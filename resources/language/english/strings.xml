@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+    <string id="30000">gdrive</string>
+    <string id="30001">Username</string>
+    <string id="30002">Password</string>
+    <string id="30003">Authorization Key [OPTIONAL]</string>
+    <string id="30004">User Agent</string>
+    <string id="30005">Save Authorization Key [EXPERIMENTAL]</string>
+</strings>

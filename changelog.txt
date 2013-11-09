@@ -1,0 +1,4 @@
+[B]Version 0.2.0[/B]
+- Public release
+[B]Version 0.1.0[/B]
+- Initial version
