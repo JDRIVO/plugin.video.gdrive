@@ -99,7 +99,7 @@ gdrive = gdrive.gdrive(username, password, auth_token, user_agent)
 
 # if we don't have an authorization token set for the plugin, set it with the recent login.
 #   auth_token will permit "quicker" login in future executions by reusing the existing login session (less HTTPS calls = quicker video transitions between clips)
-if auth_token == '' and save_auth_token:
+if auth_token == '' and save_auth_token == 'true':
     addon.setSetting('auth_token', gdrive.writely)  
     
 
