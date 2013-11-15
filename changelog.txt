@@ -1,4 +1,11 @@
-[B]Version 0.2.0[/B]
+Version 0.2.2
+- updated xbmc.python from 1.0 to 2.1.0 for XBMC 13
+Version 0.2.1
+- fix for authorization token being populated even when experimental feature is left turned off
+  - the authorization token can cause login errors; the feature is not ready to be released yet.
+  - the correction fixes the feature turning on by itself
+- if you authorization token field is populated, click defaults to unset it.
+Version 0.2.0
 - Public release
-[B]Version 0.1.0[/B]
+Version 0.1.0
 - Initial version

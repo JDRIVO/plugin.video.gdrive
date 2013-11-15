@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.gdrive" version="0.2.0" name="gdrive" provider-name="dmdsoftware">
+<addon id="plugin.video.gdrive" version="0.2.2" name="gdrive" provider-name="dmdsoftware">
     <requires>
-        <import addon="xbmc.python" version="1.0"/>
+        <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="default.py">
         <provides>video</provides>
