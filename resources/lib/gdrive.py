@@ -138,62 +138,7 @@ class gdrive:
         log('info %s' % str(response.info())) 
 
 
-    def getVideos(self):
-        log('getting video list in gdrive') 
-
-        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
-
-        url = 'https://docs.google.com/feeds/default/private/full?showfolders=true'
-
-        videos = []
-        while True:
-            log('url = %s header = %s' % (url, header)) 
-            req = urllib2.Request(url, None, header)
-
-            log('loading ' + url) 
-            try:
-              response = urllib2.urlopen(req)
-            except urllib2.URLError, e:
-              if e.code == 403 or e.code == 401:
-                self.login()
-                header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
-                req = urllib2.Request(url, None, header)
-                try:
-                  response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
-                  log(str(e), True)
-                  return
-              else:
-                log(str(e), True)
-                return
-
-            response_data = response.read()
-
-            log('checking video list in gdrive') 
-
-            for r in re.finditer('<title>([^<]+)</title><content type=\'video/[^\']+\' src=\'([^\']+)\'' ,
-                             response_data, re.DOTALL):
-                title,url = r.groups()
-                log('found video %s %s' % (title, url)) 
-                videos.append({'title': title, 'url': url})
-
-            nextURL = ''
-            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
-                             response_data, re.DOTALL):
-                nextURL = r.groups()
-                log('next URL url='+nextURL[0]) 
-
-            response.close()
-
-            if nextURL == '':
-                break
-            else:
-                url = nextURL[0]
-
-        log('exit get video') 
-        return videos        
-
-    def getVideosHash(self):
+    def getVideosHashMemoryCache(self):
         log('getting video list in gdrive') 
 
         header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
@@ -231,6 +176,62 @@ class gdrive:
                 title,url = r.groups()
                 log('found video %s %s' % (title, url)) 
                 videos[title] = url
+
+            nextURL = ''
+            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                nextURL = r.groups()
+                log('next URL url='+nextURL[0]) 
+
+            response.close()
+
+            if nextURL == '':
+                break
+            else:
+                url = nextURL[0]
+
+        log('exit get video') 
+        return videos 
+
+
+    def getVideosHashStream(self):
+        log('getting video list in gdrive') 
+
+        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
+
+        url = 'https://docs.google.com/feeds/default/private/full?showfolders=true'
+
+        videos = {}
+        while True:
+            log('url = %s header = %s' % (url, header)) 
+            req = urllib2.Request(url, None, header)
+
+            log('loading ' + url) 
+            try:
+              response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.login()
+                header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
+                req = urllib2.Request(url, None, header)
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  log(str(e), True)
+                  return
+              else:
+                log(str(e), True)
+                return
+
+            response_data = response.read()
+
+            log('checking video list in gdrive') 
+
+            for r in re.finditer('<title>([^<]+)</title><content type=\'video/[^\']+\' src=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                title,url = r.groups()
+                log('found video %s %s' % (title, url)) 
+                videos[title] = 'plugin://plugin.video.gdrive?mode=streamVideo&title=' + title
 
             nextURL = ''
             for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
@@ -382,11 +383,29 @@ class gdrive:
         log('info %s' % str(response.info())) 
         log('checking search result') 
 
-        for r in re.finditer('[^\=]+https%3A%2F%2F(.*)url\%3Dhttps\%253A\%252(.*)url\%3Dhttps\%253A\%252' ,
-                             response_data, re.DOTALL):
-          (videoURL1,videoURL2) = r.groups()
-          log('found videoURL1 %s %s' % (urllib.unquote(videoURL1), videoURL2)) 
-          videoURL1 = 'https://' + urllib.unquote(videoURL1)
+#        for r in re.finditer('[^\=]+https%3A%2F%2F(.*)url\%3Dhttps\%253A\%252(.*)url\%3Dhttps\%253A\%252' ,
+
+        
+        urls = response_data
+        urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
+
+        log('urls --- %s ' % urls) 
+        urls = re.sub('\&url\=https://', '\@', urls)
+#        urls = re.sub('\&url\=https://', '\@', urls)
+#        urls = re.sub('\&url\=https://', '\@', urls)
+#        urls = re.sub('\&url\=https://', '\@', urls)
+        log('found urlsss %s' % urls) 
+
+#        for r in re.finditer('\@([^\@]+)(\@)([^\@]+)\@' ,
+#                             urls, re.DOTALL):
+#          (videoURL1,videoURL2) = r.groups()
+#          log('found videoURL %s %s' % (videoURL1, videoURL2)) 
+#          videoURL1 = 'https://' + videoURL1
+        for r in re.finditer('\@([^\@]+)' ,urls):
+          videoURL = r.group(0)
+          log('found videoURL %s' % (videoURL)) 
+        videoURL1 = 'https://' + videoURL
+
 
         response.close()
 

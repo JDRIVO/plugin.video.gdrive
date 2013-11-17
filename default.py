@@ -114,7 +114,13 @@ mode = plugin_queries['mode']
 if mode == 'main':
     log(mode)
 
-    videos = gdrive.getVideosHash()
+    cacheType = addon.getSetting('playback_type')
+
+    if (cacheType == 0):
+      videos = gdrive.getVideosHashMemoryCache()
+    else:
+      videos = gdrive.getVideosHashStream()
+
 
     for title in sorted(videos.iterkeys()):
         addVideo(videos[title]+'|'+gdrive.returnHeaders(),
