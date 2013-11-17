@@ -1,3 +1,12 @@
+Version 0.3.0
+- finialize authorization token from experimental to stable
+  - authorization token allows for repeated calls to plugin using a reuseable session
+- add cache type: stream
+  - stream vidoes directly using google drive's player
+  - this allows for https videos playing on raspberry pi in a reliable manner
+- rename default cache type: memory-cache
+- add settings: cache type (memory-cache, disk-cache (not in use), stream)
+- catch failed login credentials
 Version 0.2.2
 - updated xbmc.python from 1.0 to 2.1.0 for XBMC 13
 Version 0.2.1

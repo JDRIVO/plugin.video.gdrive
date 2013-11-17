@@ -133,10 +133,36 @@ elif mode == 'play':
 elif mode == 'playvideo':
     title = plugin_queries['title']
     log('play title: ' + title)
+    cacheType = addon.getSetting('playback_type')
+
+    if (cacheType == 0):
+      videoURL = gdrive.getVideoLink(title)
+    else:
+      videoURL = gdrive.getVideoPlayerLink(title)
+
+    item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.returnHeaders())
+    log('play url: ' + videoURL)
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
+
+#force memory-cache - play a video given its exact-title
+elif mode == 'memoryCachevideo':
+    title = plugin_queries['title']
+    log('play title: ' + title)
     videoURL = gdrive.getVideoLink(title)
     item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.returnHeaders())
     log('play url: ' + videoURL)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
+
+
+#force stream - play a video given its exact-title
+elif mode == 'streamVideo':
+    title = plugin_queries['title']
+    log('play title: ' + title)
+    videoURL = gdrive.getVideoPlayerLink(title)
+    item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.returnHeaders())
+    log('play url: ' + videoURL)
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
+
 
 #clear the authorization token
 elif mode == 'clearauth':

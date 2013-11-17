@@ -72,7 +72,10 @@ class gdrive:
         try:
             response = urllib2.urlopen(req)
         except urllib2.URLError, e:
+            if e.code == 403:
+              xbmcgui.Dialog().ok(addon.getLocalizedString(30000), 'Login information is incorrect or permission is denied')
             log(str(e), True)
+            return
 
         response_data = response.read()
         log('response %s' % response_data) 
@@ -107,7 +110,18 @@ class gdrive:
         try:
             response = urllib2.urlopen(req)
         except urllib2.URLError, e:
-            log(str(e), True)
+            if e.code == 403 or e.code == 401:
+              self.login()
+              header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
+              req = urllib2.Request(url, None, header)
+              try:
+                response = urllib2.urlopen(req)
+              except urllib2.URLError, e:
+                log(str(e), True)
+                return
+            else:
+              log(str(e), True)
+              return
 
         response_data = response.read()
 
@@ -138,9 +152,20 @@ class gdrive:
 
             log('loading ' + url) 
             try:
-                response = urllib2.urlopen(req)
+              response = urllib2.urlopen(req)
             except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.login()
+                header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
+                req = urllib2.Request(url, None, header)
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  log(str(e), True)
+                  return
+              else:
                 log(str(e), True)
+                return
 
             response_data = response.read()
 
@@ -182,9 +207,20 @@ class gdrive:
 
             log('loading ' + url) 
             try:
-                response = urllib2.urlopen(req)
+              response = urllib2.urlopen(req)
             except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.login()
+                header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
+                req = urllib2.Request(url, None, header)
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  log(str(e), True)
+                  return
+              else:
                 log(str(e), True)
+                return
 
             response_data = response.read()
 
@@ -227,9 +263,20 @@ class gdrive:
 
         log('loading ' + url) 
         try:
-          response = urllib2.urlopen(req)
+            response = urllib2.urlopen(req)
         except urllib2.URLError, e:
-          log(str(e), True)
+            if e.code == 403 or e.code == 401:
+              self.login()
+              header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
+              req = urllib2.Request(url, None, header)
+              try:
+                response = urllib2.urlopen(req)
+              except urllib2.URLError, e:
+                log(str(e), True)
+                return
+            else:
+              log(str(e), True)
+              return
 
         response_data = response.read()
 
@@ -247,5 +294,103 @@ class gdrive:
         log('exit get video') 
         return videoURL 
 
+    def getVideoPlayerLink(self,title):
+        log('searching for video in gdrive') 
+
+        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
+
+
+	params = urllib.urlencode({'title': title, 'title-exact': 'true'})
+        url = 'https://docs.google.com/feeds/default/private/full?' + params
+       
+
+        log('url = %s header = %s' % (url, header)) 
+        req = urllib2.Request(url, None, header)
+
+        log('loading ' + url) 
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.URLError, e:
+            if e.code == 403 or e.code == 401:
+              self.login()
+              header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
+              req = urllib2.Request(url, None, header)
+              try:
+                response = urllib2.urlopen(req)
+              except urllib2.URLError, e:
+                log(str(e), True)
+                return
+            else:
+              log(str(e), True)
+              return
+
+        response_data = response.read()
+
+        log('checking search result') 
+
+        for r in re.finditer('<title>([^<]+)</title><content type=\'video/[^\']+\' src=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+          title,url = r.groups()
+          log('found video %s %s' % (title, url)) 
+          videoURL = url
+
+        for r in re.finditer('\;docid=([^\&]+)(\&)' ,
+                             response_data, re.DOTALL):
+          (docid,u) = r.groups()
+          log('found docid %s' % (docid)) 
+          return self.getPlayerLink(docid)
+
+        response.close()
+
  
+        log('exit get video') 
+        return False 
+ 
+    def getPlayerLink(self,docid):
+        log('fetching player link') 
+
+        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
+
+
+	params = urllib.urlencode({'docid': docid})
+        url = 'https://docs.google.com/get_video_info?docid=' + str((docid))
+       
+
+        log('url = %s header = %s' % (url, header)) 
+        req = urllib2.Request(url, None, header)
+
+        log('loading ' + url) 
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.URLError, e:
+            if e.code == 403 or e.code == 401:
+              self.login()
+              header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : '3.0' }
+              req = urllib2.Request(url, None, header)
+              try:
+                response = urllib2.urlopen(req)
+              except urllib2.URLError, e:
+                log(str(e), True)
+                return
+            else:
+              log(str(e), True)
+              return
+
+        response_data = response.read()
+
+        log('response %s' % response_data) 
+        log('info %s' % str(response.info())) 
+        log('checking search result') 
+
+        for r in re.finditer('[^\=]+https%3A%2F%2F(.*)url\%3Dhttps\%253A\%252(.*)url\%3Dhttps\%253A\%252' ,
+                             response_data, re.DOTALL):
+          (videoURL1,videoURL2) = r.groups()
+          log('found videoURL1 %s %s' % (urllib.unquote(videoURL1), videoURL2)) 
+          videoURL1 = 'https://' + urllib.unquote(videoURL1)
+
+        response.close()
+
+ 
+        log('exit get video') 
+        return videoURL1 
 
