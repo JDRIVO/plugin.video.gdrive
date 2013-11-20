@@ -179,7 +179,7 @@ class gdrive:
                   # streaming
                   else:
                     if promptQuality:
-                      videos[title] = 'plugin://plugin.video.gdrive?mode=streamVideo&promptQuality=1&title=' + title
+                      videos[title] = 'plugin://plugin.video.gdrive?mode=streamVideo&promptQuality=true&title=' + title
                     else: 
                       videos[title] = 'plugin://plugin.video.gdrive?mode=streamVideo&title=' + title
 

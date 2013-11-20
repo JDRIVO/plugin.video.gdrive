@@ -6,5 +6,6 @@
     <string id="30003">Authorization Key [OPTIONAL]</string>
     <string id="30004">User Agent</string>
     <string id="30006">Playback Type</string>
-    <string id="30005">Save Authorization Key [EXPERIMENTAL]</string>
+    <string id="30005">Save Authorization Key</string>
+    <string id="30007">Always Prompt for Quality / Format Playback</string>
 </strings>

@@ -96,7 +96,7 @@ password = addon.getSetting('password')
 auth_token = addon.getSetting('auth_token')
 user_agent = addon.getSetting('user_agent')
 save_auth_token = addon.getSetting('save_auth_token')
-promptQuality = addon.getSetting('prompt_for_quality')
+promptQuality = addon.getSetting('prompt_quality')
 
 
 # you need to have at least a username&password set or an authorization token
@@ -128,18 +128,19 @@ if mode == 'main':
 
     cacheType = addon.getSetting('playback_type')
 
-    if (cacheType == 0):
+    if cacheType == '0':
       videos = gdrive.getVideosList()
     else:
       videos = gdrive.getVideosList(True,2)
 
     # if results will generate further input (quality type, we use directories, otherwise add results as videos)
-    if int(promptQuality) == 1:
+    if cacheType != '0' and promptQuality == 'true':
       for title in sorted(videos.iterkeys()):
         addDirectory(videos[title],title)
     else:
-        addVideo(videos[title]+'|'+gdrive.getHeadersEncoded(),
-                             { 'title' : title , 'plot' : title },
+      for title in sorted(videos.iterkeys()):
+        addVideo(videos[title]+'|'+gdrive.getHeadersEncoded(),  
+                             { 'title' : title , 'plot' : title }, title, 
                              img='None')
 
 #play a URL that is passed in (presumely requires authorizated session)
@@ -157,7 +158,7 @@ elif mode == 'playvideo' or mode == 'playVideo':
     log('play title: ' + title)
     cacheType = addon.getSetting('playback_type')
 
-    if int(cacheType) == 0:
+    if cacheType == '0':
       videoURL = gdrive.getVideoLink(title)
     else:
       videoURL = gdrive.getVideoLink(title,True,cacheType)
@@ -187,12 +188,12 @@ elif mode == 'streamVideo':
     try:
       promptQuality = plugin_queries['promptQuality']
     except:
-      promptQuality = 0
+      promptQuality = 'false'
 
     log('play title:' + title)
 
     # result will be a list of streams
-    if int(promptQuality) == 1:
+    if promptQuality == 'true':
       videos = gdrive.getVideoLink(title, True, 2)
       log('list video url: ' + title)
 
