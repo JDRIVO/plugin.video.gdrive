@@ -40,11 +40,11 @@ def parse_query(query):
     q['mode'] = q.get('mode', 'main')
     return q
 
-def addVideo(url, infolabels, img='', fanart='', total_items=0, 
+def addVideo(url, infolabels, label, img='', fanart='', total_items=0, 
                    cm=[], cm_replace=False):
     infolabels = decode_dict(infolabels)
     log('adding video: %s - %s' % (infolabels['title'].decode('utf-8','ignore'), url))
-    listitem = xbmcgui.ListItem(infolabels['title'], iconImage=img, 
+    listitem = xbmcgui.ListItem(label, iconImage=img, 
                                 thumbnailImage=img)
     listitem.setInfo('video', infolabels)
     listitem.setProperty('IsPlayable', 'true')
@@ -54,6 +54,14 @@ def addVideo(url, infolabels, img='', fanart='', total_items=0,
     xbmcplugin.addDirectoryItem(plugin_handle, url, listitem, 
                                 isFolder=False, totalItems=total_items)
 
+def addDirectory(url, title, img='', fanart='', total_items=0):
+    log('adding dir: %s - %s' % (title, url))
+    listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
+    if not fanart:
+        fanart = addon.getAddonInfo('path') + '/fanart.jpg'
+    listitem.setProperty('fanart_image', fanart)
+    xbmcplugin.addDirectoryItem(plugin_handle, url, listitem, 
+                                isFolder=True, totalItems=total_items)
 
 #http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
 def _callback(matches):
@@ -117,15 +125,18 @@ if mode == 'main':
     cacheType = addon.getSetting('playback_type')
 
     if (cacheType == 0):
-      videos = gdrive.getVideosHashMemoryCache()
+      videos = gdrive.getVideosList()
     else:
-      videos = gdrive.getVideosHashStream()
+      videos = gdrive.getVideosList(True,1)
 
 
     for title in sorted(videos.iterkeys()):
-        addVideo(videos[title]+'|'+gdrive.returnHeaders(),
-                             { 'title' : title , 'plot' : title },
-                             img='None')
+        addDirectory(videos[title],title)
+
+
+#        addDirectory(videos[title]+'|'+gdrive.returnHeaders(),
+#                             { 'title' : title , 'plot' : title },
+#                             img='None')
 #play a URL that is passed in (presumely requires authorizated session)
 elif mode == 'play':
     url = plugin_queries['url']
@@ -151,7 +162,7 @@ elif mode == 'playvideo':
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
 
 #force memory-cache - play a video given its exact-title
-elif mode == 'memoryCachevideo':
+elif mode == 'memoryCacheVideo':
     title = plugin_queries['title']
     log('play title: ' + title)
     videoURL = gdrive.getVideoLink(title)
@@ -162,12 +173,32 @@ elif mode == 'memoryCachevideo':
 
 #force stream - play a video given its exact-title
 elif mode == 'streamVideo':
-    title = plugin_queries['title']
-    log('play title: ' + title)
-    videoURL = gdrive.getVideoPlayerLink(title)
-    item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.returnHeaders())
-    log('play url: ' + videoURL)
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
+    try:
+      title = plugin_queries['title']
+    except:
+      title = 0
+    try:
+      promptQuality = plugin_queries['promptQuality']
+    except:
+      promptQuality = 0
+
+    log('play title:' + title)
+
+    if promptQuality == '1':
+      videos = gdrive.getVideoPlayerLink(title, True)
+      log('list video url: ' + title)
+
+      for label in videos.iterkeys():
+          log('list video urldd: ' + label)
+          addVideo(videos[label]+'|'+gdrive.returnHeaders(),
+                             { 'title' : title , 'plot' : title },label,
+                             img='None')
+      xbmcplugin.endOfDirectory(plugin_handle)
+    else:
+      videoURL = gdrive.getVideoPlayerLink(title)
+      item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.returnHeaders())
+      log('play url: ' + videoURL)
+      xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
 
 
 #clear the authorization token
