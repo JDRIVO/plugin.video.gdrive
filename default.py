@@ -25,7 +25,7 @@ import re
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 
-        
+#helper methods   
 def log(msg, err=False):
     if err:
         xbmc.log(addon.getAddonInfo('name') + ': ' + msg.encode('utf-8'), xbmc.LOGERROR)    
@@ -82,18 +82,22 @@ def decode_dict(data):
 
 
 
+#global variables
 plugin_url = sys.argv[0]
 plugin_handle = int(sys.argv[1])
 plugin_queries = parse_query(sys.argv[2][1:])
 
 addon = xbmcaddon.Addon(id='plugin.video.gdrive')
-#plugin_path = addon.getAddonInfo('path')
 
+
+# retrieve settings
 username = addon.getSetting('username')
 password = addon.getSetting('password')
 auth_token = addon.getSetting('auth_token')
 user_agent = addon.getSetting('user_agent')
 save_auth_token = addon.getSetting('save_auth_token')
+promptQuality = addon.getSetting('prompt_for_quality')
+
 
 # you need to have at least a username&password set or an authorization token
 if ((username == '' or password == '') and auth_token == ''):
@@ -111,7 +115,7 @@ if auth_token == '' and save_auth_token == 'true':
     addon.setSetting('auth_token', gdrive.writely)  
     
 
-log('plugin google authorization: ' + gdrive.returnHeaders())
+log('plugin google authorization: ' + gdrive.getHeadersEncoded())
 log('plugin url: ' + plugin_url)
 log('plugin queries: ' + str(plugin_queries))
 log('plugin handle: ' + str(plugin_handle))
@@ -127,37 +131,38 @@ if mode == 'main':
     if (cacheType == 0):
       videos = gdrive.getVideosList()
     else:
-      videos = gdrive.getVideosList(True,1)
+      videos = gdrive.getVideosList(True,2)
 
-
-    for title in sorted(videos.iterkeys()):
+    # if results will generate further input (quality type, we use directories, otherwise add results as videos)
+    if int(promptQuality) == 1:
+      for title in sorted(videos.iterkeys()):
         addDirectory(videos[title],title)
+    else:
+        addVideo(videos[title]+'|'+gdrive.getHeadersEncoded(),
+                             { 'title' : title , 'plot' : title },
+                             img='None')
 
-
-#        addDirectory(videos[title]+'|'+gdrive.returnHeaders(),
-#                             { 'title' : title , 'plot' : title },
-#                             img='None')
 #play a URL that is passed in (presumely requires authorizated session)
 elif mode == 'play':
     url = plugin_queries['url']
     log('play url: ' + url)
 
-    item = xbmcgui.ListItem(path=url+'|'+gdrive.returnHeaders())
+    item = xbmcgui.ListItem(path=url+'|'+gdrive.getHeadersEncoded())
     log('play url: ' + url)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
 
 #play a video given its exact-title
-elif mode == 'playvideo':
+elif mode == 'playvideo' or mode == 'playVideo':
     title = plugin_queries['title']
     log('play title: ' + title)
     cacheType = addon.getSetting('playback_type')
 
-    if (cacheType == 0):
+    if int(cacheType) == 0:
       videoURL = gdrive.getVideoLink(title)
     else:
-      videoURL = gdrive.getVideoPlayerLink(title)
+      videoURL = gdrive.getVideoLink(title,True,cacheType)
 
-    item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.returnHeaders())
+    item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.getHeadersEncoded())
     log('play url: ' + videoURL)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
 
@@ -166,7 +171,7 @@ elif mode == 'memoryCacheVideo':
     title = plugin_queries['title']
     log('play title: ' + title)
     videoURL = gdrive.getVideoLink(title)
-    item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.returnHeaders())
+    item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.getHeadersEncoded())
     log('play url: ' + videoURL)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
 
@@ -177,6 +182,8 @@ elif mode == 'streamVideo':
       title = plugin_queries['title']
     except:
       title = 0
+
+    # check for promptQuality override
     try:
       promptQuality = plugin_queries['promptQuality']
     except:
@@ -184,19 +191,20 @@ elif mode == 'streamVideo':
 
     log('play title:' + title)
 
-    if promptQuality == '1':
-      videos = gdrive.getVideoPlayerLink(title, True)
+    # result will be a list of streams
+    if int(promptQuality) == 1:
+      videos = gdrive.getVideoLink(title, True, 2)
       log('list video url: ' + title)
 
       for label in videos.iterkeys():
           log('list video urldd: ' + label)
-          addVideo(videos[label]+'|'+gdrive.returnHeaders(),
+          addVideo(videos[label]+'|'+gdrive.getHeadersEncoded(),
                              { 'title' : title , 'plot' : title },label,
                              img='None')
-      xbmcplugin.endOfDirectory(plugin_handle)
+    # immediately play resulting (is a video)
     else:
-      videoURL = gdrive.getVideoPlayerLink(title)
-      item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.returnHeaders())
+      videoURL = gdrive.getVideoLink(title, False, 2)
+      item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.getHeadersEncoded())
       log('play url: ' + videoURL)
       xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item) 
 
@@ -204,6 +212,11 @@ elif mode == 'streamVideo':
 #clear the authorization token
 elif mode == 'clearauth':
     addon.setSetting('auth_token', '')
+
+
+# update the authorization token in the configuration file if we had to login for a new one during this execution run
+if auth_token != gdrive.writely and save_auth_token == 'true':
+    addon.setSetting('auth_token', gdrive.writely)  
      
 xbmcplugin.endOfDirectory(plugin_handle)
 
