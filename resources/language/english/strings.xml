@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <strings>
-    <string id="30000">gdrive</string>
+    <string id="30000">gDrive</string>
     <string id="30001">Username</string>
     <string id="30002">Password</string>
     <string id="30003">Authorization Key [OPTIONAL]</string>
@@ -8,4 +8,11 @@
     <string id="30006">Playback Type</string>
     <string id="30005">Save Authorization Key</string>
     <string id="30007">Always Prompt for Quality / Format Playback</string>
+    <string id="30008">Login</string>
+    <string id="30009">Playback</string>
+    <string id="30010">Login Type</string>
+    <string id="30011">Preferred Quality</string>
+    <string id="30012">Preferred Format</string>
+    <string id="30013">Avoid Quality</string>
+    <string id="30014">Avoid Format</string>
 </strings>
