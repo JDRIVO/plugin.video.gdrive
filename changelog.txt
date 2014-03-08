@@ -1,3 +1,5 @@
+- add remote-debugger code
+- cleanup of logging statements
 Version 0.3.0
 - finialize authorization token from experimental to stable
   - authorization token allows for repeated calls to plugin using a reuseable session

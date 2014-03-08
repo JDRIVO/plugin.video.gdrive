@@ -164,7 +164,6 @@ if mode == 'main':
 #play a URL that is passed in (presumely requires authorizated session)
 elif mode == 'play':
     url = plugin_queries['url']
-    log('play url: ' + url)
 
     item = xbmcgui.ListItem(path=url+'|'+gdrive.getHeadersEncoded())
     log('play url: ' + url)
@@ -173,7 +172,6 @@ elif mode == 'play':
 #play a video given its exact-title
 elif mode == 'playvideo' or mode == 'playVideo':
     title = plugin_queries['title']
-    log('play title: ' + title)
     cacheType = addon.getSetting('playback_type')
 
     if cacheType == '0':
@@ -188,7 +186,6 @@ elif mode == 'playvideo' or mode == 'playVideo':
 #force memory-cache - play a video given its exact-title
 elif mode == 'memoryCacheVideo':
     title = plugin_queries['title']
-    log('play title: ' + title)
     videoURL = gdrive.getVideoLink(title)
     item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.getHeadersEncoded())
     log('play url: ' + videoURL)
@@ -208,15 +205,12 @@ elif mode == 'streamVideo':
     except:
       promptQuality = 'false'
 
-    log('play title:' + title)
 
     # result will be a list of streams
     if promptQuality == 'true':
       videos = gdrive.getVideoLink(title, True, 2)
-      log('list video url: ' + title)
 
       for label in videos.iterkeys():
-          log('list video urldd: ' + label)
           addVideo(videos[label]+'|'+gdrive.getHeadersEncoded(),
                              { 'title' : title , 'plot' : title },label,
                              img='None')

@@ -30,9 +30,9 @@ addon = xbmcaddon.Addon(id='plugin.video.gdrive')
 # helper methods
 def log(msg, err=False):
     if err:
-        xbmc.log(addon.getAddonInfo('name') + ': ' + msg.encode('utf-8'), xbmc.LOGERROR)    
+        xbmc.log(addon.getAddonInfo('name') + ': ' + msg.encode('utf-8'), xbmc.LOGERROR)
     else:
-        xbmc.log(addon.getAddonInfo('name') + ': ' + msg.encode('utf-8'), xbmc.LOGDEBUG)    
+        xbmc.log(addon.getAddonInfo('name') + ': ' + msg.encode('utf-8'), xbmc.LOGDEBUG)
 
 
 #
@@ -57,7 +57,7 @@ class gdrive:
 
           return
         else:
-          log('no token - logging in') 
+          log('no token - logging in')
           self.login();
           return
 
@@ -77,7 +77,7 @@ class gdrive:
           'service' : 'writely'
         }
 
-        log('logging in') 
+        log('logging in')
 
         req = urllib2.Request(url, urllib.urlencode(values), header)
 
@@ -91,8 +91,8 @@ class gdrive:
             return
 
         response_data = response.read()
-        log('response %s' % response_data) 
-        log('info %s' % str(response.info())) 
+        log('response %s' % response_data)
+        log('info %s' % str(response.info()))
 
         # retrieve authorization token
         for r in re.finditer('SID=(.*).+?' +
@@ -129,18 +129,16 @@ class gdrive:
     #   returns: list of videos
     ##
     def getVideosList(self, promptQuality=True, cacheType=0):
-        log('getting video list') 
 
         # retrieve all documents
         url = 'https://docs.google.com/feeds/default/private/full?showfolders=true'
 
         videos = {}
         while True:
-            log('url = %s header = %s' % (url, self.getHeadersList())) 
+            log('url = %s header = %s' % (url, self.getHeadersList()))
             req = urllib2.Request(url, None, self.getHeadersList())
 
             # if action fails, validate login
-            log('loading ' + url) 
             try:
               response = urllib2.urlopen(req)
             except urllib2.URLError, e:
@@ -159,11 +157,9 @@ class gdrive:
             response_data = response.read()
 
             # parsing page for videos
-            log('checking video list') 
             # video-entry
             for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
                 entry = r.group(1)
-                log('found entry %s' % (entry))
 
                 # fetch video title, download URL and docid for stream link
                 for q in re.finditer('<title>([^<]+)</title><content type=\'video/[^\']+\' src=\'([^\']+)\'.*\;docid=([^\&]+)\&' ,
@@ -180,7 +176,7 @@ class gdrive:
                   else:
                     if promptQuality:
                       videos[title] = 'plugin://plugin.video.gdrive?mode=streamVideo&promptQuality=true&title=' + title
-                    else: 
+                    else:
                       videos[title] = 'plugin://plugin.video.gdrive?mode=streamVideo&title=' + title
 
             # look for more pages of videos
@@ -188,7 +184,7 @@ class gdrive:
             for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
                 nextURL = r.groups()
-                log('next URL url='+nextURL[0]) 
+                log('next URL url='+nextURL[0])
 
             response.close()
 
@@ -199,8 +195,7 @@ class gdrive:
             else:
                 url = nextURL[0]
 
-        log('exit get video') 
-        return videos 
+        return videos
 
 
     ##
@@ -209,18 +204,16 @@ class gdrive:
     #   returns: URL of video
     ##
     def getVideoLinkDNU(self,title):
-        log('searching for video') 
 
         # search by video title
-	params = urllib.urlencode({'title': title, 'title-exact': 'true'})
+        params = urllib.urlencode({'title': title, 'title-exact': 'true'})
         url = 'https://docs.google.com/feeds/default/private/full?' + params
-       
 
-        log('url = %s header = %s' % (url, self.getHeadersList())) 
+
+        log('url = %s header = %s' % (url, self.getHeadersList()))
         req = urllib2.Request(url, None, self.getHeadersList())
 
         # if action fails, validate login
-        log('loading ' + url) 
         try:
             response = urllib2.urlopen(req)
         except urllib2.URLError, e:
@@ -240,18 +233,16 @@ class gdrive:
 
 
         # fetch video title, download URL and docid for stream link
-        log('checking search result') 
         for r in re.finditer('<title>([^<]+)</title><content type=\'video/[^\']+\' src=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
           title,url = r.groups()
-          log('found video %s %s' % (title, url)) 
+          log('found video %s %s' % (title, url))
           videoURL = url
 
         response.close()
 
- 
-        log('exit get video') 
-        return videoURL 
+
+        return videoURL
 
 
     ##
@@ -260,20 +251,18 @@ class gdrive:
     #   returns: list of URLs for the video or single URL of video (if not prompting for quality)
     ##
     def getVideoLink(self,title,promptQuality=False,cacheType=0):
-        log('searching for video') 
 
 
         # search by video title
-	params = urllib.urlencode({'title': title, 'title-exact': 'true'})
+        params = urllib.urlencode({'title': title, 'title-exact': 'true'})
         url = 'https://docs.google.com/feeds/default/private/full?' + params
-       
 
-        log('url = %s header = %s' % (url, self.getHeadersList())) 
+
+        log('url = %s header = %s' % (url, self.getHeadersList()))
         req = urllib2.Request(url, None, self.getHeadersList())
 
 
         # if action fails, validate login
-        log('loading ' + url) 
         try:
             response = urllib2.urlopen(req)
         except urllib2.URLError, e:
@@ -293,7 +282,6 @@ class gdrive:
 
 
         # fetch video title, download URL and docid for stream link
-        log('checking search result') 
         for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
              entry = r.group(1)
              log('found entry %s' % (entry))
@@ -304,7 +292,6 @@ class gdrive:
 
 
         response.close()
-        log('exit get video') 
 
         if cacheType == 0:
           return url
@@ -315,28 +302,27 @@ class gdrive:
           else:
             return self.getVideoStream(docid)
 
- 
+
 
     ##
     # retrieve a stream link
     #   parameters: docid of video, whether to prompt for quality/format (optional)
     #   returns: list of streams for the video or single stream of video (if not prompting for quality)
-    ## 
+    ##
     def getVideoStream(self,docid,promptQuality=False):
-        log('fetching player link') 
+        log('fetching player link')
 
 
         # player using docid
-	params = urllib.urlencode({'docid': docid})
+        params = urllib.urlencode({'docid': docid})
         url = 'https://docs.google.com/get_video_info?docid=' + str((docid))
-       
 
-        log('url = %s header = %s' % (url, self.getHeadersList())) 
+
+        log('url = %s header = %s' % (url, self.getHeadersList()))
         req = urllib2.Request(url, None, self.getHeadersList())
 
 
         # if action fails, validate login
-        log('loading ' + url) 
         try:
             response = urllib2.urlopen(req)
         except urllib2.URLError, e:
@@ -354,20 +340,12 @@ class gdrive:
 
         response_data = response.read()
 
-
-        log('response %s' % response_data) 
-        log('info %s' % str(response.info())) 
-        log('checking search result')
-
-
         # decode resulting player URL (URL is composed of many sub-URLs)
         urls = response_data
         urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
 
         # do some substitutions to make anchoring the URL easier
-        log('urls --- %s ' % urls) 
         urls = re.sub('\&url\=https://', '\@', urls)
-        log('found urlsss %s' % urls) 
 
 
         # fetch format type and quality for each stream
@@ -378,11 +356,10 @@ class gdrive:
                              videoURL, re.DOTALL):
             (videoType,quality) = q.groups()
             videos[videoType + ' - ' + quality] = 'https://' + videoURL
-            log('found videoURL %s' % (videoURL)) 
+            log('found videoURL %s' % (videoURL))
 
         response.close()
 
-        log('exit get video select %s' %(videos)) 
         # if we are instructed to prompt for quality, we will return a list of playback links, otherwise, return a single playback link
         if promptQuality == True:
           return videos

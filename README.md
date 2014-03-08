@@ -37,7 +37,7 @@ Modes:
 FAQ:
 
 1) Is there support for Google Apps Google Drive accounts?
-Yes.  Use your fully qualified username whether that is username@gmail.com or username@domain 
+Yes.  Use your fully qualified username whether that is username@gmail.com or username@domain
 
 2) Is there support for multiple accounts?
 Sort of.  For now, you should share all your videos from subsquent Google Drive accounts to the main Google Drive account that you use with this add-on.  The shared videos will appear in the index and are viewwable.
@@ -47,13 +47,10 @@ Not at this time.  I had no need for viewing files other then Video, therefore, 
 
 4) Any limitations?
 I've tested the add-on with several Google Drive accounts, including one with over 700 videos.
- 
-Current Version:
-v0.2.0
-- first public release
+
 
 Roadmap to future releases:
-- support for multipel Google Drive accounts
+- support for multiple Google Drive accounts
 - support for OAUTH
 - support for pictures
 - support for caching account contents
