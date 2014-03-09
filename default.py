@@ -43,7 +43,7 @@ def parse_query(query):
 def addVideo(url, infolabels, label, img='', fanart='', total_items=0,
                    cm=[], cm_replace=False):
     infolabels = decode_dict(infolabels)
-    log('adding video: %s - %s' % (infolabels['title'],'ignore'), url))
+    log('adding video: %s - %s' % (infolabels['title'], url))
     listitem = xbmcgui.ListItem(label, iconImage=img,
                                 thumbnailImage=img)
     listitem.setInfo('video', infolabels)
@@ -102,7 +102,7 @@ try:
         # stdoutToServer and stderrToServer redirect stdout and stderr to eclipse console
         pydevd.settrace(remote_debugger_host, stdoutToServer=True, stderrToServer=True)
 except ImportError:
-    sys.stderr.write("Error: " + "You must add org.python.pydev.debug.pysrc to your PYTHONPATH.")
+    log(addon.getLocalizedString(30016), True)
     sys.exit(1)
 except :
     pass
@@ -119,8 +119,8 @@ promptQuality = addon.getSetting('prompt_quality')
 
 # you need to have at least a username&password set or an authorization token
 if ((username == '' or password == '') and auth_token == ''):
-    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), 'Set the Username and Password in addon settings before running.')
-    log('Set the Username and Password in addon settings before running.', True)
+    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30015))
+    log(addon.getLocalizedString(30015), True)
     xbmcplugin.endOfDirectory(plugin_handle)
 
 
@@ -152,7 +152,7 @@ if mode == 'main':
       videos = gdrive.getVideosList(True,2)
 
     # if results will generate further input (quality type, we use directories, otherwise add results as videos)
-    if cacheType != '0' and promptQuality == 'true':
+    if cacheType != '0' or promptQuality == 'true':
       for title in sorted(videos.iterkeys()):
         addDirectory(videos[title],title)
     else:

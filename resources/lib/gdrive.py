@@ -86,7 +86,8 @@ class gdrive:
             response = urllib2.urlopen(req)
         except urllib2.URLError, e:
             if e.code == 403:
-              xbmcgui.Dialog().ok(addon.getLocalizedString(30000), 'Login information is incorrect or permission is denied')
+                #login denied
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30017))
             log(str(e), True)
             return
 

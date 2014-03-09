@@ -15,4 +15,7 @@
     <string id="30012">Preferred Format</string>
     <string id="30013">Avoid Quality</string>
     <string id="30014">Avoid Format</string>
+    <string id="30015">Set the Username and Password in addon settings before running.</string>
+    <string id="30016">You must add org.python.pydev.debug.pysrc to your PYTHONPATH.</string>
+    <string id="30017">Login information is incorrect or permission is denied</string>
 </strings>
