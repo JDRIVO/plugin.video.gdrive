@@ -111,26 +111,42 @@ except :
 # retrieve settings
 username = addon.getSetting('username')
 password = addon.getSetting('password')
-auth_token = addon.getSetting('auth_token')
+auth_writely = addon.getSetting('auth_writely')
+auth_wise = addon.getSetting('auth_wise')
 user_agent = addon.getSetting('user_agent')
 save_auth_token = addon.getSetting('save_auth_token')
 promptQuality = addon.getSetting('prompt_quality')
+useWRITELY = addon.getSetting('force_writely')
 
+if useWRITELY == 'true':
+    useWRITELY = True
+else:
+    useWRITELY = False
+
+
+mode = plugin_queries['mode']
+
+# allow for playback of public videos without authentication
+if (mode.lower() == 'streamurl'):
+  authenticate = False
+else:
+  authenticate = True
 
 # you need to have at least a username&password set or an authorization token
-if ((username == '' or password == '') and auth_token == ''):
+if ((username == '' or password == '') and (auth_writely == '' and auth_wise == '') and (authenticate == True)):
     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30015))
     log(addon.getLocalizedString(30015), True)
     xbmcplugin.endOfDirectory(plugin_handle)
 
 
 #let's log in
-gdrive = gdrive.gdrive(username, password, auth_token, user_agent)
+gdrive = gdrive.gdrive(username, password, auth_writely, auth_wise, user_agent, authenticate, useWRITELY)
 
 # if we don't have an authorization token set for the plugin, set it with the recent login.
 #   auth_token will permit "quicker" login in future executions by reusing the existing login session (less HTTPS calls = quicker video transitions between clips)
-if auth_token == '' and save_auth_token == 'true':
-    addon.setSetting('auth_token', gdrive.writely)
+if auth_writely == '' and save_auth_token == 'true':
+    addon.setSetting('auth_writely', gdrive.writely)
+    addon.setSetting('auth_wise', gdrive.wise)
 
 
 log('plugin google authorization: ' + gdrive.getHeadersEncoded())
@@ -138,10 +154,9 @@ log('plugin url: ' + plugin_url)
 log('plugin queries: ' + str(plugin_queries))
 log('plugin handle: ' + str(plugin_handle))
 
-mode = plugin_queries['mode']
 
 #dump a list of videos available to play
-if mode == 'main':
+if mode.lower() == 'main':
     log(mode)
 
     cacheType = addon.getSetting('playback_type')
@@ -157,20 +172,20 @@ if mode == 'main':
         addDirectory(videos[title],title)
     else:
       for title in sorted(videos.iterkeys()):
-        addVideo(videos[title]+'|'+gdrive.getHeadersEncoded(),
+          addVideo(videos[title],
                              { 'title' : title , 'plot' : title }, title,
                              img='None')
 
-#play a URL that is passed in (presumely requires authorizated session)
-elif mode == 'play':
+#play a URL that is passed in (presumably requires authorizated session)
+elif mode.lower() == 'play':
     url = plugin_queries['url']
 
-    item = xbmcgui.ListItem(path=url+'|'+gdrive.getHeadersEncoded())
+    item = xbmcgui.ListItem(path=url+'|'+gdrive.getHeadersEncoded(useWRITELY))
     log('play url: ' + url)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 #play a video given its exact-title
-elif mode == 'playvideo' or mode == 'playVideo':
+elif mode.lower() == 'playvideo':
     title = plugin_queries['title']
     cacheType = addon.getSetting('playback_type')
 
@@ -179,21 +194,28 @@ elif mode == 'playvideo' or mode == 'playVideo':
     else:
       videoURL = gdrive.getVideoLink(title,True,cacheType)
 
-    item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.getHeadersEncoded())
+    #effective 2014/02, video stream calls require a wise token instead of writely token
+    videoURL = videoURL + '|' + gdrive.getHeadersEncoded(useWRITELY)
+
+    item = xbmcgui.ListItem(path=videoURL)
     log('play url: ' + videoURL)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 #force memory-cache - play a video given its exact-title
-elif mode == 'memoryCacheVideo':
+elif mode.lower() == 'memorycachevideo':
     title = plugin_queries['title']
     videoURL = gdrive.getVideoLink(title)
-    item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.getHeadersEncoded())
+
+    #effective 2014/02, video stream calls require a wise token instead of writely token
+    videoURL = videoURL + '|' + gdrive.getHeadersEncoded(useWRITELY)
+
+    item = xbmcgui.ListItem(path=videoURL)
     log('play url: ' + videoURL)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 
 #force stream - play a video given its exact-title
-elif mode == 'streamVideo':
+elif mode.lower() == 'streamvideo':
     try:
       title = plugin_queries['title']
     except:
@@ -211,25 +233,39 @@ elif mode == 'streamVideo':
       videos = gdrive.getVideoLink(title, True, 2)
 
       for label in videos.iterkeys():
-          addVideo(videos[label]+'|'+gdrive.getHeadersEncoded(),
+          addVideo(videos[label]+'|'+gdrive.getHeadersEncoded(useWRITELY),
                              { 'title' : title , 'plot' : title },label,
                              img='None')
     # immediately play resulting (is a video)
     else:
       videoURL = gdrive.getVideoLink(title, False, 2)
-      item = xbmcgui.ListItem(path=videoURL+'|'+gdrive.getHeadersEncoded())
+
+      #effective 2014/02, video stream calls require a wise token instead of writely token
+      videoURL = videoURL + '|' + gdrive.getHeadersEncoded(useWRITELY)
+
+      item = xbmcgui.ListItem(path=videoURL)
       log('play url: ' + videoURL)
       xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
+elif mode.lower() == 'streamurl':
+    url = plugin_queries['url']
+
+    videoURL = gdrive.getPublicStream(url)
+    item = xbmcgui.ListItem(path=videoURL)
+    log('play url: ' + videoURL)
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 #clear the authorization token
-elif mode == 'clearauth':
-    addon.setSetting('auth_token', '')
+elif mode.lower() == 'clearauth':
+    addon.setSetting('auth_writely', '')
+    addon.setSetting('auth_wise', '')
 
-
+# if we don't have an authorization token set for the plugin, set it with the recent login.
+#   auth_token will permit "quicker" login in future executions by reusing the existing login session (less HTTPS calls = quicker video transitions between clips)
 # update the authorization token in the configuration file if we had to login for a new one during this execution run
-if auth_token != gdrive.writely and save_auth_token == 'true':
-    addon.setSetting('auth_token', gdrive.writely)
+if auth_writely != gdrive.writely and save_auth_token == 'true':
+    addon.setSetting('auth_writely', gdrive.writely)
+    addon.setSetting('auth_wise', gdrive.wise)
 
 xbmcplugin.endOfDirectory(plugin_handle)
 
