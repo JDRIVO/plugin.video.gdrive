@@ -189,6 +189,11 @@ class gdrive:
     ##
     def getVideosList(self, promptQuality=True, cacheType=0):
 
+        if promptQuality:
+            promptQuality = '&promptQuality=true'
+        else:
+            promptQuality = ''
+
         # retrieve all documents
         url = 'https://docs.google.com/feeds/default/private/full?showfolders=true'
 
@@ -221,22 +226,18 @@ class gdrive:
                 entry = r.group(1)
 
                 # fetch video title, download URL and docid for stream link
-                for q in re.finditer('<title>([^<]+)</title><content type=\'([^\/]+)\/[^\']+\' src=\'([^\']+)\'.*\;docid=([^\&]+)\&' ,
-                             entry, re.DOTALL):
-
-                  title,mediaType,url,docid = q.groups()
-                  log('found video %s %s %s' % (title, url, docid))
+                for r in re.finditer('<title>([^<]+)</title><content type=\'([^\/]+)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                  title,mediaType,url,thumbnail = r.groups()
+                  log('found video %s %s' % (title, url))
 
                   # memory-cache
                   if cacheType == 0:
-                    videos[title] = url
+                    videos[title] = {'url': url, 'thumbnail':  thumbnail}
 
                   # streaming
                   else:
-                    if promptQuality:
-                      videos[title] = 'plugin://plugin.video.gdrive/?mode=streamVideo&promptQuality=true&title=' + title
-                    else:
-                      videos[title] = 'plugin://plugin.video.gdrive/?mode=streamVideo&title=' + title
+                    videos[title] = {'url': 'plugin://plugin.video.gdrive/?mode=streamVideo'+promptQuality+'&title=' + title, 'thumbnail': thumbnail}
 
                 #for playing video.google.com videos linked to your google drive account
                 for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
@@ -246,14 +247,12 @@ class gdrive:
 
                     # memory-cache
                     if cacheType == 0:
-                        videos[title] = url
+                        videos[title] = {'url': url, 'thumbnail':  thumbnail}
 
                     # streaming
                     else:
-                        if promptQuality:
-                            videos[title] = 'plugin://plugin.video.gdrive/?mode=streamVideo&promptQuality=true&title=' + title
-                        else:
-                            videos[title] = 'plugin://plugin.video.gdrive/?mode=streamVideo&title=' + title
+                      videos[title] = {'url': 'plugin://plugin.video.gdrive/?mode=streamVideo'+promptQuality+'&title=' + title, 'thumbnail': thumbnail}
+
 
             # look for more pages of videos
             nextURL = ''

@@ -169,12 +169,12 @@ if mode.lower() == 'main':
     # if results will generate further input (quality type, we use directories, otherwise add results as videos)
     if cacheType != '0' or promptQuality == 'true':
       for title in sorted(videos.iterkeys()):
-        addDirectory(videos[title],title)
+        addDirectory(videos[title]['url'],title, img=videos[title]['thumbnail'])
     else:
       for title in sorted(videos.iterkeys()):
-          addVideo(videos[title],
+          addVideo(videos[title]['url'],
                              { 'title' : title , 'plot' : title }, title,
-                             img='None')
+                             img=videos[title]['thumbnail'])
 
 #play a URL that is passed in (presumably requires authorizated session)
 elif mode.lower() == 'play':
