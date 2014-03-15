@@ -221,10 +221,10 @@ class gdrive:
                 entry = r.group(1)
 
                 # fetch video title, download URL and docid for stream link
-                for q in re.finditer('<title>([^<]+)</title><content type=\'video/[^\']+\' src=\'([^\']+)\'.*\;docid=([^\&]+)\&' ,
+                for q in re.finditer('<title>([^<]+)</title><content type=\'([^\/]+)\/[^\']+\' src=\'([^\']+)\'.*\;docid=([^\&]+)\&' ,
                              entry, re.DOTALL):
 
-                  title,url,docid = q.groups()
+                  title,mediaType,url,docid = q.groups()
                   log('found video %s %s %s' % (title, url, docid))
 
                   # memory-cache
@@ -234,9 +234,9 @@ class gdrive:
                   # streaming
                   else:
                     if promptQuality:
-                      videos[title] = 'plugin://plugin.video.gdrive?mode=streamVideo&promptQuality=true&title=' + title
+                      videos[title] = 'plugin://plugin.video.gdrive/?mode=streamVideo&promptQuality=true&title=' + title
                     else:
-                      videos[title] = 'plugin://plugin.video.gdrive?mode=streamVideo&title=' + title
+                      videos[title] = 'plugin://plugin.video.gdrive/?mode=streamVideo&title=' + title
 
                 #for playing video.google.com videos linked to your google drive account
                 for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
@@ -251,9 +251,9 @@ class gdrive:
                     # streaming
                     else:
                         if promptQuality:
-                            videos[title] = 'plugin://plugin.video.gdrive?mode=streamVideo&promptQuality=true&title=' + title
+                            videos[title] = 'plugin://plugin.video.gdrive/?mode=streamVideo&promptQuality=true&title=' + title
                         else:
-                            videos[title] = 'plugin://plugin.video.gdrive?mode=streamVideo&title=' + title
+                            videos[title] = 'plugin://plugin.video.gdrive/?mode=streamVideo&title=' + title
 
             # look for more pages of videos
             nextURL = ''
@@ -314,9 +314,9 @@ class gdrive:
         for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
              entry = r.group(1)
              log('found entry %s' % (entry))
-             for q in re.finditer('<title>([^<]+)</title><content type=\'video/[^\']+\' src=\'([^\']+)\'.*\;docid=([^\&]+)\&' ,
+             for q in re.finditer('<title>([^<]+)</title><content type=\'([^\/]+)\/[^\']+\' src=\'([^\']+)\'.*\;docid=([^\&]+)\&' ,
                              entry, re.DOTALL):
-               title,url,docid = q.groups()
+               title,mediaType,url,docid = q.groups()
                log('found video %s %s %s' % (title, url, docid))
 
 
