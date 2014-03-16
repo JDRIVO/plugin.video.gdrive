@@ -166,6 +166,9 @@ if mode.lower() == 'main':
     else:
       videos = gdrive.getVideosList(True,2)
 
+
+    addDirectory('plugin://plugin.video.gdrive/?mode=index&folder=','<< show all videos sorted alphabetically >>')
+
     # if results will generate further input (quality type, we use directories, otherwise add results as videos)
     if cacheType != '0' or promptQuality == 'true':
       for title in sorted(videos.iterkeys()):
@@ -175,6 +178,32 @@ if mode.lower() == 'main':
           addVideo(videos[title]['url'],
                              { 'title' : title , 'plot' : title }, title,
                              img=videos[title]['thumbnail'])
+
+elif mode.lower() == 'index':
+    log(mode)
+
+    cacheType = addon.getSetting('playback_type')
+
+    try:
+      folder = plugin_queries['folder']
+    except:
+      folder = ''
+
+    if cacheType == '0':
+      videos = gdrive.getVideosList(True, 0, folder)
+    else:
+      videos = gdrive.getVideosList(True, 2, folder)
+
+    # if results will generate further input (quality type, we use directories, otherwise add results as videos)
+    if cacheType != '0' or promptQuality == 'true':
+      for title in sorted(videos.iterkeys()):
+          addDirectory(videos[title]['url'],title, img=videos[title]['thumbnail'])
+    else:
+      for title in sorted(videos.iterkeys()):
+          addVideo(videos[title]['url'],
+                             { 'title' : title , 'plot' : title }, title,
+                             img=videos[title]['thumbnail'])
+
 
 #play a URL that is passed in (presumably requires authorizated session)
 elif mode.lower() == 'play':

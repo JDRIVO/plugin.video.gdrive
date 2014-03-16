@@ -1,3 +1,4 @@
+- folder support!
 - don't login or provide authorization token for public videos (unless denied access)
 - add thumbnail previews
 - fix plugin URLs to make compliant with plugins like PseudoTV Live

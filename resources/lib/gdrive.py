@@ -187,15 +187,23 @@ class gdrive:
     #   parameters: prompt for video quality (optional), cache type (optional)
     #   returns: list of videos
     ##
-    def getVideosList(self, promptQuality=True, cacheType=0):
+    def getVideosList(self, promptQuality=True, cacheType=0, folder=False):
 
         if promptQuality:
             promptQuality = '&promptQuality=true'
         else:
             promptQuality = ''
 
-        # retrieve all documents
-        url = 'https://docs.google.com/feeds/default/private/full?showfolders=true'
+        # retrieve all items
+        if folder==False:
+            url = 'https://docs.google.com/feeds/default/private/full?showfolders=true'
+        # retrieve root items
+        elif folder == '':
+            url = 'https://docs.google.com/feeds/default/private/full/folder%3Aroot/contents'
+        # retrieve folder items
+        else:
+            url = 'https://docs.google.com/feeds/default/private/full/folder%3A'+folder+'/contents'
+
 
         videos = {}
         while True:
@@ -225,33 +233,51 @@ class gdrive:
             for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
                 entry = r.group(1)
 
-                # fetch video title, download URL and docid for stream link
-                for r in re.finditer('<title>([^<]+)</title><content type=\'([^\/]+)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
-                             response_data, re.DOTALL):
-                  title,mediaType,url,thumbnail = r.groups()
-                  log('found video %s %s' % (title, url))
+                # fetch folder
+                for r in re.finditer('\<gd\:resourceId\>([^\:]*)\:?([^\<]*)\</gd:resourceId\>' ,
+                             entry, re.DOTALL):
+                  resourceType,resourceID = r.groups()
 
-                  # memory-cache
-                  if cacheType == 0:
-                    videos[title] = {'url': url, 'thumbnail':  thumbnail}
+                  # entry is a folder
+                  if (resourceType == 'folder'):
+                      for q in re.finditer('<(title)>([^<]+)</title>' ,
+                             entry, re.DOTALL):
+                          titleType, title = q.groups()
 
-                  # streaming
+                          log('found folder %s %s' % (resourceID, title))
+                          videos[title] = {'mediaType': 0, 'url': 'plugin://plugin.video.gdrive/?mode=index&folder='+resourceID, 'thumbnail':  ''}
+
+                  # entry is NOT a folder
                   else:
-                    videos[title] = {'url': 'plugin://plugin.video.gdrive/?mode=streamVideo'+promptQuality+'&title=' + title, 'thumbnail': thumbnail}
+                      # fetch video title, download URL and docid for stream link
+                      # Google Drive API format
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'([^\/]+)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,mediaType,url,thumbnail = r.groups()
+                          log('found video %s %s' % (title, url))
 
-                #for playing video.google.com videos linked to your google drive account
-                for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
-                             response_data, re.DOTALL):
-                    title,url,thumbnail = r.groups()
-                    log('found video %s %s' % (title, url))
+                          # memory-cache
+                          if cacheType == 0:
+                              videos[title] = {'mediaType': 1, 'url': url, 'thumbnail':  thumbnail}
 
-                    # memory-cache
-                    if cacheType == 0:
-                        videos[title] = {'url': url, 'thumbnail':  thumbnail}
+                              # streaming
+                          else:
+                              videos[title] = {'mediaType': 1,'url': 'plugin://plugin.video.gdrive/?mode=streamVideo'+promptQuality+'&title=' + title, 'thumbnail': thumbnail}
 
-                    # streaming
-                    else:
-                      videos[title] = {'url': 'plugin://plugin.video.gdrive/?mode=streamVideo'+promptQuality+'&title=' + title, 'thumbnail': thumbnail}
+                      #for playing video.google.com videos linked to your google drive account
+                      # Google Docs & Google Video API format
+                      for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,url,thumbnail = r.groups()
+                          log('found video %s %s' % (title, url))
+
+                          # memory-cache
+                          if cacheType == 0:
+                              videos[title] = {'mediaType': 2, 'url': url, 'thumbnail':  thumbnail}
+
+                          # streaming
+                          else:
+                              videos[title] = {'mediaType': 2,'url': 'plugin://plugin.video.gdrive/?mode=streamVideo'+promptQuality+'&title=' + title, 'thumbnail': thumbnail}
 
 
             # look for more pages of videos
