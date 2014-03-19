@@ -1,3 +1,8 @@
+Version 0.3.2.x
+- add support for preferred resolution/quality, format, and codecs to avoid
+- automatically playback based on context (directory vs playback)
+- support for music files!
+- add itags
 - folder support!
 - don't login or provide authorization token for public videos (unless denied access)
 - add thumbnail previews

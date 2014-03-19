@@ -4,16 +4,15 @@
     	<setting id="login_type" type="enum" label="30010" values="ClientLogin" default="0" />
     	<setting id="username" type="text" label="30001" default="" />
    		<setting id="password" type="text" label="30002" option="hidden" default="" />
-    	<setting id="auth_token" type="text" label="30003" default="" />
     	<setting id="user_agent" type="text" label="30004" default="Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)" />
-    	<setting id="save_auth_token" type="bool" label="30005" default="false" />
+    	<setting id="save_auth_token" type="bool" label="30005" default="true" />
     </category>
     <category label="30009">
-    	<setting id="playback_type" type="enum" label="30006" values="Memory Cache|Stream" default="1"/>
-    	<setting id="preferred_quality" type="text" label="30011" default="" />
-    	<setting id="preferred_format" type="text" label="30012" default="" />
-    	<setting id="avoid_quality" type="text" label="30013" default="" />
-    	<setting id="avoid_format" type="text" label="30014" default="" />
+    	<setting id="playback_type" type="enum" label="30006" values="Memory Cache|Disk Cache|Stream" default="2"/>
+    	<setting id="prompt_quality" type="bool" label="30019" default="true" />
+    	<setting id="preferred_quality" type="enum" label="30011" values="perfer best (1080,720,<720)|prefer 720 (720,<720,>720)|prefer SD (480,<480)" default="0" />
+    	<setting id="preferred_format" type="enum" label="30012" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
+    	<setting id="avoid_codec" type="enum" label="30013" values="none|VP8/vorbis" default="0"/>
     </category>
 
 </settings>

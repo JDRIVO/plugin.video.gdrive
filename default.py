@@ -24,13 +24,17 @@ import re
 
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
+# global variables
+PLUGIN_NAME = 'plugin.video.gdrive'
+PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
+ADDON = xbmcaddon.Addon(id=PLUGIN_NAME)
 
 #helper methods
 def log(msg, err=False):
     if err:
-        xbmc.log(addon.getAddonInfo('name') + ': ' + msg, xbmc.LOGERROR)
+        xbmc.log(ADDON.getAddonInfo('name') + ': ' + msg, xbmc.LOGERROR)
     else:
-        xbmc.log(addon.getAddonInfo('name') + ': ' + msg, xbmc.LOGDEBUG)
+        xbmc.log(ADDON.getAddonInfo('name') + ': ' + msg, xbmc.LOGDEBUG)
 
 def parse_query(query):
     queries = cgi.parse_qs(query)
@@ -51,15 +55,19 @@ def addVideo(url, infolabels, label, img='', fanart='', total_items=0,
     listitem.setProperty('fanart_image', fanart)
     if cm:
         listitem.addContextMenuItems(cm, cm_replace)
-    xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
-                                isFolder=False, totalItems=total_items)
+    if not xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=False, totalItems=total_items):
+        return False
+    return True
 
 def addDirectory(url, title, img='', fanart='', total_items=0):
     log('adding dir: %s - %s' % (title, url))
     listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
     if not fanart:
-        fanart = addon.getAddonInfo('path') + '/fanart.jpg'
+        fanart = ADDON.getAddonInfo('path') + '/fanart.jpg'
     listitem.setProperty('fanart_image', fanart)
+    # allow play controls on folders
+    listitem.setProperty('IsPlayable', 'true')
     xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=True, totalItems=total_items)
 
@@ -87,12 +95,11 @@ plugin_url = sys.argv[0]
 plugin_handle = int(sys.argv[1])
 plugin_queries = parse_query(sys.argv[2][1:])
 
-addon = xbmcaddon.Addon(id='plugin.video.gdrive')
 
 try:
 
-    remote_debugger = addon.getSetting('remote_debugger')
-    remote_debugger_host = addon.getSetting('remote_debugger_host')
+    remote_debugger = ADDON.getSetting('remote_debugger')
+    remote_debugger_host = ADDON.getSetting('remote_debugger_host')
 
     # append pydev remote debugger
     if remote_debugger == 'true':
@@ -102,40 +109,52 @@ try:
         # stdoutToServer and stderrToServer redirect stdout and stderr to eclipse console
         pydevd.settrace(remote_debugger_host, stdoutToServer=True, stderrToServer=True)
 except ImportError:
-    log(addon.getLocalizedString(30016), True)
+    log(ADDON.getLocalizedString(30016), True)
     sys.exit(1)
 except :
     pass
 
 
 # retrieve settings
-username = addon.getSetting('username')
-password = addon.getSetting('password')
-auth_writely = addon.getSetting('auth_writely')
-auth_wise = addon.getSetting('auth_wise')
-user_agent = addon.getSetting('user_agent')
-save_auth_token = addon.getSetting('save_auth_token')
-promptQuality = addon.getSetting('prompt_quality')
-useWRITELY = addon.getSetting('force_writely')
+username = ADDON.getSetting('username')
+password = ADDON.getSetting('password')
+user_agent = ADDON.getSetting('user_agent')
+save_auth_token = ADDON.getSetting('save_auth_token')
+promptQuality = ADDON.getSetting('prompt_quality')
 
-if useWRITELY == 'true':
-    useWRITELY = True
+if promptQuality == 'true':
+    promptQuality = True
 else:
-    useWRITELY = False
+    promptQuality = False
+
+# hidden parameters which may not even be defined
+try:
+    auth_writely = ADDON.getSetting('auth_writely')
+    auth_wise = ADDON.getSetting('auth_wise')
+    useWRITELY = ADDON.getSetting('force_writely')
+    if useWRITELY == 'true':
+        useWRITELY = True
+    else:
+        useWRITELY = False
+except :
+    auth_writely = ''
+    auth_wise = ''
+    useWRITELY = True
+
 
 
 mode = plugin_queries['mode']
 
 # allow for playback of public videos without authentication
-if (mode.lower() == 'streamurl'):
+if (mode == 'streamurl'):
   authenticate = False
 else:
   authenticate = True
 
 # you need to have at least a username&password set or an authorization token
 if ((username == '' or password == '') and (auth_writely == '' and auth_wise == '') and (authenticate == True)):
-    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30015))
-    log(addon.getLocalizedString(30015), True)
+    xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30015))
+    log(ADDON.getLocalizedString(30015), True)
     xbmcplugin.endOfDirectory(plugin_handle)
 
 
@@ -145,98 +164,72 @@ gdrive = gdrive.gdrive(username, password, auth_writely, auth_wise, user_agent, 
 # if we don't have an authorization token set for the plugin, set it with the recent login.
 #   auth_token will permit "quicker" login in future executions by reusing the existing login session (less HTTPS calls = quicker video transitions between clips)
 if auth_writely == '' and save_auth_token == 'true':
-    addon.setSetting('auth_writely', gdrive.writely)
-    addon.setSetting('auth_wise', gdrive.wise)
+    ADDON.setSetting('auth_writely', gdrive.writely)
+    ADDON.setSetting('auth_wise', gdrive.wise)
 
 
-log('plugin google authorization: ' + gdrive.getHeadersEncoded())
 log('plugin url: ' + plugin_url)
 log('plugin queries: ' + str(plugin_queries))
 log('plugin handle: ' + str(plugin_handle))
 
+# make mode case-insensitive
+mode = mode.lower()
 
 #dump a list of videos available to play
-if mode.lower() == 'main':
-    log(mode)
-
-    cacheType = addon.getSetting('playback_type')
-
-    if cacheType == '0':
-      videos = gdrive.getVideosList()
-    else:
-      videos = gdrive.getVideosList(True,2)
-
-
-    addDirectory('plugin://plugin.video.gdrive/?mode=index&folder=','<< show all videos sorted alphabetically >>')
-
-    # if results will generate further input (quality type, we use directories, otherwise add results as videos)
-    if cacheType != '0' or promptQuality == 'true':
-      for title in sorted(videos.iterkeys()):
-        addDirectory(videos[title]['url'],title, img=videos[title]['thumbnail'])
-    else:
-      for title in sorted(videos.iterkeys()):
-          addVideo(videos[title]['url'],
-                             { 'title' : title , 'plot' : title }, title,
-                             img=videos[title]['thumbnail'])
-
-elif mode.lower() == 'index':
-    log(mode)
-
-    cacheType = addon.getSetting('playback_type')
+if mode == 'main' or mode == 'index':
+    cacheType = int(ADDON.getSetting('playback_type'))
 
     try:
       folder = plugin_queries['folder']
     except:
-      folder = ''
+      folder = False
 
-    if cacheType == '0':
-      videos = gdrive.getVideosList(True, 0, folder)
-    else:
-      videos = gdrive.getVideosList(True, 2, folder)
+    if mode == 'main':
+      addDirectory(PLUGIN_URL+'?mode=index&folder=','<< '+ADDON.getLocalizedString(30018)+' >>')
+      folder = 'root'
 
-    # if results will generate further input (quality type, we use directories, otherwise add results as videos)
-    if cacheType != '0' or promptQuality == 'true':
-      for title in sorted(videos.iterkeys()):
-          addDirectory(videos[title]['url'],title, img=videos[title]['thumbnail'])
-    else:
-      for title in sorted(videos.iterkeys()):
-          addVideo(videos[title]['url'],
+
+    videos = gdrive.getVideosList(cacheType, folder)
+
+
+    for title in sorted(videos.iterkeys()):
+        if not videos[title]['mediaType'] == gdrive.MEDIA_TYPE_FOLDER  and (videos[title]['mediaType'] == gdrive.MEDIA_TYPE_MUSIC or (videos[title]['mediaType'] == gdrive.MEDIA_TYPE_VIDEO and(cacheType == gdrive.CACHE_TYPE_MEMORY or cacheType == gdrive.CACHE_TYPE_DISK  or (cacheType == gdrive.CACHE_TYPE_STREAM and not promptQuality)))):
+            addVideo(videos[title]['url'],
                              { 'title' : title , 'plot' : title }, title,
                              img=videos[title]['thumbnail'])
+        else:
+            addDirectory(videos[title]['url'],title, img=videos[title]['thumbnail'])
 
 
 #play a URL that is passed in (presumably requires authorizated session)
-elif mode.lower() == 'play':
+elif mode == 'play':
     url = plugin_queries['url']
 
-    item = xbmcgui.ListItem(path=url+'|'+gdrive.getHeadersEncoded(useWRITELY))
+    item = xbmcgui.ListItem(path=url+'|'+gdrive.getHeadersEncoded(gdrive.useWRITELY))
     log('play url: ' + url)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 #play a video given its exact-title
-elif mode.lower() == 'playvideo':
+elif mode == 'playvideo':
     title = plugin_queries['title']
-    cacheType = addon.getSetting('playback_type')
+    cacheType = int(ADDON.getSetting('playback_type'))
 
-    if cacheType == '0':
-      videoURL = gdrive.getVideoLink(title)
-    else:
-      videoURL = gdrive.getVideoLink(title,True,cacheType)
+    videoURL = gdrive.getVideoLink(title,cacheType)
 
     #effective 2014/02, video stream calls require a wise token instead of writely token
-    videoURL = videoURL + '|' + gdrive.getHeadersEncoded(useWRITELY)
+    videoURL = videoURL + '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY)
 
     item = xbmcgui.ListItem(path=videoURL)
     log('play url: ' + videoURL)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 #force memory-cache - play a video given its exact-title
-elif mode.lower() == 'memorycachevideo':
+elif mode == 'memorycachevideo':
     title = plugin_queries['title']
     videoURL = gdrive.getVideoLink(title)
 
     #effective 2014/02, video stream calls require a wise token instead of writely token
-    videoURL = videoURL + '|' + gdrive.getHeadersEncoded(useWRITELY)
+    videoURL = videoURL + '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY)
 
     item = xbmcgui.ListItem(path=videoURL)
     log('play url: ' + videoURL)
@@ -244,57 +237,95 @@ elif mode.lower() == 'memorycachevideo':
 
 
 #force stream - play a video given its exact-title
-elif mode.lower() == 'streamvideo':
+elif mode == 'streamvideo':
     try:
       title = plugin_queries['title']
     except:
       title = 0
 
-    # check for promptQuality override
     try:
-      promptQuality = plugin_queries['promptQuality']
-    except:
-      promptQuality = 'false'
-
+      pquality = int(ADDON.getSetting('preferred_quality'))
+      pformat = int(ADDON.getSetting('preferred_format'))
+      acodec = int(ADDON.getSetting('avoid_codec'))
+    except :
+      pquality=-1
+      pformat=-1
+      acodec=-1
 
     # result will be a list of streams
-    if promptQuality == 'true':
-      videos = gdrive.getVideoLink(title, True, 2)
+    singlePlayback=''
+    videos = gdrive.getVideoLink(title, gdrive.CACHE_TYPE_STREAM,pquality,pformat,acodec)
 
-      for label in videos.iterkeys():
-          addVideo(videos[label]+'|'+gdrive.getHeadersEncoded(useWRITELY),
+    for label in sorted(videos.iterkeys()):
+        # if invoked as a directory, user is expecting a list of qualities to select from, add each video stream playback
+        addVideo(videos[label]+'|'+gdrive.getHeadersEncoded(gdrive.useWRITELY),
                              { 'title' : title , 'plot' : title },label,
                              img='None')
-    # immediately play resulting (is a video)
-    else:
-      videoURL = gdrive.getVideoLink(title, False, 2)
+        if singlePlayback == '':
+            singlePlayback = label
 
-      #effective 2014/02, video stream calls require a wise token instead of writely token
-      videoURL = videoURL + '|' + gdrive.getHeadersEncoded(useWRITELY)
-
-      item = xbmcgui.ListItem(path=videoURL)
-      log('play url: ' + videoURL)
-      xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-elif mode.lower() == 'streamurl':
-    url = plugin_queries['url']
-
-    videoURL = gdrive.getPublicStream(url)
-    item = xbmcgui.ListItem(path=videoURL)
-    log('play url: ' + videoURL)
+    # if invoked in .strm or as a direct-video (don't prompt for quality)
+    item = xbmcgui.ListItem(path=videos[singlePlayback]+ '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY))
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
+
+#force stream - play a video given its exact-title
+elif mode == 'streamurl':
+    try:
+      url = plugin_queries['url']
+    except:
+      url = 0
+
+    # check for promptQuality override
+    try:
+      pquality = int(ADDON.getSetting('preferred_quality'))
+      pformat = int(ADDON.getSetting('preferred_format'))
+      acodec = int(ADDON.getSetting('avoid_codec'))
+    except :
+      pquality=-1
+      pformat=-1
+      acodec=-1
+
+    singlePlayback=''
+    videos = gdrive.getVideoStream(pquality=pquality,pformat=pformat,acodec=acodec, url=url)
+
+    for label in sorted(videos.iterkeys()):
+          addVideo(videos[label]+'|'+gdrive.getHeadersEncoded(gdrive.useWRITELY),
+                             { 'title' : label , 'plot' : label },label,
+                             img='None')
+          if singlePlayback == '':
+            singlePlayback = label
+
+    # if invoked in .strm or as a direct-video (don't prompt for quality)
+    item = xbmcgui.ListItem(path=videos[singlePlayback]+ '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY))
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+
+#elif mode == 'streamurl':
+#    url = plugin_queries['url']
+
+#    videoURL = gdrive.getPublicStream(url)
+#    item = xbmcgui.ListItem(path=videoURL)
+#    log('play url: ' + videoURL)
+#    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
 #clear the authorization token
-elif mode.lower() == 'clearauth':
-    addon.setSetting('auth_writely', '')
-    addon.setSetting('auth_wise', '')
+elif mode == 'clearauth':
+    ADDON.setSetting('auth_writely', '')
+    ADDON.setSetting('auth_wise', '')
 
 # if we don't have an authorization token set for the plugin, set it with the recent login.
 #   auth_token will permit "quicker" login in future executions by reusing the existing login session (less HTTPS calls = quicker video transitions between clips)
 # update the authorization token in the configuration file if we had to login for a new one during this execution run
 if auth_writely != gdrive.writely and save_auth_token == 'true':
-    addon.setSetting('auth_writely', gdrive.writely)
-    addon.setSetting('auth_wise', gdrive.wise)
+    ADDON.setSetting('auth_writely', gdrive.writely)
+    ADDON.setSetting('auth_wise', gdrive.wise)
+
+# the parameter set for wise vs writely was detected as incorrect during this run; reset as necessary
+if useWRITELY == True  and gdrive.useWRITELY == False:
+    ADDON.setSetting('force_writely','false')
+elif useWRITELY == False and gdrive.useWRITELY == True:
+    ADDON.setSetting('force_writely','true')
 
 xbmcplugin.endOfDirectory(plugin_handle)
 
