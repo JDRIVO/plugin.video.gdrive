@@ -1,6 +1,7 @@
 Version 0.3.2.x
 - issue implemented Folder support #3
 - issue implemented Music and Pictures? #1
+- Video quality selection support #4
 - add support for preferred resolution/quality, format, and codecs to avoid
 - automatically playback based on context (directory vs playback)
 - support for music files!
