@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.gdrive" version="0.3.2.20140320" name="gdrive" provider-name="dmdsoftware">
+<addon id="plugin.video.gdrive" version="0.3.2" name="gdrive" provider-name="ddurdle">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="default.py">
-        <provides>video</provides>
+        <provides>video audio</provides>
     </extension>
     <extension point="xbmc.addon.metadata">
-        <summary>Plays video from your Google Drive account</summary>
-        <description>Plays video from your Google Drive account</description>
+        <summary>Plays music and video from your Google Drive account</summary>
+        <description>Plays music and video from your Google Drive account</description>
         <platform>all</platform>
     </extension>
 </addon>
