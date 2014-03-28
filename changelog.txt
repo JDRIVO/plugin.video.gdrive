@@ -1,3 +1,4 @@
+- tweak settings dialog (disable stream selections for non-stream type)
 Version 0.3.2.x
 - issue implemented Folder support #3
 - issue implemented Music and Pictures? #1
