@@ -266,6 +266,7 @@ elif mode == 'streamvideo':
 
     # if invoked in .strm or as a direct-video (don't prompt for quality)
     item = xbmcgui.ListItem(path=videos[singlePlayback]+ '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY))
+    item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 
@@ -298,6 +299,7 @@ elif mode == 'streamurl':
 
     # if invoked in .strm or as a direct-video (don't prompt for quality)
     item = xbmcgui.ListItem(path=videos[singlePlayback]+ '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY))
+    item.setInfo( type="Video", infoLabels={ "Title": label , "Plot" : label } )
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 

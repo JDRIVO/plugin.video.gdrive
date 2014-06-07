@@ -1,5 +1,7 @@
+Version 0.3.3
+- ensure streamvideo playback has a proper title
 - tweak settings dialog (disable stream selections for non-stream type)
-Version 0.3.2.x
+Version 0.3.2
 - issue implemented Folder support #3
 - issue implemented Music and Pictures? #1
 - Video quality selection support #4
@@ -11,7 +13,7 @@ Version 0.3.2.x
 - don't login or provide authorization token for public videos (unless denied access)
 - add thumbnail previews
 - fix plugin URLs to make compliant with plugins like PseudoTV Live
-Version 0.3.1.x
+Version 0.3.1
 - Plays video.google.com videos that are linked in your google drive account
 - added streamURL parameter: mode=streamURL
 - playback a specific Google Drive Video URL (format: https://docs.google.com/file/d/#####/preview) via stream (automatically transcoded by Google Drive playback services)
