@@ -22,6 +22,9 @@ import os
 import re
 import urllib, urllib2
 
+from resources.lib import encryption
+
+
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
 # global variables
@@ -439,7 +442,8 @@ class gdrive:
 
                           log('found image %s %s' % (title, url))
                           url = re.sub('&amp;', '&', url)
-                          self.downloadPicture(url,path +'/' + folder + '/' + title)
+                          if not os.path.exists(path + '/'+folder+'/'+title):
+                            self.downloadPicture(url,path +'/' + folder + '/' + title)
 
 
                       # pictures
@@ -449,7 +453,121 @@ class gdrive:
 
                           log('found unknown %s %s' % (title, url))
                           url = re.sub('&amp;', '&', url)
-                          self.downloadPicture(url,path +'/' + folder + '/' + title)
+                          if not os.path.exists(path + '/'+folder+'/'+title):
+                            self.downloadPicture(url,path +'/' + folder + '/' + title)
+
+
+            # look for more pages of videos
+            nextURL = ''
+            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                nextURL = r.groups()
+                log('next URL url='+nextURL[0])
+
+
+            # are there more pages to process?
+            if nextURL == '':
+                break
+            else:
+                url = nextURL[0]
+
+##
+    # retrieve a list of videos, using playback type stream
+    #   parameters: cache type (optional)
+    #   returns: list of videos
+    ##
+    def decryptFolder(self,key,path,folder):
+
+        # retrieve all items
+        url = PROTOCOL+'docs.google.com/feeds/default/private/full'
+
+        # retrieve root items
+        if folder == '':
+            url = url + '/folder%3Aroot/contents'
+        # retrieve folder items
+        else:
+            url = url + '/folder%3A'+folder+'/contents'
+
+        import xbmcvfs
+        xbmcvfs.mkdir(path + '/'+folder)
+
+        while True:
+            log('url = %s header = %s' % (url, self.getHeadersList()))
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.login()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  log(str(e), True)
+                  return
+              else:
+                log(str(e), True)
+                return
+
+            response_data = response.read()
+            response.close()
+
+            # video-entry
+            for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
+                entry = r.group(1)
+
+                # fetch folder
+                for r in re.finditer('\<gd\:resourceId\>([^\:]*)\:?([^\<]*)\</gd:resourceId\>' ,
+                             entry, re.DOTALL):
+                  resourceType,resourceID = r.groups()
+
+                  # entry is NOT a folder
+                  if not (resourceType == 'folder'):
+                      # fetch video title, download URL and docid for stream link
+                      # Google Drive API format
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,mediaType,url,thumbnail = r.groups()
+                          log('found video %s %s' % (title, url))
+
+                      #for playing video.google.com videos linked to your google drive account
+                      # Google Docs & Google Video API format
+                      for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,url,thumbnail = r.groups()
+                          log('found video %s %s' % (title, url))
+
+                      # audio
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'audio\/[^\']+\' src=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,url = r.groups()
+
+                          log('found audio %s %s' % (title, url))
+
+                      # pictures
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,url = r.groups()
+
+                          log('found image %s %s' % (title, url))
+                          url = re.sub('&amp;', '&', url)
+                          filename = path + '/'+folder+'/'+ encryption.decrypt(title)
+                          if not os.path.exists(filename):
+                            self.downloadDecryptPicture(key, url,filename)
+
+
+                      # pictures
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'application\/[^\']+\' src=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,url = r.groups()
+
+                          log('found unknown %s %s' % (title, url))
+                          url = re.sub('&amp;', '&', url)
+                          filename = path + '/'+folder+'/'+ encryption.decrypt(title)
+                          if not os.path.exists(filename):
+                            self.downloadDecryptPicture(key, url,filename)
 
 
             # look for more pages of videos
@@ -536,6 +654,35 @@ class gdrive:
               req = urllib2.Request(url, None, self.getHeadersList())
               try:
                 open(file,'wb').write(urllib2.urlopen(req).read())
+              except urllib2.URLError, e:
+                log(str(e), True)
+                return
+            else:
+              log(str(e), True)
+              return
+
+
+    def downloadDecryptPicture(self,key,url, file):
+
+
+        log('url = %s header = %s' % (url, self.getHeadersList()))
+        req = urllib2.Request(url, None, self.getHeadersList())
+
+
+        # if action fails, validate login
+        try:
+#          open('/tmp/tmp','wb').write(urllib2.urlopen(req).read())
+#          encryption.decrypt_file(key,'/tmp/tmp',file)
+          encryption.decrypt_stream(key,urllib2.urlopen(req),file)
+        except urllib2.URLError, e:
+            if e.code == 403 or e.code == 401:
+              self.login()
+              req = urllib2.Request(url, None, self.getHeadersList())
+              try:
+                encryption.decrypt_stream(key,urllib2.urlopen(req),file)
+#                open('/tmp/tmp','wb').write(urllib2.urlopen(req).read())
+#                encryption.decrypt_file(key,'/tmp/tmp',file)
+
               except urllib2.URLError, e:
                 log(str(e), True)
                 return

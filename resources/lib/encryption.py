@@ -47,7 +47,10 @@ import base64
 def encrypt(string):
     return base64.b64encode(string)
 def decrypt(string):
-    return base64.b64decode(string)
+    try:
+        return base64.b64decode(string)
+    except:
+        return ''
 
 def decrypt_file(key, in_filename, out_filename=None, chunksize=24*1024):
     """ Decrypts a file using AES (CBC mode) with the
@@ -75,6 +78,22 @@ def decrypt_file(key, in_filename, out_filename=None, chunksize=24*1024):
                 outfile.write(decryptor.decrypt(chunk))
 
             outfile.truncate(origsize)
+
+def decrypt_stream(key, response, out_filename, chunksize=24*1024):
+
+#    with open(in_filename, 'rb') as infile:
+        origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
+        decryptor = AES.new(key, AES.MODE_ECB)
+
+        with open(out_filename, 'w') as outfile:
+            while True:
+                chunk = response.read(chunksize)
+                if len(chunk) == 0:
+                    break
+                outfile.write(decryptor.decrypt(chunk))
+
+            outfile.truncate(origsize)
+
 def encrypt_file(key, in_filename, out_filename=None, chunksize=64*1024):
     """ Encrypts a file using AES (CBC mode) with the
         given key.

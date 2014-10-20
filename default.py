@@ -94,6 +94,7 @@ def addDirectory(url, title, img='', fanart='', total_items=0):
 
     cm=[]
     cm.append(( 'download', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&folder='+url+')', ))
+    cm.append(( 'decrypt', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=decryptfolder&folder='+url+')', ))
     cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshowfolder&folder='+url+')', ))
 
     listitem.addContextMenuItems(cm, False)
@@ -325,7 +326,29 @@ elif mode == 'downloadfolder':
 
     key = encryption.generate_key(enc_password,salt,encryption.NUMBER_OF_ITERATIONS)
     encryption.decrypt_dir(key,path,folder)
-    print "x"
+
+elif mode == 'decryptfolder':
+    try:
+      folder = plugin_queries['folder']
+    except:
+      folder = 0
+
+    try:
+      title = plugin_queries['title']
+    except:
+      title = 0
+
+    path = '/tmp/'
+
+    enc_password = str(ADDON.getSetting('enc_password'))
+
+    salt = encryption.read_salt(str(ADDON.getSetting('salt')))
+
+    key = encryption.generate_key(enc_password,salt,encryption.NUMBER_OF_ITERATIONS)
+
+    gdrive.decryptFolder(key,path,folder)
+
+
 
 elif mode == 'slideshowfolder':
     try:
