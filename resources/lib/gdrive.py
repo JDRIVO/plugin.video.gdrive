@@ -49,6 +49,8 @@ class gdrive:
     # magic numbers
     MEDIA_TYPE_MUSIC = 1
     MEDIA_TYPE_VIDEO = 2
+    MEDIA_TYPE_PICTURE = 3
+
     MEDIA_TYPE_FOLDER = 0
 
     CACHE_TYPE_MEMORY = 0
@@ -258,7 +260,7 @@ class gdrive:
                           titleType, title = q.groups()
 
                           log('found folder %s %s' % (resourceID, title))
-                          videos[title] = {'mediaType': self.MEDIA_TYPE_FOLDER, 'url': PLUGIN_URL+'?mode=index&folder='+resourceID, 'thumbnail':  ''}
+                          videos[title] = {'mediaType': self.MEDIA_TYPE_FOLDER, 'url': resourceID, 'thumbnail':  ''}
 
                   # entry is NOT a folder
                   else:
@@ -302,7 +304,39 @@ class gdrive:
                           # there is no steaming for audio (?), so "download to stream"
                           videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
 
+                      # pictures
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,url = r.groups()
 
+                          log('found image %s %s' % (title, url))
+
+                          # there is no steaming for audio (?), so "download to stream"
+#                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
+                          cleanURL = re.sub('---', '', url)
+                          cleanURL = re.sub('&amp;', '---', cleanURL)
+#                          cleanURL = re.sub('=', '~~~', cleanURL)
+#                          cleanURL = re.sub(';', '~-~-', cleanURL)
+                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+folder+'&title='+title+'&url=' + cleanURL, 'thumbnail': ''}
+
+#                          videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url':  PLUGIN_URL+'?mode=photo&url=/u01/test.png', 'thumbnail':  ''}
+
+                      # pictures
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'application\/[^\']+\' src=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,url = r.groups()
+
+                          log('found unknown %s %s' % (title, url))
+
+                          # there is no steaming for audio (?), so "download to stream"
+#                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
+                          cleanURL = re.sub('---', '', url)
+                          cleanURL = re.sub('&amp;', '---', cleanURL)
+#                          cleanURL = re.sub('=', '~~~', cleanURL)
+#                          cleanURL = re.sub(';', '~-~-', cleanURL)
+                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+folder+'&title='+title+'&url=' + cleanURL, 'thumbnail': ''}
+
+#                          videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url':  PLUGIN_URL+'?mode=photo&url=/u01/test.png', 'thumbnail':  ''}
 
 
             # look for more pages of videos
@@ -321,6 +355,116 @@ class gdrive:
 
         return videos
 
+
+
+    ##
+    # retrieve a list of videos, using playback type stream
+    #   parameters: cache type (optional)
+    #   returns: list of videos
+    ##
+    def downloadFolder(self,path,folder):
+
+        # retrieve all items
+        url = PROTOCOL+'docs.google.com/feeds/default/private/full'
+
+        # retrieve root items
+        if folder == '':
+            url = url + '/folder%3Aroot/contents'
+        # retrieve folder items
+        else:
+            url = url + '/folder%3A'+folder+'/contents'
+
+        import xbmcvfs
+        xbmcvfs.mkdir(path + '/'+folder)
+
+        while True:
+            log('url = %s header = %s' % (url, self.getHeadersList()))
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.login()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  log(str(e), True)
+                  return
+              else:
+                log(str(e), True)
+                return
+
+            response_data = response.read()
+            response.close()
+
+            # video-entry
+            for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
+                entry = r.group(1)
+
+                # fetch folder
+                for r in re.finditer('\<gd\:resourceId\>([^\:]*)\:?([^\<]*)\</gd:resourceId\>' ,
+                             entry, re.DOTALL):
+                  resourceType,resourceID = r.groups()
+
+                  # entry is NOT a folder
+                  if not (resourceType == 'folder'):
+                      # fetch video title, download URL and docid for stream link
+                      # Google Drive API format
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,mediaType,url,thumbnail = r.groups()
+                          log('found video %s %s' % (title, url))
+
+                      #for playing video.google.com videos linked to your google drive account
+                      # Google Docs & Google Video API format
+                      for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,url,thumbnail = r.groups()
+                          log('found video %s %s' % (title, url))
+
+                      # audio
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'audio\/[^\']+\' src=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,url = r.groups()
+
+                          log('found audio %s %s' % (title, url))
+
+                      # pictures
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,url = r.groups()
+
+                          log('found image %s %s' % (title, url))
+                          url = re.sub('&amp;', '&', url)
+                          self.downloadPicture(url,path +'/' + folder + '/' + title)
+
+
+                      # pictures
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'application\/[^\']+\' src=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,url = r.groups()
+
+                          log('found unknown %s %s' % (title, url))
+                          url = re.sub('&amp;', '&', url)
+                          self.downloadPicture(url,path +'/' + folder + '/' + title)
+
+
+            # look for more pages of videos
+            nextURL = ''
+            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                nextURL = r.groups()
+                log('next URL url='+nextURL[0])
+
+
+            # are there more pages to process?
+            if nextURL == '':
+                break
+            else:
+                url = nextURL[0]
 
     ##
     # retrieve a video link
@@ -374,6 +518,30 @@ class gdrive:
         else:
           return self.getVideoStream(docid, pquality,pformat,acodec)
 
+
+
+    def downloadPicture(self,url, file):
+
+
+        log('url = %s header = %s' % (url, self.getHeadersList()))
+        req = urllib2.Request(url, None, self.getHeadersList())
+
+
+        # if action fails, validate login
+        try:
+          open(file,'wb').write(urllib2.urlopen(req).read())
+        except urllib2.URLError, e:
+            if e.code == 403 or e.code == 401:
+              self.login()
+              req = urllib2.Request(url, None, self.getHeadersList())
+              try:
+                open(file,'wb').write(urllib2.urlopen(req).read())
+              except urllib2.URLError, e:
+                log(str(e), True)
+                return
+            else:
+              log(str(e), True)
+              return
 
 
     ##

@@ -17,6 +17,8 @@
 '''
 
 from resources.lib import gdrive
+from resources.lib import encryption
+
 import sys
 import urllib
 import cgi
@@ -50,6 +52,9 @@ def addVideo(url, infolabels, label, img='', fanart='', total_items=0,
     log('adding video: %s - %s' % (infolabels['title'], url))
     listitem = xbmcgui.ListItem(label, iconImage=img,
                                 thumbnailImage=img)
+    #picture
+#    listitem.setInfo('pictures', infolabels)
+
     listitem.setInfo('video', infolabels)
     listitem.setProperty('IsPlayable', 'true')
     listitem.setProperty('fanart_image', fanart)
@@ -60,17 +65,56 @@ def addVideo(url, infolabels, label, img='', fanart='', total_items=0,
         return False
     return True
 
+def addPicture(url, infolabels, label, img='', fanart='', total_items=0,
+                   cm=[], cm_replace=False):
+    infolabels = decode_dict(infolabels)
+    log('adding picture: %s - %s' % (infolabels['title'], url))
+    listitem = xbmcgui.ListItem(label, iconImage=img,
+                                thumbnailImage=img)
+    #picture
+#    listitem.setInfo('pictures', infolabels)
+
+    listitem.setInfo('pictures', infolabels)
+#    listitem.setProperty('IsPlayable', 'true')
+    listitem.setProperty('fanart_image', fanart)
+    if cm:
+        listitem.addContextMenuItems(cm, cm_replace)
+    if not xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=False, totalItems=total_items):
+        return False
+    return True
+
+
 def addDirectory(url, title, img='', fanart='', total_items=0):
     log('adding dir: %s - %s' % (title, url))
     listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
     if not fanart:
         fanart = ADDON.getAddonInfo('path') + '/fanart.jpg'
     listitem.setProperty('fanart_image', fanart)
+
+    cm=[]
+    cm.append(( 'download', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&folder='+url+')', ))
+    cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshowfolder&folder='+url+')', ))
+
+    listitem.addContextMenuItems(cm, False)
+    url = PLUGIN_URL+'?mode=index&folder='+url
+
     # allow play controls on folders
     listitem.setProperty('IsPlayable', 'true')
     xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=True, totalItems=total_items)
 
+def addMenu(url, title, img='', fanart='', total_items=0):
+    log('adding menu: %s - %s' % (title, url))
+    listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
+    if not fanart:
+        fanart = ADDON.getAddonInfo('path') + '/fanart.jpg'
+    listitem.setProperty('fanart_image', fanart)
+
+    # allow play controls on folders
+    listitem.setProperty('IsPlayable', 'true')
+    xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=True, totalItems=total_items)
 #http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
 def _callback(matches):
     id = matches.group(1)
@@ -185,7 +229,7 @@ if mode == 'main' or mode == 'index':
       folder = False
 
     if mode == 'main':
-      addDirectory(PLUGIN_URL+'?mode=index&folder=','<< '+ADDON.getLocalizedString(30018)+' >>')
+      addMenu(PLUGIN_URL+'?mode=index&folder=','<< '+ADDON.getLocalizedString(30018)+' >>')
       folder = 'root'
 
 
@@ -196,6 +240,10 @@ if mode == 'main' or mode == 'index':
         if not videos[title]['mediaType'] == gdrive.MEDIA_TYPE_FOLDER  and (videos[title]['mediaType'] == gdrive.MEDIA_TYPE_MUSIC or (videos[title]['mediaType'] == gdrive.MEDIA_TYPE_VIDEO and(cacheType == gdrive.CACHE_TYPE_MEMORY or cacheType == gdrive.CACHE_TYPE_DISK  or (cacheType == gdrive.CACHE_TYPE_STREAM and not promptQuality)))):
             addVideo(videos[title]['url'],
                              { 'title' : title , 'plot' : title }, title,
+                             img=videos[title]['thumbnail'])
+        elif videos[title]['mediaType'] == gdrive.MEDIA_TYPE_PICTURE:
+            addPicture(videos[title]['url'],
+                             { 'title' : title}, title,
                              img=videos[title]['thumbnail'])
         else:
             addDirectory(videos[title]['url'],title, img=videos[title]['thumbnail'])
@@ -234,6 +282,66 @@ elif mode == 'memorycachevideo':
     item = xbmcgui.ListItem(path=videoURL)
     log('play url: ' + videoURL)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+elif mode == 'photo':
+    try:
+      url = plugin_queries['url']
+    except:
+      url = 0
+
+    try:
+      title = plugin_queries['title']
+    except:
+      title = 0
+
+    url = re.sub('---', '&', url)
+
+    gdrive.downloadPicture(url, '/tmp/'+title+'.png')
+
+#    item.setInfo(type='pictures',infoLabels={"Title": 'PicasaWeb Photo', "picturepath": '/u01/test.png'})
+#    item.setProperty('IsPlayable', 'true')
+
+ #   xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
+    xbmc.executebuiltin("XBMC.SlideShow(/tmp/)")
+
+elif mode == 'downloadfolder':
+    try:
+      folder = plugin_queries['folder']
+    except:
+      folder = 0
+
+    try:
+      title = plugin_queries['title']
+    except:
+      title = 0
+
+    path = '/tmp/'
+
+    gdrive.downloadFolder(path,folder)
+
+    enc_password = str(ADDON.getSetting('enc_password'))
+
+    salt = encryption.read_salt(str(ADDON.getSetting('salt')))
+
+    key = encryption.generate_key(enc_password,salt,encryption.NUMBER_OF_ITERATIONS)
+    encryption.decrypt_dir(key,path,folder)
+    print "x"
+
+elif mode == 'slideshowfolder':
+    try:
+      folder = plugin_queries['folder']
+    except:
+      folder = 0
+
+    try:
+      title = plugin_queries['title']
+    except:
+      title = 0
+
+    path = '/tmp/'
+#    gdrive.downloadFolder(path,folder)
+
+    xbmc.executebuiltin("XBMC.SlideShow("+path + '/'+folder+"/)")
 
 
 #force stream - play a video given its exact-title
