@@ -1,3 +1,4 @@
+- added support for FLAC
 - introduced encryption support
 - introduced picture support
 Version 0.3.3

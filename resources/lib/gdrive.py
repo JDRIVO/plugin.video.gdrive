@@ -307,6 +307,17 @@ class gdrive:
                           # there is no steaming for audio (?), so "download to stream"
                           videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
 
+                      # audio
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'application\/x-flac\' src=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                          title,url = r.groups()
+
+                          log('found audio %s %s' % (title, url))
+
+                          # there is no steaming for audio (?), so "download to stream"
+                          videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
+
+
                       # pictures
                       for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'' ,
                              entry, re.DOTALL):
@@ -325,7 +336,7 @@ class gdrive:
 #                          videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url':  PLUGIN_URL+'?mode=photo&url=/u01/test.png', 'thumbnail':  ''}
 
                       # pictures
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'application\/[^\']+\' src=\'([^\']+)\'' ,
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'application\/octet-stream\' src=\'([^\']+)\'' ,
                              entry, re.DOTALL):
                           title,url = r.groups()
 

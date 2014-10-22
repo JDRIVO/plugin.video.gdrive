@@ -297,13 +297,14 @@ elif mode == 'photo':
 
     url = re.sub('---', '&', url)
 
-    gdrive.downloadPicture(url, '/tmp/'+title+'.png')
+#    gdrive.downloadPicture(url, '/tmp/'+title+'.png')
 
 #    item.setInfo(type='pictures',infoLabels={"Title": 'PicasaWeb Photo', "picturepath": '/u01/test.png'})
 #    item.setProperty('IsPlayable', 'true')
 
  #   xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
-    xbmc.executebuiltin("XBMC.SlideShow(/tmp/)")
+#    xbmc.executebuiltin("XBMC.SlideShow(/tmp/)")
+    xbmc.executebuiltin("XBMC.ShowPicture("+url+")")
 
 elif mode == 'downloadfolder':
     try:
