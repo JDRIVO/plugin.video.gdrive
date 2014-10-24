@@ -23,6 +23,8 @@ import re
 import urllib, urllib2
 
 from resources.lib import encryption
+from resources.lib import downloadfile
+
 
 
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
@@ -71,6 +73,7 @@ class gdrive:
         self.wise = auth_wise
         self.user_agent = user_agent
         self.useWRITELY = useWRITELY
+        self.decrypt = False
 
         # if we have an authorization token set, try to use it
         if auth_writely != '' and auth_wise != '':
@@ -193,6 +196,9 @@ class gdrive:
         else:
             return { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.wise, 'GData-Version' : self.API_VERSION }
 
+    def setDecrypt(self):
+        self.decrypt = True
+
 
     ##
     # return the appropriate "headers" for Google Drive requests that include 1) user agent, 2) authorization token, 3) api version
@@ -261,6 +267,12 @@ class gdrive:
                       for q in re.finditer('<(title)>([^<]+)</title>' ,
                              entry, re.DOTALL):
                           titleType, title = q.groups()
+
+                          import base64
+                          try:
+                              title = base64.b64decode(title)
+                          except:
+                              pass
 
                           log('found folder %s %s' % (resourceID, title))
                           videos[title] = {'mediaType': self.MEDIA_TYPE_FOLDER, 'url': resourceID, 'thumbnail':  ''}
@@ -525,6 +537,7 @@ class gdrive:
             response_data = response.read()
             response.close()
 
+            downloadList = []
             # video-entry
             for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
                 entry = r.group(1)
@@ -565,8 +578,10 @@ class gdrive:
                           log('found image %s %s' % (title, url))
                           url = re.sub('&amp;', '&', url)
                           filename = path + '/'+folder+'/'+ encryption.decrypt(title)
-                          if not os.path.exists(filename):
-                            self.downloadDecryptPicture(key, url,filename)
+                          if not os.path.exists(filename) or os.path.getsize(filename) == 0:
+                              open(filename, 'a').close()
+                              downloadList.append(downloadfile.downloadfile(url,filename))
+                              #self.downloadDecryptPicture(key, url,filename)
 
 
                       # pictures
@@ -577,9 +592,14 @@ class gdrive:
                           log('found unknown %s %s' % (title, url))
                           url = re.sub('&amp;', '&', url)
                           filename = path + '/'+folder+'/'+ encryption.decrypt(title)
-                          if not os.path.exists(filename):
-                            self.downloadDecryptPicture(key, url,filename)
+                          if not os.path.exists(filename) or os.path.getsize(filename) == 0:
+                              open(filename, 'a').close()
+                              downloadList.append(downloadfile.downloadfile(url,filename))
+                              #self.downloadDecryptPicture(key, url,filename)
 
+            if downloadList:
+                for file in sorted(downloadList, key=lambda item: item.name):
+                    self.downloadDecryptPicture(key, file.url,file.name)
 
             # look for more pages of videos
             nextURL = ''

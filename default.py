@@ -96,6 +96,7 @@ def addDirectory(url, title, img='', fanart='', total_items=0):
     cm.append(( 'download', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&folder='+url+')', ))
     cm.append(( 'decrypt', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=decryptfolder&folder='+url+')', ))
     cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshowfolder&folder='+url+')', ))
+    cm.append(( 'decrypt titles', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=index&folder='+url+'&decrypt=1)', ))
 
     listitem.addContextMenuItems(cm, False)
     url = PLUGIN_URL+'?mode=index&folder='+url
@@ -229,6 +230,14 @@ if mode == 'main' or mode == 'index':
     except:
       folder = False
 
+    try:
+      decrypt = plugin_queries['decrypt']
+      gdrive.setDecrypt()
+      log('decrypt ')
+    except:
+      decrypt = False
+
+
     if mode == 'main':
       addMenu(PLUGIN_URL+'?mode=index&folder=','<< '+ADDON.getLocalizedString(30018)+' >>')
       folder = 'root'
@@ -317,7 +326,7 @@ elif mode == 'downloadfolder':
     except:
       title = 0
 
-    path = '/tmp/'
+    path = '/tmp/2/'
 
     gdrive.downloadFolder(path,folder)
 
@@ -339,7 +348,7 @@ elif mode == 'decryptfolder':
     except:
       title = 0
 
-    path = '/tmp/'
+    path = '/tmp/2/'
 
     enc_password = str(ADDON.getSetting('enc_password'))
 
@@ -362,7 +371,7 @@ elif mode == 'slideshowfolder':
     except:
       title = 0
 
-    path = '/tmp/'
+    path = '/tmp/2/'
 #    gdrive.downloadFolder(path,folder)
 
     xbmc.executebuiltin("XBMC.SlideShow("+path + '/'+folder+"/)")
