@@ -1,3 +1,5 @@
+- cleanup missing entry in Brazil language file
+- add error for unplayable streamurl media file
 - added support for FLAC
 - introduced encryption support
 - introduced picture support

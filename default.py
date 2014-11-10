@@ -438,10 +438,15 @@ elif mode == 'streamurl':
           if singlePlayback == '':
             singlePlayback = label
 
-    # if invoked in .strm or as a direct-video (don't prompt for quality)
-    item = xbmcgui.ListItem(path=videos[singlePlayback]+ '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY))
-    item.setInfo( type="Video", infoLabels={ "Title": label , "Plot" : label } )
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+    if (singlePlayback == ''):
+        xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30020),ADDON.getLocalizedString(30021))
+        xbmc.log(ADDON.getAddonInfo('name') + ': ' + ADDON.getLocalizedString(20021), xbmc.LOGERROR)
+    else:
+        # if invoked in .strm or as a direct-video (don't prompt for quality)
+        item = xbmcgui.ListItem(path=videos[singlePlayback]+ '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY))
+        item.setInfo( type="Video", infoLabels={ "Title": label , "Plot" : label } )
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 
 #elif mode == 'streamurl':
