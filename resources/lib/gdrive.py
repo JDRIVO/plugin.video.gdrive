@@ -1143,7 +1143,7 @@ class gdrive:
                 count = count + 1
 
         self.response = response
-        fp.close()
+        self.fp = fp
         return path + filename
 
    ##
@@ -1161,11 +1161,11 @@ class gdrive:
         if CHUNK < 1024:
             CHUNK = 16 * 1024
 
-        fp = open(url, 'a')
+#        fp = open(url, 'a')
         while True:
                 chunk = self.response.read(CHUNK)
                 if not chunk: break
-                fp.write(chunk)
-        fp.close()
+                self.fp.write(chunk)
+        self.fp.close()
 
 
