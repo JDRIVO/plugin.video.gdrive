@@ -9,10 +9,12 @@
     </category>
     <category label="30009">
     	<setting id="playback_type" type="enum" label="30006" values="Memory Cache|Disk Cache|Stream" default="2"/>
-    	<setting id="prompt_quality" type="bool" label="30019" enable="eq(-1,2)" default="true" />
-    	<setting id="preferred_quality" type="enum" label="30011" enable="eq(-2,2)" values="perfer best (1080,720,<720)|prefer 720 (720,<720,>720)|prefer SD (480,<480)" default="0" />
-    	<setting id="preferred_format" type="enum" label="30012" enable="eq(-3,2)" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
-    	<setting id="avoid_codec" type="enum" label="30013" enable="eq(-4,2)" values="none|VP8/vorbis" default="0"/>
+        <setting id="cache_folder" type="folder" label="30026" enable="eq(-1,1)" default="" />
+        <setting id="chunk_size" type="enum" label="30027" enable="eq(-2,1)" values="32224|32768|262144|1048576" default="2" />
+    	<setting id="prompt_quality" type="bool" label="30019" enable="eq(-3,2)" default="true" />
+    	<setting id="preferred_quality" type="enum" label="30011" enable="eq(-4,2)" values="perfer best (1080,720,<720)|prefer 720 (720,<720,>720)|prefer SD (480,<480)" default="0" />
+    	<setting id="preferred_format" type="enum" label="30012" enable="eq(-5,2)" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
+    	<setting id="avoid_codec" type="enum" label="30013" enable="eq(-6,2)" values="none|VP8/vorbis" default="0"/>
     </category>
 
 </settings>

@@ -1,6 +1,6 @@
 '''
     gdrive XBMC Plugin
-    Copyright (C) 2013 dmdsoftware
+    Copyright (C) 2013-2014 ddurdle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@ def parse_query(query):
 def addVideo(url, infolabels, label, img='', fanart='', total_items=0,
                    cm=[], cm_replace=False):
     infolabels = decode_dict(infolabels)
-    log('adding video: %s - %s' % (infolabels['title'], url))
     listitem = xbmcgui.ListItem(label, iconImage=img,
                                 thumbnailImage=img)
     #picture
@@ -60,6 +59,13 @@ def addVideo(url, infolabels, label, img='', fanart='', total_items=0,
     listitem.setProperty('fanart_image', fanart)
     if cm:
         listitem.addContextMenuItems(cm, cm_replace)
+
+    cacheType = int(ADDON.getSetting('playback_type'))
+
+    if cacheType == 1:
+        url = PLUGIN_URL+'?mode=play&url='+url
+
+
     if not xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=False, totalItems=total_items):
         return False
@@ -68,7 +74,6 @@ def addVideo(url, infolabels, label, img='', fanart='', total_items=0,
 def addPicture(url, infolabels, label, img='', fanart='', total_items=0,
                    cm=[], cm_replace=False):
     infolabels = decode_dict(infolabels)
-    log('adding picture: %s - %s' % (infolabels['title'], url))
     listitem = xbmcgui.ListItem(label, iconImage=img,
                                 thumbnailImage=img)
     #picture
@@ -86,7 +91,6 @@ def addPicture(url, infolabels, label, img='', fanart='', total_items=0,
 
 
 def addDirectory(url, title, img='', fanart='', total_items=0):
-    log('adding dir: %s - %s' % (title, url))
     listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
     if not fanart:
         fanart = ADDON.getAddonInfo('path') + '/fanart.jpg'
@@ -107,7 +111,6 @@ def addDirectory(url, title, img='', fanart='', total_items=0):
                                 isFolder=True, totalItems=total_items)
 
 def addMenu(url, title, img='', fanart='', total_items=0):
-    log('adding menu: %s - %s' % (title, url))
     listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
     if not fanart:
         fanart = ADDON.getAddonInfo('path') + '/fanart.jpg'
@@ -263,9 +266,20 @@ if mode == 'main' or mode == 'index':
 elif mode == 'play':
     url = plugin_queries['url']
 
-    item = xbmcgui.ListItem(path=url+'|'+gdrive.getHeadersEncoded(gdrive.useWRITELY))
-    log('play url: ' + url)
+    cacheType = int(ADDON.getSetting('playback_type'))
+
+    if cacheType == 1:
+#        url = gdrive.downloadMediaFile(url,url)
+        url = gdrive.downloadMediaFile(url,url)
+
+    else:
+        url = url + '|'+gdrive.getHeadersEncoded(gdrive.useWRITELY)
+
+    item = xbmcgui.ListItem(path=url)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+    if cacheType == 1:
+        gdrive.continuedownloadMediaFile(url)
 
 #play a video given its exact-title
 elif mode == 'playvideo':
@@ -274,12 +288,17 @@ elif mode == 'playvideo':
 
     videoURL = gdrive.getVideoLink(title,cacheType)
 
-    #effective 2014/02, video stream calls require a wise token instead of writely token
-    videoURL = videoURL + '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY)
+    if cacheType == 1:
+        videoURL = gdrive.downloadMediaFile(videoURL,title)
+    else:
+        #effective 2014/02, video stream calls require a wise token instead of writely token
+        videoURL = videoURL + '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY)
 
     item = xbmcgui.ListItem(path=videoURL)
-    log('play url: ' + videoURL)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+    if cacheType == 1:
+        gdrive.continuedownloadMediaFile(reponse,fp)
 
 #force memory-cache - play a video given its exact-title
 elif mode == 'memorycachevideo':
@@ -290,7 +309,6 @@ elif mode == 'memorycachevideo':
     videoURL = videoURL + '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY)
 
     item = xbmcgui.ListItem(path=videoURL)
-    log('play url: ' + videoURL)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 elif mode == 'photo':

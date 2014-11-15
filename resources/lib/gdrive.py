@@ -1,6 +1,6 @@
 '''
     gdrive XBMC Plugin
-    Copyright (C) 2013 dmdsoftware
+    Copyright (C) 2013-2014 ddurdle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 import os
 import re
 import urllib, urllib2
+import cookielib
 
 from resources.lib import encryption
 from resources.lib import downloadfile
@@ -106,8 +107,6 @@ class gdrive:
           'service' : 'writely'
         }
 
-        log('logging in')
-
         req = urllib2.Request(url, urllib.urlencode(values), header)
 
         # try login
@@ -129,8 +128,6 @@ class gdrive:
                              'Auth=(.*).+?' ,
                              response_data, re.DOTALL):
             sid,lsid,auth = r.groups()
-
-        log('parameters: %s %s %s' % (sid, lsid, auth))
 
 
         # save authorization token
@@ -152,8 +149,6 @@ class gdrive:
           'service' : 'wise'
         }
 
-        log('logging in')
-
         req = urllib2.Request(url, urllib.urlencode(values), header)
 
         # try login
@@ -175,9 +170,6 @@ class gdrive:
                              'Auth=(.*).+?' ,
                              response_data, re.DOTALL):
             sid,lsid,auth = r.groups()
-
-        log('parameters: %s %s %s' % (sid, lsid, auth))
-
 
         # save authorization token
         self.wise = auth
@@ -230,7 +222,6 @@ class gdrive:
 
         videos = {}
         while True:
-            log('url = %s header = %s' % (url, self.getHeadersList()))
             req = urllib2.Request(url, None, self.getHeadersList())
 
             # if action fails, validate login
@@ -268,13 +259,13 @@ class gdrive:
                              entry, re.DOTALL):
                           titleType, title = q.groups()
 
-                          import base64
-                          try:
-                              title = base64.b64decode(title)
-                          except:
-                              pass
+                          if 0:
+                              import base64
+                              try:
+                                  title = base64.b64decode(title)
+                              except:
+                                  pass
 
-                          log('found folder %s %s' % (resourceID, title))
                           videos[title] = {'mediaType': self.MEDIA_TYPE_FOLDER, 'url': resourceID, 'thumbnail':  ''}
 
                   # entry is NOT a folder
@@ -284,7 +275,6 @@ class gdrive:
                       for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              entry, re.DOTALL):
                           title,mediaType,url,thumbnail = r.groups()
-                          log('found video %s %s' % (title, url))
 
                           # memory-cache
                           if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
@@ -299,11 +289,14 @@ class gdrive:
                       for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              entry, re.DOTALL):
                           title,url,thumbnail = r.groups()
-                          log('found video %s %s' % (title, url))
 
                           # memory-cache
-                          if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
+                          if cacheType == self.CACHE_TYPE_MEMORY:
                               videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
+
+                          # memory-cache
+                          elif cacheType == self.CACHE_TYPE_DISK:
+                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': url, 'thumbnail':  thumbnail}
 
                           # streaming
                           else:
@@ -314,8 +307,6 @@ class gdrive:
                              entry, re.DOTALL):
                           title,url = r.groups()
 
-                          log('found audio %s %s' % (title, url))
-
                           # there is no steaming for audio (?), so "download to stream"
                           videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
 
@@ -323,8 +314,6 @@ class gdrive:
                       for r in re.finditer('<title>([^<]+)</title><content type=\'application\/x-flac\' src=\'([^\']+)\'' ,
                              entry, re.DOTALL):
                           title,url = r.groups()
-
-                          log('found audio %s %s' % (title, url))
 
                           # there is no steaming for audio (?), so "download to stream"
                           videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
@@ -334,8 +323,6 @@ class gdrive:
                       for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'' ,
                              entry, re.DOTALL):
                           title,url = r.groups()
-
-                          log('found image %s %s' % (title, url))
 
                           # there is no steaming for audio (?), so "download to stream"
 #                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
@@ -351,8 +338,6 @@ class gdrive:
                       for r in re.finditer('<title>([^<]+)</title><content type=\'application\/octet-stream\' src=\'([^\']+)\'' ,
                              entry, re.DOTALL):
                           title,url = r.groups()
-
-                          log('found unknown %s %s' % (title, url))
 
                           # there is no steaming for audio (?), so "download to stream"
 #                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
@@ -370,7 +355,6 @@ class gdrive:
             for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
                 nextURL = r.groups()
-                log('next URL url='+nextURL[0])
 
 
             # are there more pages to process?
@@ -404,7 +388,6 @@ class gdrive:
         xbmcvfs.mkdir(path + '/'+folder)
 
         while True:
-            log('url = %s header = %s' % (url, self.getHeadersList()))
             req = urllib2.Request(url, None, self.getHeadersList())
 
             # if action fails, validate login
@@ -442,28 +425,23 @@ class gdrive:
                       for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              entry, re.DOTALL):
                           title,mediaType,url,thumbnail = r.groups()
-                          log('found video %s %s' % (title, url))
 
                       #for playing video.google.com videos linked to your google drive account
                       # Google Docs & Google Video API format
                       for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              entry, re.DOTALL):
                           title,url,thumbnail = r.groups()
-                          log('found video %s %s' % (title, url))
 
                       # audio
                       for r in re.finditer('<title>([^<]+)</title><content type=\'audio\/[^\']+\' src=\'([^\']+)\'' ,
                              entry, re.DOTALL):
                           title,url = r.groups()
 
-                          log('found audio %s %s' % (title, url))
-
                       # pictures
                       for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'' ,
                              entry, re.DOTALL):
                           title,url = r.groups()
 
-                          log('found image %s %s' % (title, url))
                           url = re.sub('&amp;', '&', url)
                           if not os.path.exists(path + '/'+folder+'/'+title):
                             self.downloadPicture(url,path +'/' + folder + '/' + title)
@@ -474,7 +452,6 @@ class gdrive:
                              entry, re.DOTALL):
                           title,url = r.groups()
 
-                          log('found unknown %s %s' % (title, url))
                           url = re.sub('&amp;', '&', url)
                           if not os.path.exists(path + '/'+folder+'/'+title):
                             self.downloadPicture(url,path +'/' + folder + '/' + title)
@@ -485,8 +462,6 @@ class gdrive:
             for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
                 nextURL = r.groups()
-                log('next URL url='+nextURL[0])
-
 
             # are there more pages to process?
             if nextURL == '':
@@ -515,7 +490,6 @@ class gdrive:
         xbmcvfs.mkdir(path + '/'+folder)
 
         while True:
-            log('url = %s header = %s' % (url, self.getHeadersList()))
             req = urllib2.Request(url, None, self.getHeadersList())
 
             # if action fails, validate login
@@ -554,28 +528,23 @@ class gdrive:
                       for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              entry, re.DOTALL):
                           title,mediaType,url,thumbnail = r.groups()
-                          log('found video %s %s' % (title, url))
 
                       #for playing video.google.com videos linked to your google drive account
                       # Google Docs & Google Video API format
                       for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              entry, re.DOTALL):
                           title,url,thumbnail = r.groups()
-                          log('found video %s %s' % (title, url))
 
                       # audio
                       for r in re.finditer('<title>([^<]+)</title><content type=\'audio\/[^\']+\' src=\'([^\']+)\'' ,
                              entry, re.DOTALL):
                           title,url = r.groups()
 
-                          log('found audio %s %s' % (title, url))
-
                       # pictures
                       for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'' ,
                              entry, re.DOTALL):
                           title,url = r.groups()
 
-                          log('found image %s %s' % (title, url))
                           url = re.sub('&amp;', '&', url)
                           filename = path + '/'+folder+'/'+ encryption.decrypt(title)
                           if not os.path.exists(filename) or os.path.getsize(filename) == 0:
@@ -589,7 +558,6 @@ class gdrive:
                              entry, re.DOTALL):
                           title,url = r.groups()
 
-                          log('found unknown %s %s' % (title, url))
                           url = re.sub('&amp;', '&', url)
                           filename = path + '/'+folder+'/'+ encryption.decrypt(title)
                           if not os.path.exists(filename) or os.path.getsize(filename) == 0:
@@ -606,7 +574,6 @@ class gdrive:
             for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
                 nextURL = r.groups()
-                log('next URL url='+nextURL[0])
 
 
             # are there more pages to process?
@@ -627,8 +594,6 @@ class gdrive:
         params = urllib.urlencode({'title': title, 'title-exact': 'true'})
         url = PROTOCOL+'docs.google.com/feeds/default/private/full?' + params
 
-
-        log('url = %s header = %s' % (url, self.getHeadersList()))
         req = urllib2.Request(url, None, self.getHeadersList())
 
 
@@ -655,12 +620,9 @@ class gdrive:
         # fetch video title, download URL and docid for stream link
         for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
              entry = r.group(1)
-             log('found entry %s' % (entry))
              for q in re.finditer('<title>([^<]+)</title><content type=\'([^\/]+)\/[^\']+\' src=\'([^\']+)\'.*\;docid=([^\&]+)\&' ,
                              entry, re.DOTALL):
                title,mediaType,url,docid = q.groups()
-               log('found video %s %s %s' % (title, url, docid))
-
 
         if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
           return url
@@ -671,8 +633,6 @@ class gdrive:
 
     def downloadPicture(self,url, file):
 
-
-        log('url = %s header = %s' % (url, self.getHeadersList()))
         req = urllib2.Request(url, None, self.getHeadersList())
 
 
@@ -695,8 +655,6 @@ class gdrive:
 
     def downloadDecryptPicture(self,key,url, file):
 
-
-        log('url = %s header = %s' % (url, self.getHeadersList()))
         req = urllib2.Request(url, None, self.getHeadersList())
 
 
@@ -728,18 +686,15 @@ class gdrive:
     #   returns: list of streams for the video or single stream of video (if not prompting for quality)
     ##
     def getVideoStream(self,docid='',pquality=-1,pformat=-1,acodec=-1,url=''):
-        log('fetching player link')
 
         if docid != '':
             # player using docid
             params = urllib.urlencode({'docid': docid})
             url = PROTOCOL+'docs.google.com/get_video_info?docid=' + str((docid))
-            log('url = %s header = %s' % (url, self.getHeadersList(self.useWRITELY)))
             req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
         else:
             #try to use no authorization token (for pubic URLs)
             header = { 'User-Agent' : self.user_agent, 'GData-Version' : self.API_VERSION }
-            log('url = %s header = %s' % (url, header))
             req = urllib2.Request(url, None, header)
 
 
@@ -778,7 +733,6 @@ class gdrive:
         #backward support for account not migrated to the 2014/02 change
         if serviceRequired == 'writely':
           self.useWRITELY = True
-          log('url = %s header = %s' % (url, self.getHeadersList(self.useWRITELY)))
           req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
 
           try:
@@ -817,7 +771,6 @@ class gdrive:
 
         elif serviceRequired == 'wise':
           self.useWRITELY = False
-          log('url = %s header = %s' % (url, self.getHeadersList(self.useWRITELY)))
           req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
 
           try:
@@ -964,7 +917,6 @@ class gdrive:
                 videos[str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec']] = PROTOCOL + videoURL
             except KeyError:
                 videos[str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container] = PROTOCOL + videoURL
-            log('found videoURL %s' % (videoURL))
 
         return videos
 
@@ -975,8 +927,6 @@ class gdrive:
         #try to use no authorization token (for pubic URLs)
         header = { 'User-Agent' : self.user_agent, 'GData-Version' : self.API_VERSION }
 
-
-        log('url = %s header = %s' % (url, header))
         req = urllib2.Request(url, None, header)
 
         try:
@@ -1016,7 +966,6 @@ class gdrive:
           if (self.writely == ''):
             self.login();
 
-          log('url = %s header = %s' % (url, self.getHeadersList(self.useWRITELY)))
           req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
 
           try:
@@ -1059,7 +1008,6 @@ class gdrive:
           if (self.wise == ''):
             self.loginWISE();
 
-          log('url = %s header = %s' % (url, self.getHeadersList(self.useWRITELY)))
           req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
 
           try:
@@ -1114,8 +1062,110 @@ class gdrive:
 
         for r in re.finditer('\@([^\@]+)' ,urls):
           videoURL = r.group(0)
-          log('found videoURL %s' % (videoURL))
         videoURL1 = PROTOCOL + videoURL
 
 
         return videoURL1
+
+    ##
+    # retrieve a media file
+    #   parameters: title of video, whether to prompt for quality/format (optional), cache type (optional)
+    ##
+    def downloadMediaFile(self,url, title):
+
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
+        opener.addheaders = [('User-Agent', self.user_agent), ('Authorization' , 'GoogleLogin auth='+self.writely), ('GData-Version' , self.API_VERSION)]
+        request = urllib2.Request(url)
+
+        # if action fails, validate login
+
+        CHUNK = 0
+        try:
+            CHUNK = int(ADDON.getSetting('chunk_size'))
+        except:
+            CHUNK = 32 * 1024
+
+        if CHUNK < 1024:
+            CHUNK = 16 * 1024
+
+        count = 0
+        path = ''
+        try:
+            path = ADDON.getSetting('cache_folder')
+        except:
+            pass
+
+        import os.path
+
+        if not os.path.exists(path):
+                path = ''
+
+        while path == '':
+            path = xbmcgui.Dialog().browse(0,ADDON.getLocalizedString(30026), 'files','',False,False,'')
+            if not os.path.exists(path):
+                path = ''
+            else:
+                ADDON.setSetting('cache_folder', path)
+
+
+
+        # if action fails, validate login
+        try:
+            response = opener.open(request)
+        except urllib2.URLError, e:
+            if e.code == 403 or e.code == 401:
+              self.login()
+              opener.addheaders = [('User-Agent', self.user_agent), ('Authorization' , 'GoogleLogin auth='+self.writely), ('GData-Version' , self.API_VERSION)]
+              request = urllib2.Request(url)
+              try:
+                  response = opener.open(request)
+              except urllib2.URLError, e:
+                xbmc.log(ADDON.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return
+            else:
+              xbmc.log(ADDON.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+              return
+
+        progress = xbmcgui.DialogProgress()
+        progress.create(ADDON.getLocalizedString(30000),ADDON.getLocalizedString(30035),title,'\n')
+#        (0,ADDON.getLocalizedString(30026), addon.getLocalizedString(30034),'',False,False,'')
+
+#        with open(path + 'test.mp4', 'wb') as fp:
+
+        filename = 'cache.mp4'
+
+        fp = open(path + filename, 'wb')
+        while count < 100:
+                progress.update(count,ADDON.getLocalizedString(30035),title,'\n')
+                chunk = response.read(CHUNK)
+                if not chunk: break
+                fp.write(chunk)
+                count = count + 1
+
+        self.response = response
+        fp.close()
+        return path + filename
+
+   ##
+    # retrieve a media file
+    #   parameters: title of video, whether to prompt for quality/format (optional), cache type (optional)
+    ##
+    def continuedownloadMediaFile(self, url):
+
+        CHUNK = 0
+        try:
+            CHUNK = int(ADDON.getSetting('chunk_size'))
+        except:
+            CHUNK = 32 * 1024
+
+        if CHUNK < 1024:
+            CHUNK = 16 * 1024
+
+        fp = open(url, 'a')
+        while True:
+                chunk = self.response.read(CHUNK)
+                if not chunk: break
+                fp.write(chunk)
+        fp.close()
+
+

@@ -1,9 +1,13 @@
 #http://stackoverflow.com/questions/6425131/encrpyt-decrypt-data-in-python-with-salt
 import os, random, struct
-#
-import Crypto.Random
-from Crypto.Cipher import AES
-import hashlib
+
+try:
+    import Crypto.Random
+    from Crypto.Cipher import AES
+    import hashlib
+    ENCRYPTION_ENABLE = 1
+except:
+    ENCRYPTION_ENABLE = 0
 
 
 # salt size in bytes
@@ -16,6 +20,9 @@ NUMBER_OF_ITERATIONS = 20
 AES_MULTIPLE = 16
 
 def generate_key(password, salt, iterations):
+
+    if ENCRYPTION_ENABLE == 0:
+        return
     assert iterations > 0
 
     key = password + salt
@@ -43,11 +50,17 @@ def unpad_text(padded_text):
 
     return text
 
-import base64
 def encrypt(string):
+    if ENCRYPTION_ENABLE == 0:
+        return
+    import base64
+
     return base64.b64encode(string)
 def decrypt(string):
+    if ENCRYPTION_ENABLE == 0:
+        return
     try:
+        import base64
         return base64.b64decode(string)
     except:
         return ''
@@ -60,6 +73,8 @@ def decrypt_file(key, in_filename, out_filename=None, chunksize=24*1024):
         (i.e. if in_filename is 'aaa.zip.enc' then
         out_filename will be 'aaa.zip')
     """
+    if ENCRYPTION_ENABLE == 0:
+        return
     if not out_filename:
         out_filename = os.path.splitext(in_filename)[0]
 
@@ -80,7 +95,8 @@ def decrypt_file(key, in_filename, out_filename=None, chunksize=24*1024):
             outfile.truncate(origsize)
 
 def decrypt_stream(key, response, out_filename, chunksize=24*1024):
-
+        if ENCRYPTION_ENABLE == 0:
+            return
 #    with open(in_filename, 'rb') as infile:
         origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
         decryptor = AES.new(key, AES.MODE_ECB)
@@ -115,6 +131,8 @@ def encrypt_file(key, in_filename, out_filename=None, chunksize=64*1024):
             sizes can be faster for some files and machines.
             chunksize must be divisible by 16.
     """
+    if ENCRYPTION_ENABLE == 0:
+        return
     if not out_filename:
         out_filename = in_filename + '.enc'
 
@@ -139,14 +157,16 @@ def encrypt_file(key, in_filename, out_filename=None, chunksize=64*1024):
                 outfile.write(encryptor.encrypt(chunk))
 
 def read_salt(salt_filename):
-
+    if ENCRYPTION_ENABLE == 0:
+        return
     with open(salt_filename, 'rb') as infile:
         salt = infile.read(SALT_SIZE)
 
     return salt
 
 def decrypt_dir(key,path,dir):
-
+  if ENCRYPTION_ENABLE == 0:
+        return
   current, dirs, files = os.walk(path+'/'+dir).next()
 
   for file in files:
