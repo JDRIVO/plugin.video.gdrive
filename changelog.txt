@@ -1,3 +1,7 @@
+Version 0.4.3
+- add % to download before cache playback
+- add Play cache file to media right click menu
+- fix for authorization key validation after changing account information
 Version 0.4.1
 - fix for disk playback of MKV files
 Version 0.4.1

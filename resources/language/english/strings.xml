@@ -25,6 +25,7 @@
 
     <string id="30026">Location to store cache files</string>
     <string id="30027">Chunk size</string>
-    <string id="30035">Downloading...</string>
+    <string id="30035">Caching...</string>
+    <string id="30036">Percent to download before playback</string>
 
 </strings>

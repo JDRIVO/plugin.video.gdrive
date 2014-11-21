@@ -57,13 +57,25 @@ def addVideo(url, infolabels, label, img='', fanart='', total_items=0,
     listitem.setInfo('video', infolabels)
     listitem.setProperty('IsPlayable', 'true')
     listitem.setProperty('fanart_image', fanart)
+
+    cm = []
+    cm.append(( 'Play cache file', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=cache&file=cache.mp4)', ))
+
+    listitem.addContextMenuItems(cm, False)
+
     if cm:
         listitem.addContextMenuItems(cm, cm_replace)
 
     cacheType = int(ADDON.getSetting('playback_type'))
 
     if cacheType == 1:
-        url = PLUGIN_URL+'?mode=play&url='+url
+
+        fileSize = ''
+        for r in re.finditer('(size)\=(\d+)' ,
+                             url, re.DOTALL):
+            (size, fileSize) = r.groups()
+
+        url = PLUGIN_URL+'?mode=play&size='+fileSize+'&url='+url
 
 
     if not xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
@@ -97,10 +109,10 @@ def addDirectory(url, title, img='', fanart='', total_items=0):
     listitem.setProperty('fanart_image', fanart)
 
     cm=[]
-    cm.append(( 'download', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&folder='+url+')', ))
-    cm.append(( 'decrypt', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=decryptfolder&folder='+url+')', ))
-    cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshowfolder&folder='+url+')', ))
-    cm.append(( 'decrypt titles', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=index&folder='+url+'&decrypt=1)', ))
+#    cm.append(( 'download', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&folder='+url+')', ))
+#    cm.append(( 'decrypt', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=decryptfolder&folder='+url+')', ))
+#    cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshowfolder&folder='+url+')', ))
+#    cm.append(( 'decrypt titles', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=index&folder='+url+'&decrypt=1)', ))
 
     listitem.addContextMenuItems(cm, False)
     url = PLUGIN_URL+'?mode=index&folder='+url
@@ -166,6 +178,11 @@ except :
 
 # retrieve settings
 username = ADDON.getSetting('username')
+prev_username = ''
+try:
+    prev_username = ADDON.getSetting('prev_username')
+except:
+    pass
 password = ADDON.getSetting('password')
 user_agent = ADDON.getSetting('user_agent')
 save_auth_token = ADDON.getSetting('save_auth_token')
@@ -189,6 +206,10 @@ except :
     auth_writely = ''
     auth_wise = ''
     useWRITELY = True
+
+if username != prev_username:
+    auth_writely = ''
+    auth_wise = ''
 
 
 
@@ -268,9 +289,16 @@ elif mode == 'play':
 
     cacheType = int(ADDON.getSetting('playback_type'))
 
+    fileSize = 0
+    try:
+      fileSize = plugin_queries['size']
+    except:
+      fileSize = 0
+
+
     if cacheType == 1:
 #        url = gdrive.downloadMediaFile(url,url)
-        url = gdrive.downloadMediaFile(url,url)
+        url = gdrive.downloadMediaFile(url,url,fileSize)
 
     else:
         url = url + '|'+gdrive.getHeadersEncoded(gdrive.useWRITELY)
@@ -282,6 +310,34 @@ elif mode == 'play':
         gdrive.continuedownloadMediaFile(url)
 
 #play a video given its exact-title
+elif mode == 'cache':
+    file = plugin_queries['file']
+
+
+    path = ''
+    try:
+        path = ADDON.getSetting('cache_folder')
+    except:
+        pass
+
+    import os.path
+
+    if not os.path.exists(path):
+        path = ''
+
+    while path == '':
+        path = xbmcgui.Dialog().browse(0,ADDON.getLocalizedString(30026), 'files','',False,False,'')
+        if not os.path.exists(path):
+            path = ''
+        else:
+            ADDON.setSetting('cache_folder', path)
+
+    xbmc.executebuiltin("XBMC.PlayMedia("+path +file+")")
+
+#    item = xbmcgui.ListItem(path=path + file)
+#    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+#play a video given its exact-title
 elif mode == 'playvideo':
     title = plugin_queries['title']
     cacheType = int(ADDON.getSetting('playback_type'))
@@ -289,7 +345,7 @@ elif mode == 'playvideo':
     videoURL = gdrive.getVideoLink(title,cacheType)
 
     if cacheType == 1:
-        videoURL = gdrive.downloadMediaFile(videoURL,title)
+        videoURL = gdrive.downloadMediaFile(videoURL,title, 0)
     else:
         #effective 2014/02, video stream calls require a wise token instead of writely token
         videoURL = videoURL + '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY)
@@ -486,6 +542,10 @@ elif mode == 'clearauth':
 if auth_writely != gdrive.writely and save_auth_token == 'true':
     ADDON.setSetting('auth_writely', gdrive.writely)
     ADDON.setSetting('auth_wise', gdrive.wise)
+
+if username != prev_username:
+    ADDON.setSetting('prev_username', username)
+
 
 # the parameter set for wise vs writely was detected as incorrect during this run; reset as necessary
 if useWRITELY == True  and gdrive.useWRITELY == False:

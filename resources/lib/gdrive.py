@@ -272,13 +272,13 @@ class gdrive:
                   else:
                       # fetch video title, download URL and docid for stream link
                       # Google Drive API format
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'.*?\<gd\:quotaBytesUsed\>(\d+)\</gd\:quotaBytesUsed\>' ,
                              entry, re.DOTALL):
-                          title,mediaType,url,thumbnail = r.groups()
+                          title,mediaType,url,thumbnail,size = r.groups()
 
                           # memory-cache
                           if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
-                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
+                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': url+'&size='+size+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
 
                               # streaming
                           else:
@@ -1071,13 +1071,32 @@ class gdrive:
     # retrieve a media file
     #   parameters: title of video, whether to prompt for quality/format (optional), cache type (optional)
     ##
-    def downloadMediaFile(self,url, title):
+    def downloadMediaFile(self,url, title, fileSize):
 
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
         opener.addheaders = [('User-Agent', self.user_agent), ('Authorization' , 'GoogleLogin auth='+self.writely), ('GData-Version' , self.API_VERSION)]
         request = urllib2.Request(url)
 
         # if action fails, validate login
+
+        cachePercent = 0
+        try:
+            cachePercent = int(ADDON.getSetting('cache_percent'))
+        except:
+            cachePercent = 10
+
+        if cachePercent < 1:
+            cachePercent = 1
+        elif cachePercent > 100:
+            cachePercent = 100
+        fileSize = (int)(fileSize)
+        if fileSize == '' or fileSize < 1000:
+            fileSize = 5000000
+
+        sizeDownload = fileSize * (cachePercent*0.01)
+
+        if sizeDownload < 1000000:
+            sizeDownload = 1000000
 
         CHUNK = 0
         try:
@@ -1135,12 +1154,13 @@ class gdrive:
         filename = 'cache.mp4'
 
         fp = open(path + filename, 'wb')
-        while count < 100:
-                progress.update(count,ADDON.getLocalizedString(30035),title,'\n')
+        downloadedBytes = 0
+        while sizeDownload > downloadedBytes:
+                progress.update((int)(float(downloadedBytes)/sizeDownload*100),ADDON.getLocalizedString(30035),(str)(cachePercent) + ' ' +ADDON.getLocalizedString(30036),'\n')
                 chunk = response.read(CHUNK)
                 if not chunk: break
                 fp.write(chunk)
-                count = count + 1
+                downloadedBytes = downloadedBytes + CHUNK
 
         self.response = response
         self.fp = fp
