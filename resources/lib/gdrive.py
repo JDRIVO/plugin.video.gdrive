@@ -284,6 +284,20 @@ class gdrive:
                           else:
                               videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + title, 'thumbnail': thumbnail}
 
+                      #video that can't be processed (no thumbnail)
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?\<gd\:quotaBytesUsed\>(\d+)\</gd\:quotaBytesUsed\>' ,
+                             entry, re.DOTALL):
+                          title,mediaType,url,size = r.groups()
+
+                          # memory-cache
+                          if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
+                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': url+'&size='+size+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
+
+                              # streaming
+                          else:
+                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + title, 'thumbnail': ''}
+
+
                       #for playing video.google.com videos linked to your google drive account
                       # Google Docs & Google Video API format
                       for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
@@ -627,7 +641,9 @@ class gdrive:
         if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
           return url
         else:
-          return self.getVideoStream(docid, pquality,pformat,acodec)
+            videos =  self.getVideoStream(docid, pquality,pformat,acodec)
+            videos['original'] = url
+            return videos
 
 
 

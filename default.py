@@ -271,7 +271,7 @@ if mode == 'main' or mode == 'index':
 
 
     for title in sorted(videos.iterkeys()):
-        if not videos[title]['mediaType'] == gdrive.MEDIA_TYPE_FOLDER  and (videos[title]['mediaType'] == gdrive.MEDIA_TYPE_MUSIC or (videos[title]['mediaType'] == gdrive.MEDIA_TYPE_VIDEO and(cacheType == gdrive.CACHE_TYPE_MEMORY or cacheType == gdrive.CACHE_TYPE_DISK  or (cacheType == gdrive.CACHE_TYPE_STREAM and not promptQuality)))):
+        if videos[title]['mediaType'] == gdrive.MEDIA_TYPE_MUSIC or videos[title]['mediaType'] == gdrive.MEDIA_TYPE_VIDEO:
             addVideo(videos[title]['url'],
                              { 'title' : title , 'plot' : title }, title,
                              img=videos[title]['thumbnail'])
@@ -470,17 +470,17 @@ elif mode == 'streamvideo':
     # result will be a list of streams
     singlePlayback=''
     videos = gdrive.getVideoLink(title, gdrive.CACHE_TYPE_STREAM,pquality,pformat,acodec)
+    options = []
+    for videoDesc in videos:
+        options.append(videoDesc)
 
-    for label in sorted(videos.iterkeys()):
-        # if invoked as a directory, user is expecting a list of qualities to select from, add each video stream playback
-        addVideo(videos[label]+'|'+gdrive.getHeadersEncoded(gdrive.useWRITELY),
-                             { 'title' : title , 'plot' : title },label,
-                             img='None')
-        if singlePlayback == '':
-            singlePlayback = label
+    if promptQuality == True:
+        ret = xbmcgui.Dialog().select(ADDON.getLocalizedString(30033), options)
+    else:
+        ret = 0
 
     # if invoked in .strm or as a direct-video (don't prompt for quality)
-    item = xbmcgui.ListItem(path=videos[singlePlayback]+ '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY))
+    item = xbmcgui.ListItem(path=videos[options[ret]]+ '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY))
     item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 

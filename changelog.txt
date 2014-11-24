@@ -1,3 +1,7 @@
+Version 0.4.4
+- make quality selection a list instead of a directory list
+- regression fix -- plugin error trying to present stream list if the media file isn't processed or processable by google
+- regression fix -- list media files that are not processed or unprocessable by google (last working in 0.2.7)
 Version 0.4.3
 - add % to download before cache playback
 - add Play cache file to media right click menu

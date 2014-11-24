@@ -19,9 +19,10 @@
     <string id="30016">Você deve adicionar à sua org.python.pydev.debug.pysrc PYTHONPATH.</string>
     <string id="30017">Informações de login está incorreto ou permissão é negada</string>
 	<string id="30018">mostrar todos os vídeos em ordem alfabética</string>
-    <string id="30019">Force Prompt for Quality Selection (for streams only)</string>
+    <string id="30019">Force Prompt for Quality Selection</string>
     <string id="30020">Playback of this content is not possible.</string>
     <string id="30021">The media file is unavailable or was deleted.</string>
+    <string id="30033">Choose a stream</string>
 
     <string id="30026">Location to store cache files</string>
     <string id="30027">Chunk size</string>
