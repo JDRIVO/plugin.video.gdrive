@@ -334,9 +334,9 @@ class gdrive:
 
 
                       # pictures
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'' ,
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              entry, re.DOTALL):
-                          title,url = r.groups()
+                          title,url,thumbnail = r.groups()
 
                           # there is no steaming for audio (?), so "download to stream"
 #                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
@@ -344,7 +344,7 @@ class gdrive:
                           cleanURL = re.sub('&amp;', '---', cleanURL)
 #                          cleanURL = re.sub('=', '~~~', cleanURL)
 #                          cleanURL = re.sub(';', '~-~-', cleanURL)
-                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+folder+'&title='+title+'&url=' + cleanURL, 'thumbnail': ''}
+                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+folder+'&title='+title+'&url=' + cleanURL, 'thumbnail': thumbnail}
 
 #                          videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url':  PLUGIN_URL+'?mode=photo&url=/u01/test.png', 'thumbnail':  ''}
 
@@ -386,7 +386,7 @@ class gdrive:
     #   parameters: cache type (optional)
     #   returns: list of videos
     ##
-    def downloadFolder(self,path,folder):
+    def downloadFolder(self,path,folder, context):
 
         # retrieve all items
         url = PROTOCOL+'docs.google.com/feeds/default/private/full'
@@ -434,31 +434,35 @@ class gdrive:
 
                   # entry is NOT a folder
                   if not (resourceType == 'folder'):
-                      # fetch video title, download URL and docid for stream link
-                      # Google Drive API format
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                          title,mediaType,url,thumbnail = r.groups()
 
-                      #for playing video.google.com videos linked to your google drive account
-                      # Google Docs & Google Video API format
-                      for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                      if context != self.MEDIA_TYPE_PICTURE:
+                          # fetch video title, download URL and docid for stream link
+                          # Google Drive API format
+                          for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              entry, re.DOTALL):
-                          title,url,thumbnail = r.groups()
+                              title,mediaType,url,thumbnail = r.groups()
 
-                      # audio
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'audio\/[^\']+\' src=\'([^\']+)\'' ,
+                          #for playing video.google.com videos linked to your google drive account
+                          # Google Docs & Google Video API format
+                          for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              entry, re.DOTALL):
-                          title,url = r.groups()
+                              title,url,thumbnail = r.groups()
 
-                      # pictures
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'' ,
+                           # audio
+                          for r in re.finditer('<title>([^<]+)</title><content type=\'audio\/[^\']+\' src=\'([^\']+)\'' ,
                              entry, re.DOTALL):
-                          title,url = r.groups()
+                              title,url = r.groups()
 
-                          url = re.sub('&amp;', '&', url)
-                          if not os.path.exists(path + '/'+folder+'/'+title):
-                            self.downloadPicture(url,path +'/' + folder + '/' + title)
+                      elif context == self.MEDIA_TYPE_PICTURE:
+
+                          # pictures
+                          for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'' ,
+                             entry, re.DOTALL):
+                               title,url = r.groups()
+
+                               url = re.sub('&amp;', '&', url)
+                               if not os.path.exists(path + '/'+folder+'/'+title):
+                                   self.downloadPicture(url,path +'/' + folder + '/' + title)
 
 
                       # pictures
@@ -656,7 +660,6 @@ class gdrive:
         try:
           open(file,'wb').write(urllib2.urlopen(req).read())
         except urllib2.URLError, e:
-            if e.code == 403 or e.code == 401:
               self.login()
               req = urllib2.Request(url, None, self.getHeadersList())
               try:
@@ -664,9 +667,6 @@ class gdrive:
               except urllib2.URLError, e:
                 log(str(e), True)
                 return
-            else:
-              log(str(e), True)
-              return
 
 
     def downloadDecryptPicture(self,key,url, file):

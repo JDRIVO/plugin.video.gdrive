@@ -23,9 +23,22 @@
     <string id="30020">Playback of this content is not possible.</string>
     <string id="30021">The media file is unavailable or was deleted.</string>
     <string id="30033">Choose a stream</string>
+    <string id="30022">View when in video plugin context</string>
+    <string id="30023">View when in music plugin context</string>
+    <string id="30024">View when in photo plugin context</string>
+    <string id="30025">Videos only</string>
+    <string id="30028">Music only</string>
+    <string id="30029">Photos only</string>
+    <string id="30030">Everything</string>
+    <string id="30031">Video and Music only</string>
+    <string id="30032">Music and Photos only</string>
+    <string id="30034">Photos</string>
+    <string id="30037">Context</string>
+    <string id="30038">Photo cache folder</string>
 
     <string id="30026">Location to store cache files</string>
     <string id="30027">Chunk size</string>
     <string id="30035">Downloading...</string>
+    <string id="30036">Percent to download before playback</string>
 
 </strings>

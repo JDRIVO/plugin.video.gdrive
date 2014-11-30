@@ -94,8 +94,17 @@ def addPicture(url, infolabels, label, img='', fanart='', total_items=0,
     listitem.setInfo('pictures', infolabels)
 #    listitem.setProperty('IsPlayable', 'true')
     listitem.setProperty('fanart_image', fanart)
-    if cm:
-        listitem.addContextMenuItems(cm, cm_replace)
+
+    cm = []
+#    url = re.sub('gd=true', '', url)
+#    url = re.sub('e=download', '', url)
+#    cleanURL = re.sub('&', '---', url)
+
+#    cm.append(( 'View photo', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=photo&title='+label+'&url='+cleanURL+')', ))
+
+    listitem.addContextMenuItems(cm, False)
+
+
     if not xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=False, totalItems=total_items):
         return False
@@ -111,7 +120,7 @@ def addDirectory(url, title, img='', fanart='', total_items=0):
     cm=[]
 #    cm.append(( 'download', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&folder='+url+')', ))
 #    cm.append(( 'decrypt', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=decryptfolder&folder='+url+')', ))
-#    cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshowfolder&folder='+url+')', ))
+    cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+url+')', ))
 #    cm.append(( 'decrypt titles', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=index&folder='+url+'&decrypt=1)', ))
 
     listitem.addContextMenuItems(cm, False)
@@ -255,6 +264,32 @@ if mode == 'main' or mode == 'index':
       folder = False
 
     try:
+      contentType = plugin_queries['content_type']
+      if contentType == 'video':
+        if (int(ADDON.getSetting('context_video'))) == 2:
+            contentType = 0
+        elif (int(ADDON.getSetting('context_video'))) == 0:
+            contentType = 1
+        else:
+            contentType = 5
+      elif contentType == 'audio':
+        if (int(ADDON.getSetting('context_music'))) == 1:
+            contentType = 0
+        else:
+            contentType = 2
+      elif contentType == 'image':
+        if (int(ADDON.getSetting('context_photo'))) == 2:
+            contentType = 0
+        elif (int(ADDON.getSetting('context_photo'))) == 0:
+            contentType = 4
+        else:
+            contentType = 3
+    except:
+      contentType = 0
+
+
+
+    try:
       decrypt = plugin_queries['decrypt']
       gdrive.setDecrypt()
       log('decrypt ')
@@ -271,15 +306,15 @@ if mode == 'main' or mode == 'index':
 
 
     for title in sorted(videos.iterkeys()):
-        if videos[title]['mediaType'] == gdrive.MEDIA_TYPE_MUSIC or videos[title]['mediaType'] == gdrive.MEDIA_TYPE_VIDEO:
+        if contentType != 3 and videos[title]['mediaType'] == gdrive.MEDIA_TYPE_MUSIC or videos[title]['mediaType'] == gdrive.MEDIA_TYPE_VIDEO:
             addVideo(videos[title]['url'],
                              { 'title' : title , 'plot' : title }, title,
                              img=videos[title]['thumbnail'])
-        elif videos[title]['mediaType'] == gdrive.MEDIA_TYPE_PICTURE:
+        elif contentType in (0,4,3) and videos[title]['mediaType'] == gdrive.MEDIA_TYPE_PICTURE:
             addPicture(videos[title]['url'],
                              { 'title' : title}, title,
                              img=videos[title]['thumbnail'])
-        else:
+        elif videos[title]['mediaType'] == gdrive.MEDIA_TYPE_FOLDER:
             addDirectory(videos[title]['url'],title, img=videos[title]['thumbnail'])
 
 
@@ -378,16 +413,44 @@ elif mode == 'photo':
     except:
       title = 0
 
+    try:
+      folder = plugin_queries['folder']
+    except:
+      folder = 0
+
+
+    path = ''
+    try:
+        path = ADDON.getSetting('photo_folder')
+    except:
+        pass
+
+    import os.path
+
+    if not os.path.exists(path):
+        path = ''
+
+    while path == '':
+        path = xbmcgui.Dialog().browse(0,ADDON.getLocalizedString(30038), 'files','',False,False,'')
+        if not os.path.exists(path):
+            path = ''
+        else:
+            ADDON.setSetting('photo_folder', path)
+
     url = re.sub('---', '&', url)
 
-#    gdrive.downloadPicture(url, '/tmp/'+title+'.png')
+    import xbmcvfs
+    xbmcvfs.mkdir(path + '/'+folder)
+    xbmcvfs.mkdir(path + '/'+folder + '/'+title)
+
+    gdrive.downloadPicture(url, path + '/'+folder + '/'+title + '/'+title+'.png')
 
 #    item.setInfo(type='pictures',infoLabels={"Title": 'PicasaWeb Photo', "picturepath": '/u01/test.png'})
 #    item.setProperty('IsPlayable', 'true')
 
  #   xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
 #    xbmc.executebuiltin("XBMC.SlideShow(/tmp/)")
-    xbmc.executebuiltin("XBMC.ShowPicture("+url+")")
+    xbmc.executebuiltin("XBMC.SlideShow("+path + '/'+folder+"/)")
 
 elif mode == 'downloadfolder':
     try:
@@ -434,7 +497,7 @@ elif mode == 'decryptfolder':
 
 
 
-elif mode == 'slideshowfolder':
+elif mode == 'slideshow':
     try:
       folder = plugin_queries['folder']
     except:
@@ -445,8 +508,26 @@ elif mode == 'slideshowfolder':
     except:
       title = 0
 
-    path = '/tmp/2/'
-#    gdrive.downloadFolder(path,folder)
+    path = ''
+    try:
+        path = ADDON.getSetting('photo_folder')
+    except:
+        pass
+
+    import os.path
+
+    if not os.path.exists(path):
+        path = ''
+
+    while path == '':
+        path = xbmcgui.Dialog().browse(0,ADDON.getLocalizedString(30038), 'files','',False,False,'')
+        if not os.path.exists(path):
+            path = ''
+        else:
+            ADDON.setSetting('photo_folder', path)
+
+    #    gdrive.downloadFolder(path,folder)
+    gdrive.downloadFolder(path,folder, gdrive.MEDIA_TYPE_PICTURE)
 
     xbmc.executebuiltin("XBMC.SlideShow("+path + '/'+folder+"/)")
 

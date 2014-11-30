@@ -9,6 +9,9 @@
     	<setting id="save_auth_token" type="bool" label="30005" default="true" />
     </category>
     <category label="30009">
+        <setting label="30037" type="lsep"/>
+        <setting id="context_video" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Everything" default="0"/>
+        <setting id="context_music" type="enum" subsetting="true" label="30023" values="Music only|Everything" default="0"/>
     	<setting id="playback_type" type="enum" label="30006" values="Memory Cache|Disk Cache|Stream" default="2"/>
         <setting id="cache_folder" type="folder" subsetting="true" label="30026" visible="eq(-1,1)" default="" />
         <setting id="chunk_size" type="enum" subsetting="true" label="30027" visible="eq(-2,1)" values="32224|32768|262144|1048576" default="2" />
@@ -17,6 +20,11 @@
     	<setting id="preferred_quality" type="enum" subsetting="true" label="30011" visible="eq(-5,2)" values="perfer best (1080,720,<720)|prefer 720 (720,<720,>720)|prefer SD (480,<480)" default="0" />
     	<setting id="preferred_format" type="enum" subsetting="true" label="30012" visible="eq(-6,2)" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
     	<setting id="avoid_codec" type="enum" subsetting="true" label="30013" visible="eq(-7,2)" values="none|VP8/vorbis" default="0"/>
+    </category>
+    <category label="30034">
+        <setting label="30037" type="lsep"/>
+        <setting id="context_photo" type="enum" subsetting="true" label="30024" values="Photos only|Music and Photos|Everything" default="0"/>
+        <setting id="photo_folder" type="folder" label="30038" default="" />
     </category>
 
 </settings>

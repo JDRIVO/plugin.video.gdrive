@@ -9,7 +9,7 @@
     <string id="30005">Save Authorization Key</string>
     <string id="30007">Always Prompt for Quality / Format Playback</string>
     <string id="30008">Login</string>
-    <string id="30009">Playback</string>
+    <string id="30009">Video + Music</string>
     <string id="30010">Login Type</string>
     <string id="30011">Preferred Quality</string>
     <string id="30012">Preferred Format</string>
@@ -23,6 +23,18 @@
     <string id="30020">Playback of this content is not possible.</string>
     <string id="30021">The media file is unavailable or was deleted.</string>
     <string id="30033">Choose a stream</string>
+    <string id="30022">View when in video plugin context</string>
+    <string id="30023">View when in music plugin context</string>
+    <string id="30024">View when in photo plugin context</string>
+    <string id="30025">Videos only</string>
+    <string id="30028">Music only</string>
+    <string id="30029">Photos only</string>
+    <string id="30030">Everything</string>
+    <string id="30031">Video and Music only</string>
+    <string id="30032">Music and Photos only</string>
+    <string id="30034">Photos</string>
+    <string id="30037">Context</string>
+    <string id="30038">Photo cache folder</string>
 
     <string id="30026">Location to store cache files</string>
     <string id="30027">Chunk size</string>

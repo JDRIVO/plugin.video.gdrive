@@ -1,3 +1,9 @@
+Version 0.4.5
+- add photo parameters in settings
+- add content context settings
+- enabled picture support for public testing
+- implemented issue: Pictures support #5
+- implemented issue: Music and Pictures? #1
 Version 0.4.4
 - make quality selection a list instead of a directory list
 - regression fix -- plugin error trying to present stream list if the media file isn't processed or processable by google
