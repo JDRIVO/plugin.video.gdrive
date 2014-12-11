@@ -442,6 +442,10 @@ elif mode == 'photo':
     import xbmcvfs
     xbmcvfs.mkdir(path + '/'+folder)
 #    xbmcvfs.mkdir(path + '/'+folder + '/dir_'+title)
+    try:
+        xbmcvfs.mkdir(path + '/'+folder+'/'+title)
+    except:
+        pass
 
 #    gdrive.downloadPicture(url, path + '/'+folder + '/dir_'+title + '/'+title)
     gdrive.downloadPicture(url, path + '/'+folder + '/'+title)
