@@ -655,15 +655,23 @@ class gdrive:
 
         req = urllib2.Request(url, None, self.getHeadersList())
 
-
+#        import xbmcvfs
+#        f = xbmcvfs.File(file, 'w')
+#        f = open(file,'wb')
         # if action fails, validate login
         try:
-          open(file,'wb').write(urllib2.urlopen(req).read())
+#          f.write(urllib2.urlopen(req).read())
+#            f.write(urllib2.urlopen(req).read())
+#            f.close()
+                open(file,'wb').write(urllib2.urlopen(req).read())
+
         except urllib2.URLError, e:
               self.login()
               req = urllib2.Request(url, None, self.getHeadersList())
               try:
-                open(file,'wb').write(urllib2.urlopen(req).read())
+#                open(file,'wb').write(urllib2.urlopen(req).read())
+                f.write(urllib2.urlopen(req).read())
+                f.close()
               except urllib2.URLError, e:
                 log(str(e), True)
                 return

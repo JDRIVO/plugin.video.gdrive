@@ -1,3 +1,5 @@
+Version 0.4.6
+- fix for photos
 Version 0.4.5
 - add photo parameters in settings
 - add content context settings

@@ -441,16 +441,18 @@ elif mode == 'photo':
 
     import xbmcvfs
     xbmcvfs.mkdir(path + '/'+folder)
-    xbmcvfs.mkdir(path + '/'+folder + '/'+title)
+#    xbmcvfs.mkdir(path + '/'+folder + '/dir_'+title)
 
-    gdrive.downloadPicture(url, path + '/'+folder + '/'+title + '/'+title+'.png')
-
+#    gdrive.downloadPicture(url, path + '/'+folder + '/dir_'+title + '/'+title)
+    gdrive.downloadPicture(url, path + '/'+folder + '/'+title)
 #    item.setInfo(type='pictures',infoLabels={"Title": 'PicasaWeb Photo', "picturepath": '/u01/test.png'})
 #    item.setProperty('IsPlayable', 'true')
 
  #   xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
 #    xbmc.executebuiltin("XBMC.SlideShow(/tmp/)")
-    xbmc.executebuiltin("XBMC.SlideShow("+path + '/'+folder+"/)")
+#    xbmc.executebuiltin("XBMC.SlideShow("+path + '/'+folder+"/)")
+#    xbmc.executebuiltin("XBMC.ShowPicture("+path + '/'+folder + '/dir_'+title + '/'+title+")")
+    xbmc.executebuiltin("XBMC.ShowPicture("+path + '/'+folder + '/'+title+")")
 
 elif mode == 'downloadfolder':
     try:
