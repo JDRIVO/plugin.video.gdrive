@@ -669,9 +669,9 @@ class gdrive:
               self.login()
               req = urllib2.Request(url, None, self.getHeadersList())
               try:
-#                open(file,'wb').write(urllib2.urlopen(req).read())
-                f.write(urllib2.urlopen(req).read())
-                f.close()
+                open(file,'wb').write(urllib2.urlopen(req).read())
+#                f.write(urllib2.urlopen(req).read())
+#                f.close()
               except urllib2.URLError, e:
                 log(str(e), True)
                 return
