@@ -1,5 +1,6 @@
 Version 0.4.6
 - fix for photos
+- tested and works: Photo playback on Android #14
 Version 0.4.5
 - add photo parameters in settings
 - add content context settings
