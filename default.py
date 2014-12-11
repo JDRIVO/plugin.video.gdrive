@@ -443,7 +443,7 @@ elif mode == 'photo':
     xbmcvfs.mkdir(path + '/'+folder)
 #    xbmcvfs.mkdir(path + '/'+folder + '/dir_'+title)
     try:
-        xbmcvfs.mkdir(path + '/'+folder+'/'+title)
+        xbmcvfs.rmdir(path + '/'+folder+'/'+title)
     except:
         pass
 

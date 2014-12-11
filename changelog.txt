@@ -1,3 +1,5 @@
+Version 0.4.7
+- introduced an issue with the mkdir for photos; fixed
 Version 0.4.6
 - fix for photos
 - tested and works: Photo playback on Android #14
