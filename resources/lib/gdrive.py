@@ -270,96 +270,106 @@ class gdrive:
 
                   # entry is NOT a folder
                   else:
+                      processed =0
                       # fetch video title, download URL and docid for stream link
                       # Google Drive API format
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'.*?\<gd\:quotaBytesUsed\>(\d+)\</gd\:quotaBytesUsed\>' ,
+                      for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.*?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'.*?<gd:quotaBytesUsed>(\d+)</gd:quotaBytesUsed>' ,
                              entry, re.DOTALL):
                           title,mediaType,url,thumbnail,size = r.groups()
 
                           # memory-cache
                           if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
-                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': url+'&size='+size+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
+                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+'&size='+str(size)+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
 
                               # streaming
                           else:
-                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + title, 'thumbnail': thumbnail}
+                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': thumbnail}
+                          processed = 1
 
-                      #video that can't be processed (no thumbnail)
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?\<gd\:quotaBytesUsed\>(\d+)\</gd\:quotaBytesUsed\>' ,
+                      if processed == 0:
+                          #video that can't be processed (no thumbnail)
+                          for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?\<gd\:quotaBytesUsed\>(\d+)\</gd\:quotaBytesUsed\>' ,
                              entry, re.DOTALL):
-                          title,mediaType,url,size = r.groups()
+                              title,mediaType,url,size = r.groups()
 
-                          # memory-cache
-                          if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
-                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': url+'&size='+size+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
+                              # memory-cache
+                              if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
+                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+'&size='+str(size)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
 
                               # streaming
-                          else:
-                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + title, 'thumbnail': ''}
+                              else:
+                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': ''}
+                              processed = 1
 
-
-                      #for playing video.google.com videos linked to your google drive account
-                      # Google Docs & Google Video API format
-                      for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                      if processed == 0:
+                          #for playing video.google.com videos linked to your google drive account
+                          # Google Docs & Google Video API format
+                          for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              entry, re.DOTALL):
-                          title,url,thumbnail = r.groups()
+                              title,url,thumbnail = r.groups()
 
-                          # memory-cache
-                          if cacheType == self.CACHE_TYPE_MEMORY:
-                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
+                              # memory-cache
+                              if cacheType == self.CACHE_TYPE_MEMORY:
+                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
 
-                          # memory-cache
-                          elif cacheType == self.CACHE_TYPE_DISK:
-                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': url, 'thumbnail':  thumbnail}
+                              # memory-cache
+                              elif cacheType == self.CACHE_TYPE_DISK:
+                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url), 'thumbnail':  thumbnail}
 
-                          # streaming
-                          else:
-                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + title, 'thumbnail': thumbnail}
+                              # streaming
+                              else:
+                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': thumbnail}
+                              processed = 1
 
-                      # audio
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'audio\/[^\']+\' src=\'([^\']+)\'' ,
+                      if processed == 0:
+                          # audio
+                          for r in re.finditer('<title>([^<]+)</title><content type=\'audio\/[^\']+\' src=\'([^\']+)\'' ,
                              entry, re.DOTALL):
-                          title,url = r.groups()
+                              title,url = r.groups()
 
-                          # there is no steaming for audio (?), so "download to stream"
-                          videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
-
-                      # audio
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'application\/x-flac\' src=\'([^\']+)\'' ,
+                              # there is no steaming for audio (?), so "download to stream"
+                              videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
+                              processed = 1
+                      if processed == 0:
+                          # audio
+                          for r in re.finditer('<title>([^<]+)</title><content type=\'application\/x-flac\' src=\'([^\']+)\'' ,
                              entry, re.DOTALL):
-                          title,url = r.groups()
+                              title,url = r.groups()
 
-                          # there is no steaming for audio (?), so "download to stream"
-                          videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
+                              # there is no steaming for audio (?), so "download to stream"
+                              videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
+                              processed = 1
 
-
-                      # pictures
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                      if processed == 0:
+                          # pictures
+                          for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
                              entry, re.DOTALL):
-                          title,url,thumbnail = r.groups()
+                              title,url,thumbnail = r.groups()
 
-                          # there is no steaming for audio (?), so "download to stream"
+                              # there is no steaming for audio (?), so "download to stream"
 #                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
-                          cleanURL = re.sub('---', '', url)
-                          cleanURL = re.sub('&amp;', '---', cleanURL)
+                              cleanURL = re.sub('---', '', url)
+                              cleanURL = re.sub('&amp;', '---', cleanURL)
 #                          cleanURL = re.sub('=', '~~~', cleanURL)
 #                          cleanURL = re.sub(';', '~-~-', cleanURL)
-                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+folder+'&title='+title+'&url=' + cleanURL, 'thumbnail': thumbnail}
+                              videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+str(folder)+'&title='+str(title)+'&url=' + str(cleanURL), 'thumbnail': thumbnail}
 
 #                          videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url':  PLUGIN_URL+'?mode=photo&url=/u01/test.png', 'thumbnail':  ''}
+                              processed = 1
 
-                      # pictures
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'application\/octet-stream\' src=\'([^\']+)\'' ,
+                      if processed == 0:
+                          # pictures
+                          for r in re.finditer('<title>([^<]+)</title><content type=\'application\/octet-stream\' src=\'([^\']+)\'' ,
                              entry, re.DOTALL):
-                          title,url = r.groups()
+                            title,url = r.groups()
 
                           # there is no steaming for audio (?), so "download to stream"
 #                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
-                          cleanURL = re.sub('---', '', url)
-                          cleanURL = re.sub('&amp;', '---', cleanURL)
+                            cleanURL = re.sub('---', '', url)
+                            cleanURL = re.sub('&amp;', '---', cleanURL)
 #                          cleanURL = re.sub('=', '~~~', cleanURL)
 #                          cleanURL = re.sub(';', '~-~-', cleanURL)
-                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+folder+'&title='+title+'&url=' + cleanURL, 'thumbnail': ''}
+                            videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+str(folder)+'&title='+str(title)+'&url=' + str(cleanURL), 'thumbnail': ''}
 
 #                          videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url':  PLUGIN_URL+'?mode=photo&url=/u01/test.png', 'thumbnail':  ''}
 

@@ -263,29 +263,47 @@ if mode == 'main' or mode == 'index':
     except:
       folder = False
 
+    #contentType
+    #video context
+    # 0 video
+    # 1 video and music
+    # 2 everything
+    #
+    #music context
+    # 3 music
+    # 4 everything
+    #
+    #photo context
+    # 5 photo
+    # 6 music and photos
+    # 7 everything
+
     try:
-      contentType = plugin_queries['content_type']
-      if contentType == 'video':
-        if (int(ADDON.getSetting('context_video'))) == 2:
-            contentType = 0
-        elif (int(ADDON.getSetting('context_video'))) == 0:
+      contextType = plugin_queries['content_type']
+      contentType = 0
+      if contextType == 'video':
+        if (int(ADDON.getSetting('context_video'))) == 2 and folder != False:
+            contentType = 2
+        elif (int(ADDON.getSetting('context_video'))) == 1 and folder != False:
             contentType = 1
         else:
-            contentType = 5
-      elif contentType == 'audio':
-        if (int(ADDON.getSetting('context_music'))) == 1:
             contentType = 0
-        else:
-            contentType = 2
-      elif contentType == 'image':
-        if (int(ADDON.getSetting('context_photo'))) == 2:
-            contentType = 0
-        elif (int(ADDON.getSetting('context_photo'))) == 0:
+
+      elif contextType == 'audio':
+        if (int(ADDON.getSetting('context_music'))) == 1 and folder != False:
             contentType = 4
         else:
             contentType = 3
+
+      elif contextType == 'image':
+        if (int(ADDON.getSetting('context_photo'))) == 2 and folder != False:
+            contentType = 7
+        elif (int(ADDON.getSetting('context_photo'))) == 1 and folder != False:
+            contentType = 6
+        else:
+            contentType = 5
     except:
-      contentType = 0
+      contentType = 2
 
 
 
@@ -298,19 +316,34 @@ if mode == 'main' or mode == 'index':
 
 
     if mode == 'main':
-      addMenu(PLUGIN_URL+'?mode=index&folder=','<< '+ADDON.getLocalizedString(30018)+' >>')
-      folder = 'root'
+        if contentType in (2,4,7):
+            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+ADDON.getLocalizedString(30018)+' '+ADDON.getLocalizedString(30030)+' '+ADDON.getLocalizedString(30039)+']')
+        elif contentType == 1:
+            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+ADDON.getLocalizedString(30018)+' '+ADDON.getLocalizedString(30031)+' '+ADDON.getLocalizedString(30039)+']')
+        elif contentType == 0:
+            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+ADDON.getLocalizedString(30018)+' '+ADDON.getLocalizedString(30025)+' '+ADDON.getLocalizedString(30039)+']')
+        elif contentType == 3:
+            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+ADDON.getLocalizedString(30018)+' '+ADDON.getLocalizedString(30028)+' '+ADDON.getLocalizedString(30039)+']')
+        elif contentType == 5:
+            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+ADDON.getLocalizedString(30018)+' '+ADDON.getLocalizedString(30034)+' '+ADDON.getLocalizedString(30039)+']')
+        elif contentType == 6:
+            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+ADDON.getLocalizedString(30018)+' '+ADDON.getLocalizedString(30032)+' '+ADDON.getLocalizedString(30039)+']')
+        folder = 'root'
 
 
     videos = gdrive.getVideosList(cacheType, folder)
 
 
     for title in sorted(videos.iterkeys()):
-        if contentType != 3 and videos[title]['mediaType'] == gdrive.MEDIA_TYPE_MUSIC or videos[title]['mediaType'] == gdrive.MEDIA_TYPE_VIDEO:
+        if contentType in (0,1,2,4,7) and videos[title]['mediaType'] == gdrive.MEDIA_TYPE_VIDEO:
             addVideo(videos[title]['url'],
                              { 'title' : title , 'plot' : title }, title,
                              img=videos[title]['thumbnail'])
-        elif contentType in (0,4,3) and videos[title]['mediaType'] == gdrive.MEDIA_TYPE_PICTURE:
+        elif contentType in (1,2,3,4,6,7) and videos[title]['mediaType'] == gdrive.MEDIA_TYPE_MUSIC:
+            addVideo(videos[title]['url'],
+                             { 'title' : title , 'plot' : title }, title,
+                             img=videos[title]['thumbnail'])
+        elif contentType in (2,4,5,6,7) and videos[title]['mediaType'] == gdrive.MEDIA_TYPE_PICTURE:
             addPicture(videos[title]['url'],
                              { 'title' : title}, title,
                              img=videos[title]['thumbnail'])

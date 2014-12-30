@@ -1,3 +1,7 @@
+Version 0.4.8
+- fix for video preview image (problem introduced with 0.4.5)
+- context improvements
+- improvements for "show all videos by alphabetical order"
 Version 0.4.7
 - introduced an issue with the mkdir for photos; fixed
 Version 0.4.6
