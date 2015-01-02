@@ -42,4 +42,10 @@
     <string id="30035">Caching...</string>
     <string id="30036">Percent to download before playback</string>
 
+    <!-- CloudService Generic -->
+    <string id="30051">Your login failed.</string>
+    <string id="30052">Ensure that your username and password are set in settings.</string>
+    <string id="30054">List files according to</string>
+
+
 </strings>

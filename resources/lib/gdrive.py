@@ -22,9 +22,11 @@ import os
 import re
 import urllib, urllib2
 import cookielib
+from cloudservice import cloudservice
 
 from resources.lib import encryption
 from resources.lib import downloadfile
+import unicodedata
 
 
 
@@ -33,24 +35,33 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 # global variables
 PLUGIN_NAME = 'plugin.video.gdrive-testing'
 PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
-ADDON = xbmcaddon.Addon(id=PLUGIN_NAME)
+addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 PROTOCOL = 'https://'
 SERVICE_NAME = 'dmdgdrive'
 
+import sys
 
-# helper methods
-def log(msg, err=False):
-    if err:
-        xbmc.log(ADDON.getAddonInfo('name') + ': ' + msg, xbmc.LOGERROR)
-    else:
-        xbmc.log(ADDON.getAddonInfo('name') + ': ' + msg, xbmc.LOGDEBUG)
+sys.path.append(os.path.join( addon_dir, 'resources', 'lib' ) )
 
+import authorization
+#import cloudservice
+import folder
+import file
+import package
+import mediaurl
+import crashreport
+#import gSpreadsheets
 
 
 #
 # Google Docs API 3 implentation of Google Drive
 #
-class gdrive:
+class gdrive(cloudservice):
+
+    AUDIO = 1
+    VIDEO = 2
+    PICTURE = 3
 
     # magic numbers
     MEDIA_TYPE_MUSIC = 1
@@ -65,31 +76,39 @@ class gdrive:
 
     API_VERSION = '3.0'
     ##
-    # initialize (setting 1) username, 2) password, 3) authorization token, 4) user agent string
+    # initialize (save addon, instance name, user agent)
     ##
-    def __init__(self, user, password, auth_writely, auth_wise, user_agent, authenticate=True, useWRITELY=False):
-        self.user = user
-        self.password = password
-        self.writely = auth_writely
-        self.wise = auth_wise
-        self.user_agent = user_agent
-        self.useWRITELY = useWRITELY
+    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, authenticate=True, useWRITELY=False):
+        self.PLUGIN_URL = PLUGIN_URL
+        self.addon = addon
+        self.instanceName = instanceName
+
+        # gdrive specific ***
         self.decrypt = False
+        self.useWRITELY = useWRITELY
+        #***
 
-        # if we have an authorization token set, try to use it
-        if auth_writely != '' and auth_wise != '':
-          log('using token')
+        self.crashreport = crashreport.crashreport(self.addon)
+#        self.crashreport.sendError('test','test')
 
-          return
+        try:
+            username = self.addon.getSetting(self.instanceName+'_username')
+        except:
+            username = ''
+        self.authorization = authorization.authorization(username)
 
 
-        # allow for playback of public videos without authentication
+        self.cookiejar = cookielib.CookieJar()
+
+        self.user_agent = user_agent
+
+        # gdrive specific ***
+        if (not self.authorization.loadToken(self.instanceName,addon, 'auth_writely')) or (not self.authorization.loadToken(self.instanceName,addon, 'auth_wise')):
+            self.login()
+
         if (authenticate == True):
-          log('no token - logging in')
-          self.login();
-          self.loginWISE();
-
-        return
+            self.login()
+        #***
 
 
     ##
@@ -97,84 +116,42 @@ class gdrive:
     ##
     def login(self):
 
-        url = PROTOCOL + 'www.google.com/accounts/ClientLogin'
-        header = { 'User-Agent' : self.user_agent }
-        values = {
-          'Email' : self.user,
-          'Passwd' : self.password,
-          'accountType' : 'HOSTED_OR_GOOGLE',
-          'source' : SERVICE_NAME,
-          'service' : 'writely'
-        }
+        services = ['writely', 'wise']
+        for service in services:
+            url = PROTOCOL + 'www.google.com/accounts/ClientLogin'
+            header = { 'User-Agent' : self.user_agent }
+            values = {
+                      'Email' : self.authorization.username,
+                      'Passwd' : self.addon.getSetting(self.instanceName+'_password'),
+                      'accountType' : 'HOSTED_OR_GOOGLE',
+                      'source' : SERVICE_NAME,
+                      'service' : service
+                      }
 
-        req = urllib2.Request(url, urllib.urlencode(values), header)
+            req = urllib2.Request(url, urllib.urlencode(values), header)
 
-        # try login
-        try:
-            response = urllib2.urlopen(req)
-        except urllib2.URLError, e:
-            if e.code == 403:
+            # try login
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+#            if e.code == 403:
                 #login denied
-                xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30017))
-            log(str(e), True)
-            return
+#                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017))
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return
 
-        response_data = response.read()
-        response.close()
+            response_data = response.read()
+            response.close()
 
-        # retrieve authorization token
-        for r in re.finditer('SID=(.*).+?' +
+            # retrieve authorization token
+            for r in re.finditer('SID=(.*).+?' +
                              'LSID=(.*).+?' +
                              'Auth=(.*).+?' ,
                              response_data, re.DOTALL):
-            sid,lsid,auth = r.groups()
+                sid,lsid,auth = r.groups()
+                self.authorization.setToken('auth_'+service,auth)
 
-
-        # save authorization token
-        self.writely = auth
         return
-
-    ##
-    # perform login
-    ##
-    def loginWISE(self):
-
-        url = PROTOCOL+'www.google.com/accounts/ClientLogin'
-        header = { 'User-Agent' : self.user_agent }
-        values = {
-          'Email' : self.user,
-          'Passwd' : self.password,
-          'accountType' : 'HOSTED_OR_GOOGLE',
-          'source' : SERVICE_NAME,
-          'service' : 'wise'
-        }
-
-        req = urllib2.Request(url, urllib.urlencode(values), header)
-
-        # try login
-        try:
-            response = urllib2.urlopen(req)
-        except urllib2.URLError, e:
-            if e.code == 403:
-                #login denied
-                xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30017))
-            log(str(e), True)
-            return
-
-        response_data = response.read()
-        response.close()
-
-        # retrieve authorization token
-        for r in re.finditer('SID=(.*).+?' +
-                             'LSID=(.*).+?' +
-                             'Auth=(.*).+?' ,
-                             response_data, re.DOTALL):
-            sid,lsid,auth = r.groups()
-
-        # save authorization token
-        self.wise = auth
-        return
-
 
 
     ##
@@ -184,9 +161,10 @@ class gdrive:
     def getHeadersList(self, forceWritely=True):
         #effective 2014/02, video stream calls require a wise token instead of writely token
         if forceWritely == True:
-            return { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.writely, 'GData-Version' : self.API_VERSION }
+            return { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('auth_writely'), 'GData-Version' : self.API_VERSION }
         else:
-            return { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.wise, 'GData-Version' : self.API_VERSION }
+            return { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('auth_wise'), 'GData-Version' : self.API_VERSION }
+
 
     def setDecrypt(self):
         self.decrypt = True
@@ -203,24 +181,24 @@ class gdrive:
 
     ##
     # retrieve a list of videos, using playback type stream
-    #   parameters: cache type (optional)
+    #   parameters: prompt for video quality (optional), cache type (optional)
     #   returns: list of videos
     ##
-    def getVideosList(self,cacheType=CACHE_TYPE_MEMORY, folder=False):
+    def getMediaList(self, folderName=False, cacheType=CACHE_TYPE_MEMORY):
 
         # retrieve all items
         url = PROTOCOL+'docs.google.com/feeds/default/private/full'
-        if folder==False:
+        if folderName==False:
             url = url + '?showfolders=false'
         # retrieve root items
-        elif folder == '':
+        elif folderName == '':
             url = url + '/folder%3Aroot/contents'
         # retrieve folder items
         else:
-            url = url + '/folder%3A'+folder+'/contents'
+            url = url + '/folder%3A'+folderName+'/contents'
 
 
-        videos = {}
+        mediaFiles = []
         while True:
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -234,10 +212,12 @@ class gdrive:
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  log(str(e), True)
+                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                  self.crashreport.sendError('getMediaList',str(e))
                   return
               else:
-                log(str(e), True)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getMediaList',str(e))
                 return
 
             response_data = response.read()
@@ -265,9 +245,10 @@ class gdrive:
                                   title = base64.b64decode(title)
                               except:
                                   pass
-
-                          videos[title] = {'mediaType': self.MEDIA_TYPE_FOLDER, 'url': resourceID, 'thumbnail':  ''}
-
+                        #***
+#                          videos[title] = {'mediaType': self.MEDIA_TYPE_FOLDER, 'url': resourceID, 'thumbnail':  ''}
+                          media = package.package(0,folder.folder(resourceID,title))
+                          mediaFiles.append(media)
                   # entry is NOT a folder
                   else:
                       processed =0
@@ -279,11 +260,14 @@ class gdrive:
 
                           # memory-cache
                           if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
-                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+'&size='+str(size)+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
-
+                            x=1
+#                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+'&size='+str(size)+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
+                        #***
                               # streaming
                           else:
-                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': thumbnail}
+#                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': thumbnail}
+                            x=1
+                        #***
                           processed = 1
 
                       if processed == 0:
@@ -294,11 +278,14 @@ class gdrive:
 
                               # memory-cache
                               if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
-                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+'&size='+str(size)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
-
+#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+'&size='+str(size)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
+                                  x=1
+                        #***
                               # streaming
                               else:
-                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': ''}
+                                  x=1
+#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': ''}
+                        #***
                               processed = 1
 
                       if processed == 0:
@@ -310,15 +297,19 @@ class gdrive:
 
                               # memory-cache
                               if cacheType == self.CACHE_TYPE_MEMORY:
-                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
-
+                                  x=1
+#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
+                        #***
                               # memory-cache
                               elif cacheType == self.CACHE_TYPE_DISK:
-                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url), 'thumbnail':  thumbnail}
-
+                                  x=1
+#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url), 'thumbnail':  thumbnail}
+                        #***
                               # streaming
                               else:
-                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': thumbnail}
+                                  x=1
+#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': thumbnail}
+                        #***
                               processed = 1
 
                       if processed == 0:
@@ -328,7 +319,9 @@ class gdrive:
                               title,url = r.groups()
 
                               # there is no steaming for audio (?), so "download to stream"
-                              videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
+#                              videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
+                              x=1
+                        #***
                               processed = 1
                       if processed == 0:
                           # audio
@@ -337,8 +330,10 @@ class gdrive:
                               title,url = r.groups()
 
                               # there is no steaming for audio (?), so "download to stream"
-                              videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
+#                              videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
+                              x=1
                               processed = 1
+                        #***
 
                       if processed == 0:
                           # pictures
@@ -347,14 +342,11 @@ class gdrive:
                               title,url,thumbnail = r.groups()
 
                               # there is no steaming for audio (?), so "download to stream"
-#                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
                               cleanURL = re.sub('---', '', url)
                               cleanURL = re.sub('&amp;', '---', cleanURL)
-#                          cleanURL = re.sub('=', '~~~', cleanURL)
-#                          cleanURL = re.sub(';', '~-~-', cleanURL)
-                              videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+str(folder)+'&title='+str(title)+'&url=' + str(cleanURL), 'thumbnail': thumbnail}
-
-#                          videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url':  PLUGIN_URL+'?mode=photo&url=/u01/test.png', 'thumbnail':  ''}
+#                              videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+str(folderName)+'&title='+str(title)+'&url=' + str(cleanURL), 'thumbnail': thumbnail}
+                              x=1
+                        #***
                               processed = 1
 
                       if processed == 0:
@@ -364,14 +356,11 @@ class gdrive:
                             title,url = r.groups()
 
                           # there is no steaming for audio (?), so "download to stream"
-#                          videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE, 'url': url+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
                             cleanURL = re.sub('---', '', url)
                             cleanURL = re.sub('&amp;', '---', cleanURL)
-#                          cleanURL = re.sub('=', '~~~', cleanURL)
-#                          cleanURL = re.sub(';', '~-~-', cleanURL)
-                            videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+str(folder)+'&title='+str(title)+'&url=' + str(cleanURL), 'thumbnail': ''}
-
-#                          videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url':  PLUGIN_URL+'?mode=photo&url=/u01/test.png', 'thumbnail':  ''}
+#                            videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+str(folderName)+'&title='+str(title)+'&url=' + str(cleanURL), 'thumbnail': ''}
+                            x=1
+                        #***
 
 
             # look for more pages of videos
@@ -387,7 +376,8 @@ class gdrive:
             else:
                 url = nextURL[0]
 
-        return videos
+        return mediaFiles
+
 
 
 
@@ -424,10 +414,12 @@ class gdrive:
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  log(str(e), True)
-                  return
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('downloadFolder',str(e))
+                    return
               else:
-                log(str(e), True)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('downloadFolder',str(e))
                 return
 
             response_data = response.read()
@@ -530,10 +522,12 @@ class gdrive:
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  log(str(e), True)
-                  return
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('decryptFolder',str(e))
+                    return
               else:
-                log(str(e), True)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('decryptFolder',str(e))
                 return
 
             response_data = response.read()
@@ -635,11 +629,13 @@ class gdrive:
               try:
                 response = urllib2.urlopen(req)
               except urllib2.URLError, e:
-                log(str(e), True)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getVideoLink',str(e))
                 return
             else:
-              log(str(e), True)
-              return
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getVideoLink',str(e))
+                return
 
         response_data = response.read()
         response.close()
@@ -683,7 +679,8 @@ class gdrive:
 #                f.write(urllib2.urlopen(req).read())
 #                f.close()
               except urllib2.URLError, e:
-                log(str(e), True)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('downloadPicture',str(e))
                 return
 
 
@@ -707,11 +704,13 @@ class gdrive:
 #                encryption.decrypt_file(key,'/tmp/tmp',file)
 
               except urllib2.URLError, e:
-                log(str(e), True)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('downloadDecryptPicture',str(e))
                 return
             else:
-              log(str(e), True)
-              return
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('downloadDecryptPicture',str(e))
+                return
 
 
     ##
@@ -742,11 +741,13 @@ class gdrive:
               try:
                 response = urllib2.urlopen(req)
               except urllib2.URLError, e:
-                log(str(e), True)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getVideoStream',str(e))
                 return
             else:
-              log(str(e), True)
-              return
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getVideoStream',str(e))
+                return
 
         response_data = response.read()
         response.close()
@@ -778,10 +779,12 @@ class gdrive:
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  log(str(e), True)
-                  return
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('getVideoStream',str(e))
+                    return
               else:
-                log(str(e), True)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getVideoStream',str(e))
                 return
 
           response_data = response.read()
@@ -816,10 +819,12 @@ class gdrive:
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  log(str(e), True)
-                  return
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('getVideoStream',str(e))
+                    return
               else:
-                log(str(e), True)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getVideoStream',str(e))
                 return
 
           response_data = response.read()
@@ -967,16 +972,18 @@ class gdrive:
             response = urllib2.urlopen(req)
         except urllib2.URLError, e:
             if e.code == 403 or e.code == 401:
-              self.loginWISE()
+              self.login()
               req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
               try:
                 response = urllib2.urlopen(req)
               except urllib2.URLError, e:
-                log(str(e), True)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getPublicStream',str(e))
                 return
             else:
-              log(str(e), True)
-              return
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getPublicStream',str(e))
+                return
 
         response_data = response.read()
         response.close()
@@ -997,7 +1004,7 @@ class gdrive:
         if serviceRequired == 'writely':
           self.useWRITELY = True
 
-          if (self.writely == ''):
+          if (self.authorization.getToken('auth_writely') == ''):
             self.login();
 
           req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
@@ -1011,10 +1018,12 @@ class gdrive:
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  log(str(e), True)
-                  return
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('getPublicStream',str(e))
+                    return
               else:
-                log(str(e), True)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getPublicStream',str(e))
                 return
 
           response_data = response.read()
@@ -1039,8 +1048,8 @@ class gdrive:
 
         elif serviceRequired == 'wise':
           self.useWRITELY = False
-          if (self.wise == ''):
-            self.loginWISE();
+          if (self.authorization.getToken('auth_wise') == ''):
+            self.login();
 
           req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
 
@@ -1048,16 +1057,18 @@ class gdrive:
               response = urllib2.urlopen(req)
           except urllib2.URLError, e:
               if e.code == 403 or e.code == 401:
-                self.loginWISE()
+                self.login()
                 req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  log(str(e), True)
-                  return
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('getPublicStream',str(e))
+                    return
               else:
-                log(str(e), True)
-                return
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('getPublicStream',str(e))
+                    return
 
           response_data = response.read()
           response.close()
@@ -1108,14 +1119,14 @@ class gdrive:
     def downloadMediaFile(self,url, title, fileSize):
 
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
-        opener.addheaders = [('User-Agent', self.user_agent), ('Authorization' , 'GoogleLogin auth='+self.writely), ('GData-Version' , self.API_VERSION)]
+        opener.addheaders = [('User-Agent', self.user_agent), ('Authorization' , 'GoogleLogin auth='+self.authorization.getToken('auth_writely')), ('GData-Version' , self.API_VERSION)]
         request = urllib2.Request(url)
 
         # if action fails, validate login
 
         cachePercent = 0
         try:
-            cachePercent = int(ADDON.getSetting('cache_percent'))
+            cachePercent = int(self.addon.getSetting('cache_percent'))
         except:
             cachePercent = 10
 
@@ -1134,7 +1145,7 @@ class gdrive:
 
         CHUNK = 0
         try:
-            CHUNK = int(ADDON.getSetting('chunk_size'))
+            CHUNK = int(self.addon.getSetting('chunk_size'))
         except:
             CHUNK = 32 * 1024
 
@@ -1144,7 +1155,7 @@ class gdrive:
         count = 0
         path = ''
         try:
-            path = ADDON.getSetting('cache_folder')
+            path = self.addon.getSetting('cache_folder')
         except:
             pass
 
@@ -1154,11 +1165,11 @@ class gdrive:
                 path = ''
 
         while path == '':
-            path = xbmcgui.Dialog().browse(0,ADDON.getLocalizedString(30026), 'files','',False,False,'')
+            path = xbmcgui.Dialog().browse(0,self.addon.getLocalizedString(30026), 'files','',False,False,'')
             if not os.path.exists(path):
                 path = ''
             else:
-                ADDON.setSetting('cache_folder', path)
+                self.addon.setSetting('cache_folder', path)
 
 
 
@@ -1168,20 +1179,22 @@ class gdrive:
         except urllib2.URLError, e:
             if e.code == 403 or e.code == 401:
               self.login()
-              opener.addheaders = [('User-Agent', self.user_agent), ('Authorization' , 'GoogleLogin auth='+self.writely), ('GData-Version' , self.API_VERSION)]
+              opener.addheaders = [('User-Agent', self.user_agent), ('Authorization' , 'GoogleLogin auth='+self.authorization.getToken('auth_writely')), ('GData-Version' , self.API_VERSION)]
               request = urllib2.Request(url)
               try:
                   response = opener.open(request)
               except urllib2.URLError, e:
-                xbmc.log(ADDON.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('downloadMediaFile',str(e))
                 return
             else:
-              xbmc.log(ADDON.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-              return
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('downloadMediaFile',str(e))
+                return
 
         progress = xbmcgui.DialogProgress()
-        progress.create(ADDON.getLocalizedString(30000),ADDON.getLocalizedString(30035),title,'\n')
-#        (0,ADDON.getLocalizedString(30026), addon.getLocalizedString(30034),'',False,False,'')
+        progress.create(self.addon.getLocalizedString(30000),self.addon.getLocalizedString(30035),title,'\n')
+#        (0,self.addon.getLocalizedString(30026), self.addon.getLocalizedString(30034),'',False,False,'')
 
 #        with open(path + 'test.mp4', 'wb') as fp:
 
@@ -1190,7 +1203,7 @@ class gdrive:
         fp = open(path + filename, 'wb')
         downloadedBytes = 0
         while sizeDownload > downloadedBytes:
-                progress.update((int)(float(downloadedBytes)/sizeDownload*100),ADDON.getLocalizedString(30035),(str)(cachePercent) + ' ' +ADDON.getLocalizedString(30036),'\n')
+                progress.update((int)(float(downloadedBytes)/sizeDownload*100),self.addon.getLocalizedString(30035),(str)(cachePercent) + ' ' +self.addon.getLocalizedString(30036),'\n')
                 chunk = response.read(CHUNK)
                 if not chunk: break
                 fp.write(chunk)
@@ -1208,7 +1221,7 @@ class gdrive:
 
         CHUNK = 0
         try:
-            CHUNK = int(ADDON.getSetting('chunk_size'))
+            CHUNK = int(self.addon.getSetting('chunk_size'))
         except:
             CHUNK = 32 * 1024
 

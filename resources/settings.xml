@@ -9,6 +9,7 @@
     	<setting id="save_auth_token" type="bool" label="30005" default="true" />
     </category>
     <category label="30009">
+        <setting id="sorted" type="enum" label="30054" values="alphabetical|reverse alphabetical|Hive default order" default="0"/>
         <setting label="30037" type="lsep"/>
         <setting id="context_video" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Everything" default="0"/>
         <setting id="context_music" type="enum" subsetting="true" label="30023" values="Music only|Everything" default="0"/>
