@@ -572,7 +572,7 @@ if mode == 'main' or mode == 'index':
         if isSorted == "0":
             for item in sorted(mediaItems, key=lambda package: package.sortTitle):
 #                try:
-                    if item.file == 0:
+                    if item.file is None:
                         addDirectory(service, item.folder)
                     else:
                         addMediaFile(service, item)
@@ -582,7 +582,7 @@ if mode == 'main' or mode == 'index':
             for item in sorted(mediaItems, key=lambda package: package.sortTitle, reverse=True):
 
 #                try:
-                    if item.file == 0:
+                    if item.file is None:
                         addDirectory(service, item.folder)
                     else:
                         addMediaFile(service, item)
@@ -592,7 +592,7 @@ if mode == 'main' or mode == 'index':
             for item in mediaItems:
 
 #                try:
-                    if item.file == 0:
+                    if item.file is None:
                         addDirectory(service, item.folder)
                     else:
                         addMediaFile(service, item)
@@ -900,10 +900,12 @@ elif mode == 'streamurl':
 # *
 
 # the parameter set for wise vs writely was detected as incorrect during this run; reset as necessary
-if useWRITELY == True  and gdrive.useWRITELY == False:
-    addon.setSetting('force_writely','false')
-elif useWRITELY == False and gdrive.useWRITELY == True:
-    addon.setSetting('force_writely','true')
-
+try:
+    if useWRITELY == True  and gdrive.useWRITELY == False:
+        addon.setSetting('force_writely','false')
+    elif useWRITELY == False and gdrive.useWRITELY == True:
+        addon.setSetting('force_writely','true')
+except:
+    pass
 xbmcplugin.endOfDirectory(plugin_handle)
 
