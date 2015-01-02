@@ -27,7 +27,7 @@ import re
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 # global variables
-PLUGIN_NAME = 'plugin.video.gdrive'
+PLUGIN_NAME = 'plugin.video.gdrive-testing'
 PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
 ADDON = xbmcaddon.Addon(id=PLUGIN_NAME)
 

@@ -1,3 +1,5 @@
+- add cloudservice API files
+- add crashreporting API files
 Version 0.4.8
 - fix for video preview image (problem introduced with 0.4.5)
 - context improvements
