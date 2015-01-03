@@ -393,6 +393,7 @@ elif mode == 'buildstrm':
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
     xbmcplugin.endOfDirectory(plugin_handle)
 
+
 numberOfAccounts = numberOfAccounts(PLUGIN_NAME)
 
 # show list of services
@@ -544,7 +545,7 @@ if mode == 'main' or mode == 'index':
         elif contentType == 0:
             addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30025)+' '+addon.getLocalizedString(30039)+']')
         elif contentType == 3:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30028)+' '+addon.getLocalizedString(30039)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30093)+' '+addon.getLocalizedString(30039)+']')
         elif contentType == 5:
             addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30034)+' '+addon.getLocalizedString(30039)+']')
         elif contentType == 6:
@@ -605,6 +606,8 @@ if mode == 'main' or mode == 'index':
 #play a URL that is passed in (presumably requires authorizated session)
 elif mode == 'play':
     url = plugin_queries['url']
+
+
 
     cacheType = int(addon.getSetting('playback_type'))
 
@@ -831,6 +834,15 @@ elif mode == 'video':
     except:
       title = 0
 
+    promptQuality = True
+    try:
+        promptQuality = addon.getSetting('prompt_quality')
+        if promptQuality == 'false':
+            promptQuality = False
+    except:
+        pass
+
+
     mediaFile = file.file(filename, title, '', 0, '','')
     mediaFolder = folder.folder('','')
     mediaURLs = service.getPlaybackCall(0,package=package.package(mediaFile,mediaFolder))
@@ -838,7 +850,11 @@ elif mode == 'video':
     options = []
     for mediaURL in mediaURLs:
         options.append(mediaURL.qualityDesc)
-    ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
+    if promptQuality:
+        ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
+    else:
+        ret = 0
+
     playbackURL = mediaURLs[ret].url
 
     item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))

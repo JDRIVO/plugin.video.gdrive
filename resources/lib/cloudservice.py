@@ -20,11 +20,12 @@
 import os
 import re
 import urllib, urllib2
-#from resources.lib import authorization
-
-
-
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+
+
+# global variables
+#PLUGIN_NAME = 'plugin.video.gdrive-testing'
+#PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
 
 
 #
@@ -104,3 +105,38 @@ class cloudservice(object):
                 self.traverse( path+'/'+folder.title + '/',cacheType,folder.id,savePublic,0)
 
 
+    def buildSTRM(self, path, folderID=''):
+
+        import xbmcvfs
+        xbmcvfs.mkdir(path)
+
+        mediaItems = self.getMediaList(folderID,0)
+
+        if mediaItems:
+            for item in mediaItems:
+
+                url = 0
+                try:
+                    if item.file == 0:
+                        self.buildSTRM(path + '/'+item.folder.title, item.folder.id)
+                    else:
+                        url = self.PLUGIN_URL+'?mode=video&title='+item.file.title+'&filename='+item.file.id
+                except:
+                    url = self.PLUGIN_URL+'?mode=video&title='+item.file.title+'&filename='+item.file.id
+
+
+                if url != 0:
+                    if not os.path.exists(path + item.file.title+'.strm'):
+                        filename = xbmc.translatePath(os.path.join(path, item.file.title+'.strm'))
+                        strmFile = open(filename, "w")
+
+                        strmFile.write(url+'\n')
+                        strmFile.close()
+
+
+    ##
+    # retrieve a directory url
+    #   returns: url
+    ##
+    def getDirectoryCall(self, folder):
+        return self.PLUGIN_URL+'?mode=index&instance='+self.instanceName+'&folder='+folder.id

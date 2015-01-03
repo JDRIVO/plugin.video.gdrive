@@ -35,6 +35,7 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 # global variables
 PLUGIN_NAME = 'plugin.video.gdrive-testing'
 PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
+
 addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 PROTOCOL = 'https://'
@@ -55,7 +56,7 @@ import crashreport
 
 
 #
-# Google Docs API 3 implentation of Google Drive
+# Google Docs API 3 implementation of Google Drive
 #
 class gdrive(cloudservice):
 
@@ -1198,7 +1199,7 @@ class gdrive(cloudservice):
                 path = ''
 
         while path == '':
-            path = xbmcgui.Dialog().browse(0,self.addon.getLocalizedString(30026), 'files','',False,False,'')
+            path = xbmcgui.Dialog().browse(0,self.addon.getLocalizedString(30090), 'files','',False,False,'')
             if not os.path.exists(path):
                 path = ''
             else:
@@ -1227,7 +1228,6 @@ class gdrive(cloudservice):
 
         progress = xbmcgui.DialogProgress()
         progress.create(self.addon.getLocalizedString(30000),self.addon.getLocalizedString(30035),title,'\n')
-#        (0,self.addon.getLocalizedString(30026), self.addon.getLocalizedString(30034),'',False,False,'')
 
 #        with open(path + 'test.mp4', 'wb') as fp:
 
@@ -1236,7 +1236,7 @@ class gdrive(cloudservice):
         fp = open(path + filename, 'wb')
         downloadedBytes = 0
         while sizeDownload > downloadedBytes:
-                progress.update((int)(float(downloadedBytes)/sizeDownload*100),self.addon.getLocalizedString(30035),(str)(cachePercent) + ' ' +self.addon.getLocalizedString(30036),'\n')
+                progress.update((int)(float(downloadedBytes)/sizeDownload*100),self.addon.getLocalizedString(30035),(str)(cachePercent) + ' ' +self.addon.getLocalizedString(30093),'\n')
                 chunk = response.read(CHUNK)
                 if not chunk: break
                 fp.write(chunk)
@@ -1269,10 +1269,4 @@ class gdrive(cloudservice):
         self.fp.close()
 
 
-    ##
-    # retrieve a directory url
-    #   returns: url
-    ##
-    def getDirectoryCall(self, folder):
-        return self.PLUGIN_URL+'?mode=index&instance='+self.instanceName+'&folder='+folder.id
 

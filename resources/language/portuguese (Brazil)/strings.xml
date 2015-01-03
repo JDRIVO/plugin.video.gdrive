@@ -28,7 +28,6 @@
     <string id="30023">View when in music plugin context</string>
     <string id="30024">View when in photo plugin context</string>
     <string id="30025">Videos</string>
-    <string id="30028">Music</string>
     <string id="30029">Photos</string>
     <string id="30030">Media</string>
     <string id="30031">Video and Music</string>
@@ -37,12 +36,20 @@
     <string id="30037">Context</string>
     <string id="30038">Photo cache folder</string>
 
-    <string id="30026">Location to store cache files</string>
-    <string id="30027">Chunk size</string>
-    <string id="30035">Downloading...</string>
-    <string id="30036">Percent to download before playback</string>
+
+    <string id="30090">Location to store cache files</string>
+    <string id="30091">Chunk size</string>
+    <string id="30092">Downloading...</string>
+    <string id="30093">Percent to download before playback</string>
+    <string id="30094">Music</string>
 
     <!-- CloudService Generic -->
+
+    <string id="30026">Location to Store STRMs</string>
+    <string id="30027">Do you want to create the STRM files in the path</string>
+    <string id="30028">STRM file creation complete.</string>
+
+    <string id="30042">Save STRM</string>
     <string id="30043">Options</string>
 
     <string id="30051">Your login failed.</string>
