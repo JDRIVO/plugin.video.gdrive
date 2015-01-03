@@ -1,3 +1,7 @@
+Version 0.5.0
+- major move to cloudservice API
+- enable buildSTRM
+- add multiple account support (default: 10 accounts)
 - add cloudservice API files
 - add crashreporting API files
 Version 0.4.8
