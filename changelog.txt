@@ -4,6 +4,8 @@ Version 0.5.0
 - add multiple account support (default: 10 accounts)
 - add cloudservice API files
 - add crashreporting API files
+- implemented: Move to CloudService framework #16
+- implemented export to .STRM: Library Integration #15
 Version 0.4.8
 - fix for video preview image (problem introduced with 0.4.5)
 - context improvements
