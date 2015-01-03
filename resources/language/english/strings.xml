@@ -49,5 +49,17 @@
     <string id="30052">Ensure that your username and password are set in settings.</string>
     <string id="30054">List files according to</string>
 
+    <!-- CloudService Generic - Crash Reporting -->
+    <string id="30070">Would you like to send the error details to the developer?</string>
+    <string id="30071">No passwords will be sent.</string>
+    <string id="30072">You will be provided an identifer number after sent.</string>
+    <string id="30073">Your identification number of the error submission is </string>
+    <string id="30074">Logging</string>
+    <string id="30075">Enable sending crash logs to developer</string>
+    <string id="30076">Email address (optional)</string>
+    <string id="30077">Email address is for the developer to contact you at.</string>
+    <string id="30078">OS</string>
+    <string id="30079">XBMC version</string>
+    <string id="30080">Last identifier error #</string>
 
 </strings>

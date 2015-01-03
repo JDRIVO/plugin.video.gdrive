@@ -821,9 +821,33 @@ elif mode == 'slideshow':
 
     xbmc.executebuiltin("XBMC.SlideShow("+path + '/'+folder+"/)")
 
+#force stream - play a video given its exact-title
+elif mode == 'video':
+
+    filename = plugin_queries['filename']
+
+    try:
+      title = plugin_queries['title']
+    except:
+      title = 0
+
+    mediaFile = file.file(filename, title, '', 0, '','')
+    mediaFolder = folder.folder('','')
+    mediaURLs = service.getPlaybackCall(0,package=package.package(mediaFile,mediaFolder))
+
+    options = []
+    for mediaURL in mediaURLs:
+        options.append(mediaURL.qualityDesc)
+    ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
+    playbackURL = mediaURLs[ret].url
+
+    item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+    item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 #force stream - play a video given its exact-title
 elif mode == 'streamvideo':
+
     try:
       title = plugin_queries['title']
     except:
@@ -838,20 +862,15 @@ elif mode == 'streamvideo':
       pformat=-1
       acodec=-1
 
-    # result will be a list of streams
-    singlePlayback=''
-    videos = gdrive.getVideoLink(title, gdrive.CACHE_TYPE_STREAM,pquality,pformat,acodec)
+    mediaURLs = service.getPlaybackCall(0,title=title)
+
     options = []
-    for videoDesc in videos:
-        options.append(videoDesc)
+    for mediaURL in mediaURLs:
+        options.append(mediaURL.qualityDesc)
+    ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
+    playbackURL = mediaURLs[ret].url
 
-    if promptQuality == True:
-        ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
-    else:
-        ret = 0
-
-    # if invoked in .strm or as a direct-video (don't prompt for quality)
-    item = xbmcgui.ListItem(path=videos[options[ret]]+ '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY))
+    item = xbmcgui.ListItem(path=playbackURL+'|' + gdrive.getHeadersEncoded(gdrive.useWRITELY))
     item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
@@ -901,9 +920,9 @@ elif mode == 'streamurl':
 
 # the parameter set for wise vs writely was detected as incorrect during this run; reset as necessary
 try:
-    if useWRITELY == True  and gdrive.useWRITELY == False:
+    if useWRITELY == True  and service.useWRITELY == False:
         addon.setSetting('force_writely','false')
-    elif useWRITELY == False and gdrive.useWRITELY == True:
+    elif useWRITELY == False and service.useWRITELY == True:
         addon.setSetting('force_writely','true')
 except:
     pass
