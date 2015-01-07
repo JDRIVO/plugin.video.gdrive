@@ -1,3 +1,5 @@
+Version 0.5.1
+- fix: adjustment for building STRMs with subfolders
 Version 0.5.0
 - major move to cloudservice API
 - enable buildSTRM

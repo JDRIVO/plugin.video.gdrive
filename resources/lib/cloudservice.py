@@ -23,11 +23,6 @@ import urllib, urllib2
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
 
-# global variables
-#PLUGIN_NAME = 'plugin.video.gdrive-testing'
-#PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
-
-
 #
 #
 #
@@ -104,7 +99,9 @@ class cloudservice(object):
             for folder in folders:
                 self.traverse( path+'/'+folder.title + '/',cacheType,folder.id,savePublic,0)
 
-
+    ##
+    # build STRM files to a given path for a given folder ID
+    ##
     def buildSTRM(self, path, folderID=''):
 
         import xbmcvfs
@@ -117,7 +114,7 @@ class cloudservice(object):
 
                 url = 0
                 try:
-                    if item.file == 0:
+                    if item.file is None:
                         self.buildSTRM(path + '/'+item.folder.title, item.folder.id)
                     else:
                         url = self.PLUGIN_URL+'?mode=video&title='+item.file.title+'&filename='+item.file.id
