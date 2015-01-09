@@ -122,7 +122,7 @@ def addDirectory(service, folder):
 
     if folder.id != '':
         cm=[]
-        cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+folder.title+'&instanceName='+str(service.instanceName)+'&folderID='+str(folder.id)+')', ))
+        cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+folder.title+'&instance='+str(service.instanceName)+'&folderID='+str(folder.id)+')', ))
 #        cm.append(( addon.getLocalizedString(30081), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=createbookmark&title='+folder.title+'&instanceName='+str(service.instanceName)+'&folderID='+str(folder.id)+')', ))
 
         # gdrive specific ****
@@ -307,12 +307,14 @@ if mode == 'clearauth':
 elif mode == 'buildstrm':
 
     try:
-        path = addon.getSetting('path')
+        path = addon.getSetting('strm_path')
     except:
         path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+        addon.setSetting('strm_path', path)
 
     if path == '':
         path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+        addon.setSetting('strm_path', path)
 
     if path != '':
         returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
@@ -339,7 +341,7 @@ elif mode == 'buildstrm':
             try:
                 folderID = plugin_queries['folderID']
                 title = plugin_queries['title']
-                instanceName = plugin_queries['instanceName']
+                instanceName = plugin_queries['instance']
             except:
                 folderID = ''
 

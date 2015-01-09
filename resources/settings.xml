@@ -96,6 +96,18 @@
         <setting id="context_photo" type="enum" subsetting="true" label="30024" values="Photos only|Music and Photos|Everything" default="0"/>
         <setting id="photo_folder" type="folder" label="30038" default="" />
     </category>
+    <category label="30060">
+        <setting label="30061" type="lsep"/>
+        <setting id="strm_path" type="folder" label="30026" default="" />
+        <setting id="tvshows_path" type="folder" subsetting="true" label="30089" default="" />
+        <setting id="movies_path" type="folder" subsetting="true" label="30088" default="" />
+<!--        <setting id="gdrive_library" type="bool" label="30064" default="false" />
+        <setting id="gdrive_username" type="text" label="30062" default="" />
+        <setting id="gdrive_password" type="text" label="30002" option="hidden" default="" />
+        <setting id="gdrive_filename" type="text" label="30063" default="" />
+        <setting id="gdrive_save_auth_token" type="bool" label="30005" default="true" />
+-->
+    </category>
     <category label="30074">
         <setting id="crashreport_enable" type="bool" label="30075" default="false"/>
         <setting id="crashreport_email" type="text" label="30076" default=""/>

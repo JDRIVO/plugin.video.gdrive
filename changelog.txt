@@ -1,3 +1,5 @@
+- nekwebdev contribution: saving movies and tv shows to "easily" XBMC importable folders -- enhancements
+- add: save STRM path to settings (optional tvshows and movies)
 Version 0.5.1
 - fix: adjustment for building STRMs with subfolders
 - fix subfolder STRM issue: Move to CloudService framework #16

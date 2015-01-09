@@ -113,23 +113,73 @@ class cloudservice(object):
             for item in mediaItems:
 
                 url = 0
-                try:
-                    if item.file is None:
-                        self.buildSTRM(path + '/'+item.folder.title, item.folder.id)
-                    else:
-                        url = self.PLUGIN_URL+'?mode=video&title='+item.file.title+'&filename='+item.file.id
-                except:
+                if item.file is None:
+                    self.buildSTRM(path + '/'+item.folder.title, item.folder.id)
+                else:
                     url = self.PLUGIN_URL+'?mode=video&title='+item.file.title+'&filename='+item.file.id
 
 
                 if url != 0:
-                    if not os.path.exists(path + item.file.title+'.strm'):
-                        filename = xbmc.translatePath(os.path.join(path, item.file.title+'.strm'))
+                    title = item.file.title
+
+                    if not os.path.exists(path + title+'.strm'):
+                        filename = xbmc.translatePath(os.path.join(path,title+'.strm'))
                         strmFile = open(filename, "w")
 
                         strmFile.write(url+'\n')
                         strmFile.close()
 
+                    # nekwebdev contribution
+                    if self.addon.getSetting('tvshows_path') != '' or self.addon.getSetting('movies_path') != '':
+                        pathLib = ''
+                        regtv1 = re.compile('(.+?)'
+                                       '[ .]S(\d\d?)E(\d\d?)'
+                                       '.*?'
+                                       '(?:[ .](\d{3}\d?p)|\Z)?')
+                        regtv2 = re.compile('(.+?)'
+                                       '[ .]s(\d\d?)e(\d\d?)'
+                                       '.*?'
+                                       '(?:[ .](\d{3}\d?p)|\Z)?')
+                        regtv3 = re.compile('(.+?)'
+                                       '[ .](\d\d?)x(\d\d?)'
+                                       '.*?'
+                                       '(?:[ .](\d{3}\d?p)|\Z)?')
+                        regtv4 = re.compile('(.+?)'
+                                       '[ .](\d\d?)X(\d\d?)'
+                                       '.*?'
+                                       '(?:[ .](\d{3}\d?p)|\Z)?')
+                        regmovie = re.compile('(.*?[ .]\d{4})'
+                                          '.*?'
+                                          '(?:[ .](\d{3}\d?p)|\Z)?')
+
+                        tv = regtv1.match(title)
+                        if not tv:
+                            tv = regtv2.match(title)
+                        if not tv:
+                            tv = regtv3.match(title)
+                        if not tv:
+                            tv = regtv4.match(title)
+
+                        if tv and self.addon.getSetting('tvshows_path') != '':
+                            show = tv.group(1).replace(".", " ")
+                            season = tv.group(2)
+                            pathLib = self.addon.getSetting('tvshows_path') + '/' + show
+                            if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                            pathLib = pathLib + '/Season ' + season
+                            if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                        elif self.addon.getSetting('movies_path') != '':
+                            movie = regmovie.match(title)
+                            if movie:
+                                pathLib = self.addon.getSetting('movies_path')
+
+                        if pathLib != '':
+                            if not os.path.exists(pathLib + title+'.strm'):
+                                filename = xbmc.translatePath(os.path.join(pathLib, title+'.strm'))
+                                strmFile = open(filename, "w")
+                                strmFile.write(url+'\n')
+                                strmFile.close()
 
     ##
     # retrieve a directory url
