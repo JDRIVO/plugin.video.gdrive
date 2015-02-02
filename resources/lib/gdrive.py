@@ -192,6 +192,12 @@ class gdrive(cloudservice):
         if folderName==False:
             url = url + '?showfolders=false'
         # retrieve root items
+        elif folderName == 'STARRED-FILES':
+            url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/starred'
+        elif folderName == 'STARRED-FILESFOLDERS':
+            url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/starred?showfolders=true'
+        elif folderName == 'STARRED-FOLDERS':
+            url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/folder/starred'
         elif folderName == '':
             url = url + '/folder%3Aroot/contents'
         # retrieve folder items

@@ -1,3 +1,6 @@
+Version 0.5.2
+- add starred files/folders
+- implement proper label sorting
 - nekwebdev contribution: saving movies and tv shows to "easily" XBMC importable folders -- enhancements
 - add: save STRM path to settings (optional tvshows and movies)
 Version 0.5.1

@@ -267,6 +267,9 @@ try:
 except:
     pass
 
+xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
+
+
 #* utilities *
 #clear the authorization token(s) from the identified instanceName or all instances
 if mode == 'clearauth':
@@ -477,7 +480,6 @@ if mode == 'main':
 
 #dump a list of videos available to play
 if mode == 'main' or mode == 'index':
-    cacheType = int(addon.getSetting('playback_type'))
 
     folderName = ''
     try:
@@ -541,18 +543,21 @@ if mode == 'main' or mode == 'index':
     # gdrive specific ***
     if mode == 'main':
         if contentType in (2,4,7):
-            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30030)+' '+addon.getLocalizedString(30039)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30030)+']')
         elif contentType == 1:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30031)+' '+addon.getLocalizedString(30039)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30031)+']')
         elif contentType == 0:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30025)+' '+addon.getLocalizedString(30039)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30025)+']')
         elif contentType == 3:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30093)+' '+addon.getLocalizedString(30039)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30093)+']')
         elif contentType == 5:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30034)+' '+addon.getLocalizedString(30039)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30034)+']')
         elif contentType == 6:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30032)+' '+addon.getLocalizedString(30039)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30032)+']')
         folderName = 'root'
+        addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILES&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' Starred Files]')
+        addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' Starred Folders]')
+        addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' Starred Files & Folders]')
     # ***
 
     try:
@@ -562,36 +567,9 @@ if mode == 'main' or mode == 'index':
         log(addon.getLocalizedString(30050)+ 'gdrive-login', True)
         xbmcplugin.endOfDirectory(plugin_handle)
 
-#    videos = gdrive.getVideosList(cacheType, folder)
     mediaItems = service.getMediaList(folderName,0)
 
-    isSorted = "0"
-    try:
-        isSorted = addon.getSetting('sorted')
-    except:
-         pass
-
     if mediaItems:
-        if isSorted == "0":
-            for item in sorted(mediaItems, key=lambda package: package.sortTitle):
-#                try:
-                    if item.file is None:
-                        addDirectory(service, item.folder)
-                    else:
-                        addMediaFile(service, item)
-#                except:
-#                    addMediaFile(service, item)
-        elif isSorted == "1":
-            for item in sorted(mediaItems, key=lambda package: package.sortTitle, reverse=True):
-
-#                try:
-                    if item.file is None:
-                        addDirectory(service, item.folder)
-                    else:
-                        addMediaFile(service, item)
-#                except:
-#                    addMediaFile(service, item)
-        else:
             for item in mediaItems:
 
 #                try:
@@ -830,7 +808,6 @@ elif mode == 'slideshow':
 elif mode == 'video':
 
     filename = plugin_queries['filename']
-
     try:
       title = plugin_queries['title']
     except:
