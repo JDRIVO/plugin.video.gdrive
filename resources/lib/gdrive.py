@@ -265,7 +265,7 @@ class gdrive(cloudservice):
                       # Google Drive API format
                       for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.*?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'.*?\;docid=([^\&]+)\&.*?<gd:quotaBytesUsed>(\d+)</gd:quotaBytesUsed>' ,
                              entry, re.DOTALL):
-                            title,mediaType,url,thumbnail,docid,size = r.groups()
+                            title,mediaType,url,thumbnail,docid,fileSize = r.groups()
 
                           # memory-cache
 #                          if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
@@ -274,7 +274,7 @@ class gdrive(cloudservice):
                               # streaming
 #                          else:
 #                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': thumbnail}
-                            mediaFile = file.file(docid, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail)
+                            mediaFile = file.file(docid, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
 
                             media = package.package(mediaFile,folder.folder('',''))
                             media.setMediaURL(mediaurl.mediaurl(url, '','',''))
@@ -286,7 +286,7 @@ class gdrive(cloudservice):
                           #video that can't be processed (no thumbnail)
                           for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?\;docid=([^\&]+)\&.*?\<gd\:quotaBytesUsed\>(\d+)\</gd\:quotaBytesUsed\>' ,
                              entry, re.DOTALL):
-                            title,mediaType,url,docid,size = r.groups()
+                            title,mediaType,url,docid,fileSize = r.groups()
 
                               # memory-cache
 #                              if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
@@ -298,7 +298,7 @@ class gdrive(cloudservice):
 #                                  x=1
 #                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': ''}
                         #***
-                            mediaFile = file.file(docid, title, title, self.MEDIA_TYPE_VIDEO, '', '')
+                            mediaFile = file.file(docid, title, title, self.MEDIA_TYPE_VIDEO, '', '', size=fileSize)
 
                             media = package.package(mediaFile,folder.folder('',''))
                             media.setMediaURL(mediaurl.mediaurl(url, '','',''))

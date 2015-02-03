@@ -51,13 +51,13 @@ def addMediaFile(service, package):
 
     if package.file.type == package.file.AUDIO:
         if package.file.hasMeta:
-            infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate })
+            infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
         else:
-            infolabels = decode_dict({ 'title' : package.file.displayTitle() })
+            infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'size' : package.file.size })
         listitem.setInfo('Music', infolabels)
         playbackURL = '?mode=audio'
     elif package.file.type == package.file.VIDEO:
-        infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot })
+        infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot, 'size' : package.file.size })
         listitem.setInfo('Video', infolabels)
         playbackURL = '?mode=video'
     elif package.file.type == package.file.PICTURE:
@@ -65,7 +65,7 @@ def addMediaFile(service, package):
         listitem.setInfo('Pictures', infolabels)
         playbackURL = '?mode=photo'
     else:
-        infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot })
+        infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot, 'size' : package.file.size })
         llistitem.setInfo('Video', infolabels)
         playbackURL = '?mode=video'
 
@@ -268,6 +268,7 @@ except:
     pass
 
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
+xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 
 
 #* utilities *

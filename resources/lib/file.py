@@ -22,7 +22,7 @@ import urllib
 #
 #
 class file:
-    # CloudService v0.2.0
+    # CloudService v0.2.1
 
     AUDIO = 1
     VIDEO = 2
@@ -31,7 +31,7 @@ class file:
 
     ##
     ##
-    def __init__(self, id, title, plot, type, fanart,thumbnail):
+    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0):
         self.id = id
         self.title = title
         self.plot = plot
@@ -40,6 +40,8 @@ class file:
         self.thumbnail = thumbnail
         self.hasMeta = False
         self.isEncoded = False
+        self.date = date
+        self.size = size
 
     def setAlbumMeta(self,album,artist,releaseDate,trackNumber,genre):
         self.album = album

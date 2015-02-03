@@ -1,3 +1,4 @@
+- implement filesize sorting
 Version 0.5.2
 - add starred files/folders
 - implement proper label sorting
