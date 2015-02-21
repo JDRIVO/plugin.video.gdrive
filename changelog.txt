@@ -1,4 +1,7 @@
+Version 0.5.3
 - implement filesize sorting
+- add back original stream
+- sort stream selection
 Version 0.5.2
 - add starred files/folders
 - implement proper label sorting

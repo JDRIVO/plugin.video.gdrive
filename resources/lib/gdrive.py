@@ -665,10 +665,12 @@ class gdrive(cloudservice):
         mediaURLs = []
         docid = ''
         if package is None and title != '':
+            return
+        else:
 
-            # search by video title
-            params = urllib.urlencode({'title': title, 'title-exact': 'true'})
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full?' + params
+            docid = package.file.id
+
+            url = PROTOCOL+'docs.google.com/feeds/default/private/full/file:' + docid
 
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -691,23 +693,21 @@ class gdrive(cloudservice):
                     self.crashreport.sendError('getPlaybackCall',str(e))
                     return
 
-                response_data = response.read()
-                response.close()
+            response_data = response.read()
+            response.close()
 
 
-                # fetch video title, download URL and docid for stream link
-                for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
-                    entry = r.group(1)
-                    for q in re.finditer('<title>([^<]+)</title><content type=\'([^\/]+)\/[^\']+\' src=\'([^\']+)\'.*\;docid=([^\&]+)\&' ,
+            # fetch video title, download URL and docid for stream link
+            for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
+                entry = r.group(1)
+                for q in re.finditer('<title>([^<]+)</title><content type=\'([^\/]+)\/[^\']+\' src=\'([^\']+)\'.*\;docid=([^\&]+)\&' ,
                              entry, re.DOTALL):
-                        title,mediaType,url,docid = q.groups()
+                    title,mediaType,url,docid = q.groups()
 
-                if playbackType == 0:
-                    return url
-                else:
-                    mediaURLs.append(url, 'original', 0, 3)
-        else:
-            docid = package.file.id
+                    #mediaURLs.append(url, 'original', 0, 3)
+                    mediaURLs.append(mediaurl.mediaurl(url, '9999 - original', 0, 9999))
+
+
 
         if docid != '':
             # player using docid
@@ -934,10 +934,10 @@ class gdrive(cloudservice):
                         pass
 
                     try:
-                        mediaURLs.append(mediaurl.mediaurl(PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], 0, 3))
+                        mediaURLs.append(mediaurl.mediaurl(PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], 0, order+count))
 #                videos[str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec']] = PROTOCOL + videoURL
                     except KeyError:
-                        mediaURLs.append(mediaurl.mediaurl(PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container, 0, 3))
+                        mediaURLs.append(mediaurl.mediaurl(PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container, 0, order+count))
 #                videos[str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container] = PROTOCOL + videoURL
 
         return mediaURLs

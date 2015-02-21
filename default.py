@@ -828,7 +828,7 @@ elif mode == 'video':
     mediaURLs = service.getPlaybackCall(0,package=package.package(mediaFile,mediaFolder))
 
     options = []
-    for mediaURL in mediaURLs:
+    for mediaURL in sorted(mediaURLs):
         options.append(mediaURL.qualityDesc)
     if promptQuality:
         ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
@@ -861,7 +861,7 @@ elif mode == 'streamvideo':
     mediaURLs = service.getPlaybackCall(0,title=title)
 
     options = []
-    for mediaURL in mediaURLs:
+    for mediaURL in sorted(mediaURLs):
         options.append(mediaURL.qualityDesc)
     ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
     playbackURL = mediaURLs[ret].url
