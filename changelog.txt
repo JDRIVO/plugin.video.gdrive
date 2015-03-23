@@ -1,3 +1,7 @@
+Version 0.5.4
+- backward support: API video with title
+- API: add search function
+- add search function
 Version 0.5.3
 - implement filesize sorting
 - add back original stream

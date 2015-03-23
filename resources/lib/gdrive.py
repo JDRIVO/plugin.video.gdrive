@@ -651,7 +651,7 @@ class gdrive(cloudservice):
     # retrieve a playback url
     #   returns: url
     ##
-    def getPlaybackCall(self, playbackType, package=None, title=''):
+    def getPlaybackCall(self, playbackType, package=None, title='', isExact=True):
 
         try:
             pquality = int(addon.getSetting('preferred_quality'))
@@ -665,7 +665,48 @@ class gdrive(cloudservice):
         mediaURLs = []
         docid = ''
         if package is None and title != '':
-            return
+            # search by video title
+            if isExact == True:
+                params = urllib.urlencode({'title': title, 'title-exact': 'true'})
+            else:
+                params = urllib.urlencode({'title': title, 'title-exact': 'false'})
+
+            url = PROTOCOL+'docs.google.com/feeds/default/private/full?' + params
+
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            # if action fails, validate login
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                if e.code == 403 or e.code == 401:
+                    self.login()
+                    req = urllib2.Request(url, None, self.getHeadersList())
+                    try:
+                        response = urllib2.urlopen(req)
+                    except urllib2.URLError, e:
+                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                        self.crashreport.sendError('getPlaybackCall',str(e))
+                        return
+                else:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('getPlaybackCall',str(e))
+                    return
+
+            response_data = response.read()
+            response.close()
+
+
+            # fetch video title, download URL and docid for stream link
+            for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
+                entry = r.group(1)
+                for q in re.finditer('<title>([^<]+)</title><content type=\'([^\/]+)\/[^\']+\' src=\'([^\']+)\'.*\;docid=([^\&]+)\&' ,
+                             entry, re.DOTALL):
+                    title,mediaType,url,docid = q.groups()
+
+                    #mediaURLs.append(url, 'original', 0, 3)
+                    mediaURLs.append(mediaurl.mediaurl(url, '9999 - original', 0, 9999))
+
         else:
 
             docid = package.file.id

@@ -78,4 +78,10 @@
     <string id="30078">OS</string>
     <string id="30079">XBMC version</string>
     <string id="30080">Last identifier error #</string>
+
+    <string id="30100">This feature is not supported on your version of XBMC / KODI</string>
+
+    <string id="30110">Enter search string</string>
+    <string id="30111">SEARCH</string>
+
 </strings>

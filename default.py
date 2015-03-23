@@ -87,6 +87,7 @@ def addMediaFile(service, package):
     cm.append(( 'Play cache file', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=cache&file=cache.mp4)', ))
     # ***
 
+    #generate STRM
     cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+package.file.title+'&filename='+package.file.id+')', ))
 #    cm.append(( addon.getLocalizedString(30046), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=0)', ))
 #    cm.append(( addon.getLocalizedString(30047), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=1)', ))
@@ -559,6 +560,8 @@ if mode == 'main' or mode == 'index':
         addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILES&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' Starred Files]')
         addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' Starred Folders]')
         addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' Starred Files & Folders]')
+        addMenu(PLUGIN_URL+'?mode=search&content_type='+contextType,'['+addon.getLocalizedString(300111)+']')
+
     # ***
 
     try:
@@ -806,13 +809,21 @@ elif mode == 'slideshow':
     xbmc.executebuiltin("XBMC.SlideShow("+path + '/'+folder+"/)")
 
 #force stream - play a video given its exact-title
-elif mode == 'video':
+elif mode == 'video' or mode == 'search':
 
-    filename = plugin_queries['filename']
+    #title
     try:
       title = plugin_queries['title']
     except:
-      title = 0
+      title = ''
+
+    #docid
+    try:
+        filename = plugin_queries['filename']
+    except:
+        filename = ''
+
+
 
     promptQuality = True
     try:
@@ -823,9 +834,26 @@ elif mode == 'video':
         pass
 
 
-    mediaFile = file.file(filename, title, '', 0, '','')
-    mediaFolder = folder.folder('','')
-    mediaURLs = service.getPlaybackCall(0,package=package.package(mediaFile,mediaFolder))
+    #if we don't have the docid, search for the video for playback
+    if (filename != ''):
+        mediaFile = file.file(filename, title, '', 0, '','')
+        mediaFolder = folder.folder('','')
+        mediaURLs = service.getPlaybackCall(0,package=package.package(mediaFile,mediaFolder))
+    else:
+        if mode == 'search':
+
+            if title == '':
+
+                try:
+                    dialog = xbmcgui.Dialog()
+                    title = dialog.input(addon.getLocalizedString(30110), type=xbmcgui.INPUT_ALPHANUM)
+                except:
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30100))
+                    title = 'test'
+            mediaURLs = service.getPlaybackCall(0,None,title=title,isExact=False)
+
+        else:
+            mediaURLs = service.getPlaybackCall(0,None,title=title)
 
     options = []
     for mediaURL in sorted(mediaURLs):
