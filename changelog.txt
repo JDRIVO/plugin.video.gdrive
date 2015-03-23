@@ -1,3 +1,4 @@
+- add: support write STRM to network path
 Version 0.5.4
 - backward support: API video with title
 - API: add search function

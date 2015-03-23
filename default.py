@@ -22,6 +22,8 @@ import sys
 import urllib
 import cgi
 import re
+import xbmcvfs
+
 
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
@@ -337,8 +339,8 @@ elif mode == 'buildstrm':
 
         if url != '':
 
-                filename = xbmc.translatePath(os.path.join(path, title+'.strm'))
-                strmFile = open(filename, "w")
+                filename = path + '/' + title+'.strm'
+                strmFile = xbmcvfs.File(filename, "w")
 
                 strmFile.write(url+'\n')
                 strmFile.close()
@@ -372,9 +374,8 @@ elif mode == 'buildstrm':
 
             elif filename != '':
                             url = PLUGIN_URL+'?mode=video&title='+title+'&filename='+filename
-                            filename = xbmc.translatePath(os.path.join(path, title+'.strm'))
-                            strmFile = open(filename, "w")
-
+                            filename = path + '/' + title+'.strm'
+                            strmFile = xbmcvfs.File(filename, "w")
                             strmFile.write(url+'\n')
                             strmFile.close()
 
