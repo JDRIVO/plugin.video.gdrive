@@ -113,6 +113,7 @@ def addMediaFile(service, package):
 
     xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=False, totalItems=0)
+    return url
 
 
 def addDirectory(service, folder):
@@ -535,7 +536,7 @@ if mode == 'main' or mode == 'index':
     # gdrive specific ***
     try:
       decrypt = plugin_queries['decrypt']
-      gdrive.setDecrypt()
+      service.setDecrypt()
       log('decrypt ')
     except:
       decrypt = False
@@ -560,7 +561,7 @@ if mode == 'main' or mode == 'index':
         addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILES&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' Starred Files]')
         addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' Starred Folders]')
         addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' Starred Files & Folders]')
-        addMenu(PLUGIN_URL+'?mode=search&content_type='+contextType,'['+addon.getLocalizedString(300111)+']')
+        addMenu(PLUGIN_URL+'?mode=search&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
 
     # ***
 
@@ -604,16 +605,16 @@ elif mode == 'play':
 
     if cacheType == 1:
 #        url = gdrive.downloadMediaFile(url,url)
-        url = gdrive.downloadMediaFile(url,url,fileSize)
+        url = service.downloadMediaFile(url,url,fileSize)
 
     else:
-        url = url + '|'+gdrive.getHeadersEncoded(gdrive.useWRITELY)
+        url = url + '|'+service.getHeadersEncoded(service.useWRITELY)
 
     item = xbmcgui.ListItem(path=url)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
     if cacheType == 1:
-        gdrive.continuedownloadMediaFile(url)
+        service.continuedownloadMediaFile(url)
 
 #play a video given its exact-title
 elif mode == 'cache':
@@ -648,13 +649,13 @@ elif mode == 'playvideo':
     title = plugin_queries['title']
     cacheType = int(addon.getSetting('playback_type'))
 
-    videoURL = gdrive.getVideoLink(title,cacheType)
+    videoURL = service.getVideoLink(title,cacheType)
 
     if cacheType == 1:
-        videoURL = gdrive.downloadMediaFile(videoURL,title, 0)
+        videoURL = service.downloadMediaFile(videoURL,title, 0)
     else:
         #effective 2014/02, video stream calls require a wise token instead of writely token
-        videoURL = videoURL + '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY)
+        videoURL = videoURL + '|' + service.getHeadersEncoded(service.useWRITELY)
 
     item = xbmcgui.ListItem(path=videoURL)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
@@ -665,10 +666,10 @@ elif mode == 'playvideo':
 #force memory-cache - play a video given its exact-title
 elif mode == 'memorycachevideo':
     title = plugin_queries['title']
-    videoURL = gdrive.getVideoLink(title)
+    videoURL = service.getVideoLink(title)
 
     #effective 2014/02, video stream calls require a wise token instead of writely token
-    videoURL = videoURL + '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY)
+    videoURL = videoURL + '|' + service.getHeadersEncoded(service.useWRITELY)
 
     item = xbmcgui.ListItem(path=videoURL)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
@@ -719,7 +720,7 @@ elif mode == 'photo':
         pass
 
 #    gdrive.downloadPicture(url, path + '/'+folder + '/dir_'+title + '/'+title)
-    gdrive.downloadPicture(url, path + '/'+folder + '/'+title)
+    service.downloadPicture(url, path + '/'+folder + '/'+title)
 #    item.setInfo(type='pictures',infoLabels={"Title": 'PicasaWeb Photo', "picturepath": '/u01/test.png'})
 #    item.setProperty('IsPlayable', 'true')
 
@@ -742,7 +743,7 @@ elif mode == 'downloadfolder':
 
     path = '/tmp/2/'
 
-    gdrive.downloadFolder(path,folder)
+    service.downloadFolder(path,folder)
 
     enc_password = str(addon.getSetting('enc_password'))
 
@@ -770,7 +771,7 @@ elif mode == 'decryptfolder':
 
     key = encryption.generate_key(enc_password,salt,encryption.NUMBER_OF_ITERATIONS)
 
-    gdrive.decryptFolder(key,path,folder)
+    service.decryptFolder(key,path,folder)
 
 
 
@@ -804,7 +805,7 @@ elif mode == 'slideshow':
             addon.setSetting('photo_folder', path)
 
     #    gdrive.downloadFolder(path,folder)
-    gdrive.downloadFolder(path,folder, gdrive.MEDIA_TYPE_PICTURE)
+    service.downloadFolder(path,folder, gdrive.MEDIA_TYPE_PICTURE)
 
     xbmc.executebuiltin("XBMC.SlideShow("+path + '/'+folder+"/)")
 
@@ -833,7 +834,12 @@ elif mode == 'video' or mode == 'search':
     except:
         pass
 
+    try:
+        contextType = plugin_queries['content_type']
+    except:
+        contextType = ''
 
+    playbackMedia = True
     #if we don't have the docid, search for the video for playback
     if (filename != ''):
         mediaFile = file.file(filename, title, '', 0, '','')
@@ -850,24 +856,47 @@ elif mode == 'video' or mode == 'search':
                 except:
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30100))
                     title = 'test'
-            mediaURLs = service.getPlaybackCall(0,None,title=title,isExact=False)
+            mediaItems = service.getMediaList(title=title)
+            playbackMedia = False
+
+            options = []
+            urls = []
+
+            if mediaItems:
+                for item in mediaItems:
+                    if item.file is None:
+                        addDirectory(service, item.folder)
+                    else:
+                        options.append(item.file.title)
+                        urls.append(addMediaFile(service, item))
+
+            if contextType == '':
+
+                ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), options)
+                playbackURL = urls[ret]
+
+                item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+                item.setInfo( type="Video", infoLabels={ "Title": options[ret] , "Plot" : options[ret] } )
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
 
         else:
             mediaURLs = service.getPlaybackCall(0,None,title=title)
 
-    options = []
-    for mediaURL in sorted(mediaURLs):
-        options.append(mediaURL.qualityDesc)
-    if promptQuality:
-        ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
-    else:
-        ret = 0
+    if playbackMedia:
+        options = []
+        for mediaURL in sorted(mediaURLs):
+            options.append(mediaURL.qualityDesc)
+        if promptQuality:
+            ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
+        else:
+            ret = 0
 
-    playbackURL = mediaURLs[ret].url
+        playbackURL = mediaURLs[ret].url
 
-    item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
-    item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+        item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+        item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 #force stream - play a video given its exact-title
 elif mode == 'streamvideo':
@@ -894,7 +923,7 @@ elif mode == 'streamvideo':
     ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
     playbackURL = mediaURLs[ret].url
 
-    item = xbmcgui.ListItem(path=playbackURL+'|' + gdrive.getHeadersEncoded(gdrive.useWRITELY))
+    item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
     item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
@@ -917,10 +946,10 @@ elif mode == 'streamurl':
       acodec=-1
 
     singlePlayback=''
-    videos = gdrive.getVideoStream(pquality=pquality,pformat=pformat,acodec=acodec, url=url)
+    videos = service.getVideoStream(pquality=pquality,pformat=pformat,acodec=acodec, url=url)
 
     for label in sorted(videos.iterkeys()):
-          addVideo(videos[label]+'|'+gdrive.getHeadersEncoded(gdrive.useWRITELY),
+          addVideo(videos[label]+'|'+service.getHeadersEncoded(service.useWRITELY),
                              { 'title' : label , 'plot' : label },label,
                              img='None')
           if singlePlayback == '':
@@ -932,7 +961,7 @@ elif mode == 'streamurl':
         xbmc.log(addon.getAddonInfo('name') + ': ' + addon.getLocalizedString(20021), xbmc.LOGERROR)
     else:
         # if invoked in .strm or as a direct-video (don't prompt for quality)
-        item = xbmcgui.ListItem(path=videos[singlePlayback]+ '|' + gdrive.getHeadersEncoded(gdrive.useWRITELY))
+        item = xbmcgui.ListItem(path=videos[singlePlayback]+ '|' + service.getHeadersEncoded(service.useWRITELY))
         item.setInfo( type="Video", infoLabels={ "Title": label , "Plot" : label } )
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 

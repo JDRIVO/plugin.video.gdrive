@@ -185,12 +185,15 @@ class gdrive(cloudservice):
     #   parameters: prompt for video quality (optional), cache type (optional)
     #   returns: list of videos
     ##
-    def getMediaList(self, folderName=False, cacheType=CACHE_TYPE_MEMORY):
+    def getMediaList(self, folderName=False, title=False, cacheType=CACHE_TYPE_MEMORY):
 
         # retrieve all items
         url = PROTOCOL+'docs.google.com/feeds/default/private/full'
-        if folderName==False:
+        if folderName==False and title==False:
             url = url + '?showfolders=false'
+        elif title != False:
+            params = urllib.urlencode({'title': title, 'title-exact': 'false'})
+            url = PROTOCOL+'docs.google.com/feeds/default/private/full?' + params
         # retrieve root items
         elif folderName == 'STARRED-FILES':
             url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/starred'
