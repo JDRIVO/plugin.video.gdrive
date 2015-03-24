@@ -2,6 +2,11 @@
 Version 0.5.4
 - backward support: API video with title
 - API: add search function
+* to playback a video (first video that matches the title):
+*   plugin://plugin.video.gdrive-testing/?mode=video&title=This is the title of the media file
+*
+* to return a list of media files to select from:
+*   plugin://plugin.video.gdrive-testing/?mode=search&title=This is the title of the media file
 - add search function
 Version 0.5.3
 - implement filesize sorting
