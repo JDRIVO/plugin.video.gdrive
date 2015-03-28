@@ -1,3 +1,7 @@
+Version 0.5.5
+- fix: create directories of STRM on network paths
+- fix: playback of STRM files without username/instancename when multiple accounts are defined
+- fix: add username to buildSTRM
 - add: shared content
 - add: support write STRM to network path
 Version 0.5.4

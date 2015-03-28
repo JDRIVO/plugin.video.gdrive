@@ -21,13 +21,14 @@ import os
 import re
 import urllib, urllib2
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+import xbmcvfs
 
 
 #
 #
 #
 class cloudservice(object):
-    # CloudService v0.2.0
+    # CloudService v0.2.1
 
     def __init__(self): pass
 
@@ -116,15 +117,15 @@ class cloudservice(object):
                 if item.file is None:
                     self.buildSTRM(path + '/'+item.folder.title, item.folder.id)
                 else:
-                    url = self.PLUGIN_URL+'?mode=video&title='+item.file.title+'&filename='+item.file.id
+                    url = self.PLUGIN_URL+'?mode=video&title='+item.file.title+'&filename='+item.file.id+ '&username='+self.authorization.username
 
 
                 if url != 0:
                     title = item.file.title
 
-                    if not os.path.exists(path + title+'.strm'):
-                        filename = xbmc.translatePath(os.path.join(path,title+'.strm'))
-                        strmFile = open(filename, "w")
+                    if not xbmcvfs.exists(path + title+'.strm'):
+                        filename = path + '/' + title+'.strm'
+                        strmFile = xbmcvfs.File(filename, "w")
 
                         strmFile.write(url+'\n')
                         strmFile.close()
@@ -175,9 +176,9 @@ class cloudservice(object):
                                 pathLib = self.addon.getSetting('movies_path')
 
                         if pathLib != '':
-                            if not os.path.exists(pathLib + title+'.strm'):
-                                filename = xbmc.translatePath(os.path.join(pathLib, title+'.strm'))
-                                strmFile = open(filename, "w")
+                            if not xbmcvfs.exists(pathLib + title+'.strm'):
+                                filename = path + '/' + title+'.strm'
+                                strmFile = xbmcvfs.File(filename, "w")
                                 strmFile.write(url+'\n')
                                 strmFile.close()
 

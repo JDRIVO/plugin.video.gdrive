@@ -83,14 +83,14 @@ def addMediaFile(service, package):
         cleanURL = ''
 
 #    url = PLUGIN_URL+'?mode=streamurl&title='+package.file.title+'&url='+cleanURL
-    url = PLUGIN_URL+playbackURL+'&title='+package.file.title+'&filename='+package.file.id
+    url = PLUGIN_URL+playbackURL+'&title='+package.file.title+'&filename='+package.file.id+'&instance='+str(service.instanceName)
 
     # gdrive specific ***
     cm.append(( 'Play cache file', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=cache&file=cache.mp4)', ))
     # ***
 
     #generate STRM
-    cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+package.file.title+'&filename='+package.file.id+')', ))
+    cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&username='+str(service.authorization.username)+'&title='+package.file.title+'&filename='+package.file.id+')', ))
 #    cm.append(( addon.getLocalizedString(30046), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=0)', ))
 #    cm.append(( addon.getLocalizedString(30047), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=1)', ))
 #    cm.append(( addon.getLocalizedString(30048), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=2)', ))
@@ -126,7 +126,7 @@ def addDirectory(service, folder):
 
     if folder.id != '':
         cm=[]
-        cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+folder.title+'&instance='+str(service.instanceName)+'&folderID='+str(folder.id)+')', ))
+        cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+folder.title+'&username='+str(service.authorization.username)+'&folderID='+str(folder.id)+')', ))
 #        cm.append(( addon.getLocalizedString(30081), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=createbookmark&title='+folder.title+'&instanceName='+str(service.instanceName)+'&folderID='+str(folder.id)+')', ))
 
         # gdrive specific ****
@@ -349,7 +349,6 @@ elif mode == 'buildstrm':
             try:
                 folderID = plugin_queries['folderID']
                 title = plugin_queries['title']
-                instanceName = plugin_queries['instance']
             except:
                 folderID = ''
 
@@ -359,21 +358,37 @@ elif mode == 'buildstrm':
             except:
                 filename = ''
 
+            try:
+                    invokedUsername = plugin_queries['username']
+            except:
+                    invokedUsername = ''
 
             if folderID != '':
 
-                try:
-                    username = addon.getSetting(instanceName+'_username')
-                except:
-                    username = ''
+                count = 1
+                max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
+                loop = True
+                while loop:
+                    instanceName = PLUGIN_NAME+str(count)
+                    try:
+                        username = addon.getSetting(instanceName+'_username')
+                        if username == invokedUsername:
 
-                if username != '':
-                    service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
-                    service.buildSTRM(path + '/'+title,folderID)
+                            #let's log in
+                            service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                            loop = False
+                    except:
+                        break
+
+                    if count == max_count:
+                        break
+                    count = count + 1
+
+                service.buildSTRM(path + '/'+title,folderID)
 
 
             elif filename != '':
-                            url = PLUGIN_URL+'?mode=video&title='+title+'&filename='+filename
+                            url = PLUGIN_URL+'?mode=video&title='+title+'&filename='+filename + '&username='+invokedUsername
                             filename = path + '/' + title+'.strm'
                             strmFile = xbmcvfs.File(filename, "w")
                             strmFile.write(url+'\n')
@@ -405,9 +420,20 @@ elif mode == 'buildstrm':
 
 numberOfAccounts = numberOfAccounts(PLUGIN_NAME)
 
+try:
+    contextType = plugin_queries['content_type']
+except:
+    contextType = 'video'
+
+try:
+    invokedUsername = plugin_queries['username']
+except:
+    invokedUsername = ''
+
 # show list of services
-if numberOfAccounts > 1 and instanceName == '':
-    mode = ''
+if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '':
+    if mode == 'main':
+        mode = ''
     count = 1
     max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
     while True:
@@ -424,7 +450,7 @@ if numberOfAccounts > 1 and instanceName == '':
 
 else:
     # show index of accounts
-    if instanceName == '' and numberOfAccounts == 1:
+    if instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
 
         count = 1
         loop = True
@@ -477,6 +503,28 @@ else:
     elif instanceName != '':
 
         service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+
+    elif invokedUsername != '':
+
+        count = 1
+        max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
+        loop = True
+        while loop:
+            instanceName = PLUGIN_NAME+str(count)
+            try:
+                username = addon.getSetting(instanceName+'_username')
+                if username == invokedUsername:
+
+                    #let's log in
+                    service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                    loop = False
+            except:
+                break
+
+            if count == max_count:
+                break
+            count = count + 1
+
 
 if mode == 'main':
     addMenu(PLUGIN_URL+'?mode=options','<< '+addon.getLocalizedString(30043)+' >>')
