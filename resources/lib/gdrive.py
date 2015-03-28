@@ -201,6 +201,9 @@ class gdrive(cloudservice):
             url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/starred?showfolders=true'
         elif folderName == 'STARRED-FOLDERS':
             url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/folder/starred'
+        elif folderName == 'SHARED':
+            params = urllib.urlencode({'q': 'sharedWithMe=true'})
+            url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/folder/?showfolders=true&shardWithMe'
         elif folderName == '':
             url = url + '/folder%3Aroot/contents'
         # retrieve folder items

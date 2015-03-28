@@ -559,9 +559,10 @@ if mode == 'main' or mode == 'index':
         elif contentType == 6:
             addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30032)+']')
         folderName = 'root'
-        addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILES&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' Starred Files]')
-        addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' Starred Folders]')
-        addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' Starred Files & Folders]')
+        addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILES&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' '+addon.getLocalizedString(30095)+']')
+        addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30096)+']')
+        addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
+        addMenu(PLUGIN_URL+'?mode=index&folder=SHARED&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30098)+']')
         addMenu(PLUGIN_URL+'?mode=search&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
 
     # ***
