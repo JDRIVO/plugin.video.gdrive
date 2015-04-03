@@ -1,3 +1,5 @@
+Version 0.5.6
+- add fallback to first account if not able to load any accounts
 Version 0.5.5
 - fix: create directories of STRM on network paths
 - fix: playback of STRM files without username/instancename when multiple accounts are defined

@@ -381,6 +381,8 @@ elif mode == 'buildstrm':
                         break
 
                     if count == max_count:
+                        #fallback on first defined account
+                        service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
                         break
                     count = count + 1
 
@@ -410,6 +412,8 @@ elif mode == 'buildstrm':
                         service.buildSTRM(path + '/'+username)
 
                     if count == max_count:
+                        #fallback on first defined account
+                        service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
                         break
                     count = count + 1
 
@@ -445,6 +449,8 @@ if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '':
         except:
             break
         if count == max_count:
+            #fallback on first defined account
+            service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
             break
         count = count + 1
 
@@ -467,6 +473,8 @@ else:
                 break
 
             if count == numberOfAccounts:
+                #fallback on first defined account
+                service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
                 break
             count = count + 1
 
@@ -522,6 +530,8 @@ else:
                 break
 
             if count == max_count:
+                #fallback on first defined account
+                service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
                 break
             count = count + 1
 
@@ -874,7 +884,12 @@ elif mode == 'video' or mode == 'search':
     except:
         filename = ''
 
-
+    try:
+        service
+    except NameError:
+        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
+        log(addon.getLocalizedString(30050)+ 'gdrive-login', True)
+        xbmcplugin.endOfDirectory(plugin_handle)
 
     promptQuality = True
     try:
