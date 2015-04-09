@@ -49,16 +49,6 @@ SERVICE_NAME = 'dmdgdrive'
 
 import sys
 
-#sys.path.append(os.path.join( addon_dir, 'resources', 'lib' ) )
-
-#import authorization
-#import folder
-#import file
-#import package
-#import mediaurl
-#import crashreport
-#import gSpreadsheets
-
 
 #
 # Google Drive API 2 implementation of Google Drive
@@ -84,14 +74,17 @@ class gdrive(cloudservice):
     ##
     # initialize (save addon, instance name, user agent)
     ##
-    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, authenticate=True, useWRITELY=False):
+    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, authenticate=True):
         self.PLUGIN_URL = PLUGIN_URL
         self.addon = addon
         self.instanceName = instanceName
+        self.protocol = 2
 
         # gdrive specific ***
         self.decrypt = False
-        self.useWRITELY = useWRITELY
+
+        #depreciated - backward compatibility
+        self.useWRITELY = False
         #***
 
         self.crashreport = crashreport.crashreport(self.addon)
@@ -108,30 +101,25 @@ class gdrive(cloudservice):
 
         self.user_agent = user_agent
 
-        # gdrive specific ***
-        if (not self.authorization.loadToken(self.instanceName,addon, 'auth_writely')) or (not self.authorization.loadToken(self.instanceName,addon, 'auth_wise')):
-            self.login()
+        # load the OAUTH2 tokens or force fetch if not set
+        if (authenticate == True and (not self.authorization.loadToken(self.instanceName,addon, 'auth_access_token') or not self.authorization.loadToken(self.instanceName,addon, 'auth_refresh_token'))):
+            if self.addon.getSetting(self.instanceName+'_code'):
+                self.getToken(self.addon.getSetting(self.instanceName+'_code'))
+            else:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + 'error', xbmc.LOGERROR)
 
-        if (authenticate == True):
-            self.login()
         #***
 
 
     ##
     # perform login
     ##
-    def login(self):
+    def getToken(self,code):
 
-        services = ['writely', 'wise']
-        for service in services:
-            url = PROTOCOL + 'www.google.com/accounts/ClientLogin'
+            url = 'http://dmdsoftware.net/api/gdrive.php'
             header = { 'User-Agent' : self.user_agent }
             values = {
-                      'Email' : self.authorization.username,
-                      'Passwd' : self.addon.getSetting(self.instanceName+'_password'),
-                      'accountType' : 'HOSTED_OR_GOOGLE',
-                      'source' : SERVICE_NAME,
-                      'service' : service
+                      'code' : code
                       }
 
             req = urllib2.Request(url, urllib.urlencode(values), header)
@@ -150,26 +138,58 @@ class gdrive(cloudservice):
             response.close()
 
             # retrieve authorization token
-            for r in re.finditer('SID=(.*).+?' +
-                             'LSID=(.*).+?' +
-                             'Auth=(.*).+?' ,
+            for r in re.finditer('\"access_token\"\:\s?\"([^\"]+)\".+?' +
+                             '\"refresh_token\"\:\s?\"([^\"]+)\".+?' ,
                              response_data, re.DOTALL):
-                sid,lsid,auth = r.groups()
-                self.authorization.setToken('auth_'+service,auth)
+                accessToken,refreshToken = r.groups()
+                self.authorization.setToken('auth_access_token',accessToken)
+                self.authorization.setToken('auth_refresh_token',refreshToken)
+                self.updateAuthorization(self.addon)
 
-        return
+            return
 
+
+    ##
+    # perform login
+    ##
+    def refreshToken(self):
+
+            url = 'http://dmdsoftware.net/api/gdrive.php'
+            header = { 'User-Agent' : self.user_agent }
+            values = {
+                      'refresh_token' : self.authorization.getToken('auth_refresh_token')
+                      }
+
+            req = urllib2.Request(url, urllib.urlencode(values), header)
+
+            # try login
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+#            if e.code == 403:
+                #login denied
+#                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017))
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return
+
+            response_data = response.read()
+            response.close()
+
+            # retrieve authorization token
+            for r in re.finditer('(loading).+?'+ '\"access_token\"\:\s?\"([^\"]+)\".+?' ,
+                             response_data, re.DOTALL):
+                loading,accessToken = r.groups()
+                self.authorization.setToken('auth_access_token',accessToken)
+                self.updateAuthorization(self.addon)
+
+            return
 
     ##
     # return the appropriate "headers" for Google Drive requests that include 1) user agent, 2) authorization token, 3) api version
     #   returns: list containing the header
     ##
     def getHeadersList(self, forceWritely=True):
-        #effective 2014/02, video stream calls require a wise token instead of writely token
-        if forceWritely == True:
-            return { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('auth_writely'), 'GData-Version' : self.API_VERSION }
-        else:
-            return { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('auth_wise'), 'GData-Version' : self.API_VERSION }
+        return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
 
 
     def setDecrypt(self):
@@ -193,7 +213,7 @@ class gdrive(cloudservice):
     def getMediaList(self, folderName=False, title=False, cacheType=CACHE_TYPE_MEMORY):
 
         # retrieve all items
-        url = PROTOCOL+'docs.google.com/feeds/default/private/full'
+        url = PROTOCOL+'www.googleapis.com/drive/v2/files/'
         if folderName==False and title==False:
             url = url + '?showfolders=false'
         elif title != False:
@@ -210,10 +230,10 @@ class gdrive(cloudservice):
             params = urllib.urlencode({'q': 'sharedWithMe=true'})
             url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/folder/?showfolders=true&shardWithMe'
         elif folderName == '':
-            url = url + '/folder%3Aroot/contents'
+            url = url + 'root/children'
         # retrieve folder items
         else:
-            url = url + '/folder%3A'+folderName+'/contents'
+            url = url + folderName+'/children'
 
 
         mediaFiles = []
@@ -225,7 +245,7 @@ class gdrive(cloudservice):
               response = urllib2.urlopen(req)
             except urllib2.URLError, e:
               if e.code == 403 or e.code == 401:
-                self.login()
+                self.refreshToken()
                 req = urllib2.Request(url, None, self.getHeadersList())
                 try:
                   response = urllib2.urlopen(req)
@@ -243,9 +263,10 @@ class gdrive(cloudservice):
 
             # parsing page for videos
             # video-entry
-            for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
-                entry = r.group(1)
-
+            for r in re.finditer('\{(.*?)\}' ,response_data, re.DOTALL):
+             entryS = r.group(1)
+             for r1 in re.finditer('\{(.*?)\}' ,entryS, re.DOTALL):
+                entry = r1.group(1)
                 # fetch folder
                 for r in re.finditer('\<gd\:resourceId\>([^\:]*)\:?([^\<]*)\</gd:resourceId\>' ,
                              entry, re.DOTALL):
@@ -462,7 +483,7 @@ class gdrive(cloudservice):
               response = urllib2.urlopen(req)
             except urllib2.URLError, e:
               if e.code == 403 or e.code == 401:
-                self.login()
+                self.refreshToken()
                 req = urllib2.Request(url, None, self.getHeadersList())
                 try:
                   response = urllib2.urlopen(req)
@@ -570,7 +591,7 @@ class gdrive(cloudservice):
               response = urllib2.urlopen(req)
             except urllib2.URLError, e:
               if e.code == 403 or e.code == 401:
-                self.login()
+                self.refreshToken()
                 req = urllib2.Request(url, None, self.getHeadersList())
                 try:
                   response = urllib2.urlopen(req)
@@ -691,7 +712,7 @@ class gdrive(cloudservice):
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
                 if e.code == 403 or e.code == 401:
-                    self.login()
+                    self.refreshToken()
                     req = urllib2.Request(url, None, self.getHeadersList())
                     try:
                         response = urllib2.urlopen(req)
@@ -732,7 +753,7 @@ class gdrive(cloudservice):
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
                 if e.code == 403 or e.code == 401:
-                    self.login()
+                    self.refreshToken()
                     req = urllib2.Request(url, None, self.getHeadersList())
                     try:
                         response = urllib2.urlopen(req)
@@ -776,7 +797,7 @@ class gdrive(cloudservice):
                  response = urllib2.urlopen(req)
             except urllib2.URLError, e:
                  if e.code == 403 or e.code == 401:
-                     self.login()
+                     self.refreshToken()
                      req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
                      try:
                          response = urllib2.urlopen(req)
@@ -813,7 +834,7 @@ class gdrive(cloudservice):
                     response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
                     if e.code == 403 or e.code == 401:
-                        self.login()
+                        self.refreshToken()
                         req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
                         try:
                             response = urllib2.urlopen(req)
@@ -851,7 +872,7 @@ class gdrive(cloudservice):
                     response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
                     if e.code == 403 or e.code == 401:
-                        self.login()
+                        self.refreshToken()
                         req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
                         try:
                             response = urllib2.urlopen(req)
@@ -1010,7 +1031,7 @@ class gdrive(cloudservice):
                 open(file,'wb').write(urllib2.urlopen(req).read())
 
         except urllib2.URLError, e:
-              self.login()
+              self.refreshToken()
               req = urllib2.Request(url, None, self.getHeadersList())
               try:
                 open(file,'wb').write(urllib2.urlopen(req).read())
@@ -1034,7 +1055,7 @@ class gdrive(cloudservice):
           encryption.decrypt_stream(key,urllib2.urlopen(req),file)
         except urllib2.URLError, e:
             if e.code == 403 or e.code == 401:
-              self.login()
+              self.refreshToken()
               req = urllib2.Request(url, None, self.getHeadersList())
               try:
                 encryption.decrypt_stream(key,urllib2.urlopen(req),file)
@@ -1064,7 +1085,7 @@ class gdrive(cloudservice):
             response = urllib2.urlopen(req)
         except urllib2.URLError, e:
             if e.code == 403 or e.code == 401:
-              self.login()
+              self.refreshToken()
               req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
               try:
                 response = urllib2.urlopen(req)
@@ -1096,8 +1117,7 @@ class gdrive(cloudservice):
         if serviceRequired == 'writely':
           self.useWRITELY = True
 
-          if (self.authorization.getToken('auth_writely') == ''):
-            self.login();
+
 
           req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
 
@@ -1105,7 +1125,7 @@ class gdrive(cloudservice):
               response = urllib2.urlopen(req)
           except urllib2.URLError, e:
               if e.code == 403 or e.code == 401:
-                self.login()
+                self.refreshToken()
                 req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
                 try:
                   response = urllib2.urlopen(req)
@@ -1141,7 +1161,7 @@ class gdrive(cloudservice):
         elif serviceRequired == 'wise':
           self.useWRITELY = False
           if (self.authorization.getToken('auth_wise') == ''):
-            self.login();
+            self.refreshToken();
 
           req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
 
@@ -1149,7 +1169,7 @@ class gdrive(cloudservice):
               response = urllib2.urlopen(req)
           except urllib2.URLError, e:
               if e.code == 403 or e.code == 401:
-                self.login()
+                self.refreshToken()
                 req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
                 try:
                   response = urllib2.urlopen(req)
@@ -1270,7 +1290,7 @@ class gdrive(cloudservice):
             response = opener.open(request)
         except urllib2.URLError, e:
             if e.code == 403 or e.code == 401:
-              self.login()
+              self.refreshToken()
               opener.addheaders = [('User-Agent', self.user_agent), ('Authorization' , 'GoogleLogin auth='+self.authorization.getToken('auth_writely')), ('GData-Version' , self.API_VERSION)]
               request = urllib2.Request(url)
               try:
