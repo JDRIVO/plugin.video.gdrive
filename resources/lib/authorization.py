@@ -22,7 +22,7 @@
 #
 #
 class authorization:
-    # CloudService v0.2.0
+    # CloudService v0.2.3
 
     ##
     ##
@@ -39,9 +39,8 @@ class authorization:
             if self.auth[name] != value:
                 self.auth[name] = value
             self.isUpdated = True
-        except: pass
-#        if name in self.auth:
-#            self.isUpdated = True
+        except:
+            self.isUpdated = True
         self.auth[name] = value
 
 
