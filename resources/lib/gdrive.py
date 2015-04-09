@@ -77,6 +77,7 @@ class gdrive(cloudservice):
         self.PLUGIN_URL = PLUGIN_URL
         self.addon = addon
         self.instanceName = instanceName
+        self.protocol = 1
 
         # gdrive specific ***
         self.decrypt = False
