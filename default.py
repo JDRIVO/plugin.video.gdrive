@@ -199,15 +199,19 @@ addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 
 
 import os
-sys.path.append(os.path.join( addon_dir, 'resources', 'lib' ) )
+#sys.path.append(os.path.join( addon_dir, 'resources', 'lib' ) )
 
-import gdrive
-import cloudservice
-import folder
-import file
-import package
-import mediaurl
-import authorization
+from resources.lib import gdrive
+from resources.lib import gdrive_api2
+from resources.lib import cloudservice
+from resources.lib import authorization
+from resources.lib import folder
+from resources.lib import file
+from resources.lib import package
+from resources.lib import mediaurl
+from resources.lib import crashreport
+
+
 
 try:
 
@@ -467,14 +471,14 @@ else:
                 if username != '':
 
                     #let's log in
-                    service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                    service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
                     loop = False
             except:
                 break
 
             if count == numberOfAccounts:
                 #fallback on first defined account
-                service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
+                service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
                 break
             count = count + 1
 

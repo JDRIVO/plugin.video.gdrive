@@ -47,10 +47,21 @@ addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 PROTOCOL = 'https://'
 SERVICE_NAME = 'dmdgdrive'
 
+import sys
+
+#sys.path.append(os.path.join( addon_dir, 'resources', 'lib' ) )
+
+#import authorization
+#import folder
+#import file
+#import package
+#import mediaurl
+#import crashreport
+#import gSpreadsheets
 
 
 #
-# Google Docs API 3 implementation of Google Drive
+# Google Drive API 2 implementation of Google Drive
 #
 class gdrive(cloudservice):
 
@@ -69,7 +80,7 @@ class gdrive(cloudservice):
     CACHE_TYPE_DISK = 1
     CACHE_TYPE_STREAM = 2
 
-    API_VERSION = '3.0'
+    API_VERSION = '2.0'
     ##
     # initialize (save addon, instance name, user agent)
     ##

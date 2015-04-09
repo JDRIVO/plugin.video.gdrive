@@ -1,3 +1,5 @@
+- added Google Drive API 2 module
+- cleanup of import statements
 Version 0.5.6
 - add fallback to first account if not able to load any accounts
 Version 0.5.5
