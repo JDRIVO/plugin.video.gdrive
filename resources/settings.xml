@@ -3,77 +3,108 @@
     <category label="30008">
     	<setting id="user_agent" type="text" label="30004" default="Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)" />
 
-        <setting id="gdrive_numaccounts" type="integer" hidden="true" default="10" label="30022" />
-        <setting id="accounts" type="labelenum" values="1|2|3|4|5|6|7|8|9|10" default="1" label="" />
+        <setting id="gdrive_numaccounts" type="integer" hidden="true" default="9" label="30022" />
+        <setting id="accounts" type="labelenum" values="1|2|3|4|5|6|7|8|9" default="1" label="" />
 
-        <setting id="gdrive1_username" type="text" label="30001" visible="eq(-1,0)" default="" />
-        <setting id="gdrive1_password" type="text" label="30002" visible="eq(-2,0)" option="hidden" default="" />
-        <setting id="gdrive1_save_auth_token" type="bool" label="30005" visible="eq(-3,0)" default="true" />
-        <setting id="gdrive1_type" type="enum" label="30010" visible="eq(-4,0)" values="ClientLogin" default="0" />
-        <setting id="gdrive1_prev_username" type="text" label="30001" default="" visible="false" />
+        <setting id="gdrive1_type" subsetting="true" type="enum" label="30010" visible="eq(-1,0)" values="ClientLogin|dmdsoftware OAUTH2 *testing|private OAUTH2 *DO NOT USE|your OAUTH2 *DO NOT USE" default="0" />
+        <setting id="gdrive1_username" subsetting="true" type="text" label="30001" visible="eq(-2,0)" default="" />
+        <setting id="gdrive1_code" subsetting="true" type="text" label="30201" visible="eq(-3,0) + gt(-2,0)" default="" />
+        <setting id="gdrive1_client_id" subsetting="true" type="text" label="30202" visible="eq(-4,0) + gt(-3,2)" default="" />
+        <setting id="gdrive1_client_secret" subsetting="true" type="text" label="30203" visible="eq(-5,0) + gt(-4,2)" default="" />
+        <setting id="gdrive1_url" subsetting="true" type="text" label="30204" visible="eq(-6,0) + eq(-5,2)" default="" />
+        <setting id="gdrive1_password" subsetting="true" type="text" label="30002" visible="eq(-7,0) + eq(-6,0)" option="hidden" default="" />
+        <setting id="gdrive1_save_auth_token" subsetting="true" type="bool" label="30005" visible="eq(-8,0) + eq(-7,0)" default="true" />
+        <setting label="30205" visible="eq(-9,0) + gt(-8,0)" type="lsep"/>
+        <setting id="gdrive1_prev_username" subsetting="true" type="text" label="30001" default="" visible="false" />
 
+        <setting id="gdrive2_type" subsetting="true" type="enum" label="30010" visible="eq(-11,1)" values="ClientLogin|dmdsoftware OAUTH2 *testing|private OAUTH2 *DO NOT USE|your OAUTH2 *DO NOT USE" default="0" />
+        <setting id="gdrive2_username" subsetting="true" type="text" label="30001" visible="eq(-12,1)" default="" />
+        <setting id="gdrive2_code" subsetting="true" type="text" label="30201" visible="eq(-13,1) + gt(-2,0)" default="" />
+        <setting id="gdrive2_client_id" subsetting="true" type="text" label="30202" visible="eq(-14,1) + gt(-3,2)" default="" />
+        <setting id="gdrive2_client_secret" subsetting="true" type="text" label="30203" visible="eq(-15,1) + gt(-4,2)" default="" />
+        <setting id="gdrive2_url" subsetting="true" type="text" label="30204" visible="eq(-16,1) + eq(-5,2)" default="" />
+        <setting id="gdrive2_password" subsetting="true" type="text" label="30002" visible="eq(-17,1) + eq(-6,0)" option="hidden" default="" />
+        <setting id="gdrive2_save_auth_token" subsetting="true" type="bool" label="30005" visible="eq(-18,1) + eq(-7,0)" default="true" />
+        <setting label="30205" visible="eq(-19,1) + gt(-8,0)" type="lsep"/>
+        <setting id="gdrive2_prev_username" subsetting="true" type="text" label="30001" default="" visible="false" />
 
-        <setting id="gdrive2_username" type="text" label="30001" visible="eq(-6,1)" default="" />
-        <setting id="gdrive2_password" type="text" label="30002" visible="eq(-7,1)" option="hidden" default="" />
-        <setting id="gdrive2_save_auth_token" type="bool" label="30005" visible="eq(-8,1)" default="true" />
-        <setting id="gdrive2_type" type="enum" label="30010" visible="eq(-9,1)" values="ClientLogin" default="0" />
-        <setting id="gdrive2_prev_username" type="text" label="30001" default="" visible="false" />
+        <setting id="gdrive3_type" type="enum" label="30010" visible="eq(-21,2)" values="ClientLogin|dmdsoftware OAUTH2 *testing|private OAUTH2 *DO NOT USE|your OAUTH2 *DO NOT USE" default="0" />
+        <setting id="gdrive3_username" subsetting="true" type="text" label="30001" visible="eq(-22,2)" default="" />
+        <setting id="gdrive3_code" subsetting="true" type="text" label="30201" visible="eq(-23,2) + gt(-2,0)" default="" />
+        <setting id="gdrive3_client_id" subsetting="true" type="text" label="30202" visible="eq(-24,2) + gt(-3,2)" default="" />
+        <setting id="gdrive3_client_secret" subsetting="true" type="text" label="30203" visible="eq(-25,2) + gt(-4,2)" default="" />
+        <setting id="gdrive3_url" subsetting="true" type="text" label="30204" visible="eq(-26,2) + eq(-5,2)" default="" />
+        <setting id="gdrive3_password" subsetting="true" type="text" label="30002" visible="eq(-27,2) + eq(-6,0)" option="hidden" default="" />
+        <setting id="gdrive3_save_auth_token" subsetting="true" type="bool" label="30005" visible="eq(-28,2) + eq(-7,0)" default="true" />
+        <setting label="30205" visible="eq(-29,2) + gt(-8,0)" type="lsep"/>
+        <setting id="gdrive3_prev_username" subsetting="true" type="text" label="30001" default="" visible="false" />
 
+        <setting id="gdrive4_type" type="enum" label="30010" visible="eq(-31,3)" values="ClientLogin|dmdsoftware OAUTH2 *testing|private OAUTH2 *DO NOT USE|your OAUTH2 *DO NOT USE" default="0" />
+        <setting id="gdrive4_username" subsetting="true" type="text" label="30001" visible="eq(-32,3)" default="" />
+        <setting id="gdrive4_code" subsetting="true" type="text" label="30201" visible="eq(-33,3) + gt(-2,0)" default="" />
+        <setting id="gdrive4_client_id" subsetting="true" type="text" label="30202" visible="eq(-34,3) + gt(-3,2)" default="" />
+        <setting id="gdrive4_client_secret" subsetting="true" type="text" label="30203" visible="eq(-35,3) + gt(-4,2)" default="" />
+        <setting id="gdrive4_url" subsetting="true" type="text" label="30204" visible="eq(-36,3) + eq(-5,2)" default="" />
+        <setting id="gdrive4_password" subsetting="true" type="text" label="30002" visible="eq(-37,3) + eq(-6,0)" option="hidden" default="" />
+        <setting id="gdrive4_save_auth_token" subsetting="true" type="bool" label="30005" visible="eq(-38,3) + eq(-7,0)" default="true" />
+        <setting label="30205" visible="eq(-39,3) + gt(-8,0)" type="lsep"/>
+        <setting id="gdrive4_prev_username" subsetting="true" type="text" label="30001" default="" visible="false" />
 
-        <setting id="gdrive3_username" type="text" label="30001" visible="eq(-11,2)" default="" />
-        <setting id="gdrive3_password" type="text" label="30002" visible="eq(-12,2)" option="hidden" default="" />
-        <setting id="gdrive3_save_auth_token" type="bool" label="30005" visible="eq(-13,2)" default="true" />
-        <setting id="gdrive3_type" type="enum" label="30010" visible="eq(-14,2)" values="ClientLogin" default="0" />
-        <setting id="gdrive3_prev_username" type="text" label="30001" default="" visible="false" />
+        <setting id="gdrive5_type" type="enum" label="30010" visible="eq(-41,4)" values="ClientLogin|dmdsoftware OAUTH2 *testing|private OAUTH2 *DO NOT USE|your OAUTH2 *DO NOT USE" default="0" />
+        <setting id="gdrive5_username" subsetting="true" type="text" label="30001" visible="eq(-42,4)" default="" />
+        <setting id="gdrive5_code" subsetting="true" type="text" label="30201" visible="eq(-43,4) + gt(-2,0)" default="" />
+        <setting id="gdrive5_client_id" subsetting="true" type="text" label="30202" visible="eq(-44,4) + gt(-3,2)" default="" />
+        <setting id="gdrive5_client_secret" subsetting="true" type="text" label="30203" visible="eq(-45,4) + gt(-4,2)" default="" />
+        <setting id="gdrive5_url" subsetting="true" type="text" label="30204" visible="eq(-46,4) + eq(-5,2)" default="" />
+        <setting id="gdrive5_password" subsetting="true" type="text" label="30002" visible="eq(-47,4) + eq(-6,0)" option="hidden" default="" />
+        <setting id="gdrive5_save_auth_token" subsetting="true" type="bool" label="30005" visible="eq(-48,4) + eq(-7,0)" default="true" />
+        <setting label="30205" visible="eq(-49,4) + gt(-8,0)" type="lsep"/>
+        <setting id="gdrive5_prev_username" subsetting="true" type="text" label="30001" default="" visible="false" />
 
+        <setting id="gdrive6_type" type="enum" label="30010" visible="eq(-51,5)" values="ClientLogin|dmdsoftware OAUTH2 *testing|private OAUTH2 *DO NOT USE|your OAUTH2 *DO NOT USE" default="0" />
+        <setting id="gdrive6_username" subsetting="true" type="text" label="30001" visible="eq(-52,5)" default="" />
+        <setting id="gdrive6_code" subsetting="true" type="text" label="30201" visible="eq(-53,5) + gt(-2,0)" default="" />
+        <setting id="gdrive6_client_id" subsetting="true" type="text" label="30202" visible="eq(-54,5) + gt(-3,2)" default="" />
+        <setting id="gdrive6_client_secret" subsetting="true" type="text" label="30203" visible="eq(-55,5) + gt(-4,2)" default="" />
+        <setting id="gdrive6_url" subsetting="true" type="text" label="30204" visible="eq(-56,5) + eq(-5,2)" default="" />
+        <setting id="gdrive6_password" subsetting="true" type="text" label="30002" visible="eq(-57,5) + eq(-6,0)" option="hidden" default="" />
+        <setting id="gdrive6_save_auth_token" subsetting="true" type="bool" label="30005" visible="eq(-58,5) + eq(-7,0)" default="true" />
+        <setting label="30205" visible="eq(-59,5) + gt(-8,0)" type="lsep"/>
+        <setting id="gdrive6_prev_username" subsetting="true" type="text" label="30001" default="" visible="false" />
 
-        <setting id="gdrive4_username" type="text" label="30001" visible="eq(-16,3)" default="" />
-        <setting id="gdrive4_password" type="text" label="30002" visible="eq(-17,3)" option="hidden" default="" />
-        <setting id="gdrive4_save_auth_token" type="bool" label="30005" visible="eq(-18,3)" default="true" />
-        <setting id="gdrive4_type" type="enum" label="30010" visible="eq(-19,3)" values="ClientLogin" default="0" />
-        <setting id="gdrive4_prev_username" type="text" label="30001" default="" visible="false" />
+        <setting id="gdrive7_type" type="enum" label="30010" visible="eq(-61,6)" values="ClientLogin|dmdsoftware OAUTH2 *testing|private OAUTH2 *DO NOT USE|your OAUTH2 *DO NOT USE" default="0" />
+        <setting id="gdrive7_username" subsetting="true" type="text" label="30001" visible="eq(-62,6)" default="" />
+        <setting id="gdrive7_code" subsetting="true" type="text" label="30201" visible="eq(-63,6) + gt(-2,0)" default="" />
+        <setting id="gdrive7_client_id" subsetting="true" type="text" label="30202" visible="eq(-64,6) + gt(-3,2)" default="" />
+        <setting id="gdrive7_client_secret" subsetting="true" type="text" label="30203" visible="eq(-65,6) + gt(-4,2)" default="" />
+        <setting id="gdrive7_url" subsetting="true" type="text" label="30204" visible="eq(-66,6) + eq(-5,2)" default="" />
+        <setting id="gdrive7_password" subsetting="true" type="text" label="30002" visible="eq(-67,6) + eq(-6,0)" option="hidden" default="" />
+        <setting id="gdrive7_save_auth_token" subsetting="true" type="bool" label="30005" visible="eq(-68,6) + eq(-7,0)" default="true" />
+        <setting label="30205" visible="eq(-69,6) + gt(-8,0)" type="lsep"/>
+        <setting id="gdrive7_prev_username" subsetting="true" type="text" label="30001" default="" visible="false" />
 
+        <setting id="gdrive8_type" type="enum" label="30010" visible="eq(-71,7)" values="ClientLogin|dmdsoftware OAUTH2 *testing|private OAUTH2 *DO NOT USE|your OAUTH2 *DO NOT USE" default="0" />
+        <setting id="gdrive8_username" subsetting="true" type="text" label="30001" visible="eq(-72,7)" default="" />
+        <setting id="gdrive8_code" subsetting="true" type="text" label="30201" visible="eq(-73,7) + gt(-2,0)" default="" />
+        <setting id="gdrive8_client_id" subsetting="true" type="text" label="30202" visible="eq(-74,7) + gt(-3,2)" default="" />
+        <setting id="gdrive8_client_secret" subsetting="true" type="text" label="30203" visible="eq(-75,7) + gt(-4,2)" default="" />
+        <setting id="gdrive8_url" subsetting="true" type="text" label="30204" visible="eq(-76,7) + eq(-5,2)" default="" />
+        <setting id="gdrive8_password" subsetting="true" type="text" label="30002" visible="eq(-77,7) + eq(-6,0)" option="hidden" default="" />
+        <setting id="gdrive8_save_auth_token" subsetting="true" type="bool" label="30005" visible="eq(-78,7) + eq(-7,0)" default="true" />
+        <setting label="30205" visible="eq(-79,7) + gt(-8,0)" type="lsep"/>
+        <setting id="gdrive8_prev_username" subsetting="true" type="text" label="30001" default="" visible="false" />
 
-        <setting id="gdrive5_username" type="text" label="30001" visible="eq(-21,4)" default="" />
-        <setting id="gdrive5_password" type="text" label="30002" visible="eq(-22,4)" option="hidden" default="" />
-        <setting id="gdrive5_save_auth_token" type="bool" label="30005" visible="eq(-23,4)" default="true" />
-        <setting id="gdrive5_type" type="enum" label="30010" visible="eq(-24,4)" values="ClientLogin" default="0" />
-        <setting id="gdrive5_prev_username" type="text" label="30001" default="" visible="false" />
+        <setting id="gdrive9_type" type="enum" label="30010" visible="eq(-81,8)" values="ClientLogin|dmdsoftware OAUTH2 *testing|private OAUTH2 *DO NOT USE|your OAUTH2 *DO NOT USE" default="0" />
+        <setting id="gdrive9_username" subsetting="true" type="text" label="30001" visible="eq(-82,8)" default="" />
+        <setting id="gdrive9_code" subsetting="true" type="text" label="30201" visible="eq(-83,8) + gt(-2,0)" default="" />
+        <setting id="gdrive9_client_id" subsetting="true" type="text" label="30202" visible="eq(-84,8) + gt(-3,2)" default="" />
+        <setting id="gdrive9_client_secret" subsetting="true" type="text" label="30203" visible="eq(-85,8) + gt(-4,2)" default="" />
+        <setting id="gdrive9_url" subsetting="true" type="text" label="30204" visible="eq(-86,8) + eq(-5,2)" default="" />
+        <setting id="gdrive9_password" subsetting="true" type="text" label="30002" visible="eq(-87,8) + eq(-6,0)" option="hidden" default="" />
+        <setting id="gdrive9_save_auth_token" subsetting="true" type="bool" label="30005" visible="eq(-88,8) + eq(-7,0)" default="true" />
+        <setting label="30205" visible="eq(-89,8) + gt(-8,0)" type="lsep"/>
+        <setting id="gdrive9_prev_username" subsetting="true" type="text" label="30001" default="" visible="false" />
 
-
-        <setting id="gdrive6_username" type="text" label="30001" visible="eq(-26,5)" default="" />
-        <setting id="gdrive6_password" type="text" label="30002" visible="eq(-27,5)" option="hidden" default="" />
-        <setting id="gdrive6_save_auth_token" type="bool" label="30005" visible="eq(-28,5)" default="true" />
-        <setting id="gdrive6_type" type="enum" label="30010" visible="eq(-29,5)" values="ClientLogin" default="0" />
-        <setting id="gdrive6_prev_username" type="text" label="30001" default="" visible="false" />
-
-
-        <setting id="gdrive7_username" type="text" label="30001" visible="eq(-31,6)" default="" />
-        <setting id="gdrive7_password" type="text" label="30002" visible="eq(-32,6)" option="hidden" default="" />
-        <setting id="gdrive7_save_auth_token" type="bool" label="30005" visible="eq(-33,6)" default="true" />
-        <setting id="gdrive7_type" type="enum" label="30010" visible="eq(-34,6)" values="ClientLogin" default="0" />
-        <setting id="gdrive7_prev_username" type="text" label="30001" default="" visible="false" />
-
-
-        <setting id="gdrive8_username" type="text" label="30001" visible="eq(-36,7)" default="" />
-        <setting id="gdrive8_password" type="text" label="30002" visible="eq(-37,7)" option="hidden" default="" />
-        <setting id="gdrive8_save_auth_token" type="bool" label="30005" visible="eq(-38,7)" default="true" />
-        <setting id="gdrive8_type" type="enum" label="30010" visible="eq(-39,7)" values="ClientLogin" default="0" />
-        <setting id="gdrive8_prev_username" type="text" label="30001" default="" visible="false" />
-
-
-        <setting id="gdrive9_username" type="text" label="30001" visible="eq(-41,8)" default="" />
-        <setting id="gdrive9_password" type="text" label="30002" visible="eq(-42,8)" option="hidden" default="" />
-        <setting id="gdrive9_save_auth_token" type="bool" label="30005" visible="eq(-43,8)" default="true" />
-        <setting id="gdrive9_type" type="enum" label="30010" visible="eq(-44,8)" values="ClientLogin" default="0" />
-        <setting id="gdrive9_prev_username" type="text" label="30001" default="" visible="false" />
-
-
-        <setting id="gdrive10_username" type="text" label="30001" visible="eq(-46,9)" default="" />
-        <setting id="gdrive10_password" type="text" label="30002" visible="eq(-47,9)" option="hidden" default="" />
-        <setting id="gdrive10_save_auth_token" type="bool" label="30005" visible="eq(-48,9)" default="true" />
-        <setting id="gdrive10_type" type="enum" label="30010" visible="eq(-49,9)" values="ClientLogin" default="0" />
-        <setting id="gdrive10_prev_username" type="text" label="30001" default="" visible="false" />
 
     </category>
 

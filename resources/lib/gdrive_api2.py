@@ -80,7 +80,7 @@ class gdrive(cloudservice):
     CACHE_TYPE_DISK = 1
     CACHE_TYPE_STREAM = 2
 
-    API_VERSION = '2.0'
+    API_VERSION = '3.0'
     ##
     # initialize (save addon, instance name, user agent)
     ##
