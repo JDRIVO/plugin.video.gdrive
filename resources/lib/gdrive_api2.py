@@ -233,8 +233,8 @@ class gdrive(cloudservice):
             url = url + 'root/children'
         # retrieve folder items
         else:
-            url = url + folderName
-
+#            url = url + folderName
+            url = url + "?q='0AArCRtQQMzFFUk9PVA'+in+parents"
 
         mediaFiles = []
         while True:
