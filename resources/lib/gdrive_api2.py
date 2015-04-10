@@ -229,12 +229,13 @@ class gdrive(cloudservice):
         elif folderName == 'SHARED':
             params = urllib.urlencode({'q': 'sharedWithMe=true'})
             url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/folder/?showfolders=true&shardWithMe'
-        elif folderName == '':
-            url = url + 'root/children'
+        elif folderName == '' or folderName == 'me' or folderName == 'root':
+            resourceID = self.getRootID()
+            url = url + "?q='"+str(resourceID)+"'+in+parents"
         # retrieve folder items
         else:
 #            url = url + folderName
-            url = url + "?q='0AArCRtQQMzFFUk9PVA'+in+parents"
+            url = url + "?q='"+folderName+"'+in+parents"
 
         mediaFiles = []
         while True:
@@ -272,47 +273,57 @@ class gdrive(cloudservice):
                 resourceType = ''
                 title = ''
                 fileSize = 0
+                thumbnail = ''
                 url = ''
                 for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   resourceID = r.group(1)
+                  break
                 for r in re.finditer('\"mimeType\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   resourceType = r.group(1)
+                  break
                 for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   title = r.group(1)
+                  break
                 for r in re.finditer('\"quotaBytesUsed\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   fileSize = r.group(1)
+                  break
+                for r in re.finditer('\"thumbnailLink\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  thumbnail = r.group(1)
+                  break
                 for r in re.finditer('\"alternateLink\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   url = r.group(1)
+                  break
 
                 # entry is a folder
                 if (resourceType == 'application/vnd.google-apps.folder'):
                     media = package.package(None,folder.folder(resourceID,title))
                     mediaFiles.append(media)
                 elif (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', '', size=fileSize)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder('',''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     mediaFiles.append(media)
                 elif (resourceType == 'application/vnd.google-apps.audio' or 'audio' in resourceType):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', '', size=fileSize)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder('',''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     mediaFiles.append(media)
                 elif (resourceType == 'application/vnd.google-apps.photo' or 'photo' in resourceType):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, '', '', size=fileSize)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder('',''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     mediaFiles.append(media)
                 elif (resourceType == 'application/vnd.google-apps.unknown'):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', '', size=fileSize)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder('',''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
@@ -333,6 +344,66 @@ class gdrive(cloudservice):
 
         return mediaFiles
 
+
+
+    ##
+    # retrieve the resource ID for root folder
+    #   parameters: none
+    #   returns: resource ID
+    ##
+    def getRootID(self):
+
+        # retrieve all items
+        url = PROTOCOL+'www.googleapis.com/drive/v2/files/root'
+
+        resourceID = ''
+        while True:
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.refreshToken()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                  self.crashreport.sendError('getMediaList',str(e))
+                  return
+              else:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getMediaList',str(e))
+                return
+
+            response_data = response.read()
+            response.close()
+
+
+            for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
+                entry = r1.group(1)
+
+                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  resourceID = r.group(1)
+                  return resourceID
+
+            # look for more pages of videos
+            nextURL = ''
+            for r in re.finditer('\"nextLink\"\:\s+\"([\"]+)\"' ,
+                             response_data, re.DOTALL):
+                nextURL = r.group(1)
+
+
+            # are there more pages to process?
+            if nextURL == '':
+                break
+            else:
+                url = nextURL[0]
+
+        return resourceID
 
 
 
@@ -624,7 +695,7 @@ class gdrive(cloudservice):
 
             docid = package.file.id
 
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full/file:' + docid
+            url = PROTOCOL+'www.googleapis.com/drive/v2/files/' + docid
 
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -651,22 +722,36 @@ class gdrive(cloudservice):
             response.close()
 
 
-            # fetch video title, download URL and docid for stream link
-            for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
-                entry = r.group(1)
-                for q in re.finditer('<title>([^<]+)</title><content type=\'([^\/]+)\/[^\']+\' src=\'([^\']+)\'.*\;docid=([^\&]+)\&' ,
+            for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
+                entry = r1.group(1)
+
+
+                resourceType = ''
+                title = ''
+                url = ''
+                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                    title,mediaType,url,docid = q.groups()
-
-                    #mediaURLs.append(url, 'original', 0, 3)
-                    mediaURLs.append(mediaurl.mediaurl(url, '9999 - original', 0, 9999))
-
+                  docid = r.group(1)
+                  break
+                for r in re.finditer('\"mimeType\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  resourceType = r.group(1)
+                  break
+                for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  title = r.group(1)
+                  break
+                for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  url = r.group(1)
+                  mediaURLs.append(mediaurl.mediaurl(url, '9999 - original', 0, 9999))
+                  break
 
 
         if docid != '':
             # player using docid
             params = urllib.urlencode({'docid': docid})
-            url = PROTOCOL+'docs.google.com/get_video_info?docid=' + str(docid)
+            url = PROTOCOL+'drive.google.com/get_video_info?docid=' + str(docid)
             req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
 #        else:
             #try to use no authorization token (for pubic URLs)
