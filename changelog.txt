@@ -1,3 +1,4 @@
+- better multiple account support
 - update settings for OAUTH2 support
 - reduce number of supported accounts to 9 (XBMC limitations, exceeds maximum number of setting components)
 -- define additional accounts above 9 manually by editing the settings.xml to add account 10,11,etc

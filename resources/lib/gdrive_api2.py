@@ -233,7 +233,7 @@ class gdrive(cloudservice):
             url = url + 'root/children'
         # retrieve folder items
         else:
-            url = url + folderName+'/children'
+            url = url + folderName
 
 
         mediaFiles = []
@@ -263,185 +263,66 @@ class gdrive(cloudservice):
 
             # parsing page for videos
             # video-entry
-            for r in re.finditer('\{(.*?)\}' ,response_data, re.DOTALL):
-             entryS = r.group(1)
-             for r1 in re.finditer('\{(.*?)\}' ,entryS, re.DOTALL):
+            for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\s+\]\s+\}' ,response_data, re.DOTALL):
+             entryS = r2.group(1)
+             for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,entryS, re.DOTALL):
                 entry = r1.group(1)
-                # fetch folder
-                for r in re.finditer('\<gd\:resourceId\>([^\:]*)\:?([^\<]*)\</gd:resourceId\>' ,
+
+                resourceID = 0
+                resourceType = ''
+                title = ''
+                fileSize = 0
+                url = ''
+                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                  resourceType,resourceID = r.groups()
-
-                  # entry is a folder
-                  if (resourceType == 'folder'):
-                      for q in re.finditer('<(title)>([^<]+)</title>' ,
+                  resourceID = r.group(1)
+                for r in re.finditer('\"mimeType\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                          titleType, title = q.groups()
-
-                          # gdrive decryption specific ***
-                          if 0:
-                              import base64
-                              try:
-                                  title = base64.b64decode(title)
-                              except:
-                                  pass
-                          #***
-
-                          media = package.package(None,folder.folder(resourceID,title))
-                          mediaFiles.append(media)
-
-                  # entry is NOT a folder
-                  else:
-                      processed =0
-                      # fetch video title, download URL and docid for stream link
-                      # Google Drive API format
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.*?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'.*?\;docid=([^\&]+)\&.*?<gd:quotaBytesUsed>(\d+)</gd:quotaBytesUsed>' ,
+                  resourceType = r.group(1)
+                for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                            title,mediaType,url,thumbnail,docid,fileSize = r.groups()
-
-                          # memory-cache
-#                          if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
-#                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+'&size='+str(size)+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
-                        #***
-                              # streaming
-#                          else:
-#                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': thumbnail}
-                            mediaFile = file.file(docid, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
-
-                            media = package.package(mediaFile,folder.folder('',''))
-                            media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                            mediaFiles.append(media)
-                            #***
-                            processed = 1
-
-                      if processed == 0:
-                          #video that can't be processed (no thumbnail)
-                          for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?\;docid=([^\&]+)\&.*?\<gd\:quotaBytesUsed\>(\d+)\</gd\:quotaBytesUsed\>' ,
+                  title = r.group(1)
+                for r in re.finditer('\"quotaBytesUsed\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                            title,mediaType,url,docid,fileSize = r.groups()
-
-                              # memory-cache
-#                              if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
-#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+'&size='+str(size)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
-#                                  x=1
-                        #***
-                              # streaming
-#                              else:
-#                                  x=1
-#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': ''}
-                        #***
-                            mediaFile = file.file(docid, title, title, self.MEDIA_TYPE_VIDEO, '', '', size=fileSize)
-
-                            media = package.package(mediaFile,folder.folder('',''))
-                            media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                            mediaFiles.append(media)
-                            processed = 1
-
-                      if processed == 0:
-                          #for playing video.google.com videos linked to your google drive account
-                          # Google Docs & Google Video API format
-                          for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                  fileSize = r.group(1)
+                for r in re.finditer('\"alternateLink\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                              title,url,thumbnail = r.groups()
+                  url = r.group(1)
 
-                              # memory-cache
-#                              if cacheType == self.CACHE_TYPE_MEMORY:
-#                                  x=1
-#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
-                        #***
-                              # memory-cache
-#                              elif cacheType == self.CACHE_TYPE_DISK:
-#                                  x=1
-#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url), 'thumbnail':  thumbnail}
-                        #***
-                              # streaming
-#                              else:
-#                                  x=1
-#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': thumbnail}
-                        #***
-                              mediaFile = file.file(title, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail)
+                # entry is a folder
+                if (resourceType == 'application/vnd.google-apps.folder'):
+                    media = package.package(None,folder.folder(resourceID,title))
+                    mediaFiles.append(media)
+                elif (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType):
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', '', size=fileSize)
 
-                              media = package.package(mediaFile,folder.folder('',''))
-                              media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                              mediaFiles.append(media)
-                              processed = 1
+                    media = package.package(mediaFile,folder.folder('',''))
+                    media.setMediaURL(mediaurl.mediaurl(url, '','',''))
+                    mediaFiles.append(media)
+                elif (resourceType == 'application/vnd.google-apps.audio' or 'audio' in resourceType):
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', '', size=fileSize)
 
-                      if processed == 0:
-                          # audio
-                          for r in re.finditer('<title>([^<]+)</title><content type=\'audio\/[^\']+\' src=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                              title,url = r.groups()
+                    media = package.package(mediaFile,folder.folder('',''))
+                    media.setMediaURL(mediaurl.mediaurl(url, '','',''))
+                    mediaFiles.append(media)
+                elif (resourceType == 'application/vnd.google-apps.photo' or 'photo' in resourceType):
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, '', '', size=fileSize)
 
-                              # there is no steaming for audio (?), so "download to stream"
-#                              videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
-                        #***
-                              mediaFile = file.file(title, title, title, self.MEDIA_TYPE_MUSIC, '', '')
+                    media = package.package(mediaFile,folder.folder('',''))
+                    media.setMediaURL(mediaurl.mediaurl(url, '','',''))
+                    mediaFiles.append(media)
+                elif (resourceType == 'application/vnd.google-apps.unknown'):
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', '', size=fileSize)
 
-                              media = package.package(mediaFile,folder.folder('',''))
-                              media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                              mediaFiles.append(media)
-                              processed = 1
-
-                      if processed == 0:
-                          # audio
-                          for r in re.finditer('<title>([^<]+)</title><content type=\'application\/x-flac\' src=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                              title,url = r.groups()
-
-                              # there is no steaming for audio (?), so "download to stream"
-#                              videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
-                              mediaFile = file.file(title, title, title, self.MEDIA_TYPE_VIDEO, '', '')
-
-                              media = package.package(mediaFile,folder.folder('',''))
-                              media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                              mediaFiles.append(media)
-                              processed = 1
-                        #***
-
-                      if processed == 0:
-                          # pictures
-                          for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                              title,url,thumbnail = r.groups()
-
-                              # there is no steaming for audio (?), so "download to stream"
-                              cleanURL = re.sub('---', '', url)
-                              cleanURL = re.sub('&amp;', '---', cleanURL)
-#                              videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+str(folderName)+'&title='+str(title)+'&url=' + str(cleanURL), 'thumbnail': thumbnail}
-#                              x=1
-                        #***
-                              mediaFile = file.file(title, title, title, self.MEDIA_TYPE_PICTURE, '', thumbnail)
-
-                              media = package.package(mediaFile,folder.folder('',''))
-                              media.setMediaURL(mediaurl.mediaurl(cleanURL, '','',''))
-                              mediaFiles.append(media)
-                              processed = 1
-
-                      if processed == 0:
-                          # pictures
-                          for r in re.finditer('<title>([^<]+)</title><content type=\'application\/octet-stream\' src=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                              title,url = r.groups()
-
-                          # there is no steaming for audio (?), so "download to stream"
-                              cleanURL = re.sub('---', '', url)
-                              cleanURL = re.sub('&amp;', '---', cleanURL)
-#                            videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+str(folderName)+'&title='+str(title)+'&url=' + str(cleanURL), 'thumbnail': ''}
-
-                        #***
-                              mediaFile = file.file(title, title, title, self.MEDIA_TYPE_PICTURE, '', '')
-
-                              media = package.package(mediaFile,folder.folder('',''))
-                              media.setMediaURL(mediaurl.mediaurl(cleanURL, '','',''))
-                              mediaFiles.append(media)
-                              processed = 1
-
+                    media = package.package(mediaFile,folder.folder('',''))
+                    media.setMediaURL(mediaurl.mediaurl(url, '','',''))
+                    mediaFiles.append(media)
 
             # look for more pages of videos
             nextURL = ''
-            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+            for r in re.finditer('\"nextLink\"\:\s+\"([\"]+)\"' ,
                              response_data, re.DOTALL):
-                nextURL = r.groups()
+                nextURL = r.group(1)
 
 
             # are there more pages to process?

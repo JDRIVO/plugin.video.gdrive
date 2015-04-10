@@ -658,24 +658,24 @@ if mode == 'main' or mode == 'index':
     # gdrive specific ***
     if mode == 'main':
         if contentType in (2,4,7):
-            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30030)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30030)+']')
         elif contentType == 1:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30031)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30031)+']')
         elif contentType == 0:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30025)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30025)+']')
         elif contentType == 3:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30093)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30093)+']')
         elif contentType == 5:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30034)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30034)+']')
         elif contentType == 6:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30032)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30032)+']')
         folderName = 'root'
         if (service.protocol != 2):
-            addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILES&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' '+addon.getLocalizedString(30095)+']')
-            addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30096)+']')
-            addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
-            addMenu(PLUGIN_URL+'?mode=index&folder=SHARED&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30098)+']')
-            addMenu(PLUGIN_URL+'?mode=search&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILES&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' '+addon.getLocalizedString(30095)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30096)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=SHARED&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30098)+']')
+            addMenu(PLUGIN_URL+'?mode=search&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
 
     # ***
 
