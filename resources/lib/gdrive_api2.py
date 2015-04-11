@@ -214,29 +214,33 @@ class gdrive(cloudservice):
 
         # retrieve all items
         url = PROTOCOL+'www.googleapis.com/drive/v2/files/'
-        if folderName==False and title==False:
-            url = url + '?showfolders=false'
+        if folderName=='VIDEO':
+            url = url + "?q=mimeType+contains+'video'"
+        elif folderName=='MUSIC':
+            url = url + "?q=mimeType+contains+'music'"
+        elif folderName=='VIDEOMUSIC':
+            url = url + "?q=mimeType+contains+'music'+or+mimeType+contains+'video'"
+        elif folderName=='PHOTOMUSIC':
+            url = url + "?q=mimeType+contains+'photo'+or+mimeType+contains+'music'"
+        elif folderName=='PHOTO':
+            url = url + "?q=mimeType+contains+'photo'"
+        elif folderName=='ALL':
+            url = url + "?q=mimeType+contains+'music'+or+mimeType+contains+'video'+or+mimeType+contains+'photo'"
         elif title != False:
-            params = urllib.urlencode({'title': title})
             encodedTitle = re.sub(' ', '+', title)
-            url = url + "?q=title+contains+'" + encodedTitle + "'"
+            url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
         # retrieve root items
-        elif folderName == 'STARRED-FILES':
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/starred'
-        elif folderName == 'STARRED-FILESFOLDERS':
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/starred?showfolders=true'
-        elif folderName == 'STARRED-FOLDERS':
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/folder/starred'
+        elif folderName == 'STARRED-FILES' or folderName == 'STARRED-FILESFOLDERS' or folderName == 'STARRED-FOLDERS':
+            url = url + "?q=starred%3dtrue"
         elif folderName == 'SHARED':
-            params = urllib.urlencode({'q': 'sharedWithMe=true'})
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/folder/?showfolders=true&shardWithMe'
+            url = url + "?q=sharedWithMe%3dtrue"
         elif folderName == '' or folderName == 'me' or folderName == 'root':
             resourceID = self.getRootID()
             url = url + "?q='"+str(resourceID)+"'+in+parents"
         # retrieve folder items
         else:
 #            url = url + folderName
-            url = url + "?q='"+folderName+"'+in+parents"
+            url = url + "?q='"+str(folderName)+"'+in+parents"
 
         mediaFiles = []
         while True:

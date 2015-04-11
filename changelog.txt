@@ -1,4 +1,7 @@
 -- Google Drive API 2 module - add support for search
+-- Google Drive API 2 module - add support for "show all music/video/photo"
+-- Google Drive API 2 module - add support for "show starred"
+-- Google Drive API 2 module - add support for "show shared"
 Version 0.5.7
 - better multiple account support
 - update settings for OAUTH2 support

@@ -470,7 +470,7 @@ if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '':
         try:
             username = addon.getSetting(instanceName+'_username')
             if username != '':
-                addMenu(PLUGIN_URL+'?mode=main&instance='+instanceName,username)
+                addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username)
         except:
             break
         if count == max_count:
@@ -618,7 +618,6 @@ if mode == 'main' or mode == 'index':
     # 7 everything
 
     try:
-      contextType = plugin_queries['content_type']
       contentType = 0
       if contextType == 'video':
         if (int(addon.getSetting('context_video'))) == 2 and folderName != False:
@@ -658,24 +657,24 @@ if mode == 'main' or mode == 'index':
     # gdrive specific ***
     if mode == 'main':
         if contentType in (2,4,7):
-            addMenu(PLUGIN_URL+'?mode=index&folder=&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30030)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=ALL&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30030)+']')
         elif contentType == 1:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30031)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=VIDEOMUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30031)+']')
         elif contentType == 0:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30025)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=VIDEO&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30025)+']')
         elif contentType == 3:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30093)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=MUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30094)+']')
         elif contentType == 5:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30034)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=PHOTO&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30034)+']')
         elif contentType == 6:
-            addMenu(PLUGIN_URL+'?mode=index&folder=&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30032)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=PHOTOMUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30032)+']')
         folderName = 'root'
         if (service.protocol != 2):
-            addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILES&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' '+addon.getLocalizedString(30095)+']')
-            addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30096)+']')
-            addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
-            addMenu(PLUGIN_URL+'?mode=index&folder=SHARED&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30098)+']')
-        addMenu(PLUGIN_URL+'?mode=search&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILES&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' '+addon.getLocalizedString(30095)+']')
+            addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30096)+']')
+        addMenu(PLUGIN_URL+'?mode=index&folder=SHARED&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30098)+']')
+        addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
+        addMenu(PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
 
     # ***
 
