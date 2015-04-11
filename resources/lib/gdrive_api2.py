@@ -217,8 +217,9 @@ class gdrive(cloudservice):
         if folderName==False and title==False:
             url = url + '?showfolders=false'
         elif title != False:
-            params = urllib.urlencode({'title': title, 'title-exact': 'false'})
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full?' + params
+            params = urllib.urlencode({'title': title})
+            encodedTitle = re.sub(' ', '+', title)
+            url = url + "?q=title+contains+'" + encodedTitle + "'"
         # retrieve root items
         elif folderName == 'STARRED-FILES':
             url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/starred'

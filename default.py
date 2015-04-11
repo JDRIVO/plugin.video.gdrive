@@ -675,7 +675,7 @@ if mode == 'main' or mode == 'index':
             addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30096)+']')
             addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
             addMenu(PLUGIN_URL+'?mode=index&folder=SHARED&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30098)+']')
-            addMenu(PLUGIN_URL+'?mode=search&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
+        addMenu(PLUGIN_URL+'?mode=search&username='+str(service.authorization.username)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
 
     # ***
 
