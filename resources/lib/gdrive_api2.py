@@ -790,7 +790,7 @@ class gdrive(cloudservice):
                 for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   url = r.group(1)
-                  mediaURLs.append(mediaurl.mediaurl(url, '9999 - original', 0, 9999))
+                  mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
                   break
 
         #given docid, fetch original playback
@@ -846,7 +846,7 @@ class gdrive(cloudservice):
                 for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   url = r.group(1)
-                  mediaURLs.append(mediaurl.mediaurl(url, '9999 - original', 0, 9999))
+                  mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
                   break
 
 
@@ -1030,9 +1030,9 @@ class gdrive(cloudservice):
                         pass
 
                     try:
-                        mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], 0, order+count))
+                        mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], 0, order+count))
                     except KeyError:
-                        mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container, 0, order+count))
+                        mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, 0, order+count))
 
         return mediaURLs
 
