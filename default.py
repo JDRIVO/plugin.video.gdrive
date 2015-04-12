@@ -812,37 +812,31 @@ elif mode == 'photo':
     except:
         pass
 
-#    import os.path
-#    if not os.path.exists(path):
-#        path = ''
+    if not xbmcvfs.exists(path):
+        path = ''
 
     while path == '':
         path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30038), 'files','',False,False,'')
-        if not os.path.exists(path):
+        if not xbmcvfs.exists(path):
             path = ''
         else:
             addon.setSetting('photo_folder', path)
 
-
-    import xbmcvfs
-    xbmcvfs.mkdir(str(path) + '/'+str(folder))
-#    xbmcvfs.mkdir(path + '/'+folder + '/dir_'+title)
+    if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
+        xbmcvfs.mkdir(str(path) + '/'+str(folder))
     try:
-        xbmcvfs.rmdir(path + '/'+folder+'/'+title)
+        xbmcvfs.rmdir(str(path) + '/'+str(folder)+'/'+str(title))
     except:
         pass
 
-#    gdrive.downloadPicture(url, path + '/'+folder + '/dir_'+title + '/'+title)
-    url = service.getDownloadURL(docid)
-    service.downloadPicture(url, str(path) + '/'+str(folder) + '/'+str(title))
-#    item.setInfo(type='pictures',infoLabels={"Title": 'PicasaWeb Photo', "picturepath": '/u01/test.png'})
-#    item.setProperty('IsPlayable', 'true')
+    # don't redownload if present already
+    if (not xbmcvfs.exists(str(path) + '/'+str(folder)+'/'+str(title))):
+        url = service.getDownloadURL(docid)
+        service.downloadPicture(url, str(path) + '/'+str(folder) + '/'+str(title))
 
- #   xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
-#    xbmc.executebuiltin("XBMC.SlideShow(/tmp/)")
-#    xbmc.executebuiltin("XBMC.SlideShow("+path + '/'+folder+"/)")
-#    xbmc.executebuiltin("XBMC.ShowPicture("+path + '/'+folder + '/dir_'+title + '/'+title+")")
     xbmc.executebuiltin("XBMC.ShowPicture("+str(path) + '/'+str(folder) + '/'+str(title)+")")
+    item = xbmcgui.ListItem(path=str(path) + '/'+str(folder) + '/'+str(title))
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
 
 elif mode == 'downloadfolder':
     try:

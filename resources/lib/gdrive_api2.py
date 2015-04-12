@@ -37,6 +37,7 @@ import unicodedata
 
 
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+import xbmcvfs
 
 # global variables
 PLUGIN_NAME = 'plugin.video.gdrive-testing'
@@ -1036,28 +1037,28 @@ class gdrive(cloudservice):
         return mediaURLs
 
 
-    #*** needs update
-    def downloadPicture(self,url, file):
+
+    ##
+    # download remote picture
+    # parameters: url of picture, file location with path on disk
+    ##
+    def downloadPicture(self, url, file):
 
         req = urllib2.Request(url, None, self.getHeadersList())
 
-        import xbmcvfs
         f = xbmcvfs.File(file, 'w')
-#        f = open(file,'wb')
+
         # if action fails, validate login
         try:
             f.write(urllib2.urlopen(req).read())
-#            f.write(urllib2.urlopen(req).read())
             f.close()
-#                open(file,'wb').write(urllib2.urlopen(req).read())
 
         except urllib2.URLError, e:
               self.refreshToken()
               req = urllib2.Request(url, None, self.getHeadersList())
               try:
-                open(file,'wb').write(urllib2.urlopen(req).read())
-#                f.write(urllib2.urlopen(req).read())
-#                f.close()
+                f.write(urllib2.urlopen(req).read())
+                f.close()
               except urllib2.URLError, e:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                 self.crashreport.sendError('downloadPicture',str(e))
