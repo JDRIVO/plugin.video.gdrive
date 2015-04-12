@@ -103,7 +103,7 @@ class cloudservice(object):
     ##
     # build STRM files to a given path for a given folder ID
     ##
-    def buildSTRM(self, path, folderID='', contentType=7):
+    def buildSTRM(self, path, folderID='', contentType=7, pDialog=None):
 
         import xbmcvfs
         xbmcvfs.mkdir(path)
@@ -115,13 +115,16 @@ class cloudservice(object):
 
                 url = 0
                 if item.file is None:
-                    self.buildSTRM(path + '/'+item.folder.title, item.folder.id)
+                    self.buildSTRM(path + '/'+item.folder.title, item.folder.id, pDialog=pDialog)
                 else:
                     url = self.PLUGIN_URL+'?mode=video&title='+item.file.title+'&filename='+item.file.id+ '&username='+self.authorization.username
 
 
                 if url != 0:
                     title = item.file.title
+
+                    if pDialog is not None:
+                        pDialog.update(message=title)
 
                     if not xbmcvfs.exists(path + title+'.strm'):
                         filename = path + '/' + title+'.strm'

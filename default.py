@@ -283,6 +283,53 @@ xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 
 
+try:
+    contextType = plugin_queries['content_type']
+except:
+    contextType = 'video'
+
+
+    #contentType
+    #video context
+    # 0 video
+    # 1 video and music
+    # 2 everything
+    #
+    #music context
+    # 3 music
+    # 4 everything
+    #
+    #photo context
+    # 5 photo
+    # 6 music and photos
+    # 7 everything
+
+try:
+      contentType = 0
+      if contextType == 'video':
+        if (int(addon.getSetting('context_video'))) == 2:
+            contentType = 2
+        elif (int(addon.getSetting('context_video'))) == 1:
+            contentType = 1
+        else:
+            contentType = 0
+
+      elif contextType == 'audio':
+        if (int(addon.getSetting('context_music'))) == 1:
+            contentType = 4
+        else:
+            contentType = 3
+
+      elif contextType == 'image':
+        if (int(addon.getSetting('context_photo'))) == 2:
+            contentType = 7
+        elif (int(addon.getSetting('context_photo'))) == 1:
+            contentType = 6
+        else:
+            contentType = 5
+except:
+      contentType = 2
+
 #* utilities *
 #clear the authorization token(s) from the identified instanceName or all instances
 if mode == 'clearauth':
@@ -322,6 +369,17 @@ if mode == 'clearauth':
 #create strm files
 elif mode == 'buildstrm':
 
+    silent = 0
+    try:
+        silent = int(addon.getSetting('strm_silent'))
+    except:
+        silent = 0
+
+    try:
+        silent = int(plugin_queries['silent'])
+    except:
+        pass
+
     try:
         path = addon.getSetting('strm_path')
     except:
@@ -337,6 +395,13 @@ elif mode == 'buildstrm':
 
 
     if path != '' and returnPrompt:
+
+        if silent != 2:
+            try:
+                pDialog = xbmcgui.DialogProgressBG()
+                pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
+            except:
+                pass
 
         try:
             url = plugin_queries['streamurl']
@@ -404,7 +469,7 @@ elif mode == 'buildstrm':
                         break
                     count = count + 1
 
-                service.buildSTRM(path + '/'+title,folderID, contentType=contentType)
+                service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog)
 
 
             elif filename != '':
@@ -431,7 +496,7 @@ elif mode == 'buildstrm':
                         else:
                             service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
 
-                        service.buildSTRM(path + '/'+username, contentType=contentType)
+                        service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog)
 
                     if count == max_count:
                         #fallback on first defined account
@@ -446,59 +511,17 @@ elif mode == 'buildstrm':
                         break
                     count = count + 1
 
-
-        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
+        if silent != 2:
+            try:
+                pDialog.update(100)
+            except:
+                pass
+        if silent == 0:
+            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
     xbmcplugin.endOfDirectory(plugin_handle)
 
 
 numberOfAccounts = numberOfAccounts(PLUGIN_NAME)
-
-try:
-    contextType = plugin_queries['content_type']
-except:
-    contextType = 'video'
-
-
-    #contentType
-    #video context
-    # 0 video
-    # 1 video and music
-    # 2 everything
-    #
-    #music context
-    # 3 music
-    # 4 everything
-    #
-    #photo context
-    # 5 photo
-    # 6 music and photos
-    # 7 everything
-
-try:
-      contentType = 0
-      if contextType == 'video':
-        if (int(addon.getSetting('context_video'))) == 2:
-            contentType = 2
-        elif (int(addon.getSetting('context_video'))) == 1:
-            contentType = 1
-        else:
-            contentType = 0
-
-      elif contextType == 'audio':
-        if (int(addon.getSetting('context_music'))) == 1:
-            contentType = 4
-        else:
-            contentType = 3
-
-      elif contextType == 'image':
-        if (int(addon.getSetting('context_photo'))) == 2:
-            contentType = 7
-        elif (int(addon.getSetting('context_photo'))) == 1:
-            contentType = 6
-        else:
-            contentType = 5
-except:
-      contentType = 2
 
 try:
     invokedUsername = plugin_queries['username']
