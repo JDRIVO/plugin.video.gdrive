@@ -88,19 +88,17 @@ def addMediaFile(service, package, contextType='video'):
     url = PLUGIN_URL+playbackURL+'&title='+package.file.title+'&filename='+package.file.id+'&instance='+str(service.instanceName)
 
     # gdrive specific ***
-    cm.append(( 'Play cache file', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=cache&file=cache.mp4)', ))
+#    cm.append(( 'Play cache file', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=cache&file=cache.mp4)', ))
     # ***
 
-    #generate STRM
-    if (contextType != 'pictures' and package.file.type != package.file.PICTURE):
+    if (contextType != 'image' and package.file.type != package.file.PICTURE):
         cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&username='+str(service.authorization.username)+'&title='+package.file.title+'&filename='+package.file.id+')', ))
 #    cm.append(( addon.getLocalizedString(30046), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=0)', ))
 #    cm.append(( addon.getLocalizedString(30047), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=1)', ))
 #    cm.append(( addon.getLocalizedString(30048), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=2)', ))
     #cm.append(( addon.getLocalizedString(30032), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=download&title='+package.file.title+'&filename='+package.file.id+')', ))
-    elif contextType == 'pictures':
+    elif contextType == 'image':
         cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+str(package.folder.id)+'&username='+str(service.authorization.username)+')', ))
-    cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+str(package.folder.id)+'&username='+str(service.authorization.username)+')', ))
 
 #    listitem.addContextMenuItems( commands )
 #    if cm:
@@ -132,10 +130,10 @@ def addDirectory(service, folder, contextType='video'):
 
     if folder.id != '':
         cm=[]
-        if contextType != 'pictures':
+        if contextType != 'image':
             cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+folder.title+'&username='+str(service.authorization.username)+'&folderID='+str(folder.id)+')', ))
 #        cm.append(( addon.getLocalizedString(30081), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=createbookmark&title='+folder.title+'&instanceName='+str(service.instanceName)+'&folderID='+str(folder.id)+')', ))
-        elif contextType == 'pictures':
+        elif contextType == 'image':
             cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+str(folder.id)+'&username='+str(service.authorization.username)+')', ))
 
         listitem.addContextMenuItems(cm, False)
@@ -929,16 +927,15 @@ elif mode == 'slideshow':
 
     mediaItems = service.getMediaList(folderName=folder, contentType=5)
 
+    xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
 
     if mediaItems:
                 for item in mediaItems:
-                    if item.file is None:
-                        addDirectory(service, item.folder, contextType)
-                    else:
-                        service.downloadPicture(item.file.url,str(path) + '/'+str(folder))
+                    if item.file is not None:
+                        service.downloadPicture(item.mediaurl.url,str(path) + '/'+str(folder)+ '/'+item.file.title)
+                        xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
 
 
-    xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
 
 #force stream - play a video given its exact-title
 elif mode == 'video' or mode == 'search':

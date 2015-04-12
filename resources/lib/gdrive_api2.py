@@ -258,8 +258,8 @@ class gdrive(cloudservice):
 
         # default / show root folder
         elif folderName == '' or folderName == 'me' or folderName == 'root':
-            resourceID = self.getRootID()
-            url = url + "?q='"+str(resourceID)+"'+in+parents"
+            folderName = self.getRootID()
+            url = url + "?q='"+str(folderName)+"'+in+parents"
 
         # retrieve folder items
         else:
@@ -338,7 +338,7 @@ class gdrive(cloudservice):
                 elif (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType and contentType in (0,1,2,4,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
 
-                    media = package.package(mediaFile,folder.folder('',''))
+                    media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     mediaFiles.append(media)
 
@@ -346,7 +346,7 @@ class gdrive(cloudservice):
                 elif (resourceType == 'application/vnd.google-apps.audio' or 'audio' in resourceType and contentType in (1,2,3,4,6,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', thumbnail, size=fileSize)
 
-                    media = package.package(mediaFile,folder.folder('',''))
+                    media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     mediaFiles.append(media)
 
@@ -354,7 +354,7 @@ class gdrive(cloudservice):
                 elif (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType and contentType in (2,4,5,6,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, '', thumbnail, size=fileSize)
 
-                    media = package.package(mediaFile,folder.folder('',''))
+                    media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     mediaFiles.append(media)
 
@@ -362,7 +362,7 @@ class gdrive(cloudservice):
                 elif (resourceType == 'application/vnd.google-apps.unknown'):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
 
-                    media = package.package(mediaFile,folder.folder('',''))
+                    media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     mediaFiles.append(media)
 
