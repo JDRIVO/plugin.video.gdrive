@@ -44,7 +44,6 @@ PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
 
 addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
-PROTOCOL = 'https://'
 SERVICE_NAME = 'dmdgdrive'
 
 import sys
@@ -71,6 +70,11 @@ class gdrive(cloudservice):
     CACHE_TYPE_STREAM = 2
 
     API_VERSION = '3.0'
+
+    PROTOCOL = 'https://'
+
+    API_URL = PROTOCOL+'www.googleapis.com/drive/v2/'
+
     ##
     # initialize (save addon, instance name, user agent)
     ##
@@ -112,7 +116,9 @@ class gdrive(cloudservice):
 
 
     ##
-    # perform login
+    # get OAUTH2 access and refresh token for provided code
+    #   parameters: OAUTH2 code
+    #   returns: none
     ##
     def getToken(self,code):
 
@@ -150,7 +156,9 @@ class gdrive(cloudservice):
 
 
     ##
-    # perform login
+    # refresh OAUTH2 access given refresh token
+    #   parameters: none
+    #   returns: none
     ##
     def refreshToken(self):
 
@@ -185,13 +193,14 @@ class gdrive(cloudservice):
             return
 
     ##
-    # return the appropriate "headers" for Google Drive requests that include 1) user agent, 2) authorization token, 3) api version
+    # return the appropriate "headers" for Google Drive requests that include 1) user agent, 2) authorization token
     #   returns: list containing the header
     ##
     def getHeadersList(self, forceWritely=True):
         return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
 
 
+    #*** not used
     def setDecrypt(self):
         self.decrypt = True
 
@@ -213,34 +222,48 @@ class gdrive(cloudservice):
     def getMediaList(self, folderName=False, title=False, cacheType=CACHE_TYPE_MEMORY):
 
         # retrieve all items
-        url = PROTOCOL+'www.googleapis.com/drive/v2/files/'
+        url = self.API_URL +'files/'
+
+        # show all videos
         if folderName=='VIDEO':
             url = url + "?q=mimeType+contains+'video'"
+        # show all music
         elif folderName=='MUSIC':
             url = url + "?q=mimeType+contains+'music'"
+        # show all music and video
         elif folderName=='VIDEOMUSIC':
             url = url + "?q=mimeType+contains+'music'+or+mimeType+contains+'video'"
+        # show all photos and music
         elif folderName=='PHOTOMUSIC':
             url = url + "?q=mimeType+contains+'photo'+or+mimeType+contains+'music'"
+        # show all photos
         elif folderName=='PHOTO':
             url = url + "?q=mimeType+contains+'photo'"
+        # show all music, photos and video
         elif folderName=='ALL':
             url = url + "?q=mimeType+contains+'music'+or+mimeType+contains+'video'+or+mimeType+contains+'photo'"
+
+        # search for title
         elif title != False:
             encodedTitle = re.sub(' ', '+', title)
             url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
-        # retrieve root items
+
+        # show all starred items
         elif folderName == 'STARRED-FILES' or folderName == 'STARRED-FILESFOLDERS' or folderName == 'STARRED-FOLDERS':
             url = url + "?q=starred%3dtrue"
+        # show all shared items
         elif folderName == 'SHARED':
             url = url + "?q=sharedWithMe%3dtrue"
+
+        # default / show root folder
         elif folderName == '' or folderName == 'me' or folderName == 'root':
             resourceID = self.getRootID()
             url = url + "?q='"+str(resourceID)+"'+in+parents"
+
         # retrieve folder items
         else:
-#            url = url + folderName
             url = url + "?q='"+str(folderName)+"'+in+parents"
+
 
         mediaFiles = []
         while True:
@@ -309,24 +332,32 @@ class gdrive(cloudservice):
                 if (resourceType == 'application/vnd.google-apps.folder'):
                     media = package.package(None,folder.folder(resourceID,title))
                     mediaFiles.append(media)
+
+                # entry is a video
                 elif (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder('',''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     mediaFiles.append(media)
+
+                # entry is a music file
                 elif (resourceType == 'application/vnd.google-apps.audio' or 'audio' in resourceType):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder('',''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     mediaFiles.append(media)
+
+                # entry is a photo
                 elif (resourceType == 'application/vnd.google-apps.photo' or 'photo' in resourceType):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder('',''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     mediaFiles.append(media)
+
+                # entry is unknown
                 elif (resourceType == 'application/vnd.google-apps.unknown'):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
 
@@ -359,7 +390,7 @@ class gdrive(cloudservice):
     def getRootID(self):
 
         # retrieve all items
-        url = PROTOCOL+'www.googleapis.com/drive/v2/files/root'
+        url = self.API_URL +'files/root'
 
         resourceID = ''
         while True:
@@ -412,6 +443,7 @@ class gdrive(cloudservice):
 
 
 
+    #*** update
     ##
     # retrieve a list of videos, using playback type stream
     #   parameters: cache type (optional)
@@ -520,7 +552,8 @@ class gdrive(cloudservice):
             else:
                 url = nextURL[0]
 
-##
+    #*** update
+    ##
     # retrieve a list of videos, using playback type stream
     #   parameters: cache type (optional)
     #   returns: list of videos
@@ -652,7 +685,10 @@ class gdrive(cloudservice):
             acodec=-1
 
         mediaURLs = []
+
         docid = ''
+
+        #*** update
         if package is None and title != '':
             # search by video title
             if isExact == True:
@@ -696,11 +732,11 @@ class gdrive(cloudservice):
                     #mediaURLs.append(url, 'original', 0, 3)
                     mediaURLs.append(mediaurl.mediaurl(url, '9999 - original', 0, 9999))
 
+        #given docid, fetch original playback
         else:
-
             docid = package.file.id
 
-            url = PROTOCOL+'www.googleapis.com/drive/v2/files/' + docid
+            url = self.API_URL +'files/' + docid
 
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -753,16 +789,12 @@ class gdrive(cloudservice):
                   break
 
 
+        # fetch streams
         if docid != '':
             # player using docid
             params = urllib.urlencode({'docid': docid})
             url = PROTOCOL+'drive.google.com/get_video_info?docid=' + str(docid)
             req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
-#        else:
-            #try to use no authorization token (for pubic URLs)
-#            header = { 'User-Agent' : self.user_agent, 'GData-Version' : self.API_VERSION }
-#            req = urllib2.Request(url, None, header)
-
             # if action fails, validate login
             try:
                  response = urllib2.urlopen(req)
@@ -795,15 +827,12 @@ class gdrive(cloudservice):
                              urls, re.DOTALL):
                 (service, serviceRequired) = r.groups()
 
-            #effective 2014/02, video stream calls require a wise token instead of writely token
-            #backward support for account not migrated to the 2014/02 change
-            if serviceRequired == 'writely':
-                self.useWRITELY = True
-                req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
+            self.useWRITELY = True
+            req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
 
-                try:
+            try:
                     response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
+            except urllib2.URLError, e:
                     if e.code == 403 or e.code == 401:
                         self.refreshToken()
                         req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
@@ -818,67 +847,29 @@ class gdrive(cloudservice):
                         self.crashreport.sendError('getPlaybackCall',str(e))
                         return
 
-                response_data = response.read()
-                response.close()
+            response_data = response.read()
+            response.close()
 
-                # decode resulting player URL (URL is composed of many sub-URLs)
-                urls = response_data
-                urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
-                urls = re.sub('\\\\u003d', '=', urls)
-                urls = re.sub('\\\\u0026', '&', urls)
+            # decode resulting player URL (URL is composed of many sub-URLs)
+            urls = response_data
+            urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
+            urls = re.sub('\\\\u003d', '=', urls)
+            urls = re.sub('\\\\u0026', '&', urls)
 
-                serviceRequired = ''
-                for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
+            serviceRequired = ''
+            for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
                                urls, re.DOTALL):
-                    (service, serviceRequired) = r.groups()
+                (service, serviceRequired) = r.groups()
 
-                if serviceRequired != '':
-                    log('an unexpected service token is required: %s' % (serviceRequired), True)
+            if serviceRequired != '':
+                log('an unexpected service token is required: %s' % (serviceRequired), True)
 
-            elif serviceRequired == 'wise':
-                self.useWRITELY = False
-                req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
-
-                try:
-                    response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
-                    if e.code == 403 or e.code == 401:
-                        self.refreshToken()
-                        req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
-                        try:
-                            response = urllib2.urlopen(req)
-                        except urllib2.URLError, e:
-                            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                            self.crashreport.sendError('getPlaybackCall',str(e))
-                            return
-                    else:
-                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                        self.crashreport.sendError('getPlaybackCall',str(e))
-                        return
-
-                response_data = response.read()
-                response.close()
-
-                # decode resulting player URL (URL is composed of many sub-URLs)
-                urls = response_data
-                urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
-                urls = re.sub('\\\\u003d', '=', urls)
-                urls = re.sub('\\\\u0026', '&', urls)
-
-                serviceRequired = ''
-                for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
-                               urls, re.DOTALL):
-                    (service, serviceRequired) = r.groups()
-
-                if serviceRequired != '':
-                    log('an unexpected service token is required: %s' % (serviceRequired), True)
-
-            elif serviceRequired != '':
-              log('an unexpected service token is required: %s' % (serviceRequired), True)
+        elif serviceRequired != '':
+           log('an unexpected service token is required: %s' % (serviceRequired), True)
 
 
-            # do some substitutions to make anchoring the URL easier
-            urls = re.sub('\&url\='+PROTOCOL, '\@', urls)
+        # do some substitutions to make anchoring the URL easier
+        urls = re.sub('\&url\='+PROTOCOL, '\@', urls)
 
         # itag code reference http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs
         #itag_dict = {1080: ['137', '37', '46'], 720: ['22', '136', '45'],
@@ -889,9 +880,9 @@ class gdrive(cloudservice):
 #        <setting id="preferred_format" type="enum" label="30012" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
 #        <setting id="avoid_codec" type="enum" label="30013" values="none|VP8/vorbis" default="0"/>
 
-            itagDB={}
-            containerDB = {'x-flv':'flv', 'webm': 'WebM', 'mp4;+codecs="avc1.42001E,+mp4a.40.2"': 'MP4'}
-            for r in re.finditer('(\d+)/(\d+)x(\d+)/(\d+/\d+/\d+)\&?\,?' ,
+        itagDB={}
+        containerDB = {'x-flv':'flv', 'webm': 'WebM', 'mp4;+codecs="avc1.42001E,+mp4a.40.2"': 'MP4'}
+        for r in re.finditer('(\d+)/(\d+)x(\d+)/(\d+/\d+/\d+)\&?\,?' ,
                                urls, re.DOTALL):
               (itag,resolution1,resolution2,codec) = r.groups()
 
@@ -903,9 +894,9 @@ class gdrive(cloudservice):
                 itagDB[itag] = {'resolution': resolution2}
 
 
-            # fetch format type and quality for each stream
-            count=0
-            for r in re.finditer('\@([^\@]+)' ,urls):
+        # fetch format type and quality for each stream
+        count=0
+        for r in re.finditer('\@([^\@]+)' ,urls):
                 videoURL = r.group(1)
                 for q in re.finditer('itag\=(\d+).*?type\=video\/([^\&]+)\&quality\=(\w+)' ,
                              videoURL, re.DOTALL):
@@ -979,14 +970,13 @@ class gdrive(cloudservice):
 
                     try:
                         mediaURLs.append(mediaurl.mediaurl(PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], 0, order+count))
-#                videos[str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec']] = PROTOCOL + videoURL
                     except KeyError:
                         mediaURLs.append(mediaurl.mediaurl(PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container, 0, order+count))
-#                videos[str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container] = PROTOCOL + videoURL
 
         return mediaURLs
 
 
+    #*** needs update
     def downloadPicture(self,url, file):
 
         req = urllib2.Request(url, None, self.getHeadersList())
@@ -1013,7 +1003,7 @@ class gdrive(cloudservice):
                 self.crashreport.sendError('downloadPicture',str(e))
                 return
 
-
+    #*** needs update
     def downloadDecryptPicture(self,key,url, file):
 
         req = urllib2.Request(url, None, self.getHeadersList())
@@ -1043,7 +1033,7 @@ class gdrive(cloudservice):
                 return
 
 
-
+    #*** needs update
     # for playing public URLs
     def getPublicStream(self,url):
 
@@ -1195,6 +1185,7 @@ class gdrive(cloudservice):
 
         return videoURL1
 
+    #*** needs update
     ##
     # retrieve a media file
     #   parameters: title of video, whether to prompt for quality/format (optional), cache type (optional)
@@ -1295,7 +1286,8 @@ class gdrive(cloudservice):
         self.fp = fp
         return path + filename
 
-   ##
+    #*** needs update
+    ##
     # retrieve a media file
     #   parameters: title of video, whether to prompt for quality/format (optional), cache type (optional)
     ##
