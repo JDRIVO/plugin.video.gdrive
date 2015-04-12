@@ -350,7 +350,7 @@ class gdrive(cloudservice):
                     mediaFiles.append(media)
 
                 # entry is a photo
-                elif (resourceType == 'application/vnd.google-apps.photo' or 'photo' in resourceType):
+                elif (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder('',''))
@@ -440,6 +440,50 @@ class gdrive(cloudservice):
                 url = nextURL[0]
 
         return resourceID
+
+    ##
+    # retrieve the download URL for given docid
+    #   parameters: resource ID
+    #   returns: download URL
+    ##
+    def getDownloadURL(self, docid):
+
+            url = self.API_URL +'files/' + docid
+
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+
+            # if action fails, validate login
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                if e.code == 403 or e.code == 401:
+                    self.refreshToken()
+                    req = urllib2.Request(url, None, self.getHeadersList())
+                    try:
+                        response = urllib2.urlopen(req)
+                    except urllib2.URLError, e:
+                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                        self.crashreport.sendError('getPlaybackCall',str(e))
+                        return
+                else:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('getPlaybackCall',str(e))
+                    return
+
+            response_data = response.read()
+            response.close()
+
+
+            for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
+                entry = r1.group(1)
+
+
+                url = ''
+                for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  url = r.group(1)
+                  return url
 
 
 
@@ -688,15 +732,16 @@ class gdrive(cloudservice):
 
         docid = ''
 
-        #*** update
+        # for playback from STRM with title of video provided (best match)
         if package is None and title != '':
-            # search by video title
-            if isExact == True:
-                params = urllib.urlencode({'title': title, 'title-exact': 'true'})
-            else:
-                params = urllib.urlencode({'title': title, 'title-exact': 'false'})
 
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full?' + params
+            url = self.API_URL +'files/'
+            # search by video title
+            encodedTitle = re.sub(' ', '+', title)
+            if isExact == True:
+                url = url + "?q=title%3d'" + str(encodedTitle) + "'"
+            else:
+                url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
 
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -722,15 +767,30 @@ class gdrive(cloudservice):
             response.close()
 
 
-            # fetch video title, download URL and docid for stream link
-            for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
-                entry = r.group(1)
-                for q in re.finditer('<title>([^<]+)</title><content type=\'([^\/]+)\/[^\']+\' src=\'([^\']+)\'.*\;docid=([^\&]+)\&' ,
-                             entry, re.DOTALL):
-                    title,mediaType,url,docid = q.groups()
+            for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
+                entry = r1.group(1)
 
-                    #mediaURLs.append(url, 'original', 0, 3)
-                    mediaURLs.append(mediaurl.mediaurl(url, '9999 - original', 0, 9999))
+
+                resourceType = ''
+                title = ''
+                url = ''
+                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  docid = r.group(1)
+                  break
+                for r in re.finditer('\"mimeType\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  resourceType = r.group(1)
+                  break
+                for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  title = r.group(1)
+                  break
+                for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  url = r.group(1)
+                  mediaURLs.append(mediaurl.mediaurl(url, '9999 - original', 0, 9999))
+                  break
 
         #given docid, fetch original playback
         else:
@@ -793,7 +853,7 @@ class gdrive(cloudservice):
         if docid != '':
             # player using docid
             params = urllib.urlencode({'docid': docid})
-            url = PROTOCOL+'drive.google.com/get_video_info?docid=' + str(docid)
+            url = self.PROTOCOL+ 'drive.google.com/get_video_info?docid=' + str(docid)
             req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
             # if action fails, validate login
             try:
@@ -869,7 +929,7 @@ class gdrive(cloudservice):
 
 
         # do some substitutions to make anchoring the URL easier
-        urls = re.sub('\&url\='+PROTOCOL, '\@', urls)
+        urls = re.sub('\&url\='+self.PROTOCOL, '\@', urls)
 
         # itag code reference http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs
         #itag_dict = {1080: ['137', '37', '46'], 720: ['22', '136', '45'],
@@ -969,9 +1029,9 @@ class gdrive(cloudservice):
                         pass
 
                     try:
-                        mediaURLs.append(mediaurl.mediaurl(PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], 0, order+count))
+                        mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], 0, order+count))
                     except KeyError:
-                        mediaURLs.append(mediaurl.mediaurl(PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container, 0, order+count))
+                        mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container, 0, order+count))
 
         return mediaURLs
 
@@ -981,15 +1041,15 @@ class gdrive(cloudservice):
 
         req = urllib2.Request(url, None, self.getHeadersList())
 
-#        import xbmcvfs
-#        f = xbmcvfs.File(file, 'w')
+        import xbmcvfs
+        f = xbmcvfs.File(file, 'w')
 #        f = open(file,'wb')
         # if action fails, validate login
         try:
-#          f.write(urllib2.urlopen(req).read())
+            f.write(urllib2.urlopen(req).read())
 #            f.write(urllib2.urlopen(req).read())
-#            f.close()
-                open(file,'wb').write(urllib2.urlopen(req).read())
+            f.close()
+#                open(file,'wb').write(urllib2.urlopen(req).read())
 
         except urllib2.URLError, e:
               self.refreshToken()
@@ -1176,11 +1236,11 @@ class gdrive(cloudservice):
         urls = re.sub('\\\\u0026', '&', urls)
 
 
-        urls = re.sub('\d+\|'+PROTOCOL, '\@', urls)
+        urls = re.sub('\d+\|'+self.PROTOCOL, '\@', urls)
 
         for r in re.finditer('\@([^\@]+)' ,urls):
           videoURL = r.group(0)
-        videoURL1 = PROTOCOL + videoURL
+        videoURL1 = self.PROTOCOL + videoURL
 
 
         return videoURL1

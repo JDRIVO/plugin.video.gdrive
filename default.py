@@ -789,15 +789,16 @@ elif mode == 'memorycachevideo':
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 elif mode == 'photo':
-    try:
-      url = plugin_queries['url']
-    except:
-      url = 0
 
     try:
       title = plugin_queries['title']
     except:
       title = 0
+
+    try:
+      docid = plugin_queries['filename']
+    except:
+      docid = ''
 
     try:
       folder = plugin_queries['folder']
@@ -811,10 +812,9 @@ elif mode == 'photo':
     except:
         pass
 
-    import os.path
-
-    if not os.path.exists(path):
-        path = ''
+#    import os.path
+#    if not os.path.exists(path):
+#        path = ''
 
     while path == '':
         path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30038), 'files','',False,False,'')
@@ -823,10 +823,9 @@ elif mode == 'photo':
         else:
             addon.setSetting('photo_folder', path)
 
-    url = re.sub('---', '&', url)
 
     import xbmcvfs
-    xbmcvfs.mkdir(path + '/'+folder)
+    xbmcvfs.mkdir(str(path) + '/'+str(folder))
 #    xbmcvfs.mkdir(path + '/'+folder + '/dir_'+title)
     try:
         xbmcvfs.rmdir(path + '/'+folder+'/'+title)
@@ -834,7 +833,8 @@ elif mode == 'photo':
         pass
 
 #    gdrive.downloadPicture(url, path + '/'+folder + '/dir_'+title + '/'+title)
-    service.downloadPicture(url, path + '/'+folder + '/'+title)
+    url = service.getDownloadURL(docid)
+    service.downloadPicture(url, str(path) + '/'+str(folder) + '/'+str(title))
 #    item.setInfo(type='pictures',infoLabels={"Title": 'PicasaWeb Photo', "picturepath": '/u01/test.png'})
 #    item.setProperty('IsPlayable', 'true')
 
@@ -842,7 +842,7 @@ elif mode == 'photo':
 #    xbmc.executebuiltin("XBMC.SlideShow(/tmp/)")
 #    xbmc.executebuiltin("XBMC.SlideShow("+path + '/'+folder+"/)")
 #    xbmc.executebuiltin("XBMC.ShowPicture("+path + '/'+folder + '/dir_'+title + '/'+title+")")
-    xbmc.executebuiltin("XBMC.ShowPicture("+path + '/'+folder + '/'+title+")")
+    xbmc.executebuiltin("XBMC.ShowPicture("+str(path) + '/'+str(folder) + '/'+str(title)+")")
 
 elif mode == 'downloadfolder':
     try:

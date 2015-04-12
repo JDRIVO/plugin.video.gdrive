@@ -1,3 +1,5 @@
+-- Google Drive API 2 module - add support legacy STRM support for files with title
+-- Google Drive API 2 module - add support for photos
 Version 0.5.8
 -- Google Drive API 2 module - add support for search
 -- Google Drive API 2 module - add support for "show all music/video/photo"
