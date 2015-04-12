@@ -75,7 +75,7 @@ class cloudservice(object):
         xbmcvfs.mkdir(path)
 
         folders = self.getFolderList(folderID)
-        files = self.getMediaList(folderID,cacheType)
+        files = self.getMediaList(folderID,contentType=contentType)
 
         if files:
             for media in files:
@@ -103,12 +103,12 @@ class cloudservice(object):
     ##
     # build STRM files to a given path for a given folder ID
     ##
-    def buildSTRM(self, path, folderID=''):
+    def buildSTRM(self, path, folderID='', contentType=7):
 
         import xbmcvfs
         xbmcvfs.mkdir(path)
 
-        mediaItems = self.getMediaList(folderID,0)
+        mediaItems = self.getMediaList(folderID,contentType=contentType)
 
         if mediaItems:
             for item in mediaItems:
@@ -186,5 +186,5 @@ class cloudservice(object):
     # retrieve a directory url
     #   returns: url
     ##
-    def getDirectoryCall(self, folder):
-        return self.PLUGIN_URL+'?mode=index&instance='+self.instanceName+'&folder='+folder.id
+    def getDirectoryCall(self, folder, contextType='video'):
+        return self.PLUGIN_URL+'?mode=index&instance='+str(self.instanceName)+'&folder='+str(folder.id)+'&content_type='+str(contextType)

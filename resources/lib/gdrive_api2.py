@@ -220,7 +220,7 @@ class gdrive(cloudservice):
     #   parameters: prompt for video quality (optional), cache type (optional)
     #   returns: list of videos
     ##
-    def getMediaList(self, folderName=False, title=False, cacheType=CACHE_TYPE_MEMORY):
+    def getMediaList(self, folderName=False, title=False, contentType=7):
 
         # retrieve all items
         url = self.API_URL +'files/'
@@ -324,7 +324,7 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                   thumbnail = r.group(1)
                   break
-                for r in re.finditer('\"alternateLink\"\:\s+\"([^\"]+)\"' ,
+                for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   url = r.group(1)
                   break
@@ -335,7 +335,7 @@ class gdrive(cloudservice):
                     mediaFiles.append(media)
 
                 # entry is a video
-                elif (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType):
+                elif (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType and contentType in (0,1,2,4,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder('',''))
@@ -343,7 +343,7 @@ class gdrive(cloudservice):
                     mediaFiles.append(media)
 
                 # entry is a music file
-                elif (resourceType == 'application/vnd.google-apps.audio' or 'audio' in resourceType):
+                elif (resourceType == 'application/vnd.google-apps.audio' or 'audio' in resourceType and contentType in (1,2,3,4,6,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder('',''))
@@ -351,7 +351,7 @@ class gdrive(cloudservice):
                     mediaFiles.append(media)
 
                 # entry is a photo
-                elif (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType):
+                elif (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType and contentType in (2,4,5,6,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder('',''))
