@@ -1251,13 +1251,8 @@ class gdrive(cloudservice):
     # retrieve a media file
     #   parameters: title of video, whether to prompt for quality/format (optional), cache type (optional)
     ##
-    def downloadMediaFile(self,url, title, fileSize):
+    def downloadMediaFile(self, playback, url, title, fileSize):
 
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
-        opener.addheaders = [('User-Agent', self.user_agent), ('Authorization' , 'GoogleLogin auth='+self.authorization.getToken('auth_writely')), ('GData-Version' , self.API_VERSION)]
-        request = urllib2.Request(url)
-
-        # if action fails, validate login
 
         cachePercent = 0
         try:
@@ -1288,87 +1283,77 @@ class gdrive(cloudservice):
             CHUNK = 16 * 1024
 
         count = 0
+
+
         path = ''
         try:
-            path = self.addon.getSetting('cache_folder')
+            path = addon.getSetting('cache_folder')
         except:
             pass
 
-        import os.path
-
-        if not os.path.exists(path):
-                path = ''
+        if not xbmcvfs.exists(path):
+            path = ''
 
         while path == '':
             path = xbmcgui.Dialog().browse(0,self.addon.getLocalizedString(30090), 'files','',False,False,'')
-            if not os.path.exists(path):
+            if not xbmcvfs.exists(path):
                 path = ''
             else:
                 self.addon.setSetting('cache_folder', path)
 
 
+        req = urllib2.Request(url, None, self.getHeadersList())
 
-        # if action fails, validate login
-        try:
-            response = opener.open(request)
-        except urllib2.URLError, e:
-            if e.code == 403 or e.code == 401:
+        playbackFile = str(path) + '/' + str(title)
+
+        if not xbmcvfs.exists(playbackFile):
+            f = xbmcvfs.File(playbackFile, 'w')
+
+            progress = xbmcgui.DialogProgress()
+            progress.create(self.addon.getLocalizedString(30000),self.addon.getLocalizedString(30035),title,'\n')
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+
+#            f.write(urllib2.urlopen(req).read(CHUNK))
+#            f.close()
+
+            except urllib2.URLError, e:
               self.refreshToken()
-              opener.addheaders = [('User-Agent', self.user_agent), ('Authorization' , 'GoogleLogin auth='+self.authorization.getToken('auth_writely')), ('GData-Version' , self.API_VERSION)]
-              request = urllib2.Request(url)
+              req = urllib2.Request(url, None, self.getHeadersList())
               try:
-                  response = opener.open(request)
+                  response = urllib2.urlopen(req)
+
+#                f.write(urllib2.urlopen(req).read(CHUNK))
+#                f.close()
               except urllib2.URLError, e:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('downloadMediaFile',str(e))
-                return
-            else:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('downloadMediaFile',str(e))
+                self.crashreport.sendError('downloadPicture',str(e))
                 return
 
-        progress = xbmcgui.DialogProgress()
-        progress.create(self.addon.getLocalizedString(30000),self.addon.getLocalizedString(30035),title,'\n')
-
-#        with open(path + 'test.mp4', 'wb') as fp:
-
-        filename = 'cache.mp4'
-
-        fp = open(path + filename, 'wb')
-        downloadedBytes = 0
-        while sizeDownload > downloadedBytes:
+#        f = open(str(path) + '/' + str(filename), 'wb')
+            downloadedBytes = 0
+            while sizeDownload > downloadedBytes:
                 progress.update((int)(float(downloadedBytes)/sizeDownload*100),self.addon.getLocalizedString(30035),(str)(cachePercent) + ' ' +self.addon.getLocalizedString(30093),'\n')
                 chunk = response.read(CHUNK)
                 if not chunk: break
-                fp.write(chunk)
+                f.write(chunk)
                 downloadedBytes = downloadedBytes + CHUNK
 
-        self.response = response
-        self.fp = fp
-        return path + filename
+        item = xbmcgui.ListItem(path=playbackFile)
+        item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
+        xbmcplugin.setResolvedUrl(playback, True, item)
+        xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
 
-    #*** needs update
-    ##
-    # retrieve a media file
-    #   parameters: title of video, whether to prompt for quality/format (optional), cache type (optional)
-    ##
-    def continuedownloadMediaFile(self, url):
-
-        CHUNK = 0
         try:
-            CHUNK = int(self.addon.getSetting('chunk_size'))
-        except:
-            CHUNK = 32 * 1024
-
-        if CHUNK < 1024:
-            CHUNK = 16 * 1024
-
-#        fp = open(url, 'a')
-        while True:
-                chunk = self.response.read(CHUNK)
+            while True:
+                chunk = response.read(CHUNK)
                 if not chunk: break
-                self.fp.write(chunk)
-        self.fp.close()
+                f.write(chunk)
+            f.close()
+        except: pass
+
 
 
 

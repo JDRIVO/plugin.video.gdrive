@@ -1,7 +1,10 @@
 - prevent "Save STRM" option for picture files and while running under picture plugin
 - better context handling
+- add dialog for save STRM
 -- Google Drive API 2 module - add support slideshow support (pictures)
 -- Google Drive API 2 module - remove sort-order from playback list
+-- Google Drive API 2 module - add support for download
+-- Google Drive API 2 module - add support for cache playback
 Version 0.5.9
 -- Google Drive API 2 module - add support legacy STRM support for files with title
 -- Google Drive API 2 module - add support for photos

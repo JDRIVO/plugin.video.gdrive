@@ -96,9 +96,9 @@ def addMediaFile(service, package, contextType='video'):
 #    cm.append(( addon.getLocalizedString(30046), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=0)', ))
 #    cm.append(( addon.getLocalizedString(30047), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=1)', ))
 #    cm.append(( addon.getLocalizedString(30048), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=2)', ))
-    #cm.append(( addon.getLocalizedString(30032), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=download&title='+package.file.title+'&filename='+package.file.id+')', ))
+        cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=download&title='+str(package.file.title)+'&filename='+str(package.file.id)+'&instance='+str(service.instanceName)+')', ))
     elif contextType == 'image':
-        cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+str(package.folder.id)+'&username='+str(service.authorization.username)+')', ))
+        cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+str(package.folder.id)+'&instance='+str(service.instanceName)+')', ))
 
 #    listitem.addContextMenuItems( commands )
 #    if cm:
@@ -731,13 +731,54 @@ if mode == 'main' or mode == 'index':
     service.updateAuthorization(addon)
 
 
-#play a URL that is passed in (presumably requires authorizated session)
-elif mode == 'play':
-    url = plugin_queries['url']
+#download a file
+elif mode == 'download' or mode == 'cache':
+
+    #title
+    try:
+        title = plugin_queries['title']
+    except:
+        title = ''
+
+    #docid
+    try:
+        filename = plugin_queries['filename']
+    except:
+        filename = ''
+
+    try:
+        service
+    except NameError:
+        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
+        log(addon.getLocalizedString(30050)+ 'gdrive-login', True)
+        xbmcplugin.endOfDirectory(plugin_handle)
+
+    promptQuality = True
+    try:
+        promptQuality = addon.getSetting('prompt_quality')
+        if promptQuality == 'false':
+            promptQuality = False
+    except:
+        pass
 
 
+    playbackMedia = True
+    #if we don't have the docid, search for the video for playback
+    if (filename != ''):
+        mediaFile = file.file(filename, title, '', 0, '','')
+        mediaFolder = folder.folder('','')
+        mediaURLs = service.getPlaybackCall(0,package=package.package(mediaFile,mediaFolder))
 
-    cacheType = int(addon.getSetting('playback_type'))
+        options = []
+
+        for mediaURL in sorted(mediaURLs):
+            options.append(mediaURL.qualityDesc)
+        if promptQuality:
+            ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
+        else:
+            ret = 0
+
+        playbackURL = mediaURLs[ret].url
 
     fileSize = 0
     try:
@@ -746,76 +787,8 @@ elif mode == 'play':
       fileSize = 0
 
 
-    if cacheType == 1:
-#        url = gdrive.downloadMediaFile(url,url)
-        url = service.downloadMediaFile(url,url,fileSize)
+    service.downloadMediaFile(int(sys.argv[1]),playbackURL,title,fileSize)
 
-    else:
-        url = url + '|'+service.getHeadersEncoded(service.useWRITELY)
-
-    item = xbmcgui.ListItem(path=url)
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-    if cacheType == 1:
-        service.continuedownloadMediaFile(url)
-
-#play a video given its exact-title
-elif mode == 'cache':
-    file = plugin_queries['file']
-
-
-    path = ''
-    try:
-        path = addon.getSetting('cache_folder')
-    except:
-        pass
-
-    import os.path
-
-    if not os.path.exists(path):
-        path = ''
-
-    while path == '':
-        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
-        if not os.path.exists(path):
-            path = ''
-        else:
-            addon.setSetting('cache_folder', path)
-
-    xbmc.executebuiltin("XBMC.PlayMedia("+path +file+")")
-
-#    item = xbmcgui.ListItem(path=path + file)
-#    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-#play a video given its exact-title
-elif mode == 'playvideo':
-    title = plugin_queries['title']
-    cacheType = int(addon.getSetting('playback_type'))
-
-    videoURL = service.getVideoLink(title,cacheType)
-
-    if cacheType == 1:
-        videoURL = service.downloadMediaFile(videoURL,title, 0)
-    else:
-        #effective 2014/02, video stream calls require a wise token instead of writely token
-        videoURL = videoURL + '|' + service.getHeadersEncoded(service.useWRITELY)
-
-    item = xbmcgui.ListItem(path=videoURL)
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-    if cacheType == 1:
-        service.continuedownloadMediaFile(reponse,fp)
-
-#force memory-cache - play a video given its exact-title
-elif mode == 'memorycachevideo':
-    title = plugin_queries['title']
-    videoURL = service.getVideoLink(title)
-
-    #effective 2014/02, video stream calls require a wise token instead of writely token
-    videoURL = videoURL + '|' + service.getHeadersEncoded(service.useWRITELY)
-
-    item = xbmcgui.ListItem(path=videoURL)
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 elif mode == 'photo':
 
@@ -867,6 +840,7 @@ elif mode == 'photo':
     item = xbmcgui.ListItem(path=str(path) + '/'+str(folder) + '/'+str(title))
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
 
+#*** needs updating
 elif mode == 'downloadfolder':
     try:
       folder = plugin_queries['folder']
@@ -889,6 +863,7 @@ elif mode == 'downloadfolder':
     key = encryption.generate_key(enc_password,salt,encryption.NUMBER_OF_ITERATIONS)
     encryption.decrypt_dir(key,path,folder)
 
+#*** needs updating
 elif mode == 'decryptfolder':
     try:
       folder = plugin_queries['folder']
@@ -960,14 +935,18 @@ elif mode == 'slideshow':
 
 
 
-#force stream - play a video given its exact-title
-elif mode == 'video' or mode == 'search':
+#playback of video
+# legacy (depreicated) - memorycachevideo [given title]
+# legacy (depreicated) - play [given title]
+# legacy (depreicated) - playvideo [given title]
+# legacy (depreicated) - streamvideo [given title]
+elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycachevideo' or mode == 'playvideo' or mode == 'streamvideo':
 
     #title
     try:
-      title = plugin_queries['title']
+        title = plugin_queries['title']
     except:
-      title = ''
+        title = ''
 
     #docid
     try:
@@ -990,10 +969,6 @@ elif mode == 'video' or mode == 'search':
     except:
         pass
 
-    try:
-        contextType = plugin_queries['content_type']
-    except:
-        contextType = ''
 
     playbackMedia = True
     #if we don't have the docid, search for the video for playback
