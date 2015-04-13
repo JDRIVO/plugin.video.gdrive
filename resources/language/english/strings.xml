@@ -5,7 +5,7 @@
     <string id="30002">Password</string>
     <string id="30003">Authorization Key [OPTIONAL]</string>
     <string id="30004">User Agent</string>
-    <string id="30006">Playback Type</string>
+    <string id="30006">Playback</string>
     <string id="30005">Save Authorization Key</string>
     <string id="30007">Always Prompt for Quality / Format Playback</string>
     <string id="30008">Login</string>
@@ -41,6 +41,8 @@
     <string id="30092">Downloading...</string>
     <string id="30093">Percent to download before playback</string>
     <string id="30094">Music</string>
+    <string id="30095">Downloads and Cache</string>
+    <string id="30096">Stream Perferences</string>
 
     <!-- CloudService Generic -->
 

@@ -104,18 +104,6 @@ def addMediaFile(service, package, contextType='video'):
 #    if cm:
     listitem.addContextMenuItems(cm, False)
 
-    # gdrive specific ***
-    cacheType = int(addon.getSetting('playback_type'))
-
-    if cacheType == 1:
-
-        fileSize = ''
-        for r in re.finditer('(size)\=(\d+)' ,
-                             url, re.DOTALL):
-            (size, fileSize) = r.groups()
-
-        url = PLUGIN_URL+'?mode=play&size='+fileSize+'&url='+url
-    # ***
 
     xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=False, totalItems=0)

@@ -66,9 +66,6 @@ class gdrive(cloudservice):
 
     MEDIA_TYPE_FOLDER = 0
 
-    CACHE_TYPE_MEMORY = 0
-    CACHE_TYPE_DISK = 1
-    CACHE_TYPE_STREAM = 2
 
     API_VERSION = '3.0'
 
@@ -1249,7 +1246,7 @@ class gdrive(cloudservice):
     #*** needs update
     ##
     # retrieve a media file
-    #   parameters: title of video, whether to prompt for quality/format (optional), cache type (optional)
+    #   parameters: title of video, whether to prompt for quality/format (optional),
     ##
     def downloadMediaFile(self, playback, url, title, fileSize):
 
