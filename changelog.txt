@@ -5,6 +5,7 @@
 -- Google Drive API 2 module - remove sort-order from playback list
 -- Google Drive API 2 module - add support for download
 -- Google Drive API 2 module - add support for cache playback
+-- Google Drive API 2 module - implement depricated API calls: memorycachevideo, play, playvideo, streamvideo
 Version 0.5.9
 -- Google Drive API 2 module - add support legacy STRM support for files with title
 -- Google Drive API 2 module - add support for photos

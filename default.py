@@ -1030,36 +1030,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 #force stream - play a video given its exact-title
-elif mode == 'streamvideo':
-
-    try:
-      title = plugin_queries['title']
-    except:
-      title = 0
-
-    try:
-      pquality = int(addon.getSetting('preferred_quality'))
-      pformat = int(addon.getSetting('preferred_format'))
-      acodec = int(addon.getSetting('avoid_codec'))
-    except :
-      pquality=-1
-      pformat=-1
-      acodec=-1
-
-    mediaURLs = service.getPlaybackCall(0,title=title)
-
-    options = []
-    for mediaURL in sorted(mediaURLs):
-        options.append(mediaURL.qualityDesc)
-    ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
-    playbackURL = mediaURLs[ret].url
-
-    item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
-    item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-
-#force stream - play a video given its exact-title
 elif mode == 'streamurl':
     try:
       url = plugin_queries['url']
