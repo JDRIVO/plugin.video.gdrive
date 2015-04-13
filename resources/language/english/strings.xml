@@ -39,6 +39,7 @@
     <string id="30090">Location to store cache files</string>
     <string id="30091">Chunk size</string>
     <string id="30092">Downloading...</string>
+    <string id="30035">Caching...</string>
     <string id="30093">Percent to download before playback</string>
     <string id="30094">Music</string>
     <string id="30095">Downloads and Cache</string>

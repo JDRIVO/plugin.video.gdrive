@@ -96,9 +96,12 @@ def addMediaFile(service, package, contextType='video'):
 #    cm.append(( addon.getLocalizedString(30046), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=0)', ))
 #    cm.append(( addon.getLocalizedString(30047), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=1)', ))
 #    cm.append(( addon.getLocalizedString(30048), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=2)', ))
-        cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=download&title='+str(package.file.title)+'&filename='+str(package.file.id)+'&instance='+str(service.instanceName)+')', ))
+        cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=download&folder='+str(package.folder.id)+'&title='+str(package.file.title)+'&filename='+str(package.file.id)+'&filesize='+str(package.file.size)+'&instance='+str(service.instanceName)+')', ))
+        cm.append(( "Play from cache", 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=cache&folder='+str(package.folder.id)+'&title='+str(package.file.title)+'&filename='+str(package.file.id)+'&instance='+str(service.instanceName)+')', ))
+
     elif contextType == 'image':
         cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+str(package.folder.id)+'&instance='+str(service.instanceName)+')', ))
+
 
 #    listitem.addContextMenuItems( commands )
 #    if cm:
@@ -122,7 +125,9 @@ def addDirectory(service, folder, contextType='video'):
             cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+folder.title+'&username='+str(service.authorization.username)+'&folderID='+str(folder.id)+')', ))
 #        cm.append(( addon.getLocalizedString(30081), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=createbookmark&title='+folder.title+'&instanceName='+str(service.instanceName)+'&folderID='+str(folder.id)+')', ))
         elif contextType == 'image':
-            cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+str(folder.id)+'&username='+str(service.authorization.username)+')', ))
+            cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&title='+str(folder.title) + '&folder='+str(folder.id)+'&username='+str(service.authorization.username)+')', ))
+
+        cm.append(( 'Download', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&title='+str(folder.title) + '&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
 
         listitem.addContextMenuItems(cm, False)
     listitem.setProperty('fanart_image', fanart)
@@ -502,6 +507,7 @@ elif mode == 'buildstrm':
         if silent != 2:
             try:
                 pDialog.update(100)
+                pDialog.close()
             except:
                 pass
         if silent == 0:
@@ -734,6 +740,12 @@ elif mode == 'download' or mode == 'cache':
     except:
         filename = ''
 
+    #docid
+    try:
+        folderID = plugin_queries['folder']
+    except:
+        folderID = ''
+
     try:
         service
     except NameError:
@@ -749,33 +761,56 @@ elif mode == 'download' or mode == 'cache':
     except:
         pass
 
-
-    playbackMedia = True
-    #if we don't have the docid, search for the video for playback
-    if (filename != ''):
-        mediaFile = file.file(filename, title, '', 0, '','')
-        mediaFolder = folder.folder('','')
-        mediaURLs = service.getPlaybackCall(0,package=package.package(mediaFile,mediaFolder))
-
-        options = []
-
-        for mediaURL in sorted(mediaURLs):
-            options.append(mediaURL.qualityDesc)
-        if promptQuality:
-            ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
-        else:
-            ret = 0
-
-        playbackURL = mediaURLs[ret].url
-
     fileSize = 0
     try:
-      fileSize = plugin_queries['size']
+      fileSize = plugin_queries['filesize']
     except:
       fileSize = 0
 
+    if mode == 'download':
+        playbackMedia = True
+        #if we don't have the docid, search for the video for playback
+        if (filename != ''):
+            mediaFile = file.file(filename, title, '', 0, '','')
+            mediaFolder = folder.folder(folderID,'')
+            mediaURLs = service.getPlaybackCall(0,package=package.package(mediaFile,mediaFolder))
 
-    service.downloadMediaFile(int(sys.argv[1]),playbackURL,title,fileSize)
+            options = []
+
+            for mediaURL in sorted(mediaURLs):
+                options.append(mediaURL.qualityDesc)
+            if promptQuality:
+                ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
+            else:
+                ret = 0
+
+            playbackURL = mediaURLs[ret].url
+            service.downloadMediaFile('',playbackURL, str(title)+'.'+ str(mediaURLs[ret].quality), folderID, filename, fileSize)
+    elif mode == 'cache':
+
+        path = ''
+        try:
+            path = addon.getSetting('cache_folder')
+        except:
+            pass
+
+        playbackPath = str(path) + '/' + str(folderID) + '/' + str(filename) + '/'
+
+        if xbmcvfs.exists(playbackPath):
+
+            dirs,files = xbmcvfs.listdir(playbackPath)
+
+            options = []
+
+            for file in sorted(files):
+                options.append(file)
+
+            ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
+
+            item = xbmcgui.ListItem(path=str(playbackPath) + str(files[ret]))
+            item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
+            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+            xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath) + str(files[ret])+")")
 
 
 elif mode == 'photo':
@@ -830,26 +865,34 @@ elif mode == 'photo':
 
 #*** needs updating
 elif mode == 'downloadfolder':
+
+    #title
     try:
-      folder = plugin_queries['folder']
+        title = plugin_queries['title']
     except:
-      folder = 0
+        title = ''
+
+
+    #docid
+    try:
+        folderID = plugin_queries['folder']
+    except:
+        folderID = ''
 
     try:
-      title = plugin_queries['title']
-    except:
-      title = 0
+        service
+    except NameError:
+        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
+        log(addon.getLocalizedString(30050)+ 'gdrive-login', True)
+        xbmcplugin.endOfDirectory(plugin_handle)
 
-    path = '/tmp/2/'
+    mediaItems = service.getMediaList(folderName=folderID, contentType=contentType)
 
-    service.downloadFolder(path,folder)
+    if mediaItems:
+        for item in mediaItems:
+            if item.file is not None:
+                service.downloadMediaFile('', item.mediaurl.url, item.file.title, folderID, item.file.id, item.file.size)
 
-    enc_password = str(addon.getSetting('enc_password'))
-
-    salt = encryption.read_salt(str(addon.getSetting('salt')))
-
-    key = encryption.generate_key(enc_password,salt,encryption.NUMBER_OF_ITERATIONS)
-    encryption.decrypt_dir(key,path,folder)
 
 #*** needs updating
 elif mode == 'decryptfolder':
