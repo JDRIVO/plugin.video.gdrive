@@ -105,12 +105,9 @@
         <setting label="30205" visible="eq(-89,8) + gt(-8,0)" type="lsep"/>
         <setting id="gdrive9_prev_username" subsetting="true" type="text" label="30001" default="" visible="false" />
 
-
     </category>
 
     <category label="30025">
-        <setting label="30037" type="lsep"/>
-        <setting id="context_video" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Everything" default="0"/>
         <setting label="30006" type="lsep"/>
     	<setting id="prompt_quality" type="bool" subsetting="true" label="30019" default="true" />
 
@@ -119,20 +116,21 @@
     	<setting id="preferred_format" type="enum" subsetting="true" label="30012" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
     	<setting id="avoid_codec" type="enum" subsetting="true" label="30013" values="none|VP8/vorbis" default="0"/>
 
+    </category>
+
+    <category label="30098">
+        <setting label="30037" type="lsep"/>
+        <setting id="context_video" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Everything" default="0"/>
+        <setting id="context_music" type="enum" subsetting="true" label="30023" values="Music only|Everything" default="0"/>
+        <setting id="context_photo" type="enum" subsetting="true" label="30024" values="Photos only|Music and Photos|Everything" default="0"/>
+    </category>
+
+    <category label="30097">
+        <setting id="photo_folder" type="folder" label="30038" default="" />
         <setting label="30095" type="lsep"/>
         <setting id="cache_folder" type="folder" subsetting="true" label="30090" default="" />
         <setting id="chunk_size" type="enum" subsetting="true" label="30091" values="32224|32768|262144|1048576" default="2" />
         <setting id="cache_percent" type="slider" subsetting="true" label="30093" option="percent" range="0,1,100" />
-    </category>
-    <category label="30094">
-        <setting label="30037" type="lsep"/>
-        <setting id="context_music" type="enum" subsetting="true" label="30023" values="Music only|Everything" default="0"/>
-    </category>
-
-    <category label="30034">
-        <setting label="30037" type="lsep"/>
-        <setting id="context_photo" type="enum" subsetting="true" label="30024" values="Photos only|Music and Photos|Everything" default="0"/>
-        <setting id="photo_folder" type="folder" label="30038" default="" />
     </category>
     <category label="30060">
         <setting label="30061" type="lsep"/>

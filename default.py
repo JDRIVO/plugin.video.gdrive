@@ -872,8 +872,6 @@ elif mode == 'downloadfolder':
     except:
         title = ''
 
-
-    #docid
     try:
         folderID = plugin_queries['folder']
     except:
