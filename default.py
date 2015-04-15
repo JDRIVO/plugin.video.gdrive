@@ -977,6 +977,13 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
     except:
         title = ''
 
+    #closed captions
+    srt = ''
+    try:
+        srt = plugin_queries['srt']
+    except:
+        srt = ''
+
     #docid
     try:
         filename = plugin_queries['filename']
@@ -998,6 +1005,8 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
     except:
         pass
 
+    if srt != '':
+        SRTURL = service.getSRT(title)
 
     playbackMedia = True
     #if we don't have the docid, search for the video for playback

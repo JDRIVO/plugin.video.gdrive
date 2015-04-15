@@ -379,6 +379,97 @@ class gdrive(cloudservice):
         return mediaFiles
 
 
+    ##
+    # retrieve a srt file for playback
+    #   parameters: title of the video file
+    #   returns: download url for srt
+    ##
+    def getSRT(self, title):
+
+        # retrieve all items
+        url = self.API_URL +'files/'
+
+        # search for title
+        if title != False:
+            title = os.path.splitext(title)[0]
+            encodedTitle = re.sub(' ', '+', title)
+            url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
+
+
+        mediaFiles = []
+        while True:
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.refreshToken()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                  self.crashreport.sendError('getMediaList',str(e))
+                  return
+              else:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getMediaList',str(e))
+                return
+
+            response_data = response.read()
+            response.close()
+
+            # parsing page for videos
+            # video-entry
+            for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\s+\]\s+\}' ,response_data, re.DOTALL):
+             entryS = r2.group(1)
+             for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,entryS, re.DOTALL):
+                entry = r1.group(1)
+
+                resourceID = 0
+                resourceType = ''
+                title = ''
+                url = ''
+                fileExtension = ''
+                for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  fileExtension = r.group(1)
+                  break
+                if fileExtension != 'srt':
+                    break
+                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  resourceID = r.group(1)
+                  break
+                for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  title = r.group(1)
+                  break
+                for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  url = r.group(1)
+                  return url
+                  break
+
+
+
+            # look for more pages of videos
+            nextURL = ''
+            for r in re.finditer('\"nextLink\"\:\s+\"([\"]+)\"' ,
+                             response_data, re.DOTALL):
+                nextURL = r.group(1)
+
+
+            # are there more pages to process?
+            if nextURL == '':
+                break
+            else:
+                url = nextURL[0]
+
+        return ''
+
 
     ##
     # retrieve the resource ID for root folder
