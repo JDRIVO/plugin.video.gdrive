@@ -81,6 +81,8 @@ class gdrive(cloudservice):
         self.addon = addon
         self.instanceName = instanceName
         self.protocol = 2
+        self.type = int(addon.getSetting(instanceName+'_type'))
+
 
         # gdrive specific ***
         self.decrypt = False
@@ -120,11 +122,28 @@ class gdrive(cloudservice):
     ##
     def getToken(self,code):
 
-            url = 'http://dmdsoftware.net/api/gdrive.php'
-            header = { 'User-Agent' : self.user_agent }
-            values = {
+
+            if (self.type == 2):
+                url = addon.getSetting(self.instanceName+'_url')
+                values = {
                       'code' : code
                       }
+            elif (self.type == 3):
+                url = 'https://www.googleapis.com/oauth2/v3/token'
+                clientID = addon.getSetting(self.instanceName+'_client_id')
+                clientSecret = addon.getSetting(self.instanceName+'_client_secret')
+                values = { 'client_id' : clientID, 'client_secret' : clientSecret,
+                      'code' : code,
+                      'grant_type' : 'refresh_token'
+                      }
+            else:
+                url = 'http://dmdsoftware.net/api/gdrive.php'
+                values = {
+                      'code' : code
+                      }
+
+            header = { 'User-Agent' : self.user_agent }
+
 
             req = urllib2.Request(url, urllib.urlencode(values), header)
 
@@ -160,13 +179,29 @@ class gdrive(cloudservice):
     ##
     def refreshToken(self):
 
-            url = 'http://dmdsoftware.net/api/gdrive.php'
             header = { 'User-Agent' : self.user_agent }
-            values = {
+
+            if (self.type == 2):
+                url = addon.getSetting(self.instanceName+'_url')
+                values = {
                       'refresh_token' : self.authorization.getToken('auth_refresh_token')
                       }
+                req = urllib2.Request(url, urllib.urlencode(values), header)
 
-            req = urllib2.Request(url, urllib.urlencode(values), header)
+            elif (self.type == 3):
+                url = 'https://www.googleapis.com/oauth2/v3/token'
+                clientID = addon.getSetting(self.instanceName+'_client_id')
+                clientSecret = addon.getSetting(self.instanceName+'_client_secret')
+
+                req = urllib2.Request(url, 'client_id='+clientID+'&client_secret='+clientSecret+'&refresh_token='+self.authorization.getToken('auth_refresh_token')+'&grant_type=refresh_token', header)
+
+            else:
+                url = 'http://dmdsoftware.net/api/gdrive.php'
+                values = {
+                      'refresh_token' : self.authorization.getToken('auth_refresh_token')
+                      }
+                req = urllib2.Request(url, urllib.urlencode(values), header)
+
 
             # try login
             try:
@@ -182,9 +217,9 @@ class gdrive(cloudservice):
             response.close()
 
             # retrieve authorization token
-            for r in re.finditer('(loading).+?'+ '\"access_token\"\:\s?\"([^\"]+)\".+?' ,
+            for r in re.finditer('\"access_token\"\:\s?\"([^\"]+)\".+?' ,
                              response_data, re.DOTALL):
-                loading,accessToken = r.groups()
+                accessToken = r.group(1)
                 self.authorization.setToken('auth_access_token',accessToken)
                 self.updateAuthorization(self.addon)
 

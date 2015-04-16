@@ -100,7 +100,7 @@ def addMediaFile(service, package, contextType='video'):
         cm.append(( "Play from cache", 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=cache&folder='+str(package.folder.id)+'&title='+str(package.file.title)+'&filename='+str(package.file.id)+'&instance='+str(service.instanceName)+')', ))
 
     elif contextType == 'image':
-        cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+str(package.folder.id)+'&instance='+str(service.instanceName)+')', ))
+        cm.append(( 'Slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+str(package.folder.id)+'&instance='+str(service.instanceName)+')', ))
 
 
 #    listitem.addContextMenuItems( commands )
@@ -125,7 +125,7 @@ def addDirectory(service, folder, contextType='video'):
             cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+folder.title+'&username='+str(service.authorization.username)+'&folderID='+str(folder.id)+')', ))
 #        cm.append(( addon.getLocalizedString(30081), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=createbookmark&title='+folder.title+'&instanceName='+str(service.instanceName)+'&folderID='+str(folder.id)+')', ))
         elif contextType == 'image':
-            cm.append(( 'slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&title='+str(folder.title) + '&folder='+str(folder.id)+'&username='+str(service.authorization.username)+')', ))
+            cm.append(( 'Slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&title='+str(folder.title) + '&folder='+str(folder.id)+'&username='+str(service.authorization.username)+')', ))
 
         cm.append(( 'Download', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&title='+str(folder.title) + '&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
 

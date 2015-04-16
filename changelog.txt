@@ -1,3 +1,6 @@
+Version 0.5.11
+- enabled OAUTH2 private support
+- enabled OAUTH2 custom client id/secret
 Version 0.5.10
 - prevent "Save STRM" option for picture files and while running under picture plugin
 - better context handling
