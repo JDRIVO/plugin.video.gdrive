@@ -104,5 +104,7 @@
     <string id="30204">OAUTH2 URL</string>
     <string id="30205">Visit www.dmdsoftware.net for help setting up OAUTH2</string>
 
+    <string id="30118">Something went wrong with login setup.</string>
+
 
 </strings>

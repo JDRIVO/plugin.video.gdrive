@@ -110,8 +110,8 @@ class gdrive(cloudservice):
             if self.addon.getSetting(self.instanceName+'_code'):
                 self.getToken(self.addon.getSetting(self.instanceName+'_code'))
             else:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + 'error', xbmc.LOGERROR)
-
+                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
         #***
 
 
@@ -151,11 +151,15 @@ class gdrive(cloudservice):
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
-#            if e.code == 403:
-                #login denied
-#                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017))
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                if e.code == 403:
+                    #login issue
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                else:
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                 return
+
 
             response_data = response.read()
             response.close()
@@ -207,10 +211,13 @@ class gdrive(cloudservice):
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
-#            if e.code == 403:
-                #login denied
-#                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017))
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                if e.code == 403:
+                    #login issue
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                else:
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                 return
 
             response_data = response.read()
