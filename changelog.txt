@@ -1,3 +1,11 @@
+- passed regression testing: Support for Drive API 2 #21
+- passed regression testing: OAUTH 2 support #20
+- passed regression testing: Move to CloudService framework #16
+- passed regression testing: Photo playback on Android #14
+- passed regression testing: Playback fails #13
+- passed regression testing: title when using mode=playvideo&title=file_name_in_drive #11
+- passed regression testing: Pictures support #5
+- passed regression testing: Music and Pictures? #1
 Version 0.5.13
 - tested against regression bucket (pass)
 - fix streamurl
