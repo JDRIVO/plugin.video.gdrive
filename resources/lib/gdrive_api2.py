@@ -173,6 +173,12 @@ class gdrive(cloudservice):
                 self.authorization.setToken('auth_refresh_token',refreshToken)
                 self.updateAuthorization(self.addon)
 
+            for r in re.finditer('\"error_description\"\:\s?\"([^\"]+)\"',
+                             response_data, re.DOTALL):
+                errorMessage = r.group(1)
+                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119), errorMessage)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(errorMessage), xbmc.LOGERROR)
+
             return
 
 
@@ -230,6 +236,12 @@ class gdrive(cloudservice):
                 self.authorization.setToken('auth_access_token',accessToken)
                 self.updateAuthorization(self.addon)
 
+            for r in re.finditer('\"error_description\"\:\s?\"([^\"]+)\"',
+                             response_data, re.DOTALL):
+                errorMessage = r.group(1)
+                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119), errorMessage)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(errorMessage), xbmc.LOGERROR)
+
             return
 
     ##
@@ -237,7 +249,10 @@ class gdrive(cloudservice):
     #   returns: list containing the header
     ##
     def getHeadersList(self, forceWritely=True):
-        return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+        if self.authorization.loadToken(self.instanceName,addon, 'auth_access_token'):
+            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+        else:
+            return { 'User-Agent' : self.user_agent}
 
 
     #*** not used
@@ -407,7 +422,7 @@ class gdrive(cloudservice):
 
             # look for more pages of videos
             nextURL = ''
-            for r in re.finditer('\"nextLink\"\:\s+\"([\"]+)\"' ,
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
                 nextURL = r.group(1)
 
@@ -416,7 +431,7 @@ class gdrive(cloudservice):
             if nextURL == '':
                 break
             else:
-                url = nextURL[0]
+                url = nextURL
 
         return mediaFiles
 
@@ -499,7 +514,7 @@ class gdrive(cloudservice):
 
             # look for more pages of videos
             nextURL = ''
-            for r in re.finditer('\"nextLink\"\:\s+\"([\"]+)\"' ,
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
                 nextURL = r.group(1)
 
@@ -508,7 +523,7 @@ class gdrive(cloudservice):
             if nextURL == '':
                 break
             else:
-                url = nextURL[0]
+                url = nextURL
 
         return ''
 
@@ -559,7 +574,7 @@ class gdrive(cloudservice):
 
             # look for more pages of videos
             nextURL = ''
-            for r in re.finditer('\"nextLink\"\:\s+\"([\"]+)\"' ,
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
                 nextURL = r.group(1)
 
@@ -568,7 +583,7 @@ class gdrive(cloudservice):
             if nextURL == '':
                 break
             else:
-                url = nextURL[0]
+                url = nextURL
 
         return resourceID
 

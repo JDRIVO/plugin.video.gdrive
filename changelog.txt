@@ -1,3 +1,9 @@
+Version 0.5.12
+-- Google Drive API 2 module - add enroll account via .STRM
+-- Google Drive API 2 module - fix for long listings
+- fix for ClientLogin backward compatibility
+- add help file for login
+- add additional error handling for logins
 Version 0.5.11
 - enabled OAUTH2 private support
 - enabled OAUTH2 custom client id/secret

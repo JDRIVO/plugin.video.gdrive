@@ -358,6 +358,51 @@ if mode == 'clearauth':
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30023))
     xbmcplugin.endOfDirectory(plugin_handle)
 
+# enroll a new account
+elif mode == 'enroll':
+
+
+        invokedUsername = ''
+        try:
+            invokedUsername = plugin_queries['username']
+        except:
+            pass
+
+        code = ''
+        try:
+            code = plugin_queries['code']
+        except:
+            pass
+
+        count = 1
+        max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
+        loop = True
+        while loop:
+            instanceName = PLUGIN_NAME+str(count)
+            try:
+                username = addon.getSetting(instanceName+'_username')
+                if username == invokedUsername:
+                    addon.setSetting(instanceName + '_type', str(1))
+                    addon.setSetting(instanceName + '_code', str(code))
+                    addon.setSetting(instanceName + '_auth_wise', str(invokedUsername))
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
+                    loop = False
+                elif username == '':
+                    addon.setSetting(instanceName + '_type', str(1))
+                    addon.setSetting(instanceName + '_code', str(code))
+                    addon.setSetting(instanceName + '_username', str(invokedUsername))
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
+                    loop = False
+
+            except:
+                pass
+
+            if count == max_count:
+                #fallback on first defined account
+                addon.setSetting(instanceName + '_type', str(1))
+                addon.setSetting(instanceName + '_code', code)
+                addon.setSetting(instanceName + '_username', username)
+            count = count + 1
 
 #create strm files
 elif mode == 'buildstrm':

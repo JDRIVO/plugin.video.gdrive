@@ -180,7 +180,7 @@ class gdrive(cloudservice):
     #   parameters: prompt for video quality (optional), cache type (optional)
     #   returns: list of videos
     ##
-    def getMediaList(self, folderName=False, title=False, cacheType=CACHE_TYPE_MEMORY):
+    def getMediaList(self, folderName=False, title=False, contentType=7):
 
         # retrieve all items
         url = PROTOCOL+'docs.google.com/feeds/default/private/full'
@@ -268,13 +268,6 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                             title,mediaType,url,thumbnail,docid,fileSize = r.groups()
 
-                          # memory-cache
-#                          if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
-#                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+'&size='+str(size)+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
-                        #***
-                              # streaming
-#                          else:
-#                              videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': thumbnail}
                             mediaFile = file.file(docid, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
 
                             media = package.package(mediaFile,folder.folder('',''))
@@ -289,16 +282,6 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                             title,mediaType,url,docid,fileSize = r.groups()
 
-                              # memory-cache
-#                              if cacheType == self.CACHE_TYPE_MEMORY or cacheType == self.CACHE_TYPE_DISK:
-#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+'&size='+str(size)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
-#                                  x=1
-                        #***
-                              # streaming
-#                              else:
-#                                  x=1
-#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': ''}
-                        #***
                             mediaFile = file.file(docid, title, title, self.MEDIA_TYPE_VIDEO, '', '', size=fileSize)
 
                             media = package.package(mediaFile,folder.folder('',''))
@@ -313,21 +296,6 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                               title,url,thumbnail = r.groups()
 
-                              # memory-cache
-#                              if cacheType == self.CACHE_TYPE_MEMORY:
-#                                  x=1
-#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  thumbnail}
-                        #***
-                              # memory-cache
-#                              elif cacheType == self.CACHE_TYPE_DISK:
-#                                  x=1
-#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO, 'url': str(url), 'thumbnail':  thumbnail}
-                        #***
-                              # streaming
-#                              else:
-#                                  x=1
-#                                  videos[title] = {'mediaType': self.MEDIA_TYPE_VIDEO,'url': PLUGIN_URL+'?mode=streamVideo&title=' + str(title), 'thumbnail': thumbnail}
-                        #***
                               mediaFile = file.file(title, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail)
 
                               media = package.package(mediaFile,folder.folder('',''))
@@ -341,9 +309,6 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                               title,url = r.groups()
 
-                              # there is no steaming for audio (?), so "download to stream"
-#                              videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
-                        #***
                               mediaFile = file.file(title, title, title, self.MEDIA_TYPE_MUSIC, '', '')
 
                               media = package.package(mediaFile,folder.folder('',''))
@@ -358,7 +323,6 @@ class gdrive(cloudservice):
                               title,url = r.groups()
 
                               # there is no steaming for audio (?), so "download to stream"
-#                              videos[title] = {'mediaType': self.MEDIA_TYPE_MUSIC, 'url': str(url)+ '|' + self.getHeadersEncoded(), 'thumbnail':  ''}
                               mediaFile = file.file(title, title, title, self.MEDIA_TYPE_VIDEO, '', '')
 
                               media = package.package(mediaFile,folder.folder('',''))
@@ -376,9 +340,6 @@ class gdrive(cloudservice):
                               # there is no steaming for audio (?), so "download to stream"
                               cleanURL = re.sub('---', '', url)
                               cleanURL = re.sub('&amp;', '---', cleanURL)
-#                              videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+str(folderName)+'&title='+str(title)+'&url=' + str(cleanURL), 'thumbnail': thumbnail}
-#                              x=1
-                        #***
                               mediaFile = file.file(title, title, title, self.MEDIA_TYPE_PICTURE, '', thumbnail)
 
                               media = package.package(mediaFile,folder.folder('',''))
@@ -395,7 +356,6 @@ class gdrive(cloudservice):
                           # there is no steaming for audio (?), so "download to stream"
                               cleanURL = re.sub('---', '', url)
                               cleanURL = re.sub('&amp;', '---', cleanURL)
-#                            videos[title] = {'mediaType': self.MEDIA_TYPE_PICTURE,'url': PLUGIN_URL+'?mode=photo&folder='+str(folderName)+'&title='+str(title)+'&url=' + str(cleanURL), 'thumbnail': ''}
 
                         #***
                               mediaFile = file.file(title, title, title, self.MEDIA_TYPE_PICTURE, '', '')

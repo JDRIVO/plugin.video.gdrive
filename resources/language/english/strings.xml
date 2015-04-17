@@ -98,6 +98,9 @@
     <string id="30116">Cache</string>
     <string id="30117">Listings</string>
 
+    <string id="30118">The following account was enrolled:</string>
+    <string id="30119">The following login error was encountered:</string>
+
     <string id="30201">OAUTH2 code</string>
     <string id="30202">OAUTH2 client id</string>
     <string id="30203">OAUTH2 client secret</string>
