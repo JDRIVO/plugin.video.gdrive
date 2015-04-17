@@ -79,3 +79,14 @@ class authorization:
         except:
             return False
 
+    ##
+    # load the latest authorization tokens
+    ##
+    def isToken(self,instanceName, addon, token):
+        try:
+            if self.auth[token] != '':
+              return True
+            else:
+              return False
+        except:
+            return False

@@ -1,3 +1,6 @@
+- disable <options>; not in use anymore
+- if invoked without a username or instancename, don't default on the first account but prompt the user to select
+-- Google Drive API 2 module - bug fix with header authorization
 Version 0.5.12
 -- Google Drive API 2 module - add enroll account via .STRM
 -- Google Drive API 2 module - fix for long listings

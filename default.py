@@ -96,8 +96,9 @@ def addMediaFile(service, package, contextType='video'):
 #    cm.append(( addon.getLocalizedString(30046), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=0)', ))
 #    cm.append(( addon.getLocalizedString(30047), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=1)', ))
 #    cm.append(( addon.getLocalizedString(30048), 'XBMC.PlayMedia('+playbackURL+'&title='+ package.file.title + '&directory='+ package.folder.id + '&filename='+ package.file.id +'&playback=2)', ))
-        cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=download&folder='+str(package.folder.id)+'&title='+str(package.file.title)+'&filename='+str(package.file.id)+'&filesize='+str(package.file.size)+'&instance='+str(service.instanceName)+')', ))
-        cm.append(( "Play from cache", 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=cache&folder='+str(package.folder.id)+'&title='+str(package.file.title)+'&filename='+str(package.file.id)+'&instance='+str(service.instanceName)+')', ))
+        if (service.protocol == 2):
+            cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=download&folder='+str(package.folder.id)+'&title='+str(package.file.title)+'&filename='+str(package.file.id)+'&filesize='+str(package.file.size)+'&instance='+str(service.instanceName)+')', ))
+            cm.append(( "Play from cache", 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=cache&folder='+str(package.folder.id)+'&title='+str(package.file.title)+'&filename='+str(package.file.id)+'&instance='+str(service.instanceName)+')', ))
 
     elif contextType == 'image':
         cm.append(( 'Slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+str(package.folder.id)+'&instance='+str(service.instanceName)+')', ))
@@ -127,7 +128,8 @@ def addDirectory(service, folder, contextType='video'):
         elif contextType == 'image':
             cm.append(( 'Slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&title='+str(folder.title) + '&folder='+str(folder.id)+'&username='+str(service.authorization.username)+')', ))
 
-        cm.append(( 'Download', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&title='+str(folder.title) + '&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
+        if (service.protocol == 2):
+            cm.append(( 'Download', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&title='+str(folder.title) + '&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
 
         listitem.addContextMenuItems(cm, False)
     listitem.setProperty('fanart_image', fanart)
@@ -568,34 +570,36 @@ except:
     invokedUsername = ''
 
 # show list of services
-if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '':
-    if mode == 'main':
+if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
         mode = ''
-    count = 1
-    max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
-    while True:
-        instanceName = PLUGIN_NAME+str(count)
-        try:
-            username = addon.getSetting(instanceName+'_username')
-            if username != '':
-                addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username)
-        except:
-            break
-        if count == max_count:
-            #fallback on first defined account
-            break
-        count = count + 1
-
-else:
-    # show index of accounts
-    if instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
-
         count = 1
-        loop = True
-        while loop:
+        max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
+        while True:
             instanceName = PLUGIN_NAME+str(count)
             try:
                 username = addon.getSetting(instanceName+'_username')
+                if username != '':
+                    addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username)
+            except:
+                break
+            if count == max_count:
+                break
+            count = count + 1
+
+    # show index of accounts
+elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
+
+        count = 1
+        options = []
+        accounts = []
+        for count in range (1, max_count):
+            instanceName = PLUGIN_NAME+str(count)
+            try:
+                username = addon.getSetting(instanceName+'_username')
+                if username != '':
+                    options.append(username)
+                    accounts.append(instanceName)
+
                 if username != '':
 
                     #let's log in
@@ -603,26 +607,23 @@ else:
                         service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
                     else:
                         service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
-
-                    loop = False
+                    break
             except:
                 break
 
-            if count == numberOfAccounts:
-
-                try:
+        try:
                     service
-                except NameError:
+        except NameError:
+                    ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), options)
+
                     #fallback on first defined account
-                    if ( int(addon.getSetting(PLUGIN_NAME+'1'+'_type')) > 0):
-                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
+                    if ( int(addon.getSetting(accounts[ret]+'_type')) > 0):
+                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
                     else:
-                        service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
-                break
-            count = count + 1
+                        service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
 
     # no accounts defined
-    elif numberOfAccounts == 0:
+elif numberOfAccounts == 0:
 
         #legacy account conversion
         try:
@@ -654,7 +655,7 @@ else:
 
 
     # show entries of a single account (such as folder)
-    elif instanceName != '':
+elif instanceName != '':
 
         #let's log in
         if ( int(addon.getSetting(instanceName+'_type')) > 0):
@@ -663,15 +664,19 @@ else:
             service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
 
 
-    elif invokedUsername != '':
+elif invokedUsername != '':
 
-        count = 1
+        options = []
+        accounts = []
         max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
-        loop = True
-        while loop:
+        for count in range (1, max_count):
             instanceName = PLUGIN_NAME+str(count)
             try:
                 username = addon.getSetting(instanceName+'_username')
+                if username != '':
+                    options.append(username)
+                    accounts.append(instanceName)
+
                 if username == invokedUsername:
 
                     #let's log in
@@ -679,26 +684,48 @@ else:
                         service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
                     else:
                         service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
-                    loop = False
+                    break
             except:
                 break
 
-            if count == max_count:
-                #fallback on first defined account
-                try:
+        #fallback on first defined account
+        try:
                     service
-                except NameError:
+        except NameError:
+                    ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), options)
+
                     #fallback on first defined account
-                    if ( int(addon.getSetting(PLUGIN_NAME+'1'+'_type')) > 0):
-                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
+                    if ( int(addon.getSetting(accounts[ret]+'_type')) > 0):
+                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
                     else:
-                        service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
+                        service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
+#prompt before playback
+else:
+
+        options = []
+        accounts = []
+        max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
+        for count in range (1, max_count):
+            instanceName = PLUGIN_NAME+str(count)
+            try:
+                username = addon.getSetting(instanceName+'_username')
+                if username != '':
+                    options.append(username)
+                    accounts.append(instanceName)
+            except:
                 break
-            count = count + 1
+
+        ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), options)
+
+        #fallback on first defined account
+        if ( int(addon.getSetting(accounts[ret]+'_type')) > 0):
+            service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
+        else:
+            service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
 
 
-if mode == 'main':
-    addMenu(PLUGIN_URL+'?mode=options','<< '+addon.getLocalizedString(30043)+' >>')
+#if mode == 'main':
+#    addMenu(PLUGIN_URL+'?mode=options','<< '+addon.getLocalizedString(30043)+' >>')
 
 
 #dump a list of videos available to play

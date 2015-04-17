@@ -100,6 +100,7 @@
 
     <string id="30118">The following account was enrolled:</string>
     <string id="30119">The following login error was encountered:</string>
+    <string id="30120">Select an account:</string>
 
     <string id="30201">OAUTH2 code</string>
     <string id="30202">OAUTH2 client id</string>

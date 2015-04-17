@@ -249,7 +249,7 @@ class gdrive(cloudservice):
     #   returns: list containing the header
     ##
     def getHeadersList(self, forceWritely=True):
-        if self.authorization.loadToken(self.instanceName,addon, 'auth_access_token'):
+        if self.authorization.isToken(self.instanceName,addon, 'auth_access_token'):
             return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
         else:
             return { 'User-Agent' : self.user_agent}
