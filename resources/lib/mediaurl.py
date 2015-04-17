@@ -25,11 +25,12 @@ class mediaurl:
 
     ##
     ##
-    def __init__(self, url, qualityDesc, quality, order):
+    def __init__(self, url, qualityDesc, quality, order, title=''):
         self.url = url
         self.qualityDesc = qualityDesc
         self.quality = quality
         self.order = order
+        self.title = title
 
 
     def __repr__(self):

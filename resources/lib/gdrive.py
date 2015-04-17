@@ -57,6 +57,7 @@ class gdrive(cloudservice):
     AUDIO = 1
     VIDEO = 2
     PICTURE = 3
+    PROTOCOL = 'https://'
 
     # magic numbers
     MEDIA_TYPE_MUSIC = 1
@@ -1005,6 +1006,16 @@ class gdrive(cloudservice):
     # for playing public URLs
     def getPublicStream(self,url):
 
+        try:
+            pquality = int(self.addon.getSetting('preferred_quality'))
+            pformat = int(self.addon.getSetting('preferred_format'))
+            acodec = int(self.addon.getSetting('avoid_codec'))
+        except :
+            pquality=-1
+            pformat=-1
+            acodec=-1
+
+        mediaURLs = []
         #try to use no authorization token (for pubic URLs)
         header = { 'User-Agent' : self.user_agent, 'GData-Version' : self.API_VERSION }
 
@@ -1071,19 +1082,10 @@ class gdrive(cloudservice):
           response_data = response.read()
           response.close()
 
-          for r in re.finditer('"(fmt_stream_map)":"([^\"]+)"' ,
-                             response_data, re.DOTALL):
-              (urlType, urls) = r.groups()
-
-          urls = re.sub('\\\\u003d', '=', urls)
-          urls = re.sub('\\\\u0026', '&', urls)
-
-
           serviceRequired = ''
           for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
                                urls, re.DOTALL):
               (service, serviceRequired) = r.groups()
-
 
           if serviceRequired != '':
             log('an unexpected service token is required: %s' % (serviceRequired), True)
@@ -1116,14 +1118,6 @@ class gdrive(cloudservice):
           response.close()
 
 
-          for r in re.finditer('"(fmt_stream_map)":"([^\"]+)"' ,
-                             response_data, re.DOTALL):
-              (urlType, urls) = r.groups()
-
-          urls = re.sub('\\\\u003d', '=', urls)
-          urls = re.sub('\\\\u0026', '&', urls)
-
-
           serviceRequired = ''
           for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
                                urls, re.DOTALL):
@@ -1137,23 +1131,136 @@ class gdrive(cloudservice):
         elif serviceRequired != '':
           log('an unexpected service token is required: %s' % (serviceRequired), True)
 
-        for r in re.finditer('"(fmt_stream_map)":"([^\"]+)"' ,
-                             response_data, re.DOTALL):
-            (urlType, urls) = r.groups()
 
+        for r in re.finditer('\"fmt_list\"\,\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+            fmtlist = r.group(1)
+
+        title = ''
+        for r in re.finditer('\"title\"\,\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+            title = r.group(1)
+
+#thumbnail
+#        downloadURL = ''
+#        for r in re.finditer('\,\[\,\"[^\"]+\"\,\"([^\"]+)\"' ,
+#                             response_data, re.DOTALL):
+#            downloadURL = r.group(1)
+#            downloadURL = re.sub('\\\\u003d', '=', downloadURL)
+
+
+        itagDB={}
+        containerDB = {'x-flv':'flv', 'webm': 'WebM', 'mp4;+codecs="avc1.42001E,+mp4a.40.2"': 'MP4'}
+        for r in re.finditer('(\d+)/(\d+)x(\d+)/(\d+/\d+/\d+)\&?\,?' ,
+                               fmtlist, re.DOTALL):
+              (itag,resolution1,resolution2,codec) = r.groups()
+
+              if codec == '9/0/115':
+                itagDB[itag] = {'resolution': resolution2, 'codec': 'h.264/aac'}
+              elif codec == '99/0/0':
+                itagDB[itag] = {'resolution': resolution2, 'codec': 'VP8/vorbis'}
+              else:
+                itagDB[itag] = {'resolution': resolution2}
+
+        for r in re.finditer('\"url_encoded_fmt_stream_map\"\,\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+            urls = r.group(1)
+
+
+
+        urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
         urls = re.sub('\\\\u003d', '=', urls)
         urls = re.sub('\\\\u0026', '&', urls)
 
 
-        urls = re.sub('\d+\|'+PROTOCOL, '\@', urls)
+#        urls = re.sub('\d+\&url\='+self.PROTOCOL, '\@', urls)
+        urls = re.sub('\&url\='+self.PROTOCOL, '\@', urls)
 
+#        for r in re.finditer('\@([^\@]+)' ,urls):
+#          videoURL = r.group(0)
+#        videoURL1 = self.PROTOCOL + videoURL
+
+
+        # fetch format type and quality for each stream
+        count=0
         for r in re.finditer('\@([^\@]+)' ,urls):
-          videoURL = r.group(0)
-        videoURL1 = PROTOCOL + videoURL
+                videoURL = r.group(1)
+                for q in re.finditer('itag\=(\d+).*?type\=video\/([^\&]+)\&quality\=(\w+)' ,
+                             videoURL, re.DOTALL):
+                    (itag,container,quality) = q.groups()
+                    count = count + 1
+                    order=0
+                    if pquality > -1 or pformat > -1 or acodec > -1:
+                        if int(itagDB[itag]['resolution']) == 1080:
+                            if pquality == 0:
+                                order = order + 1000
+                            elif pquality == 1:
+                                order = order + 3000
+                            elif pquality == 3:
+                                order = order + 9000
+                        elif int(itagDB[itag]['resolution']) == 720:
+                            if pquality == 0:
+                                order = order + 2000
+                            elif pquality == 1:
+                                order = order + 1000
+                            elif pquality == 3:
+                                order = order + 9000
+                        elif int(itagDB[itag]['resolution']) == 480:
+                            if pquality == 0:
+                                order = order + 3000
+                            elif pquality == 1:
+                                order = order + 2000
+                            elif pquality == 3:
+                                order = order + 1000
+                        elif int(itagDB[itag]['resolution']) < 480:
+                            if pquality == 0:
+                                order = order + 4000
+                            elif pquality == 1:
+                                order = order + 3000
+                            elif pquality == 3:
+                                order = order + 2000
+                    try:
+                        if itagDB[itag]['codec'] == 'VP8/vorbis':
+                            if acodec == 1:
+                                order = order + 90000
+                            else:
+                                order = order + 10000
+                    except :
+                        order = order + 30000
 
+                    try:
+                        if containerDB[container] == 'MP4':
+                            if pformat == 0 or pformat == 1:
+                                order = order + 100
+                            elif pformat == 3 or pformat == 4:
+                                order = order + 200
+                            else:
+                                order = order + 300
+                        elif containerDB[container] == 'flv':
+                            if pformat == 2 or pformat == 3:
+                                order = order + 100
+                            elif pformat == 1 or pformat == 5:
+                                order = order + 200
+                            else:
+                                order = order + 300
+                        elif containerDB[container] == 'WebM':
+                            if pformat == 4 or pformat == 5:
+                                order = order + 100
+                            elif pformat == 0 or pformat == 1:
+                                order = order + 200
+                            else:
+                                order = order + 300
+                        else:
+                            order = order + 100
+                    except :
+                        pass
 
-        return videoURL1
+                    try:
+                        mediaURLs.append( mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count, title=title))
+                    except KeyError:
+                        mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count, title=title))
 
+        return mediaURLs
     ##
     # retrieve a media file
     #   parameters: title of video, whether to prompt for quality/format (optional), cache type (optional)

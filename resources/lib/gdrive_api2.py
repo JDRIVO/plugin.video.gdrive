@@ -81,7 +81,8 @@ class gdrive(cloudservice):
         self.addon = addon
         self.instanceName = instanceName
         self.protocol = 2
-        self.type = int(addon.getSetting(instanceName+'_type'))
+        if authenticate == True:
+            self.type = int(addon.getSetting(instanceName+'_type'))
 
 
         # gdrive specific ***
@@ -917,10 +918,6 @@ class gdrive(cloudservice):
             urls = re.sub('\\\\u003d', '=', urls)
             urls = re.sub('\\\\u0026', '&', urls)
 
-            serviceRequired = ''
-            for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
-                             urls, re.DOTALL):
-                (service, serviceRequired) = r.groups()
 
             self.useWRITELY = True
             req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
@@ -950,17 +947,6 @@ class gdrive(cloudservice):
             urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
             urls = re.sub('\\\\u003d', '=', urls)
             urls = re.sub('\\\\u0026', '&', urls)
-
-            serviceRequired = ''
-            for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
-                               urls, re.DOTALL):
-                (service, serviceRequired) = r.groups()
-
-            if serviceRequired != '':
-                log('an unexpected service token is required: %s' % (serviceRequired), True)
-
-        elif serviceRequired != '':
-           log('an unexpected service token is required: %s' % (serviceRequired), True)
 
 
         # do some substitutions to make anchoring the URL easier
@@ -1132,10 +1118,21 @@ class gdrive(cloudservice):
     # for playing public URLs
     def getPublicStream(self,url):
 
-        #try to use no authorization token (for pubic URLs)
-        header = { 'User-Agent' : self.user_agent, 'GData-Version' : self.API_VERSION }
+        try:
+            pquality = int(self.addon.getSetting('preferred_quality'))
+            pformat = int(self.addon.getSetting('preferred_format'))
+            acodec = int(self.addon.getSetting('avoid_codec'))
+        except :
+            pquality=-1
+            pformat=-1
+            acodec=-1
 
-        req = urllib2.Request(url, None, header)
+        mediaURLs = []
+
+        #try to use no authorization token (for pubic URLs)
+#        header = { 'User-Agent' : self.user_agent, 'GData-Version' : self.API_VERSION }
+
+        req = urllib2.Request(url, None, self.getHeadersList())
 
         try:
             response = urllib2.urlopen(req)
@@ -1158,127 +1155,136 @@ class gdrive(cloudservice):
         response.close()
 
 
-        serviceRequired = ''
-        for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
+        for r in re.finditer('\"fmt_list\"\,\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
-            (service, serviceRequired) = r.groups()
+            fmtlist = r.group(1)
 
-        for r in re.finditer('AccountChooser.+?(service)=([^\']+)\'' ,
+        title = ''
+        for r in re.finditer('\"title\"\,\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
-            (service, serviceRequired) = r.groups()
+            title = r.group(1)
 
+#thumbnail
+#        downloadURL = ''
+#        for r in re.finditer('\,\[\,\"[^\"]+\"\,\"([^\"]+)\"' ,
+#                             response_data, re.DOTALL):
+#            downloadURL = r.group(1)
+#            downloadURL = re.sub('\\\\u003d', '=', downloadURL)
 
-        #effective 2014/02, video stream calls require a wise token instead of writely token
-        #backward support for account not migrated to the 2014/02 change
-        if serviceRequired == 'writely':
-          self.useWRITELY = True
+        itagDB={}
+        containerDB = {'x-flv':'flv', 'webm': 'WebM', 'mp4;+codecs="avc1.42001E,+mp4a.40.2"': 'MP4'}
+        for r in re.finditer('(\d+)/(\d+)x(\d+)/(\d+/\d+/\d+)\&?\,?' ,
+                               fmtlist, re.DOTALL):
+              (itag,resolution1,resolution2,codec) = r.groups()
 
-
-
-          req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
-
-          try:
-              response = urllib2.urlopen(req)
-          except urllib2.URLError, e:
-              if e.code == 403 or e.code == 401:
-                self.refreshToken()
-                req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
-                try:
-                  response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    self.crashreport.sendError('getPublicStream',str(e))
-                    return
+              if codec == '9/0/115':
+                itagDB[itag] = {'resolution': resolution2, 'codec': 'h.264/aac'}
+              elif codec == '99/0/0':
+                itagDB[itag] = {'resolution': resolution2, 'codec': 'VP8/vorbis'}
               else:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('getPublicStream',str(e))
-                return
+                itagDB[itag] = {'resolution': resolution2}
 
-          response_data = response.read()
-          response.close()
-
-          for r in re.finditer('"(fmt_stream_map)":"([^\"]+)"' ,
+        for r in re.finditer('\"url_encoded_fmt_stream_map\"\,\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
-              (urlType, urls) = r.groups()
-
-          urls = re.sub('\\\\u003d', '=', urls)
-          urls = re.sub('\\\\u0026', '&', urls)
+            urls = r.group(1)
 
 
-          serviceRequired = ''
-          for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
-                               urls, re.DOTALL):
-              (service, serviceRequired) = r.groups()
 
-
-          if serviceRequired != '':
-            log('an unexpected service token is required: %s' % (serviceRequired), True)
-
-        elif serviceRequired == 'wise':
-          self.useWRITELY = False
-          if (self.authorization.getToken('auth_wise') == ''):
-            self.refreshToken();
-
-          req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
-
-          try:
-              response = urllib2.urlopen(req)
-          except urllib2.URLError, e:
-              if e.code == 403 or e.code == 401:
-                self.refreshToken()
-                req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
-                try:
-                  response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    self.crashreport.sendError('getPublicStream',str(e))
-                    return
-              else:
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    self.crashreport.sendError('getPublicStream',str(e))
-                    return
-
-          response_data = response.read()
-          response.close()
-
-
-          for r in re.finditer('"(fmt_stream_map)":"([^\"]+)"' ,
-                             response_data, re.DOTALL):
-              (urlType, urls) = r.groups()
-
-          urls = re.sub('\\\\u003d', '=', urls)
-          urls = re.sub('\\\\u0026', '&', urls)
-
-
-          serviceRequired = ''
-          for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
-                               urls, re.DOTALL):
-              (service, serviceRequired) = r.groups()
-
-
-          if serviceRequired != '':
-            log('an unexpected service token is required: %s' % (serviceRequired), True)
-
-
-        elif serviceRequired != '':
-          log('an unexpected service token is required: %s' % (serviceRequired), True)
-
-        for r in re.finditer('"(fmt_stream_map)":"([^\"]+)"' ,
-                             response_data, re.DOTALL):
-            (urlType, urls) = r.groups()
-
+        urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
         urls = re.sub('\\\\u003d', '=', urls)
         urls = re.sub('\\\\u0026', '&', urls)
 
 
-        urls = re.sub('\d+\|'+self.PROTOCOL, '\@', urls)
+#        urls = re.sub('\d+\&url\='+self.PROTOCOL, '\@', urls)
+        urls = re.sub('\&url\='+self.PROTOCOL, '\@', urls)
 
+#        for r in re.finditer('\@([^\@]+)' ,urls):
+#          videoURL = r.group(0)
+#        videoURL1 = self.PROTOCOL + videoURL
+
+
+        # fetch format type and quality for each stream
+        count=0
         for r in re.finditer('\@([^\@]+)' ,urls):
-          videoURL = r.group(0)
-        videoURL1 = self.PROTOCOL + videoURL
+                videoURL = r.group(1)
+                for q in re.finditer('itag\=(\d+).*?type\=video\/([^\&]+)\&quality\=(\w+)' ,
+                             videoURL, re.DOTALL):
+                    (itag,container,quality) = q.groups()
+                    count = count + 1
+                    order=0
+                    if pquality > -1 or pformat > -1 or acodec > -1:
+                        if int(itagDB[itag]['resolution']) == 1080:
+                            if pquality == 0:
+                                order = order + 1000
+                            elif pquality == 1:
+                                order = order + 3000
+                            elif pquality == 3:
+                                order = order + 9000
+                        elif int(itagDB[itag]['resolution']) == 720:
+                            if pquality == 0:
+                                order = order + 2000
+                            elif pquality == 1:
+                                order = order + 1000
+                            elif pquality == 3:
+                                order = order + 9000
+                        elif int(itagDB[itag]['resolution']) == 480:
+                            if pquality == 0:
+                                order = order + 3000
+                            elif pquality == 1:
+                                order = order + 2000
+                            elif pquality == 3:
+                                order = order + 1000
+                        elif int(itagDB[itag]['resolution']) < 480:
+                            if pquality == 0:
+                                order = order + 4000
+                            elif pquality == 1:
+                                order = order + 3000
+                            elif pquality == 3:
+                                order = order + 2000
+                    try:
+                        if itagDB[itag]['codec'] == 'VP8/vorbis':
+                            if acodec == 1:
+                                order = order + 90000
+                            else:
+                                order = order + 10000
+                    except :
+                        order = order + 30000
 
+                    try:
+                        if containerDB[container] == 'MP4':
+                            if pformat == 0 or pformat == 1:
+                                order = order + 100
+                            elif pformat == 3 or pformat == 4:
+                                order = order + 200
+                            else:
+                                order = order + 300
+                        elif containerDB[container] == 'flv':
+                            if pformat == 2 or pformat == 3:
+                                order = order + 100
+                            elif pformat == 1 or pformat == 5:
+                                order = order + 200
+                            else:
+                                order = order + 300
+                        elif containerDB[container] == 'WebM':
+                            if pformat == 4 or pformat == 5:
+                                order = order + 100
+                            elif pformat == 0 or pformat == 1:
+                                order = order + 200
+                            else:
+                                order = order + 300
+                        else:
+                            order = order + 100
+                    except :
+                        pass
 
-        return videoURL1
+                    try:
+                        mediaURLs.append( mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count, title=title))
+                    except KeyError:
+                        mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count, title=title))
+
+        return mediaURLs
+
+ #       return videoURL1
 
     #*** needs update
     ##

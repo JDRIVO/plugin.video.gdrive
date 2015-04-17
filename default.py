@@ -281,7 +281,7 @@ xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 try:
     contextType = plugin_queries['content_type']
 except:
-    contextType = 'video'
+    contextType = ''
 
 
     #contentType
@@ -622,6 +622,11 @@ elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
                     else:
                         service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
 
+
+# no accounts defined and url provided; assume public
+elif numberOfAccounts == 0 and mode=='streamurl':
+    service = gdrive_api2.gdrive(PLUGIN_URL,addon,'', user_agent, authenticate=False)
+
     # no accounts defined
 elif numberOfAccounts == 0:
 
@@ -715,10 +720,17 @@ else:
             except:
                 break
 
+        # url provided; provide public option
+        if mode=='streamurl':
+            options.append('public')
+            accounts.append('public')
+
         ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), options)
 
         #fallback on first defined account
-        if ( int(addon.getSetting(accounts[ret]+'_type')) > 0):
+        if accounts[ret] == 'public':
+            service = gdrive_api2.gdrive(PLUGIN_URL,addon,'', user_agent, authenticate=False)
+        elif ( int(addon.getSetting(accounts[ret]+'_type')) > 0):
             service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
         else:
             service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
@@ -849,7 +861,8 @@ elif mode == 'download' or mode == 'cache':
 
             options = []
 
-            for mediaURL in sorted(mediaURLs):
+            mediaURLs = sorted(mediaURLs)
+            for mediaURL in mediaURLs:
                 options.append(mediaURL.qualityDesc)
             if promptQuality:
                 ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
@@ -874,7 +887,8 @@ elif mode == 'download' or mode == 'cache':
 
             options = []
 
-            for file in sorted(files):
+            files = sorted(files)
+            for file in files:
                 options.append(file)
 
             ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
@@ -1126,7 +1140,8 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
     if playbackMedia:
         options = []
-        for mediaURL in sorted(mediaURLs):
+        mediaURLs = sorted(mediaURLs)
+        for mediaURL in mediaURLs:
             options.append(mediaURL.qualityDesc)
         if promptQuality:
             ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
@@ -1139,42 +1154,54 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
-#force stream - play a video given its exact-title
+#force stream - play a video given its url
 elif mode == 'streamurl':
+
     try:
       url = plugin_queries['url']
     except:
       url = 0
 
-    # check for promptQuality override
     try:
-      pquality = int(addon.getSetting('preferred_quality'))
-      pformat = int(addon.getSetting('preferred_format'))
-      acodec = int(addon.getSetting('avoid_codec'))
-    except :
-      pquality=-1
-      pformat=-1
-      acodec=-1
+      title = plugin_queries['title']
+    except:
+      title = ''
 
-    singlePlayback=''
-    videos = service.getVideoStream(pquality=pquality,pformat=pformat,acodec=acodec, url=url)
+    promptQuality = True
+    try:
+        promptQuality = addon.getSetting('prompt_quality')
+        if promptQuality == 'false':
+            promptQuality = False
+    except:
+        pass
 
-    for label in sorted(videos.iterkeys()):
-          addVideo(videos[label]+'|'+service.getHeadersEncoded(service.useWRITELY),
-                             { 'title' : label , 'plot' : label },label,
-                             img='None')
-          if singlePlayback == '':
-            singlePlayback = label
+    mediaURLs = service.getPublicStream(url)
+    options = []
 
+    if mediaURLs:
+        mediaURLs = sorted(mediaURLs)
+        for mediaURL in mediaURLs:
+            options.append(mediaURL.qualityDesc)
 
-    if (singlePlayback == ''):
-        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30020),addon.getLocalizedString(30021))
-        xbmc.log(addon.getAddonInfo('name') + ': ' + addon.getLocalizedString(20021), xbmc.LOGERROR)
+        if promptQuality:
+            ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
+        else:
+            ret = 0
+
+        playbackURL = mediaURLs[ret].url
+
+        if (playbackURL == ''):
+            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30020),addon.getLocalizedString(30021))
+            xbmc.log(addon.getAddonInfo('name') + ': ' + addon.getLocalizedString(20021), xbmc.LOGERROR)
+        else:
+            # if invoked in .strm or as a direct-video (don't prompt for quality)
+            item = xbmcgui.ListItem(path=playbackURL+ '|' + service.getHeadersEncoded(service.useWRITELY))
+            item.setInfo( type="Video", infoLabels={ "Title": mediaURLs[ret].title , "Plot" : mediaURLs[ret].title } )
+            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
     else:
-        # if invoked in .strm or as a direct-video (don't prompt for quality)
-        item = xbmcgui.ListItem(path=videos[singlePlayback]+ '|' + service.getHeadersEncoded(service.useWRITELY))
-        item.setInfo( type="Video", infoLabels={ "Title": label , "Plot" : label } )
-        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30020),addon.getLocalizedString(30021))
+            xbmc.log(addon.getAddonInfo('name') + ': ' + addon.getLocalizedString(20021), xbmc.LOGERROR)
+
 
 
 # migrate *

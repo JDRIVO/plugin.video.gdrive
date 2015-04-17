@@ -1,3 +1,8 @@
+Version 0.5.13
+- tested against regression bucket (pass)
+- fix streamurl
+- improved error handling on deleted videos
+-- Google Drive API 2 module - add playback via public (not logged in)
 - disable <options>; not in use anymore
 - if invoked without a username or instancename, don't default on the first account but prompt the user to select
 -- Google Drive API 2 module - bug fix with header authorization
