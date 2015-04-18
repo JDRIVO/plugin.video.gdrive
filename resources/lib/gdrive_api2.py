@@ -124,29 +124,32 @@ class gdrive(cloudservice):
     def getToken(self,code):
 
 
+            header = { 'User-Agent' : self.user_agent }
+
             if (self.type == 2):
                 url = addon.getSetting(self.instanceName+'_url')
                 values = {
                       'code' : code
                       }
+                req = urllib2.Request(url, urllib.urlencode(values), header)
+
             elif (self.type == 3):
-                url = 'https://www.googleapis.com/oauth2/v3/token'
+                url = 'https://accounts.google.com/o/oauth2/token'
                 clientID = addon.getSetting(self.instanceName+'_client_id')
                 clientSecret = addon.getSetting(self.instanceName+'_client_secret')
-                values = { 'client_id' : clientID, 'client_secret' : clientSecret,
-                      'code' : code,
-                      'grant_type' : 'refresh_token'
-                      }
+                header = { 'User-Agent' : self.user_agent , 'Content-Type': 'application/x-www-form-urlencoded'}
+
+                req = urllib2.Request(url, 'code='+str(code)+'&client_id='+str(clientID)+'&client_secret='+str(clientSecret)+'&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code', header)
+
             else:
                 url = 'http://dmdsoftware.net/api/gdrive.php'
                 values = {
                       'code' : code
                       }
+                req = urllib2.Request(url, urllib.urlencode(values), header)
 
-            header = { 'User-Agent' : self.user_agent }
 
 
-            req = urllib2.Request(url, urllib.urlencode(values), header)
 
             # try login
             try:
@@ -154,10 +157,10 @@ class gdrive(cloudservice):
             except urllib2.URLError, e:
                 if e.code == 403:
                     #login issue
-                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
                     xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                 else:
-                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
                     xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                 return
 
@@ -166,15 +169,15 @@ class gdrive(cloudservice):
             response.close()
 
             # retrieve authorization token
-            for r in re.finditer('\"access_token\"\:\s?\"([^\"]+)\".+?' +
-                             '\"refresh_token\"\:\s?\"([^\"]+)\".+?' ,
+            for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?' +
+                             '\"refresh_token\"\s?\:\s?\"([^\"]+)\".+?' ,
                              response_data, re.DOTALL):
                 accessToken,refreshToken = r.groups()
                 self.authorization.setToken('auth_access_token',accessToken)
                 self.authorization.setToken('auth_refresh_token',refreshToken)
                 self.updateAuthorization(self.addon)
 
-            for r in re.finditer('\"error_description\"\:\s?\"([^\"]+)\"',
+            for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"',
                              response_data, re.DOTALL):
                 errorMessage = r.group(1)
                 xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119), errorMessage)
@@ -200,9 +203,10 @@ class gdrive(cloudservice):
                 req = urllib2.Request(url, urllib.urlencode(values), header)
 
             elif (self.type == 3):
-                url = 'https://www.googleapis.com/oauth2/v3/token'
+                url = 'https://accounts.google.com/o/oauth2/token'
                 clientID = addon.getSetting(self.instanceName+'_client_id')
                 clientSecret = addon.getSetting(self.instanceName+'_client_secret')
+                header = { 'User-Agent' : self.user_agent , 'Content-Type': 'application/x-www-form-urlencoded'}
 
                 req = urllib2.Request(url, 'client_id='+clientID+'&client_secret='+clientSecret+'&refresh_token='+self.authorization.getToken('auth_refresh_token')+'&grant_type=refresh_token', header)
 
@@ -220,10 +224,10 @@ class gdrive(cloudservice):
             except urllib2.URLError, e:
                 if e.code == 403:
                     #login issue
-                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
                     xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                 else:
-                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
                     xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                 return
 
@@ -231,13 +235,13 @@ class gdrive(cloudservice):
             response.close()
 
             # retrieve authorization token
-            for r in re.finditer('\"access_token\"\:\s?\"([^\"]+)\".+?' ,
+            for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?' ,
                              response_data, re.DOTALL):
                 accessToken = r.group(1)
                 self.authorization.setToken('auth_access_token',accessToken)
                 self.updateAuthorization(self.addon)
 
-            for r in re.finditer('\"error_description\"\:\s?\"([^\"]+)\"',
+            for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"',
                              response_data, re.DOTALL):
                 errorMessage = r.group(1)
                 xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119), errorMessage)
@@ -400,7 +404,7 @@ class gdrive(cloudservice):
                 # entry is a music file
                 elif (resourceType == 'application/vnd.google-apps.audio' or 'audio' in resourceType and contentType in (1,2,3,4,6,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', thumbnail, size=fileSize)
-
+                    url = re.sub('\&gd\=true', '', url)
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     mediaFiles.append(media)
@@ -881,9 +885,14 @@ class gdrive(cloudservice):
                 for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   url = r.group(1)
+                  if package.file.type == self.MEDIA_TYPE_MUSIC:
+                      url = re.sub('\&gd\=true', '', url)
+
                   mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
                   break
 
+        if package.file.type == self.MEDIA_TYPE_MUSIC:
+            return mediaURLs
 
         # fetch streams
         if docid != '':

@@ -590,6 +590,8 @@ elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
         count = 1
         options = []
         accounts = []
+        max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
+
         for count in range (1, max_count):
             instanceName = PLUGIN_NAME+str(count)
             try:
@@ -955,6 +957,223 @@ elif mode == 'slideshow':
                     if item.file is not None:
                         service.downloadPicture(item.mediaurl.url,str(path) + '/'+str(folder)+ '/'+item.file.title)
                         xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
+
+elif mode == 'audio':
+
+    #title
+    try:
+        title = plugin_queries['title']
+    except:
+        title = ''
+
+
+    #docid
+    try:
+        filename = plugin_queries['filename']
+    except:
+        filename = ''
+
+    #docid
+    try:
+        folderID = plugin_queries['folder']
+        if folderID == 'False':
+            folderID = 'SEARCH'
+    except:
+        folderID = ''
+
+    try:
+        service
+    except NameError:
+        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
+        log(addon.getLocalizedString(30050)+ 'gdrive-login', True)
+        xbmcplugin.endOfDirectory(plugin_handle)
+
+
+    try:
+        download = addon.getSetting('always_cache')
+        if download == 'true':
+            download = True
+            play = True
+        else:
+            download = False
+            play = False
+    except:
+        download = False
+        play = False
+
+    try:
+        download = plugin_queries['download']
+        if download == 'true':
+            download = True
+        else:
+            download = False
+    except:
+        pass
+
+    try:
+        play = plugin_queries['play']
+        if play == 'true':
+            play = True
+        else:
+            play = False
+    except:
+        pass
+
+    try:
+        cache = plugin_queries['cache']
+        if cache == 'true':
+            cache = True
+            download = False
+            play = False
+        else:
+            cache = False
+    except:
+        cache = False
+
+    try:
+      fileSize = plugin_queries['filesize']
+    except:
+      fileSize = ''
+
+    try:
+        path = addon.getSetting('cache_folder')
+    except:
+        path = ''
+
+
+    playbackMedia = True
+    #if we don't have the docid, search for the video for playback
+    if (filename != ''):
+        mediaFile = file.file(filename, title, '', service.MEDIA_TYPE_MUSIC, '','')
+        mediaFolder = folder.folder(folderID,'')
+        mediaURLs = service.getPlaybackCall(0,package=package.package(mediaFile,mediaFolder))
+    else:
+        if mode == 'search':
+
+            if title == '':
+
+                try:
+                    dialog = xbmcgui.Dialog()
+                    title = dialog.input(addon.getLocalizedString(30110), type=xbmcgui.INPUT_ALPHANUM)
+                except:
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30100))
+                    title = 'test'
+            mediaItems = service.getMediaList(title=title, contentType=contentType)
+            playbackMedia = False
+
+            options = []
+            urls = []
+
+            if mediaItems:
+                for item in mediaItems:
+                    if item.file is None:
+                        addDirectory(service, item.folder, contextType)
+                    else:
+                        options.append(item.file.title)
+                        urls.append(addMediaFile(service, item))
+
+            if contextType == '':
+
+                ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), options)
+                playbackURL = urls[ret]
+
+                item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+                item.setInfo( type="Music", infoLabels={ "Title": options[ret] , "Plot" : options[ret] } )
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+        else:
+            mediaURLs = service.getPlaybackCall(0,None,title=title)
+
+    if playbackMedia:
+
+
+        playbackURL = ''
+        playbackQuality = ''
+        playbackPath = ''
+        if cache:
+            playbackPath = str(path) + '/' + str(folderID) + '/' + str(filename) + '/'
+
+            if xbmcvfs.exists(playbackPath):
+
+                    dirs,files = xbmcvfs.listdir(playbackPath)
+
+                    playbackPath = str(playbackPath) + str(files[0])
+
+        else:
+            playbackURL = mediaURLs[0].url
+            playbackQuality = mediaURLs[0].quality
+
+        #right-menu context
+        if contextType == '':
+            #download only
+            if download and not play:
+                service.downloadMediaFile('',playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
+            #download and play
+            elif download and play:
+                service.downloadMediaFile(int(sys.argv[1]), playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
+            elif cache:
+                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+")")
+            #stream
+            else:
+                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
+        elif cache:
+                item = xbmcgui.ListItem(path=str(playbackPath))
+                item.setInfo( type="Music", infoLabels={ "Title": title , "Plot" : title } )
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+        else:
+
+            item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+            item.setInfo( type="Music", infoLabels={ "Title": title , "Plot" : title } )
+            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+#force stream - play a video given its url
+elif mode == 'streamurl':
+
+    try:
+      url = plugin_queries['url']
+    except:
+      url = 0
+
+    try:
+      title = plugin_queries['title']
+    except:
+      title = ''
+
+    promptQuality = True
+    try:
+        promptQuality = addon.getSetting('prompt_quality')
+        if promptQuality == 'false':
+            promptQuality = False
+    except:
+        pass
+
+    mediaURLs = service.getPublicStream(url)
+    options = []
+
+    if mediaURLs:
+        mediaURLs = sorted(mediaURLs)
+        for mediaURL in mediaURLs:
+            options.append(mediaURL.qualityDesc)
+
+        if promptQuality:
+            ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
+        else:
+            ret = 0
+
+        playbackURL = mediaURLs[ret].url
+
+        if (playbackURL == ''):
+            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30020),addon.getLocalizedString(30021))
+            xbmc.log(addon.getAddonInfo('name') + ': ' + addon.getLocalizedString(20021), xbmc.LOGERROR)
+        else:
+            # if invoked in .strm or as a direct-video (don't prompt for quality)
+            item = xbmcgui.ListItem(path=playbackURL+ '|' + service.getHeadersEncoded(service.useWRITELY))
+            item.setInfo( type="Video", infoLabels={ "Title": mediaURLs[ret].title , "Plot" : mediaURLs[ret].title } )
+            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+    else:
+            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30020),addon.getLocalizedString(30021))
+            xbmc.log(addon.getAddonInfo('name') + ': ' + addon.getLocalizedString(20021), xbmc.LOGERROR)
+
 
 
 

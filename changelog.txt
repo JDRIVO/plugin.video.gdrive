@@ -1,3 +1,5 @@
+Version 0.5.15
+- bug fixes for OAUTH2
 Version 0.5.14
 - passed regression testing: Support for Drive API 2 #21
 - passed regression testing: OAUTH 2 support #20
