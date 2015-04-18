@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
     <category label="30008">
-    	<setting id="user_agent" type="text" label="30004" default="Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)" />
+    	<setting id="user_agent" type="text" label="30004" default="Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0" />
 
         <setting id="gdrive_numaccounts" type="integer" hidden="true" default="9" label="30022" />
         <setting id="accounts" type="labelenum" values="1|2|3|4|5|6|7|8|9" default="1" label="" />
@@ -129,7 +129,7 @@
         <setting label="30095" type="lsep"/>
         <setting id="cache_folder" type="folder" subsetting="true" label="30090" default="" />
         <setting id="chunk_size" type="enum" subsetting="true" label="30091" values="32224|32768|262144|1048576" default="2" />
-        <setting id="cache_percent" type="slider" subsetting="true" label="30093" option="percent" range="0,1,100" />
+        <setting id="cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100" />
     </category>
     <category label="30060">
         <setting label="30061" type="lsep"/>

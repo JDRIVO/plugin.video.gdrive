@@ -96,7 +96,7 @@
     <string id="30111">SEARCH</string>
     <string id="30112">Choose a result to playback</string>
 
-    <string id="30113">Download</string>
+    <string id="30113">Make offline</string>
 
     <string id="30114">Downloads and Cache</string>
     <string id="30115">Stream Perferences</string>
@@ -109,6 +109,9 @@
     <string id="30120">Select an account:</string>
     <string id="30121">Always cache for playback</string>
     <string id="30122">Never transcode</string>
+    <string id="30123">Play original</string>
+	<string id="30124">Play + cache</string>
+	<string id="30125">Play offline</string>
 
     <string id="30201">OAUTH2 code</string>
     <string id="30202">OAUTH2 client id</string>

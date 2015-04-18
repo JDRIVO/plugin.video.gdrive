@@ -375,7 +375,7 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                   title = r.group(1)
                   break
-                for r in re.finditer('\"quotaBytesUsed\"\:\s+\"([^\"]+)\"' ,
+                for r in re.finditer('\"fileSize\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   fileSize = r.group(1)
                   break
@@ -1292,7 +1292,6 @@ class gdrive(cloudservice):
 
         return mediaURLs
 
- #       return videoURL1
 
     ##
     # retrieve a media file
@@ -1301,7 +1300,6 @@ class gdrive(cloudservice):
     def downloadMediaFile(self, playback, url, title, folderID, filename, fileSize, force=False):
 
 
-        cachePercent = 0
         try:
             cachePercent = int(self.addon.getSetting('cache_percent'))
         except:

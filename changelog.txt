@@ -1,3 +1,5 @@
+- fix audio streaming issue by updating User Agent
+- fix filesize sizing issue with caching
 Version 0.5.15
 - bug fixes for OAUTH2
 Version 0.5.14

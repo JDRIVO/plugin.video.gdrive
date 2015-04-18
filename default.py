@@ -92,9 +92,9 @@ def addMediaFile(service, package, contextType='video'):
         cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&username='+str(service.authorization.username)+'&title='+package.file.title+'&filename='+package.file.id+')', ))
         if (service.protocol == 2):
             cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+url + '&download=true'+')', ))
-            cm.append(( "Play original", 'XBMC.RunPlugin('+url + '&original=true'+')', ))
-            cm.append(( "Play + Download", 'XBMC.RunPlugin('+url + '&play=true&download=true'+')', ))
-            cm.append(( "Play from cache", 'XBMC.RunPlugin('+url + '&cache=true'+')', ))
+            cm.append(( addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&original=true'+')', ))
+            cm.append(( addon.getLocalizedString(30124), 'XBMC.RunPlugin('+url + '&play=true&download=true'+')', ))
+            cm.append(( addon.getLocalizedString(30125), 'XBMC.RunPlugin('+url + '&cache=true'+')', ))
 
 
     elif contextType == 'image':
@@ -127,7 +127,7 @@ def addDirectory(service, folder, contextType='video'):
             cm.append(( 'Slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&title='+str(folder.title) + '&folder='+str(folder.id)+'&username='+str(service.authorization.username)+')', ))
 
         if (service.protocol == 2):
-            cm.append(( 'Download', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&title='+str(folder.title) + '&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
+            cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&title='+str(folder.title) + '&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
 
         listitem.addContextMenuItems(cm, False)
     listitem.setProperty('fanart_image', fanart)
@@ -230,6 +230,9 @@ except :
 
 # retrieve settings
 user_agent = addon.getSetting('user_agent')
+#obsolete, replace, revents audio from streaming
+if user_agent == 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)':
+    addon.setSetting('user_agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0')
 
 #promptQuality = addon.getSetting('prompt_quality')
 
