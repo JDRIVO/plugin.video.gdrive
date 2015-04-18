@@ -104,18 +104,17 @@
         <setting id="gdrive9_save_auth_token" subsetting="true" type="bool" label="30005" visible="eq(-88,8) + eq(-7,0)" default="true" />
         <setting label="30205" visible="eq(-89,8) + gt(-8,0)" type="lsep"/>
         <setting id="gdrive9_prev_username" subsetting="true" type="text" label="30001" default="" visible="false" />
-
     </category>
 
     <category label="30025">
         <setting label="30006" type="lsep"/>
     	<setting id="prompt_quality" type="bool" subsetting="true" label="30019" default="true" />
-
-        <setting label="30096" type="lsep"/>
-    	<setting id="preferred_quality" type="enum" subsetting="true" label="30011" values="perfer best (1080,720,<720)|prefer 720 (720,<720,>720)|prefer SD (480,<480)" default="0" />
-    	<setting id="preferred_format" type="enum" subsetting="true" label="30012" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
-    	<setting id="avoid_codec" type="enum" subsetting="true" label="30013" values="none|VP8/vorbis" default="0"/>
-
+    	<setting id="always_cache" type="bool" subsetting="true" label="30121" default="false" />
+    	<setting id="never_stream" type="bool" subsetting="true" label="30122" default="false" />
+        <setting label="30115" subsetting="true" enable="eq(-1,false)" type="lsep"/>
+    	<setting id="preferred_quality" type="enum" enable="eq(-2,false)" subsetting="true" label="30011" values="perfer best (1080,720,<720)|prefer 720 (720,<720,>720)|prefer SD (480,<480)" default="0" />
+    	<setting id="preferred_format" type="enum" enable="eq(-3,false)" subsetting="true" label="30012" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
+    	<setting id="avoid_codec" type="enum" enable="eq(-4,false)" subsetting="true" label="30013" values="none|VP8/vorbis" default="0"/>
     </category>
 
     <category label="30117">

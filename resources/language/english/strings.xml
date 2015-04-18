@@ -97,6 +97,8 @@
     <string id="30115">Stream Perferences</string>
     <string id="30116">Cache</string>
     <string id="30117">Listings</string>
+    <string id="30121">Always cache for playback</string>
+    <string id="30122">Never transcode</string>
 
     <string id="30118">The following account was enrolled:</string>
     <string id="30119">The following login error was encountered:</string>

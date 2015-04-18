@@ -43,10 +43,16 @@
     <string id="30035">Caching...</string>
     <string id="30093">Percent to download before playback</string>
     <string id="30094">Music</string>
-    <string id="30095">Downloads and Cache</string>
-    <string id="30096">Stream Perferences</string>
-    <string id="30097">Cache</string>
-    <string id="30098">Listings</string>
+
+    <string id="30095">Starred Files</string>
+    <string id="30096">Starred Folders</string>
+	<string id="30097">Starred Files & Folders</string>
+	<string id="30098">Shared Files & Folders</string>
+
+    <string id="30114">Downloads and Cache</string>
+    <string id="30115">Stream Perferences</string>
+    <string id="30116">Cache</string>
+    <string id="30117">Listings</string>
 
     <!-- CloudService Generic -->
 
@@ -101,6 +107,8 @@
     <string id="30119">The following login error was encountered:</string>
 
     <string id="30120">Select an account:</string>
+    <string id="30121">Always cache for playback</string>
+    <string id="30122">Never transcode</string>
 
     <string id="30201">OAUTH2 code</string>
     <string id="30202">OAUTH2 client id</string>

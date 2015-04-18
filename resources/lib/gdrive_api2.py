@@ -632,7 +632,7 @@ class gdrive(cloudservice):
                   url = r.group(1)
                   return url
 
-    #*** update
+    #*** not used
     ##
     # retrieve a list of videos, using playback type stream
     #   parameters: cache type (optional)
@@ -1114,7 +1114,6 @@ class gdrive(cloudservice):
                 return
 
 
-    #*** needs update
     # for playing public URLs
     def getPublicStream(self,url):
 
@@ -1286,12 +1285,11 @@ class gdrive(cloudservice):
 
  #       return videoURL1
 
-    #*** needs update
     ##
     # retrieve a media file
     #   parameters: title of video, whether to prompt for quality/format (optional),
     ##
-    def downloadMediaFile(self, playback, url, title, folderID, filename, fileSize):
+    def downloadMediaFile(self, playback, url, title, folderID, filename, fileSize, force=False):
 
 
         cachePercent = 0
@@ -1354,7 +1352,7 @@ class gdrive(cloudservice):
         playbackFile = str(path) + '/' + str(folderID) + '/' + str(filename) + '/' + str(title)
 
 
-        if not xbmcvfs.exists(playbackFile):
+        if not xbmcvfs.exists(playbackFile) or force:
 
             req = urllib2.Request(url, None, self.getHeadersList())
 
