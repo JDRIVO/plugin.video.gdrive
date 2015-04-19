@@ -37,6 +37,7 @@ import unicodedata
 
 
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+import xbmcvfs
 
 # global variables
 PLUGIN_NAME = 'plugin.video.gdrive-testing'
@@ -44,20 +45,19 @@ PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
 
 addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
-PROTOCOL = 'https://'
 SERVICE_NAME = 'dmdgdrive'
 
+import sys
 
 
 #
-# Google Docs API 3 implementation of Google Drive
+# Google Drive API 2 implementation of Google Drive
 #
 class gdrive(cloudservice):
 
     AUDIO = 1
     VIDEO = 2
     PICTURE = 3
-    PROTOCOL = 'https://'
 
     # magic numbers
     MEDIA_TYPE_MUSIC = 1
@@ -66,23 +66,30 @@ class gdrive(cloudservice):
 
     MEDIA_TYPE_FOLDER = 0
 
-    CACHE_TYPE_MEMORY = 0
-    CACHE_TYPE_DISK = 1
-    CACHE_TYPE_STREAM = 2
 
     API_VERSION = '3.0'
+
+    PROTOCOL = 'https://'
+
+    API_URL = PROTOCOL+'www.googleapis.com/drive/v2/'
+
     ##
     # initialize (save addon, instance name, user agent)
     ##
-    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, authenticate=True, useWRITELY=False):
+    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, authenticate=True):
         self.PLUGIN_URL = PLUGIN_URL
         self.addon = addon
         self.instanceName = instanceName
-        self.protocol = 1
+        self.protocol = 2
+        if authenticate == True:
+            self.type = int(addon.getSetting(instanceName+'_type'))
+
 
         # gdrive specific ***
         self.decrypt = False
-        self.useWRITELY = useWRITELY
+
+        #depreciated - backward compatibility
+        self.useWRITELY = False
         #***
 
         self.crashreport = crashreport.crashreport(self.addon)
@@ -99,70 +106,162 @@ class gdrive(cloudservice):
 
         self.user_agent = user_agent
 
-        # gdrive specific ***
-        if (not self.authorization.loadToken(self.instanceName,addon, 'auth_writely')) or (not self.authorization.loadToken(self.instanceName,addon, 'auth_wise')):
-            self.login()
-
-        if (authenticate == True):
-            self.login()
+        # load the OAUTH2 tokens or force fetch if not set
+        if (authenticate == True and (not self.authorization.loadToken(self.instanceName,addon, 'auth_access_token') or not self.authorization.loadToken(self.instanceName,addon, 'auth_refresh_token'))):
+            if self.addon.getSetting(self.instanceName+'_code'):
+                self.getToken(self.addon.getSetting(self.instanceName+'_code'))
+            else:
+                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
         #***
 
 
     ##
-    # perform login
+    # get OAUTH2 access and refresh token for provided code
+    #   parameters: OAUTH2 code
+    #   returns: none
     ##
-    def login(self):
+    def getToken(self,code):
 
-        services = ['writely', 'wise']
-        for service in services:
-            url = PROTOCOL + 'www.google.com/accounts/ClientLogin'
+
             header = { 'User-Agent' : self.user_agent }
-            values = {
-                      'Email' : self.authorization.username,
-                      'Passwd' : self.addon.getSetting(self.instanceName+'_password'),
-                      'accountType' : 'HOSTED_OR_GOOGLE',
-                      'source' : SERVICE_NAME,
-                      'service' : service
-                      }
 
-            req = urllib2.Request(url, urllib.urlencode(values), header)
+            if (self.type == 2):
+                url = addon.getSetting(self.instanceName+'_url')
+                values = {
+                      'code' : code
+                      }
+                req = urllib2.Request(url, urllib.urlencode(values), header)
+
+            elif (self.type == 3):
+                url = 'https://accounts.google.com/o/oauth2/token'
+                clientID = addon.getSetting(self.instanceName+'_client_id')
+                clientSecret = addon.getSetting(self.instanceName+'_client_secret')
+                header = { 'User-Agent' : self.user_agent , 'Content-Type': 'application/x-www-form-urlencoded'}
+
+                req = urllib2.Request(url, 'code='+str(code)+'&client_id='+str(clientID)+'&client_secret='+str(clientSecret)+'&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code', header)
+
+            else:
+                url = 'http://dmdsoftware.net/api/gdrive.php'
+                values = {
+                      'code' : code
+                      }
+                req = urllib2.Request(url, urllib.urlencode(values), header)
+
+
+
 
             # try login
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
-#            if e.code == 403:
-                #login denied
-#                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017))
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                if e.code == 403:
+                    #login issue
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                else:
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return
+
+
+            response_data = response.read()
+            response.close()
+
+            # retrieve authorization token
+            for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?' +
+                             '\"refresh_token\"\s?\:\s?\"([^\"]+)\".+?' ,
+                             response_data, re.DOTALL):
+                accessToken,refreshToken = r.groups()
+                self.authorization.setToken('auth_access_token',accessToken)
+                self.authorization.setToken('auth_refresh_token',refreshToken)
+                self.updateAuthorization(self.addon)
+
+            for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"',
+                             response_data, re.DOTALL):
+                errorMessage = r.group(1)
+                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119), errorMessage)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(errorMessage), xbmc.LOGERROR)
+
+            return
+
+
+    ##
+    # refresh OAUTH2 access given refresh token
+    #   parameters: none
+    #   returns: none
+    ##
+    def refreshToken(self):
+
+            header = { 'User-Agent' : self.user_agent }
+
+            if (self.type == 2):
+                url = addon.getSetting(self.instanceName+'_url')
+                values = {
+                      'refresh_token' : self.authorization.getToken('auth_refresh_token')
+                      }
+                req = urllib2.Request(url, urllib.urlencode(values), header)
+
+            elif (self.type == 3):
+                url = 'https://accounts.google.com/o/oauth2/token'
+                clientID = addon.getSetting(self.instanceName+'_client_id')
+                clientSecret = addon.getSetting(self.instanceName+'_client_secret')
+                header = { 'User-Agent' : self.user_agent , 'Content-Type': 'application/x-www-form-urlencoded'}
+
+                req = urllib2.Request(url, 'client_id='+clientID+'&client_secret='+clientSecret+'&refresh_token='+self.authorization.getToken('auth_refresh_token')+'&grant_type=refresh_token', header)
+
+            else:
+                url = 'http://dmdsoftware.net/api/gdrive.php'
+                values = {
+                      'refresh_token' : self.authorization.getToken('auth_refresh_token')
+                      }
+                req = urllib2.Request(url, urllib.urlencode(values), header)
+
+
+            # try login
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                if e.code == 403:
+                    #login issue
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                else:
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                 return
 
             response_data = response.read()
             response.close()
 
             # retrieve authorization token
-            for r in re.finditer('SID=(.*).+?' +
-                             'LSID=(.*).+?' +
-                             'Auth=(.*).+?' ,
+            for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?' ,
                              response_data, re.DOTALL):
-                sid,lsid,auth = r.groups()
-                self.authorization.setToken('auth_'+service,auth)
+                accessToken = r.group(1)
+                self.authorization.setToken('auth_access_token',accessToken)
+                self.updateAuthorization(self.addon)
 
-        return
+            for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"',
+                             response_data, re.DOTALL):
+                errorMessage = r.group(1)
+                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119), errorMessage)
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(errorMessage), xbmc.LOGERROR)
 
+            return
 
     ##
-    # return the appropriate "headers" for Google Drive requests that include 1) user agent, 2) authorization token, 3) api version
+    # return the appropriate "headers" for Google Drive requests that include 1) user agent, 2) authorization token
     #   returns: list containing the header
     ##
     def getHeadersList(self, forceWritely=True):
-        #effective 2014/02, video stream calls require a wise token instead of writely token
-        if forceWritely == True:
-            return { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('auth_writely'), 'GData-Version' : self.API_VERSION }
+        if self.authorization.isToken(self.instanceName,addon, 'auth_access_token'):
+#            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+            return { 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
         else:
-            return { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('auth_wise'), 'GData-Version' : self.API_VERSION }
+            return { 'User-Agent' : self.user_agent}
 
 
+    #*** not used
     def setDecrypt(self):
         self.decrypt = True
 
@@ -184,27 +283,47 @@ class gdrive(cloudservice):
     def getMediaList(self, folderName=False, title=False, contentType=7):
 
         # retrieve all items
-        url = PROTOCOL+'docs.google.com/feeds/default/private/full'
-        if folderName==False and title==False:
-            url = url + '?showfolders=false'
+        url = self.API_URL +'files/'
+
+        # show all videos
+        if folderName=='VIDEO':
+            url = url + "?q=mimeType+contains+'video'"
+        # show all music
+        elif folderName=='MUSIC':
+            url = url + "?q=mimeType+contains+'audio'"
+        # show all music and video
+        elif folderName=='VIDEOMUSIC':
+            url = url + "?q=mimeType+contains+'audio'+or+mimeType+contains+'video'"
+        # show all photos and music
+        elif folderName=='PHOTOMUSIC':
+            url = url + "?q=mimeType+contains+'image'+or+mimeType+contains+'music'"
+        # show all photos
+        elif folderName=='PHOTO':
+            url = url + "?q=mimeType+contains+'image'"
+        # show all music, photos and video
+        elif folderName=='ALL':
+            url = url + "?q=mimeType+contains+'audio'+or+mimeType+contains+'video'+or+mimeType+contains+'image'"
+
+        # search for title
         elif title != False:
-            params = urllib.urlencode({'title': title, 'title-exact': 'false'})
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full?' + params
-        # retrieve root items
-        elif folderName == 'STARRED-FILES':
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/starred'
-        elif folderName == 'STARRED-FILESFOLDERS':
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/starred?showfolders=true'
-        elif folderName == 'STARRED-FOLDERS':
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/folder/starred'
+            encodedTitle = re.sub(' ', '+', title)
+            url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
+
+        # show all starred items
+        elif folderName == 'STARRED-FILES' or folderName == 'STARRED-FILESFOLDERS' or folderName == 'STARRED-FOLDERS':
+            url = url + "?q=starred%3dtrue"
+        # show all shared items
         elif folderName == 'SHARED':
-            params = urllib.urlencode({'q': 'sharedWithMe=true'})
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full/-/folder/?showfolders=true&shardWithMe'
-        elif folderName == '':
-            url = url + '/folder%3Aroot/contents'
+            url = url + "?q=sharedWithMe%3dtrue"
+
+        # default / show root folder
+        elif folderName == '' or folderName == 'me' or folderName == 'root':
+            folderName = self.getRootID()
+            url = url + "?q='"+str(folderName)+"'+in+parents"
+
         # retrieve folder items
         else:
-            url = url + '/folder%3A'+folderName+'/contents'
+            url = url + "?q='"+str(folderName)+"'+in+parents"
 
 
         mediaFiles = []
@@ -216,7 +335,7 @@ class gdrive(cloudservice):
               response = urllib2.urlopen(req)
             except urllib2.URLError, e:
               if e.code == 403 or e.code == 401:
-                self.login()
+                self.refreshToken()
                 req = urllib2.Request(url, None, self.getHeadersList())
                 try:
                   response = urllib2.urlopen(req)
@@ -234,177 +353,113 @@ class gdrive(cloudservice):
 
             # parsing page for videos
             # video-entry
-            for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
-                entry = r.group(1)
+            for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\s+\]\s+\}' ,response_data, re.DOTALL):
+             entryS = r2.group(1)
+             for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,entryS, re.DOTALL):
+                entry = r1.group(1)
 
-                # fetch folder
-                for r in re.finditer('\<gd\:resourceId\>([^\:]*)\:?([^\<]*)\</gd:resourceId\>' ,
+                resourceID = 0
+                resourceType = ''
+                title = ''
+                fileSize = 0
+                thumbnail = ''
+                url = ''
+                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                  resourceType,resourceID = r.groups()
-
-                  # entry is a folder
-                  if (resourceType == 'folder'):
-                      for q in re.finditer('<(title)>([^<]+)</title>' ,
+                  resourceID = r.group(1)
+                  break
+                for r in re.finditer('\"mimeType\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                          titleType, title = q.groups()
-
-                          # gdrive decryption specific ***
-                          if 0:
-                              import base64
-                              try:
-                                  title = base64.b64decode(title)
-                              except:
-                                  pass
-                          #***
-
-                          media = package.package(None,folder.folder(resourceID,title))
-                          mediaFiles.append(media)
-
-                  # entry is NOT a folder
-                  else:
-                      processed =0
-                      # fetch video title, download URL and docid for stream link
-                      # Google Drive API format
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.*?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'.*?\;docid=([^\&]+)\&.*?<gd:quotaBytesUsed>(\d+)</gd:quotaBytesUsed>' ,
+                  resourceType = r.group(1)
+                  break
+                for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                            title,mediaType,url,thumbnail,docid,fileSize = r.groups()
-
-                            mediaFile = file.file(docid, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
-
-                            media = package.package(mediaFile,folder.folder('',''))
-                            media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                            mediaFiles.append(media)
-                            #***
-                            processed = 1
-
-                      if processed == 0:
-                          #video that can't be processed (no thumbnail)
-                          for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?\;docid=([^\&]+)\&.*?\<gd\:quotaBytesUsed\>(\d+)\</gd\:quotaBytesUsed\>' ,
+                  title = r.group(1)
+                  break
+                for r in re.finditer('\"fileSize\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                            title,mediaType,url,docid,fileSize = r.groups()
-
-                            mediaFile = file.file(docid, title, title, self.MEDIA_TYPE_VIDEO, '', '', size=fileSize)
-
-                            media = package.package(mediaFile,folder.folder('',''))
-                            media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                            mediaFiles.append(media)
-                            processed = 1
-
-                      if processed == 0:
-                          #for playing video.google.com videos linked to your google drive account
-                          # Google Docs & Google Video API format
-                          for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                  fileSize = r.group(1)
+                  break
+                for r in re.finditer('\"thumbnailLink\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                              title,url,thumbnail = r.groups()
-
-                              mediaFile = file.file(title, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail)
-
-                              media = package.package(mediaFile,folder.folder('',''))
-                              media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                              mediaFiles.append(media)
-                              processed = 1
-
-                      if processed == 0:
-                          # audio
-                          for r in re.finditer('<title>([^<]+)</title><content type=\'audio\/[^\']+\' src=\'([^\']+)\'' ,
+                  thumbnail = r.group(1)
+                  break
+                for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                              title,url = r.groups()
+                  url = r.group(1)
+                  break
 
-                              mediaFile = file.file(title, title, title, self.MEDIA_TYPE_MUSIC, '', '')
+                # entry is a folder
+                if (resourceType == 'application/vnd.google-apps.folder'):
+                    media = package.package(None,folder.folder(resourceID,title))
+                    mediaFiles.append(media)
 
-                              media = package.package(mediaFile,folder.folder('',''))
-                              media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                              mediaFiles.append(media)
-                              processed = 1
+                # entry is a video
+                elif (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType and contentType in (0,1,2,4,7)):
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
 
-                      if processed == 0:
-                          # audio
-                          for r in re.finditer('<title>([^<]+)</title><content type=\'application\/x-flac\' src=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                              title,url = r.groups()
+                    media = package.package(mediaFile,folder.folder(folderName,''))
+                    media.setMediaURL(mediaurl.mediaurl(url, '','',''))
+                    mediaFiles.append(media)
 
-                              # there is no steaming for audio (?), so "download to stream"
-                              mediaFile = file.file(title, title, title, self.MEDIA_TYPE_VIDEO, '', '')
+                # entry is a music file
+                elif (resourceType == 'application/vnd.google-apps.audio' or 'audio' in resourceType and contentType in (1,2,3,4,6,7)):
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', '', size=fileSize)
+                    #url = re.sub('\&gd\=true', '', url)
+                    media = package.package(mediaFile,folder.folder(folderName,''))
+                    media.setMediaURL(mediaurl.mediaurl(url, '','',''))
+                    mediaFiles.append(media)
 
-                              media = package.package(mediaFile,folder.folder('',''))
-                              media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                              mediaFiles.append(media)
-                              processed = 1
-                        #***
+                # entry is a photo
+                elif (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType and contentType in (2,4,5,6,7)):
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, '', thumbnail, size=fileSize)
 
-                      if processed == 0:
-                          # pictures
-                          for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                              title,url,thumbnail = r.groups()
+                    media = package.package(mediaFile,folder.folder(folderName,''))
+                    media.setMediaURL(mediaurl.mediaurl(url, '','',''))
+                    mediaFiles.append(media)
 
-                              # there is no steaming for audio (?), so "download to stream"
-                              cleanURL = re.sub('---', '', url)
-                              cleanURL = re.sub('&amp;', '---', cleanURL)
-                              mediaFile = file.file(title, title, title, self.MEDIA_TYPE_PICTURE, '', thumbnail)
+                # entry is unknown
+                elif (resourceType == 'application/vnd.google-apps.unknown'):
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
 
-                              media = package.package(mediaFile,folder.folder('',''))
-                              media.setMediaURL(mediaurl.mediaurl(cleanURL, '','',''))
-                              mediaFiles.append(media)
-                              processed = 1
-
-                      if processed == 0:
-                          # pictures
-                          for r in re.finditer('<title>([^<]+)</title><content type=\'application\/octet-stream\' src=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                              title,url = r.groups()
-
-                          # there is no steaming for audio (?), so "download to stream"
-                              cleanURL = re.sub('---', '', url)
-                              cleanURL = re.sub('&amp;', '---', cleanURL)
-
-                        #***
-                              mediaFile = file.file(title, title, title, self.MEDIA_TYPE_PICTURE, '', '')
-
-                              media = package.package(mediaFile,folder.folder('',''))
-                              media.setMediaURL(mediaurl.mediaurl(cleanURL, '','',''))
-                              mediaFiles.append(media)
-                              processed = 1
-
+                    media = package.package(mediaFile,folder.folder(folderName,''))
+                    media.setMediaURL(mediaurl.mediaurl(url, '','',''))
+                    mediaFiles.append(media)
 
             # look for more pages of videos
             nextURL = ''
-            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
-                nextURL = r.groups()
+                nextURL = r.group(1)
 
 
             # are there more pages to process?
             if nextURL == '':
                 break
             else:
-                url = nextURL[0]
+                url = nextURL
 
         return mediaFiles
 
 
-
-
     ##
-    # retrieve a list of videos, using playback type stream
-    #   parameters: cache type (optional)
-    #   returns: list of videos
+    # retrieve a srt file for playback
+    #   parameters: title of the video file
+    #   returns: download url for srt
     ##
-    def downloadFolder(self,path,folder, context):
+    def getSRT(self, title):
 
         # retrieve all items
-        url = PROTOCOL+'docs.google.com/feeds/default/private/full'
+        url = self.API_URL +'files/'
 
-        # retrieve root items
-        if folder == '':
-            url = url + '/folder%3Aroot/contents'
-        # retrieve folder items
-        else:
-            url = url + '/folder%3A'+folder+'/contents'
+        # search for title
+        if title != False:
+            title = os.path.splitext(title)[0]
+            encodedTitle = re.sub(' ', '+', title)
+            url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
 
-        import xbmcvfs
-        xbmcvfs.mkdir(path + '/'+folder)
 
+        mediaFiles = []
         while True:
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -413,87 +468,177 @@ class gdrive(cloudservice):
               response = urllib2.urlopen(req)
             except urllib2.URLError, e:
               if e.code == 403 or e.code == 401:
-                self.login()
+                self.refreshToken()
                 req = urllib2.Request(url, None, self.getHeadersList())
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    self.crashreport.sendError('downloadFolder',str(e))
-                    return
+                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                  self.crashreport.sendError('getMediaList',str(e))
+                  return
               else:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('downloadFolder',str(e))
+                self.crashreport.sendError('getMediaList',str(e))
                 return
 
             response_data = response.read()
             response.close()
 
+            # parsing page for videos
             # video-entry
-            for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
-                entry = r.group(1)
+            for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\s+\]\s+\}' ,response_data, re.DOTALL):
+             entryS = r2.group(1)
+             for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,entryS, re.DOTALL):
+                entry = r1.group(1)
 
-                # fetch folder
-                for r in re.finditer('\<gd\:resourceId\>([^\:]*)\:?([^\<]*)\</gd:resourceId\>' ,
+                resourceID = 0
+                resourceType = ''
+                title = ''
+                url = ''
+                fileExtension = ''
+                for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                  resourceType,resourceID = r.groups()
-
-                  # entry is NOT a folder
-                  if not (resourceType == 'folder'):
-
-                      if context != self.MEDIA_TYPE_PICTURE:
-                          # fetch video title, download URL and docid for stream link
-                          # Google Drive API format
-                          for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                  fileExtension = r.group(1)
+                  break
+                if fileExtension != 'srt':
+                    break
+                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                              title,mediaType,url,thumbnail = r.groups()
-
-                          #for playing video.google.com videos linked to your google drive account
-                          # Google Docs & Google Video API format
-                          for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
+                  resourceID = r.group(1)
+                  break
+                for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                              title,url,thumbnail = r.groups()
-
-                           # audio
-                          for r in re.finditer('<title>([^<]+)</title><content type=\'audio\/[^\']+\' src=\'([^\']+)\'' ,
+                  title = r.group(1)
+                  break
+                for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                              title,url = r.groups()
+                  url = r.group(1)
+                  return url
+                  break
 
-                      elif context == self.MEDIA_TYPE_PICTURE:
-
-                          # pictures
-                          for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                               title,url = r.groups()
-
-                               url = re.sub('&amp;', '&', url)
-                               if not os.path.exists(path + '/'+folder+'/'+title):
-                                   self.downloadPicture(url,path +'/' + folder + '/' + title)
-
-
-                      # pictures
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'application\/[^\']+\' src=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                          title,url = r.groups()
-
-                          url = re.sub('&amp;', '&', url)
-                          if not os.path.exists(path + '/'+folder+'/'+title):
-                            self.downloadPicture(url,path +'/' + folder + '/' + title)
 
 
             # look for more pages of videos
             nextURL = ''
-            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
-                nextURL = r.groups()
+                nextURL = r.group(1)
+
 
             # are there more pages to process?
             if nextURL == '':
                 break
             else:
-                url = nextURL[0]
+                url = nextURL
 
-##
+        return ''
+
+
+    ##
+    # retrieve the resource ID for root folder
+    #   parameters: none
+    #   returns: resource ID
+    ##
+    def getRootID(self):
+
+        # retrieve all items
+        url = self.API_URL +'files/root'
+
+        resourceID = ''
+        while True:
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.refreshToken()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                  self.crashreport.sendError('getMediaList',str(e))
+                  return
+              else:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getMediaList',str(e))
+                return
+
+            response_data = response.read()
+            response.close()
+
+
+            for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
+                entry = r1.group(1)
+
+                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  resourceID = r.group(1)
+                  return resourceID
+
+            # look for more pages of videos
+            nextURL = ''
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                nextURL = r.group(1)
+
+
+            # are there more pages to process?
+            if nextURL == '':
+                break
+            else:
+                url = nextURL
+
+        return resourceID
+
+    ##
+    # retrieve the download URL for given docid
+    #   parameters: resource ID
+    #   returns: download URL
+    ##
+    def getDownloadURL(self, docid):
+
+            url = self.API_URL +'files/' + docid
+
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+
+            # if action fails, validate login
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                if e.code == 403 or e.code == 401:
+                    self.refreshToken()
+                    req = urllib2.Request(url, None, self.getHeadersList())
+                    try:
+                        response = urllib2.urlopen(req)
+                    except urllib2.URLError, e:
+                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                        self.crashreport.sendError('getPlaybackCall',str(e))
+                        return
+                else:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('getPlaybackCall',str(e))
+                    return
+
+            response_data = response.read()
+            response.close()
+
+
+            for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
+                entry = r1.group(1)
+
+
+                url = ''
+                for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  url = r.group(1)
+                  return url
+
+    #*** not used
+    ##
     # retrieve a list of videos, using playback type stream
     #   parameters: cache type (optional)
     #   returns: list of videos
@@ -521,7 +666,7 @@ class gdrive(cloudservice):
               response = urllib2.urlopen(req)
             except urllib2.URLError, e:
               if e.code == 403 or e.code == 401:
-                self.login()
+                self.refreshToken()
                 req = urllib2.Request(url, None, self.getHeadersList())
                 try:
                   response = urllib2.urlopen(req)
@@ -625,15 +770,19 @@ class gdrive(cloudservice):
             acodec=-1
 
         mediaURLs = []
-        docid = ''
-        if package is None and title != '':
-            # search by video title
-            if isExact == True:
-                params = urllib.urlencode({'title': title, 'title-exact': 'true'})
-            else:
-                params = urllib.urlencode({'title': title, 'title-exact': 'false'})
 
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full?' + params
+        docid = ''
+
+        # for playback from STRM with title of video provided (best match)
+        if package is None and title != '':
+
+            url = self.API_URL +'files/'
+            # search by video title
+            encodedTitle = re.sub(' ', '+', title)
+            if isExact == True:
+                url = url + "?q=title%3d'" + str(encodedTitle) + "'"
+            else:
+                url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
 
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -642,7 +791,7 @@ class gdrive(cloudservice):
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
                 if e.code == 403 or e.code == 401:
-                    self.login()
+                    self.refreshToken()
                     req = urllib2.Request(url, None, self.getHeadersList())
                     try:
                         response = urllib2.urlopen(req)
@@ -659,21 +808,36 @@ class gdrive(cloudservice):
             response.close()
 
 
-            # fetch video title, download URL and docid for stream link
-            for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
-                entry = r.group(1)
-                for q in re.finditer('<title>([^<]+)</title><content type=\'([^\/]+)\/[^\']+\' src=\'([^\']+)\'.*\;docid=([^\&]+)\&' ,
+            for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
+                entry = r1.group(1)
+
+
+                resourceType = ''
+                title = ''
+                url = ''
+                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                    title,mediaType,url,docid = q.groups()
+                  docid = r.group(1)
+                  break
+                for r in re.finditer('\"mimeType\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  resourceType = r.group(1)
+                  break
+                for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  title = r.group(1)
+                  break
+                for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  url = r.group(1)
+                  mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
+                  break
 
-                    #mediaURLs.append(url, 'original', 0, 3)
-                    mediaURLs.append(mediaurl.mediaurl(url, '9999 - original', 0, 9999))
-
+        #given docid, fetch original playback
         else:
-
             docid = package.file.id
 
-            url = PROTOCOL+'docs.google.com/feeds/default/private/full/file:' + docid
+            url = self.API_URL +'files/' + docid
 
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -683,7 +847,7 @@ class gdrive(cloudservice):
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
                 if e.code == 403 or e.code == 401:
-                    self.login()
+                    self.refreshToken()
                     req = urllib2.Request(url, None, self.getHeadersList())
                     try:
                         response = urllib2.urlopen(req)
@@ -700,34 +864,49 @@ class gdrive(cloudservice):
             response.close()
 
 
-            # fetch video title, download URL and docid for stream link
-            for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
-                entry = r.group(1)
-                for q in re.finditer('<title>([^<]+)</title><content type=\'([^\/]+)\/[^\']+\' src=\'([^\']+)\'.*\;docid=([^\&]+)\&' ,
+            for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
+                entry = r1.group(1)
+
+
+                resourceType = ''
+                title = ''
+                url = ''
+                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                    title,mediaType,url,docid = q.groups()
+                  docid = r.group(1)
+                  break
+                for r in re.finditer('\"mimeType\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  resourceType = r.group(1)
+                  break
+                for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  title = r.group(1)
+                  break
+                for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  url = r.group(1)
+                  if package.file.type == self.MEDIA_TYPE_MUSIC:
+                      url = re.sub('\&gd\=true', '', url)
 
-                    #mediaURLs.append(url, 'original', 0, 3)
-                    mediaURLs.append(mediaurl.mediaurl(url, '9999 - original', 0, 9999))
+                  mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
+                  break
 
+        if package.file.type == self.MEDIA_TYPE_MUSIC:
+            return mediaURLs
 
-
+        # fetch streams
         if docid != '':
             # player using docid
             params = urllib.urlencode({'docid': docid})
-            url = PROTOCOL+'docs.google.com/get_video_info?docid=' + str(docid)
+            url = self.PROTOCOL+ 'drive.google.com/get_video_info?docid=' + str(docid)
             req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
-#        else:
-            #try to use no authorization token (for pubic URLs)
-#            header = { 'User-Agent' : self.user_agent, 'GData-Version' : self.API_VERSION }
-#            req = urllib2.Request(url, None, header)
-
             # if action fails, validate login
             try:
                  response = urllib2.urlopen(req)
             except urllib2.URLError, e:
                  if e.code == 403 or e.code == 401:
-                     self.login()
+                     self.refreshToken()
                      req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
                      try:
                          response = urllib2.urlopen(req)
@@ -749,22 +928,15 @@ class gdrive(cloudservice):
             urls = re.sub('\\\\u003d', '=', urls)
             urls = re.sub('\\\\u0026', '&', urls)
 
-            serviceRequired = ''
-            for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
-                             urls, re.DOTALL):
-                (service, serviceRequired) = r.groups()
 
-            #effective 2014/02, video stream calls require a wise token instead of writely token
-            #backward support for account not migrated to the 2014/02 change
-            if serviceRequired == 'writely':
-                self.useWRITELY = True
-                req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
+            self.useWRITELY = True
+            req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
 
-                try:
+            try:
                     response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
+            except urllib2.URLError, e:
                     if e.code == 403 or e.code == 401:
-                        self.login()
+                        self.refreshToken()
                         req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
                         try:
                             response = urllib2.urlopen(req)
@@ -777,67 +949,18 @@ class gdrive(cloudservice):
                         self.crashreport.sendError('getPlaybackCall',str(e))
                         return
 
-                response_data = response.read()
-                response.close()
+            response_data = response.read()
+            response.close()
 
-                # decode resulting player URL (URL is composed of many sub-URLs)
-                urls = response_data
-                urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
-                urls = re.sub('\\\\u003d', '=', urls)
-                urls = re.sub('\\\\u0026', '&', urls)
-
-                serviceRequired = ''
-                for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
-                               urls, re.DOTALL):
-                    (service, serviceRequired) = r.groups()
-
-                if serviceRequired != '':
-                    log('an unexpected service token is required: %s' % (serviceRequired), True)
-
-            elif serviceRequired == 'wise':
-                self.useWRITELY = False
-                req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
-
-                try:
-                    response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
-                    if e.code == 403 or e.code == 401:
-                        self.login()
-                        req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
-                        try:
-                            response = urllib2.urlopen(req)
-                        except urllib2.URLError, e:
-                            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                            self.crashreport.sendError('getPlaybackCall',str(e))
-                            return
-                    else:
-                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                        self.crashreport.sendError('getPlaybackCall',str(e))
-                        return
-
-                response_data = response.read()
-                response.close()
-
-                # decode resulting player URL (URL is composed of many sub-URLs)
-                urls = response_data
-                urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
-                urls = re.sub('\\\\u003d', '=', urls)
-                urls = re.sub('\\\\u0026', '&', urls)
-
-                serviceRequired = ''
-                for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
-                               urls, re.DOTALL):
-                    (service, serviceRequired) = r.groups()
-
-                if serviceRequired != '':
-                    log('an unexpected service token is required: %s' % (serviceRequired), True)
-
-            elif serviceRequired != '':
-              log('an unexpected service token is required: %s' % (serviceRequired), True)
+            # decode resulting player URL (URL is composed of many sub-URLs)
+            urls = response_data
+            urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
+            urls = re.sub('\\\\u003d', '=', urls)
+            urls = re.sub('\\\\u0026', '&', urls)
 
 
-            # do some substitutions to make anchoring the URL easier
-            urls = re.sub('\&url\='+PROTOCOL, '\@', urls)
+        # do some substitutions to make anchoring the URL easier
+        urls = re.sub('\&url\='+self.PROTOCOL, '\@', urls)
 
         # itag code reference http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs
         #itag_dict = {1080: ['137', '37', '46'], 720: ['22', '136', '45'],
@@ -848,9 +971,9 @@ class gdrive(cloudservice):
 #        <setting id="preferred_format" type="enum" label="30012" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
 #        <setting id="avoid_codec" type="enum" label="30013" values="none|VP8/vorbis" default="0"/>
 
-            itagDB={}
-            containerDB = {'x-flv':'flv', 'webm': 'WebM', 'mp4;+codecs="avc1.42001E,+mp4a.40.2"': 'MP4'}
-            for r in re.finditer('(\d+)/(\d+)x(\d+)/(\d+/\d+/\d+)\&?\,?' ,
+        itagDB={}
+        containerDB = {'x-flv':'flv', 'webm': 'WebM', 'mp4;+codecs="avc1.42001E,+mp4a.40.2"': 'MP4'}
+        for r in re.finditer('(\d+)/(\d+)x(\d+)/(\d+/\d+/\d+)\&?\,?' ,
                                urls, re.DOTALL):
               (itag,resolution1,resolution2,codec) = r.groups()
 
@@ -862,9 +985,9 @@ class gdrive(cloudservice):
                 itagDB[itag] = {'resolution': resolution2}
 
 
-            # fetch format type and quality for each stream
-            count=0
-            for r in re.finditer('\@([^\@]+)' ,urls):
+        # fetch format type and quality for each stream
+        count=0
+        for r in re.finditer('\@([^\@]+)' ,urls):
                 videoURL = r.group(1)
                 for q in re.finditer('itag\=(\d+).*?type\=video\/([^\&]+)\&quality\=(\w+)' ,
                              videoURL, re.DOTALL):
@@ -937,42 +1060,41 @@ class gdrive(cloudservice):
                         pass
 
                     try:
-                        mediaURLs.append(mediaurl.mediaurl(PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], 0, order+count))
-#                videos[str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec']] = PROTOCOL + videoURL
+                        mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count))
                     except KeyError:
-                        mediaURLs.append(mediaurl.mediaurl(PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container, 0, order+count))
-#                videos[str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container] = PROTOCOL + videoURL
+                        mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count))
 
         return mediaURLs
 
 
-    def downloadPicture(self,url, file):
+
+    ##
+    # download remote picture
+    # parameters: url of picture, file location with path on disk
+    ##
+    def downloadPicture(self, url, file):
 
         req = urllib2.Request(url, None, self.getHeadersList())
 
-#        import xbmcvfs
-#        f = xbmcvfs.File(file, 'w')
-#        f = open(file,'wb')
+        f = xbmcvfs.File(file, 'w')
+
         # if action fails, validate login
         try:
-#          f.write(urllib2.urlopen(req).read())
-#            f.write(urllib2.urlopen(req).read())
-#            f.close()
-                open(file,'wb').write(urllib2.urlopen(req).read())
+            f.write(urllib2.urlopen(req).read())
+            f.close()
 
         except urllib2.URLError, e:
-              self.login()
+              self.refreshToken()
               req = urllib2.Request(url, None, self.getHeadersList())
               try:
-                open(file,'wb').write(urllib2.urlopen(req).read())
-#                f.write(urllib2.urlopen(req).read())
-#                f.close()
+                f.write(urllib2.urlopen(req).read())
+                f.close()
               except urllib2.URLError, e:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                 self.crashreport.sendError('downloadPicture',str(e))
                 return
 
-
+    #*** needs update
     def downloadDecryptPicture(self,key,url, file):
 
         req = urllib2.Request(url, None, self.getHeadersList())
@@ -985,7 +1107,7 @@ class gdrive(cloudservice):
           encryption.decrypt_stream(key,urllib2.urlopen(req),file)
         except urllib2.URLError, e:
             if e.code == 403 or e.code == 401:
-              self.login()
+              self.refreshToken()
               req = urllib2.Request(url, None, self.getHeadersList())
               try:
                 encryption.decrypt_stream(key,urllib2.urlopen(req),file)
@@ -1002,7 +1124,6 @@ class gdrive(cloudservice):
                 return
 
 
-
     # for playing public URLs
     def getPublicStream(self,url):
 
@@ -1016,16 +1137,17 @@ class gdrive(cloudservice):
             acodec=-1
 
         mediaURLs = []
-        #try to use no authorization token (for pubic URLs)
-        header = { 'User-Agent' : self.user_agent, 'GData-Version' : self.API_VERSION }
 
-        req = urllib2.Request(url, None, header)
+        #try to use no authorization token (for pubic URLs)
+#        header = { 'User-Agent' : self.user_agent, 'GData-Version' : self.API_VERSION }
+
+        req = urllib2.Request(url, None, self.getHeadersList())
 
         try:
             response = urllib2.urlopen(req)
         except urllib2.URLError, e:
             if e.code == 403 or e.code == 401:
-              self.login()
+              self.refreshToken()
               req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
               try:
                 response = urllib2.urlopen(req)
@@ -1040,96 +1162,6 @@ class gdrive(cloudservice):
 
         response_data = response.read()
         response.close()
-
-
-        serviceRequired = ''
-        for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
-                             response_data, re.DOTALL):
-            (service, serviceRequired) = r.groups()
-
-        for r in re.finditer('AccountChooser.+?(service)=([^\']+)\'' ,
-                             response_data, re.DOTALL):
-            (service, serviceRequired) = r.groups()
-
-
-        #effective 2014/02, video stream calls require a wise token instead of writely token
-        #backward support for account not migrated to the 2014/02 change
-        if serviceRequired == 'writely':
-          self.useWRITELY = True
-
-          if (self.authorization.getToken('auth_writely') == ''):
-            self.login();
-
-          req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
-
-          try:
-              response = urllib2.urlopen(req)
-          except urllib2.URLError, e:
-              if e.code == 403 or e.code == 401:
-                self.login()
-                req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
-                try:
-                  response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    self.crashreport.sendError('getPublicStream',str(e))
-                    return
-              else:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('getPublicStream',str(e))
-                return
-
-          response_data = response.read()
-          response.close()
-
-          serviceRequired = ''
-          for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
-                               urls, re.DOTALL):
-              (service, serviceRequired) = r.groups()
-
-          if serviceRequired != '':
-            log('an unexpected service token is required: %s' % (serviceRequired), True)
-
-        elif serviceRequired == 'wise':
-          self.useWRITELY = False
-          if (self.authorization.getToken('auth_wise') == ''):
-            self.login();
-
-          req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
-
-          try:
-              response = urllib2.urlopen(req)
-          except urllib2.URLError, e:
-              if e.code == 403 or e.code == 401:
-                self.login()
-                req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
-                try:
-                  response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    self.crashreport.sendError('getPublicStream',str(e))
-                    return
-              else:
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    self.crashreport.sendError('getPublicStream',str(e))
-                    return
-
-          response_data = response.read()
-          response.close()
-
-
-          serviceRequired = ''
-          for r in re.finditer('ServiceLogin\?(service)=([^\&]+)\&' ,
-                               urls, re.DOTALL):
-              (service, serviceRequired) = r.groups()
-
-
-          if serviceRequired != '':
-            log('an unexpected service token is required: %s' % (serviceRequired), True)
-
-
-        elif serviceRequired != '':
-          log('an unexpected service token is required: %s' % (serviceRequired), True)
 
 
         for r in re.finditer('\"fmt_list\"\,\"([^\"]+)\"' ,
@@ -1147,7 +1179,6 @@ class gdrive(cloudservice):
 #                             response_data, re.DOTALL):
 #            downloadURL = r.group(1)
 #            downloadURL = re.sub('\\\\u003d', '=', downloadURL)
-
 
         itagDB={}
         containerDB = {'x-flv':'flv', 'webm': 'WebM', 'mp4;+codecs="avc1.42001E,+mp4a.40.2"': 'MP4'}
@@ -1261,19 +1292,15 @@ class gdrive(cloudservice):
                         mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count, title=title))
 
         return mediaURLs
+
+
     ##
     # retrieve a media file
-    #   parameters: title of video, whether to prompt for quality/format (optional), cache type (optional)
+    #   parameters: title of video, whether to prompt for quality/format (optional),
     ##
-    def downloadMediaFile(self,url, title, fileSize):
+    def downloadMediaFile(self, playback, url, title, folderID, filename, fileSize, force=False):
 
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
-        opener.addheaders = [('User-Agent', self.user_agent), ('Authorization' , 'GoogleLogin auth='+self.authorization.getToken('auth_writely')), ('GData-Version' , self.API_VERSION)]
-        request = urllib2.Request(url)
 
-        # if action fails, validate login
-
-        cachePercent = 0
         try:
             cachePercent = int(self.addon.getSetting('cache_percent'))
         except:
@@ -1302,86 +1329,98 @@ class gdrive(cloudservice):
             CHUNK = 16 * 1024
 
         count = 0
+
+
         path = ''
         try:
-            path = self.addon.getSetting('cache_folder')
+            path = addon.getSetting('cache_folder')
         except:
             pass
 
-        import os.path
-
-        if not os.path.exists(path):
-                path = ''
+        if not xbmcvfs.exists(path):
+            path = ''
 
         while path == '':
             path = xbmcgui.Dialog().browse(0,self.addon.getLocalizedString(30090), 'files','',False,False,'')
-            if not os.path.exists(path):
+            if not xbmcvfs.exists(path):
                 path = ''
             else:
                 self.addon.setSetting('cache_folder', path)
 
 
 
-        # if action fails, validate login
         try:
-            response = opener.open(request)
-        except urllib2.URLError, e:
-            if e.code == 403 or e.code == 401:
-              self.login()
-              opener.addheaders = [('User-Agent', self.user_agent), ('Authorization' , 'GoogleLogin auth='+self.authorization.getToken('auth_writely')), ('GData-Version' , self.API_VERSION)]
-              request = urllib2.Request(url)
+            xbmcvfs.mkdir(str(path) + '/'+str(folderID))
+        except: pass
+
+        try:
+            xbmcvfs.mkdir(str(path) + '/'+str(folderID)+ '/' + str(filename))
+        except: pass
+
+        playbackFile = str(path) + '/' + str(folderID) + '/' + str(filename) + '/' + str(title)
+
+
+        if not xbmcvfs.exists(playbackFile) or force:
+
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            f = xbmcvfs.File(playbackFile, 'w')
+
+
+            if playback != '':
+                progress = xbmcgui.DialogProgress()
+                progressBar = sizeDownload
+                progress.create(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30035), title)
+            else:
+                progress = xbmcgui.DialogProgressBG()
+                progressBar = fileSize
+                progress.create(self.addon.getLocalizedString(30035), title)
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+
+            except urllib2.URLError, e:
+              self.refreshToken()
+              req = urllib2.Request(url, None, self.getHeadersList())
               try:
-                  response = opener.open(request)
+                  response = urllib2.urlopen(req)
+
               except urllib2.URLError, e:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('downloadMediaFile',str(e))
-                return
-            else:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('downloadMediaFile',str(e))
+                self.crashreport.sendError('downloadPicture',str(e))
                 return
 
-        progress = xbmcgui.DialogProgress()
-        progress.create(self.addon.getLocalizedString(30000),self.addon.getLocalizedString(30035),title,'\n')
-
-#        with open(path + 'test.mp4', 'wb') as fp:
-
-        filename = 'cache.mp4'
-
-        fp = open(path + filename, 'wb')
-        downloadedBytes = 0
-        while sizeDownload > downloadedBytes:
-                progress.update((int)(float(downloadedBytes)/sizeDownload*100),self.addon.getLocalizedString(30035),(str)(cachePercent) + ' ' +self.addon.getLocalizedString(30093),'\n')
+            downloadedBytes = 0
+            while sizeDownload > downloadedBytes:
+                progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30035))
                 chunk = response.read(CHUNK)
                 if not chunk: break
-                fp.write(chunk)
+                f.write(chunk)
                 downloadedBytes = downloadedBytes + CHUNK
 
-        self.response = response
-        self.fp = fp
-        return path + filename
+        if playback != '':
+            try:
+                progress.close()
+            except:
+                pass
 
-   ##
-    # retrieve a media file
-    #   parameters: title of video, whether to prompt for quality/format (optional), cache type (optional)
-    ##
-    def continuedownloadMediaFile(self, url):
+            item = xbmcgui.ListItem(path=playbackFile)
+            item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
+            xbmcplugin.setResolvedUrl(playback, True, item)
+            xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
 
-        CHUNK = 0
         try:
-            CHUNK = int(self.addon.getSetting('chunk_size'))
-        except:
-            CHUNK = 32 * 1024
-
-        if CHUNK < 1024:
-            CHUNK = 16 * 1024
-
-#        fp = open(url, 'a')
-        while True:
-                chunk = self.response.read(CHUNK)
+            while True:
+                downloadedBytes = downloadedBytes + CHUNK
+                progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30092))
+                chunk = response.read(CHUNK)
                 if not chunk: break
-                self.fp.write(chunk)
-        self.fp.close()
+                f.write(chunk)
+            f.close()
+            progress.close()
+
+        except: pass
 
 
 

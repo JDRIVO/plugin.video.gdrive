@@ -1,3 +1,112 @@
+Version 0.6.0
+- Merge with stable
+Version 0.5.17
+-- Google Drive API 2 module - fix for "show all music" & "show all photos"
+-- Google Drive API 2 module - for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
+Version 0.5.16
+- fix audio streaming issue by updating User Agent
+-- Google Drive API 2 module - fix filesize sizing issue with caching
+-- Google Drive API 2 module - optimizations for caching
+Version 0.5.15
+- bug fixes for OAUTH2
+Version 0.5.14
+- passed regression testing: Support for Drive API 2 #21
+- passed regression testing: OAUTH 2 support #20
+- passed regression testing: Move to CloudService framework #16
+- passed regression testing: Photo playback on Android #14
+- passed regression testing: Playback fails #13
+- passed regression testing: title when using mode=playvideo&title=file_name_in_drive #11
+- passed regression testing: Pictures support #5
+- passed regression testing: Music and Pictures? #1
+-- Google Drive API 2 module - added "always cache for playback" (used to be known as memorycache)
+-- Google Drive API 2 module - added "never transcode" (used to be known as playvideo -- plays original, never a stream)
+Version 0.5.13
+- tested against regression bucket (pass)
+- fix streamurl
+- improved error handling on deleted videos
+-- Google Drive API 2 module - add playback via public (not logged in)
+- disable <options>; not in use anymore
+- if invoked without a username or instancename, don't default on the first account but prompt the user to select
+-- Google Drive API 2 module - bug fix with header authorization
+Version 0.5.12
+-- Google Drive API 2 module - add enroll account via .STRM
+-- Google Drive API 2 module - fix for long listings
+- fix for ClientLogin backward compatibility
+- add help file for login
+- add additional error handling for logins
+Version 0.5.11
+- enabled OAUTH2 private support
+- enabled OAUTH2 custom client id/secret
+Version 0.5.10
+- prevent "Save STRM" option for picture files and while running under picture plugin
+- better context handling
+- add dialog for save STRM
+- cleanup settings
+-- Google Drive API 2 module - add support slideshow support (pictures)
+-- Google Drive API 2 module - remove sort-order from playback list
+-- Google Drive API 2 module - add support for download
+-- Google Drive API 2 module - add support for cache playback
+-- Google Drive API 2 module - add support for download folder
+-- Google Drive API 2 module - implement depricated API calls: memorycachevideo, play, playvideo, streamvideo
+Version 0.5.9
+-- Google Drive API 2 module - add support legacy STRM support for files with title
+-- Google Drive API 2 module - add support for photos
+-- Google Drive API 2 module - added support for saving photos on network devices.
+Version 0.5.8
+-- Google Drive API 2 module - add support for search
+-- Google Drive API 2 module - add support for "show all music/video/photo"
+-- Google Drive API 2 module - add support for "show starred"
+-- Google Drive API 2 module - add support for "show shared"
+- issue: Support for Drive API 2 #21
+- issue: OAUTH 2 support #20
+Version 0.5.7
+- better multiple account support
+- update settings for OAUTH2 support
+- reduce number of supported accounts to 9 (XBMC limitations, exceeds maximum number of setting components)
+-- define additional accounts above 9 manually by editing the settings.xml to add account 10,11,etc
+- added Google Drive API 2 module
+-- Google Drive API 2 module - add support for root folder
+-- Google Drive API 2 module - add support for subfolder folder
+-- Google Drive API 2 module - add support for video playback
+-- Google Drive API 2 module - add support for streaming playback
+- cleanup of import statements
+Version 0.5.6
+- add fallback to first account if not able to load any accounts
+Version 0.5.5
+- fix: create directories of STRM on network paths
+- fix: playback of STRM files without username/instancename when multiple accounts are defined
+- fix: add username to buildSTRM
+- add: shared content
+- add: support write STRM to network path
+Version 0.5.4
+- backward support: API video with title
+- API: add search function
+* to playback a video (first video that matches the title):
+*   plugin://plugin.video.gdrive-testing/?mode=video&title=This is the title of the media file
+*
+* to return a list of media files to select from:
+*   plugin://plugin.video.gdrive-testing/?mode=search&title=This is the title of the media file
+- add search function
+Version 0.5.3
+- implement filesize sorting
+- add back original stream
+- sort stream selection
+Version 0.5.2
+- add starred files/folders
+- implement proper label sorting
+- nekwebdev contribution: saving movies and tv shows to "easily" XBMC importable folders -- enhancements
+- add: save STRM path to settings (optional tvshows and movies)
+Version 0.5.1
+- fix: adjustment for building STRMs with subfolders
+- fix subfolder STRM issue: Move to CloudService framework #16
+Version 0.5.0
+- major move to cloudservice API
+- enable buildSTRM
+- add multiple account support (default: 10 accounts)
+- add cloudservice API files
+- add crashreporting API files
+- implemented: Move to CloudService framework #16
+- implemented export to .STRM: Library Integration #15
 Version 0.4.8
 - fix for video preview image (problem introduced with 0.4.5)
 - context improvements

@@ -28,7 +28,6 @@
     <string id="30023">View when in music plugin context</string>
     <string id="30024">View when in photo plugin context</string>
     <string id="30025">Videos</string>
-    <string id="30028">Music</string>
     <string id="30029">Photos</string>
     <string id="30030">Media</string>
     <string id="30031">Video and Music</string>
@@ -37,9 +36,88 @@
     <string id="30037">Context</string>
     <string id="30038">Photo cache folder</string>
 
-    <string id="30026">Location to store cache files</string>
-    <string id="30027">Chunk size</string>
-    <string id="30035">Downloading...</string>
-    <string id="30036">Percent to download before playback</string>
+
+    <string id="30090">Location to store cache files</string>
+    <string id="30091">Chunk size</string>
+    <string id="30092">Downloading...</string>
+    <string id="30035">Caching...</string>
+    <string id="30093">Percent to download before playback</string>
+    <string id="30094">Music</string>
+
+    <string id="30095">Starred Files</string>
+    <string id="30096">Starred Folders</string>
+	<string id="30097">Starred Files & Folders</string>
+	<string id="30098">Shared Files & Folders</string>
+
+    <string id="30114">Downloads and Cache</string>
+    <string id="30115">Stream Perferences</string>
+    <string id="30116">Cache</string>
+    <string id="30117">Listings</string>
+
+    <!-- CloudService Generic -->
+
+    <string id="30042">Save STRM</string>
+    <string id="30043">Options</string>
+
+    <string id="30051">Your login failed.</string>
+    <string id="30052">Ensure that your username and password are set in settings.</string>
+    <string id="30054">List files according to</string>
+
+    <!-- CloudService Generic - Library -->
+
+    <string id="30060">Library</string>
+    <string id="30061">Library Integration via Google Drive</string>
+    <string id="30062">Full Username (i.e. username@gmail.com)</string>
+    <string id="30063">Spredsheet Name</string>
+    <string id="30064">Use library integration?</string>
+    <string id="30088">Location to store movie STRMs (optional) </string>
+    <string id="30089">Location to store tv show STRMs (optional) </string>
+    <string id="30026">Location to store STRMs</string>
+    <string id="30027">Do you want to create the STRM files in the path</string>
+    <string id="30028">STRM file creation complete.</string>
+
+
+    <!-- CloudService Generic - Crash Reporting -->
+    <string id="30070">Would you like to send the error details to the developer?</string>
+    <string id="30071">No passwords will be sent.</string>
+    <string id="30072">You will be provided an identifer number after sent.</string>
+    <string id="30073">Your identification number of the error submission is </string>
+    <string id="30074">Logging</string>
+    <string id="30075">Enable sending crash logs to developer</string>
+    <string id="30076">Email address (optional)</string>
+    <string id="30077">Email address is for the developer to contact you at.</string>
+    <string id="30078">OS</string>
+    <string id="30079">XBMC version</string>
+    <string id="30080">Last identifier error #</string>
+
+    <string id="30100">This feature is not supported on your version of XBMC / KODI</string>
+
+    <string id="30110">Enter search string</string>
+    <string id="30111">SEARCH</string>
+    <string id="30112">Choose a result to playback</string>
+
+    <string id="30113">Make offline</string>
+
+    <string id="30114">Downloads and Cache</string>
+    <string id="30115">Stream Perferences</string>
+    <string id="30116">Cache</string>
+    <string id="30117">Listings</string>
+
+    <string id="30118">The following account was enrolled:</string>
+    <string id="30119">The following login error was encountered:</string>
+
+    <string id="30120">Select an account:</string>
+    <string id="30121">Always cache for playback</string>
+    <string id="30122">Never transcode</string>
+    <string id="30123">Play original</string>
+	<string id="30124">Play + cache</string>
+	<string id="30125">Play offline</string>
+	<string id="30126">Slideshow</string>
+
+    <string id="30201">OAUTH2 code</string>
+    <string id="30202">OAUTH2 client id</string>
+    <string id="30203">OAUTH2 client secret</string>
+    <string id="30204">OAUTH2 URL</string>
+    <string id="30205">Visit www.dmdsoftware.net for help setting up OAUTH2</string>
 
 </strings>
