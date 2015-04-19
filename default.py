@@ -492,6 +492,7 @@ elif mode == 'buildstrm':
 
                             loop = False
                     except:
+                        service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
                         break
 
                     if count == max_count:
@@ -528,9 +529,12 @@ elif mode == 'buildstrm':
                         username = ''
 
                     if username != '':
-                        if ( int(addon.getSetting(instanceName+'_type')) > 0):
-                            service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
-                        else:
+                        try:
+                            if ( int(addon.getSetting(instanceName+'_type')) > 0):
+                                service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                            else:
+                                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                        except:
                             service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
 
                         service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog)
@@ -608,6 +612,7 @@ elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
                         service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
                     break
             except:
+                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
                 break
 
         try:
@@ -652,19 +657,24 @@ elif numberOfAccounts == 0:
             xbmcplugin.endOfDirectory(plugin_handle)
 
         #let's log in
-        if ( int(addon.getSetting(instanceName+'_type')) > 0):
-            service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
-        else:
+        try:
+            if ( int(addon.getSetting(instanceName+'_type')) > 0):
+                service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+            else:
+                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+        except:
             service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
-
 
     # show entries of a single account (such as folder)
 elif instanceName != '':
 
-        #let's log in
-        if ( int(addon.getSetting(instanceName+'_type')) > 0):
-            service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
-        else:
+        try:
+            #let's log in
+            if ( int(addon.getSetting(instanceName+'_type')) > 0):
+                service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+            else:
+                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+        except:
             service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
 
 
@@ -683,6 +693,7 @@ elif invokedUsername != '':
 
                 if username == invokedUsername:
 
+
                     #let's log in
                     if ( int(addon.getSetting(instanceName+'_type')) > 0):
                         service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
@@ -690,7 +701,8 @@ elif invokedUsername != '':
                         service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
                     break
             except:
-                break
+                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+
 
         #fallback on first defined account
         try:
