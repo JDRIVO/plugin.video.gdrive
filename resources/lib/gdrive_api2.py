@@ -290,19 +290,19 @@ class gdrive(cloudservice):
             url = url + "?q=mimeType+contains+'video'"
         # show all music
         elif folderName=='MUSIC':
-            url = url + "?q=mimeType+contains+'music'"
+            url = url + "?q=mimeType+contains+'audio'"
         # show all music and video
         elif folderName=='VIDEOMUSIC':
-            url = url + "?q=mimeType+contains+'music'+or+mimeType+contains+'video'"
+            url = url + "?q=mimeType+contains+'audio'+or+mimeType+contains+'video'"
         # show all photos and music
         elif folderName=='PHOTOMUSIC':
-            url = url + "?q=mimeType+contains+'photo'+or+mimeType+contains+'music'"
+            url = url + "?q=mimeType+contains+'image'+or+mimeType+contains+'music'"
         # show all photos
         elif folderName=='PHOTO':
-            url = url + "?q=mimeType+contains+'photo'"
+            url = url + "?q=mimeType+contains+'image'"
         # show all music, photos and video
         elif folderName=='ALL':
-            url = url + "?q=mimeType+contains+'music'+or+mimeType+contains+'video'+or+mimeType+contains+'photo'"
+            url = url + "?q=mimeType+contains+'audio'+or+mimeType+contains+'video'+or+mimeType+contains+'image'"
 
         # search for title
         elif title != False:

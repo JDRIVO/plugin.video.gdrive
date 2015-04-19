@@ -98,7 +98,7 @@ def addMediaFile(service, package, contextType='video'):
 
 
     elif contextType == 'image':
-        cm.append(( 'Slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+str(package.folder.id)+'&instance='+str(service.instanceName)+')', ))
+        cm.append(( addon.getLocalizedString(30126), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+str(package.folder.id)+'&instance='+str(service.instanceName)+')', ))
 
     url = url + '&content_type='+contextType
 
@@ -124,7 +124,7 @@ def addDirectory(service, folder, contextType='video'):
             cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+folder.title+'&username='+str(service.authorization.username)+'&folderID='+str(folder.id)+')', ))
 #        cm.append(( addon.getLocalizedString(30081), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=createbookmark&title='+folder.title+'&instanceName='+str(service.instanceName)+'&folderID='+str(folder.id)+')', ))
         elif contextType == 'image':
-            cm.append(( 'Slideshow', 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&title='+str(folder.title) + '&folder='+str(folder.id)+'&username='+str(service.authorization.username)+')', ))
+            cm.append(( addon.getLocalizedString(30126), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&title='+str(folder.title) + '&folder='+str(folder.id)+'&username='+str(service.authorization.username)+')', ))
 
         if (service.protocol == 2):
             cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&title='+str(folder.title) + '&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
@@ -988,6 +988,7 @@ elif mode == 'audio':
         xbmcplugin.endOfDirectory(plugin_handle)
 
 
+    #force cache
     try:
         download = addon.getSetting('always_cache')
         if download == 'true':
@@ -1000,6 +1001,7 @@ elif mode == 'audio':
         download = False
         play = False
 
+    #user selected to download
     try:
         download = plugin_queries['download']
         if download == 'true':
@@ -1009,6 +1011,7 @@ elif mode == 'audio':
     except:
         pass
 
+    #user selected to playback
     try:
         play = plugin_queries['play']
         if play == 'true':
@@ -1018,6 +1021,7 @@ elif mode == 'audio':
     except:
         pass
 
+    #user selected to playback from cache
     try:
         cache = plugin_queries['cache']
         if cache == 'true':
@@ -1029,11 +1033,13 @@ elif mode == 'audio':
     except:
         cache = False
 
+    #filesize (used for downloading)
     try:
       fileSize = plugin_queries['filesize']
     except:
       fileSize = ''
 
+    #cache folder (used for downloading)
     try:
         path = addon.getSetting('cache_folder')
     except:
@@ -1071,20 +1077,22 @@ elif mode == 'audio':
                         options.append(item.file.title)
                         urls.append(addMediaFile(service, item))
 
+            #search from STRM
             if contextType == '':
 
                 ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), options)
                 playbackURL = urls[ret]
 
                 item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
-                item.setInfo( type="Music", infoLabels={ "Title": options[ret] } )
+                # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
+                item.setInfo( type="Video", infoLabels={ "Title": options[ret] } )
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
         else:
             mediaURLs = service.getPlaybackCall(0,None,title=title)
 
-    if playbackMedia:
 
+    if playbackMedia:
 
         playbackURL = ''
         playbackQuality = ''
@@ -1102,7 +1110,7 @@ elif mode == 'audio':
             playbackURL = mediaURLs[0].url
             playbackQuality = mediaURLs[0].quality
 
-        #right-menu context
+        #right-menu context or STRM
         if contextType == '':
             #download only
             if download and not play:
@@ -1114,15 +1122,26 @@ elif mode == 'audio':
                 xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+")")
             #stream
             else:
-                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
+                item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+                # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
+                item.setInfo( type="Video", infoLabels={ "Title": title } )
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
+
+                #xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
+
+        #direct playback from within plugin
         elif cache:
                 item = xbmcgui.ListItem(path=str(playbackPath))
+                # local, not remote. "Music" is ok
                 item.setInfo( type="Music", infoLabels={ "Title": title } )
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+        #direct playback from within plugin
         else:
 
             item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
-            item.setInfo( type="Music", infoLabels={ "Title": title } )
+            # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
+            item.setInfo( type="Video", infoLabels={ "Title": title } )
             xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
 #            xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
 
