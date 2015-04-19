@@ -255,7 +255,8 @@ class gdrive(cloudservice):
     ##
     def getHeadersList(self, forceWritely=True):
         if self.authorization.isToken(self.instanceName,addon, 'auth_access_token'):
-            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+#            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+            return { 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
         else:
             return { 'User-Agent' : self.user_agent}
 
@@ -403,8 +404,8 @@ class gdrive(cloudservice):
 
                 # entry is a music file
                 elif (resourceType == 'application/vnd.google-apps.audio' or 'audio' in resourceType and contentType in (1,2,3,4,6,7)):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', thumbnail, size=fileSize)
-                    url = re.sub('\&gd\=true', '', url)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', '', size=fileSize)
+                    #url = re.sub('\&gd\=true', '', url)
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     mediaFiles.append(media)
@@ -1365,8 +1366,15 @@ class gdrive(cloudservice):
 
             f = xbmcvfs.File(playbackFile, 'w')
 
-            progress = xbmcgui.DialogProgressBG()
-            progress.create(self.addon.getLocalizedString(30000),title)
+
+            if playback != '':
+                progress = xbmcgui.DialogProgress()
+                progressBar = sizeDownload
+                progress.create(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30035), title)
+            else:
+                progress = xbmcgui.DialogProgressBG()
+                progressBar = fileSize
+                progress.create(self.addon.getLocalizedString(30035), title)
 
             # if action fails, validate login
             try:
@@ -1385,13 +1393,18 @@ class gdrive(cloudservice):
 
             downloadedBytes = 0
             while sizeDownload > downloadedBytes:
-                progress.update((int)(float(downloadedBytes)/sizeDownload*100),self.addon.getLocalizedString(30035))
+                progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30035))
                 chunk = response.read(CHUNK)
                 if not chunk: break
                 f.write(chunk)
                 downloadedBytes = downloadedBytes + CHUNK
 
         if playback != '':
+            try:
+                progress.close()
+            except:
+                pass
+
             item = xbmcgui.ListItem(path=playbackFile)
             item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
             xbmcplugin.setResolvedUrl(playback, True, item)
@@ -1400,7 +1413,7 @@ class gdrive(cloudservice):
         try:
             while True:
                 downloadedBytes = downloadedBytes + CHUNK
-                progress.update((int)(float(downloadedBytes)/fileSize*100),self.addon.getLocalizedString(30035))
+                progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30092))
                 chunk = response.read(CHUNK)
                 if not chunk: break
                 f.write(chunk)

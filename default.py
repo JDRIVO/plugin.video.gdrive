@@ -231,15 +231,11 @@ except :
 # retrieve settings
 user_agent = addon.getSetting('user_agent')
 #obsolete, replace, revents audio from streaming
-if user_agent == 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)':
-    addon.setSetting('user_agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0')
+#if user_agent == 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)':
+#    addon.setSetting('user_agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0')
 
 #promptQuality = addon.getSetting('prompt_quality')
 
-#if promptQuality == 'true':
-#    promptQuality = True
-#else:
-#    promptQuality = False
 
 # hidden parameters which may not even be defined
 try:
@@ -1081,7 +1077,7 @@ elif mode == 'audio':
                 playbackURL = urls[ret]
 
                 item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
-                item.setInfo( type="Music", infoLabels={ "Title": options[ret] , "Plot" : options[ret] } )
+                item.setInfo( type="Music", infoLabels={ "Title": options[ret] } )
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
         else:
@@ -1121,13 +1117,14 @@ elif mode == 'audio':
                 xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
         elif cache:
                 item = xbmcgui.ListItem(path=str(playbackPath))
-                item.setInfo( type="Music", infoLabels={ "Title": title , "Plot" : title } )
+                item.setInfo( type="Music", infoLabels={ "Title": title } )
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
         else:
 
             item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
-            item.setInfo( type="Music", infoLabels={ "Title": title , "Plot" : title } )
-            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+            item.setInfo( type="Music", infoLabels={ "Title": title } )
+            xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
+#            xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
 
 #force stream - play a video given its url
 elif mode == 'streamurl':

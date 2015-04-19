@@ -1,5 +1,7 @@
+Version 0.5.16
 - fix audio streaming issue by updating User Agent
-- fix filesize sizing issue with caching
+-- Google Drive API 2 module - fix filesize sizing issue with caching
+-- Google Drive API 2 module - optimizations for caching
 Version 0.5.15
 - bug fixes for OAUTH2
 Version 0.5.14
