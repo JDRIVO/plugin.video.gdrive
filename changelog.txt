@@ -1,3 +1,5 @@
+Version 0.6.0
+- Merge with stable
 Version 0.5.17
 -- Google Drive API 2 module - fix for "show all music" & "show all photos"
 -- Google Drive API 2 module - for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
