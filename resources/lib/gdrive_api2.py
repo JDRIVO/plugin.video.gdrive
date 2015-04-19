@@ -40,10 +40,10 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 import xbmcvfs
 
 # global variables
-PLUGIN_NAME = 'plugin.video.gdrive-testing'
+PLUGIN_NAME = 'plugin.video.gdrive'
 PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
 
-addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+addon = xbmcaddon.Addon(id='plugin.video.gdrive')
 addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 SERVICE_NAME = 'dmdgdrive'
 
