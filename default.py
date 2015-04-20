@@ -63,7 +63,7 @@ def addMediaFile(service, package, contextType='video'):
         infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot, 'size' : package.file.size })
         listitem.setInfo('Video', infolabels)
         playbackURL = '?mode=video'
-        listitem.setProperty('IsPlayable', 'true')
+        listitem.setProperty('IsPlayable', 'false')
     elif package.file.type == package.file.PICTURE:
         infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot })
         listitem.setInfo('Pictures', infolabels)
@@ -220,6 +220,8 @@ from resources.lib import file
 from resources.lib import package
 from resources.lib import mediaurl
 from resources.lib import crashreport
+from resources.lib import gPlayer
+from resources.lib import tvWindow
 
 
 
@@ -1172,6 +1174,12 @@ elif mode == 'audio':
                 item.setInfo( type="Video", infoLabels={ "Title": title } )
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
 
+                player = gPlayer.gPlayer()
+                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
+                w.setPlayer(player)
+                w.doModal()
+
                 #xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
 
         #direct playback from within plugin
@@ -1464,16 +1472,40 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+")")
             #stream
             else:
-                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
+                item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+                item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
+
+                player = gPlayer.gPlayer()
+                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                while not (player.isPlaying()):
+                    xbmc.sleep(1)
+
+                player.seekTime(1000)
+                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
+                w.setPlayer(player)
+                w.doModal()
+
+#                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
         elif cache:
                 item = xbmcgui.ListItem(path=str(playbackPath))
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
         else:
 
-            item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
-            item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+                item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
+#            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                player = gPlayer.gPlayer()
+                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+#                while not (player.isPlaying()):
+#                    xbmc.sleep(1)
+
+#                player.seekTime(1000)
+#                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
+#                w.setPlayer(player)
+#                w.doModal()
+
+
 
 #force stream - play a video given its url
 elif mode == 'streamurl':
