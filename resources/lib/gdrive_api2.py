@@ -40,11 +40,11 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 import xbmcvfs
 
 # global variables
-PLUGIN_NAME = 'plugin.video.gdrive-testing'
-PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
+#PLUGIN_NAME = 'plugin.video.gdrive-testing'
+#PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
 
-addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
-addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
+#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+#addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 SERVICE_NAME = 'dmdgdrive'
 
 import sys
@@ -135,8 +135,8 @@ class gdrive(cloudservice):
 
             elif (self.type == 3):
                 url = 'https://accounts.google.com/o/oauth2/token'
-                clientID = addon.getSetting(self.instanceName+'_client_id')
-                clientSecret = addon.getSetting(self.instanceName+'_client_secret')
+                clientID =self.addon.getSetting(self.instanceName+'_client_id')
+                clientSecret = self.addon.getSetting(self.instanceName+'_client_secret')
                 header = { 'User-Agent' : self.user_agent , 'Content-Type': 'application/x-www-form-urlencoded'}
 
                 req = urllib2.Request(url, 'code='+str(code)+'&client_id='+str(clientID)+'&client_secret='+str(clientSecret)+'&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code', header)
@@ -196,7 +196,7 @@ class gdrive(cloudservice):
             header = { 'User-Agent' : self.user_agent }
 
             if (self.type == 2):
-                url = addon.getSetting(self.instanceName+'_url')
+                url = self.addon.getSetting(self.instanceName+'_url')
                 values = {
                       'refresh_token' : self.authorization.getToken('auth_refresh_token')
                       }
@@ -204,8 +204,8 @@ class gdrive(cloudservice):
 
             elif (self.type == 3):
                 url = 'https://accounts.google.com/o/oauth2/token'
-                clientID = addon.getSetting(self.instanceName+'_client_id')
-                clientSecret = addon.getSetting(self.instanceName+'_client_secret')
+                clientID = self.addon.getSetting(self.instanceName+'_client_id')
+                clientSecret = self.addon.getSetting(self.instanceName+'_client_secret')
                 header = { 'User-Agent' : self.user_agent , 'Content-Type': 'application/x-www-form-urlencoded'}
 
                 req = urllib2.Request(url, 'client_id='+clientID+'&client_secret='+clientSecret+'&refresh_token='+self.authorization.getToken('auth_refresh_token')+'&grant_type=refresh_token', header)
@@ -254,7 +254,7 @@ class gdrive(cloudservice):
     #   returns: list containing the header
     ##
     def getHeadersList(self, forceWritely=True):
-        if self.authorization.isToken(self.instanceName,addon, 'auth_access_token'):
+        if self.authorization.isToken(self.instanceName,self.addon, 'auth_access_token'):
 #            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
             return { 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
         else:
@@ -769,9 +769,9 @@ class gdrive(cloudservice):
     def getPlaybackCall(self, playbackType, package=None, title='', isExact=True):
 
         try:
-            pquality = int(addon.getSetting('preferred_quality'))
-            pformat = int(addon.getSetting('preferred_format'))
-            acodec = int(addon.getSetting('avoid_codec'))
+            pquality = int(self.addon.getSetting('preferred_quality'))
+            pformat = int(self.addon.getSetting('preferred_format'))
+            acodec = int(self.addon.getSetting('avoid_codec'))
         except :
             pquality=-1
             pformat=-1
@@ -1342,12 +1342,12 @@ class gdrive(cloudservice):
 
         if encfs:
             try:
-                path = addon.getSetting('encfs_source')
+                path = self.addon.getSetting('encfs_source')
             except:
                 pass
         else:
             try:
-                path = addon.getSetting('cache_folder')
+                path = self.addon.getSetting('cache_folder')
             except:
                 pass
 

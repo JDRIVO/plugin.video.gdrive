@@ -39,11 +39,11 @@ import unicodedata
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
 # global variables
-PLUGIN_NAME = 'plugin.video.gdrive-testing'
-PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
+#PLUGIN_NAME = 'plugin.video.gdrive-testing'
+#PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
 
-addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
-addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
+#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+#addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 PROTOCOL = 'https://'
 SERVICE_NAME = 'dmdgdrive'
 
@@ -616,9 +616,9 @@ class gdrive(cloudservice):
     def getPlaybackCall(self, playbackType, package=None, title='', isExact=True):
 
         try:
-            pquality = int(addon.getSetting('preferred_quality'))
-            pformat = int(addon.getSetting('preferred_format'))
-            acodec = int(addon.getSetting('avoid_codec'))
+            pquality = int(self.addon.getSetting('preferred_quality'))
+            pformat = int(self.addon.getSetting('preferred_format'))
+            acodec = int(self.addon.getSetting('avoid_codec'))
         except :
             pquality=-1
             pformat=-1

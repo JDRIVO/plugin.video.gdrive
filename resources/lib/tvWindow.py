@@ -22,14 +22,6 @@ import urllib, urllib2
 
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
-addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
-
-def log(msg, err=False):
-    if err:
-        xbmc.log(addon.getAddonInfo('name') + ': ' + msg.encode('utf-8'), xbmc.LOGERROR)
-    else:
-        xbmc.log(addon.getAddonInfo('name') + ': ' + msg.encode('utf-8'), xbmc.LOGDEBUG)
-
 
 class tvWindow(xbmcgui.WindowXMLDialog):
 

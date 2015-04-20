@@ -1,3 +1,4 @@
+- add player controls
 Version 0.6.1
 - add encfs source + target support, decrypted folder support
 Version 0.6.0
