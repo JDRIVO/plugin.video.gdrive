@@ -426,6 +426,14 @@ class gdrive(cloudservice):
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     mediaFiles.append(media)
 
+                # all files (for saving to encfs)
+                elif (contentType == 8):
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', '', size=fileSize)
+
+                    media = package.package(mediaFile,folder.folder(folderName,''))
+                    media.setMediaURL(mediaurl.mediaurl(url, '','',''))
+                    mediaFiles.append(media)
+
             # look for more pages of videos
             nextURL = ''
             for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
@@ -1298,7 +1306,7 @@ class gdrive(cloudservice):
     # retrieve a media file
     #   parameters: title of video, whether to prompt for quality/format (optional),
     ##
-    def downloadMediaFile(self, playback, url, title, folderID, filename, fileSize, force=False):
+    def downloadMediaFile(self, playback, url, title, folderID, filename, fileSize, force=False, encfs=False, folderName=''):
 
 
         try:
@@ -1331,11 +1339,17 @@ class gdrive(cloudservice):
         count = 0
 
 
-        path = ''
-        try:
-            path = addon.getSetting('cache_folder')
-        except:
-            pass
+
+        if encfs:
+            try:
+                path = addon.getSetting('encfs_source')
+            except:
+                pass
+        else:
+            try:
+                path = addon.getSetting('cache_folder')
+            except:
+                pass
 
         if not xbmcvfs.exists(path):
             path = ''
@@ -1348,16 +1362,23 @@ class gdrive(cloudservice):
                 self.addon.setSetting('cache_folder', path)
 
 
+        if encfs:
+            try:
+                xbmcvfs.mkdir(str(path) + '/'+str(folderName))
+            except: pass
 
-        try:
-            xbmcvfs.mkdir(str(path) + '/'+str(folderID))
-        except: pass
+            playbackFile = str(path) + '/' + str(folderName) + '/' + str(title)
 
-        try:
-            xbmcvfs.mkdir(str(path) + '/'+str(folderID)+ '/' + str(filename))
-        except: pass
+        else:
+            try:
+                xbmcvfs.mkdir(str(path) + '/'+str(folderID))
+            except: pass
 
-        playbackFile = str(path) + '/' + str(folderID) + '/' + str(filename) + '/' + str(title)
+            try:
+                xbmcvfs.mkdir(str(path) + '/'+str(folderID)+ '/' + str(filename))
+            except: pass
+
+            playbackFile = str(path) + '/' + str(folderID) + '/' + str(filename) + '/' + str(title)
 
 
         if not xbmcvfs.exists(playbackFile) or force:

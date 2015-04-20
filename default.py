@@ -100,6 +100,10 @@ def addMediaFile(service, package, contextType='video'):
     elif contextType == 'image':
         cm.append(( addon.getLocalizedString(30126), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+str(package.folder.id)+'&instance='+str(service.instanceName)+')', ))
 
+    #encfs
+    cm.append(( addon.getLocalizedString(30130), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&foldername='+str(package.folder.title)+'&folder='+str(package.folder.id)+'&instance='+str(service.instanceName)+')', ))
+
+
     url = url + '&content_type='+contextType
 
 #    listitem.addContextMenuItems( commands )
@@ -112,27 +116,37 @@ def addMediaFile(service, package, contextType='video'):
     return url
 
 
-def addDirectory(service, folder, contextType='video'):
+def addDirectory(service, folder, contextType='video', localPath=''):
 
-    listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
     fanart = addon.getAddonInfo('path') + '/fanart.jpg'
 
+    if folder is None:
+        listitem = xbmcgui.ListItem('[Decrypted Folder]')
+#        listitem.addContextMenuItems(cm, False)
+        listitem.setProperty('fanart_image', fanart)
+        xbmcplugin.addDirectoryItem(plugin_handle, localPath, listitem,
+                                isFolder=True, totalItems=0)
+    else:
+        listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
 
-    if folder.id != '':
-        cm=[]
-        if contextType != 'image':
-            cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+folder.title+'&username='+str(service.authorization.username)+'&folderID='+str(folder.id)+')', ))
-#        cm.append(( addon.getLocalizedString(30081), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=createbookmark&title='+folder.title+'&instanceName='+str(service.instanceName)+'&folderID='+str(folder.id)+')', ))
-        elif contextType == 'image':
-            cm.append(( addon.getLocalizedString(30126), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&title='+str(folder.title) + '&folder='+str(folder.id)+'&username='+str(service.authorization.username)+')', ))
+        if folder.id != '':
+            cm=[]
+            if contextType != 'image':
+                cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+folder.title+'&username='+str(service.authorization.username)+'&folderID='+str(folder.id)+')', ))
+                #        cm.append(( addon.getLocalizedString(30081), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=createbookmark&title='+folder.title+'&instanceName='+str(service.instanceName)+'&folderID='+str(folder.id)+')', ))
+            elif contextType == 'image':
+                cm.append(( addon.getLocalizedString(30126), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&title='+str(folder.title) + '&folder='+str(folder.id)+'&username='+str(service.authorization.username)+')', ))
 
-        if (service.protocol == 2):
-            cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&title='+str(folder.title) + '&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
+            if (service.protocol == 2):
+                cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&title='+str(folder.title) + '&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
+
+            #encfs
+            cm.append(( addon.getLocalizedString(30130), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&foldername='+str(folder.title)+'&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
 
         listitem.addContextMenuItems(cm, False)
-    listitem.setProperty('fanart_image', fanart)
+        listitem.setProperty('fanart_image', fanart)
 
-    xbmcplugin.addDirectoryItem(plugin_handle, service.getDirectoryCall(folder, contextType), listitem,
+        xbmcplugin.addDirectoryItem(plugin_handle, service.getDirectoryCall(folder, contextType), listitem,
                                 isFolder=True, totalItems=0)
 
 
@@ -319,6 +333,11 @@ try:
             contentType = 6
         else:
             contentType = 5
+
+      # show all (for encfs)
+      elif contextType == 'all':
+            contentType = 8
+
 except:
       contentType = 2
 
@@ -781,6 +800,14 @@ if mode == 'main' or mode == 'index':
         addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
         addMenu(PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
 
+        try:
+            encfs_target = addon.getSetting('encfs_target')
+            if encfs_target != '':
+                addDirectory(service, None, contextType, localPath=encfs_target)
+        except:
+            pass
+
+
     # ***
 
     try:
@@ -873,18 +900,36 @@ elif mode == 'downloadfolder':
         folderID = ''
 
     try:
+        folderName = plugin_queries['foldername']
+    except:
+        folderName = ''
+
+    #force encfs
+    try:
+        encfs = plugin_queries['encfs']
+        if encfs == 'true':
+            encfs = True
+        else:
+            encfs = False
+    except:
+        encfs = False
+
+    try:
         service
     except NameError:
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
         log(addon.getLocalizedString(30050)+ 'gdrive-login', True)
         xbmcplugin.endOfDirectory(plugin_handle)
 
-    mediaItems = service.getMediaList(folderName=folderID, contentType=contentType)
+    if encfs:
+        mediaItems = service.getMediaList(folderName=folderID, contentType=8)
+    else:
+        mediaItems = service.getMediaList(folderName=folderID, contentType=contentType)
 
     if mediaItems:
         for item in mediaItems:
             if item.file is not None:
-                service.downloadMediaFile('', item.mediaurl.url, item.file.title, folderID, item.file.id, item.file.size)
+                service.downloadMediaFile('', item.mediaurl.url, item.file.title, folderID, item.file.id, item.file.size, encfs=encfs, folderName=folderName)
 
 
 #*** needs updating

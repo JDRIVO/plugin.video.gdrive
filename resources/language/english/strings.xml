@@ -104,6 +104,13 @@
 	<string id="30125">Play offline</string>
 	<string id="30126">Slideshow</string>
 
+	<string id="30127">encfs</string>
+	<string id="30128">encfs source</string>
+	<string id="30129">encfs target</string>
+	<string id="30130">Save to encfs</string>
+	<string id="30131">Decrypted Drive</string>
+
+
     <string id="30118">The following account was enrolled:</string>
     <string id="30119">The following login error was encountered:</string>
     <string id="30120">Select an account:</string>

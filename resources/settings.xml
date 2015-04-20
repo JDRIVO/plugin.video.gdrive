@@ -130,6 +130,10 @@
         <setting id="cache_folder" type="folder" subsetting="true" label="30090" default="" />
         <setting id="chunk_size" type="enum" subsetting="true" label="30091" values="32224|32768|262144|1048576" default="2" />
         <setting id="cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100" />
+        <setting label="30127" type="lsep"/>
+        <setting id="encfs_source" type="folder" subsetting="true" label="30128" default="" />
+        <setting id="encfs_target" type="folder" subsetting="true" label="30129" default="" />
+
     </category>
     <category label="30060">
         <setting label="30061" type="lsep"/>
