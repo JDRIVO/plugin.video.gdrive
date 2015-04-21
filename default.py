@@ -1053,8 +1053,6 @@ elif mode == 'audio':
         download = plugin_queries['download']
         if download == 'true':
             download = True
-        else:
-            download = False
     except:
         pass
 
@@ -1063,8 +1061,6 @@ elif mode == 'audio':
         play = plugin_queries['play']
         if play == 'true':
             play = True
-        else:
-            play = False
     except:
         pass
 
@@ -1158,13 +1154,13 @@ elif mode == 'audio':
             playbackQuality = mediaURLs[0].quality
 
         #right-menu context or STRM
-        if contextType == '':
+            #download and play
+        if download and play:
+            service.downloadMediaFile(int(sys.argv[1]), playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
+        elif contextType == '':
             #download only
             if download and not play:
                 service.downloadMediaFile('',playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
-            #download and play
-            elif download and play:
-                service.downloadMediaFile(int(sys.argv[1]), playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
             elif cache:
                 xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+")")
             #stream
@@ -1176,9 +1172,9 @@ elif mode == 'audio':
 
                 player = gPlayer.gPlayer()
                 player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
-                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
-                w.setPlayer(player)
-                w.doModal()
+#                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
+#                w.setPlayer(player)
+#                w.doModal()
 
                 #xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
 
@@ -1330,8 +1326,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         download = plugin_queries['download']
         if download == 'true':
             download = True
-        else:
-            download = False
     except:
         pass
 
@@ -1339,8 +1333,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         play = plugin_queries['play']
         if play == 'true':
             play = True
-        else:
-            play = False
     except:
         pass
 
@@ -1461,13 +1453,13 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
             playbackQuality = mediaURLs[0].quality
 
         #right-menu context
-        if contextType == '':
+            #download and play
+        if download and play:
+            service.downloadMediaFile(int(sys.argv[1]), playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
+        elif contextType == '':
             #download only
             if download and not play:
                 service.downloadMediaFile('',playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
-            #download and play
-            elif download and play:
-                service.downloadMediaFile(int(sys.argv[1]), playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
             elif cache:
                 xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+")")
             #stream

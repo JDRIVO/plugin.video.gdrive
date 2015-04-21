@@ -1,4 +1,8 @@
-- add player controls
+Version 0.6.2
+- add player controls (player + window) -- testing
+- override player playback (no longer displays "opening stream") -- testing
+- fix playback default for never transcode + always cache
+-- Google Drive API 2 module - add force cache to single file option
 Version 0.6.1
 - add encfs source + target support, decrypted folder support
 Version 0.6.0

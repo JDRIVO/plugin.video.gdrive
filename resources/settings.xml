@@ -128,6 +128,7 @@
         <setting id="photo_folder" type="folder" label="30038" default="" />
         <setting label="30095" type="lsep"/>
         <setting id="cache_folder" type="folder" subsetting="true" label="30090" default="" />
+        <setting id="cache_single" type="bool" subsetting="true" label="30132" default="false" />
         <setting id="chunk_size" type="enum" subsetting="true" label="30091" values="32224|32768|262144|1048576" default="2" />
         <setting id="cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100" />
         <setting label="30127" type="lsep"/>

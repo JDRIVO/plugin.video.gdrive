@@ -109,7 +109,7 @@
 	<string id="30129">encfs target</string>
 	<string id="30130">Save to encfs</string>
 	<string id="30131">Decrypted Drive</string>
-
+	<string id="30132">Force cache into single file</string>
 
     <string id="30118">The following account was enrolled:</string>
     <string id="30119">The following login error was encountered:</string>
