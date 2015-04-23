@@ -139,26 +139,35 @@ def addDirectory(service, folder, contextType='video', localPath=''):
         xbmcplugin.addDirectoryItem(plugin_handle, localPath, listitem,
                                 isFolder=True, totalItems=0)
     else:
-        listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
 
-        if folder.id != '':
-            cm=[]
-            if contextType != 'image':
-                cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+folder.title+'&username='+str(service.authorization.username)+'&folderID='+str(folder.id)+')', ))
-                #        cm.append(( addon.getLocalizedString(30081), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=createbookmark&title='+folder.title+'&instanceName='+str(service.instanceName)+'&folderID='+str(folder.id)+')', ))
-            elif contextType == 'image':
-                cm.append(( addon.getLocalizedString(30126), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&title='+str(folder.title) + '&folder='+str(folder.id)+'&username='+str(service.authorization.username)+')', ))
+        if folder.id == 'SAVED SEARCH':
+            listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
 
-            if (service.protocol == 2):
-                cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&title='+str(folder.title) + '&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
+            url = PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType + '&title='+str(folder.title)
 
-            #encfs
-            cm.append(( addon.getLocalizedString(30130), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&foldername='+str(folder.title)+'&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
+            xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=True, totalItems=0)
+        else:
+            listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
 
-        listitem.addContextMenuItems(cm, False)
-        listitem.setProperty('fanart_image', fanart)
+            if folder.id != '':
+                cm=[]
+                if contextType != 'image':
+                    cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+folder.title+'&username='+str(service.authorization.username)+'&folderID='+str(folder.id)+')', ))
+                    #        cm.append(( addon.getLocalizedString(30081), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=createbookmark&title='+folder.title+'&instanceName='+str(service.instanceName)+'&folderID='+str(folder.id)+')', ))
+                elif contextType == 'image':
+                    cm.append(( addon.getLocalizedString(30126), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&title='+str(folder.title) + '&folder='+str(folder.id)+'&username='+str(service.authorization.username)+')', ))
 
-        xbmcplugin.addDirectoryItem(plugin_handle, service.getDirectoryCall(folder, contextType), listitem,
+                if (service.protocol == 2):
+                    cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&title='+str(folder.title) + '&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
+
+                #encfs
+                cm.append(( addon.getLocalizedString(30130), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&foldername='+str(folder.title)+'&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
+
+            listitem.addContextMenuItems(cm, False)
+            listitem.setProperty('fanart_image', fanart)
+
+            xbmcplugin.addDirectoryItem(plugin_handle, service.getDirectoryCall(folder, contextType), listitem,
                                 isFolder=True, totalItems=0)
 
 
@@ -1547,8 +1556,8 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
                 else:
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-                player = gPlayer.gPlayer()
-                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+#                player = gPlayer.gPlayer()
+#                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
 #                while not (player.isPlaying()):
 #                    xbmc.sleep(1)
 

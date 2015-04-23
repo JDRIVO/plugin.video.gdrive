@@ -305,9 +305,9 @@ class gdrive(cloudservice):
             url = url + "?q=mimeType+contains+'audio'+or+mimeType+contains+'video'+or+mimeType+contains+'image'"
 
         # search for title
-        elif title != False:
+        elif title != False or folderName == 'SAVED SEARCH':
             encodedTitle = re.sub(' ', '+', title)
-            url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
+            url = url + "?q=title+contains+'" + str(encodedTitle) + "'" + "+and+not+title+contains+'SAVED+SEARCH'"
 
         # show all starred items
         elif folderName == 'STARRED-FILES' or folderName == 'STARRED-FILESFOLDERS' or folderName == 'STARRED-FOLDERS':
@@ -391,6 +391,11 @@ class gdrive(cloudservice):
 
                 # entry is a folder
                 if (resourceType == 'application/vnd.google-apps.folder'):
+                    for r in re.finditer('SAVED SEARCH\|([^\|]+)' ,
+                             title, re.DOTALL):
+                        newtitle = r.group(1)
+                        title = '*' + newtitle
+                        resourceID = 'SAVED SEARCH'
                     media = package.package(None,folder.folder(resourceID,title))
                     mediaFiles.append(media)
 

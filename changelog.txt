@@ -1,3 +1,6 @@
+Version 0.6.4
+-- Google Drive API 2 module - add: saved search (create a folder anywhere on your drive called 'SAVED SEARCH|search critera', and when viewing that folder, that entry will show up with a "*search critera", allowing you to search for content matching "search content"
+- bug fix for delayed playback on videos
 Version 0.6.3
 - fully implement override player playback (no longer displays "opening stream")
 - add toggle in settings for override player playback (advance-> use integrated player) [default disable]
