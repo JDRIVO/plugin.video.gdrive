@@ -58,21 +58,31 @@ def addMediaFile(service, package, contextType='video'):
             infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'size' : package.file.size })
         listitem.setInfo('Music', infolabels)
         playbackURL = '?mode=audio'
-        listitem.setProperty('IsPlayable', 'true')
+        if integratedPlayer:
+            listitem.setProperty('IsPlayable', 'false')
+        else:
+            listitem.setProperty('IsPlayable', 'true')
     elif package.file.type == package.file.VIDEO:
         infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot, 'size' : package.file.size })
         listitem.setInfo('Video', infolabels)
         playbackURL = '?mode=video'
-        listitem.setProperty('IsPlayable', 'false')
+        if integratedPlayer:
+            listitem.setProperty('IsPlayable', 'false')
+        else:
+            listitem.setProperty('IsPlayable', 'true')
     elif package.file.type == package.file.PICTURE:
         infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot })
         listitem.setInfo('Pictures', infolabels)
         playbackURL = '?mode=photo'
+        listitem.setProperty('IsPlayable', 'false')
     else:
         infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot, 'size' : package.file.size })
         listitem.setInfo('Video', infolabels)
         playbackURL = '?mode=video'
-        listitem.setProperty('IsPlayable', 'true')
+        if integratedPlayer:
+            listitem.setProperty('IsPlayable', 'false')
+        else:
+            listitem.setProperty('IsPlayable', 'true')
 
     listitem.setProperty('fanart_image', package.file.fanart)
     cm=[]
@@ -95,6 +105,8 @@ def addMediaFile(service, package, contextType='video'):
             cm.append(( addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&original=true'+')', ))
             cm.append(( addon.getLocalizedString(30124), 'XBMC.RunPlugin('+url + '&play=true&download=true'+')', ))
             cm.append(( addon.getLocalizedString(30125), 'XBMC.RunPlugin('+url + '&cache=true'+')', ))
+            if (contextType == 'video'):
+                cm.append(( addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&original=true'+')', ))
 
 
     elif contextType == 'image':
@@ -156,8 +168,8 @@ def addMenu(url, title, img='', fanart='', total_items=0):
         fanart = addon.getAddonInfo('path') + '/fanart.jpg'
     listitem.setProperty('fanart_image', fanart)
 
-    # allow play controls on folders
-    listitem.setProperty('IsPlayable', 'true')
+    # disallow play controls on menus
+    listitem.setProperty('IsPlayable', 'false')
     xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=True, totalItems=total_items)
 
@@ -290,6 +302,20 @@ except:
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 
+# override playback
+try:
+    integratedPlayer = addon.getSetting('integrated_player')
+    if integratedPlayer == 'true':
+        integratedPlayer = True
+    else:
+        integratedPlayer = False
+except:
+        integratedPlayer = False
+
+try:
+    contextType = plugin_queries['integrated_player']
+except:
+    contextType = ''
 
 try:
     contextType = plugin_queries['content_type']
@@ -1129,7 +1155,11 @@ elif mode == 'audio':
                 item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
                 # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
                 item.setInfo( type="Video", infoLabels={ "Title": options[ret] } )
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                if integratedPlayer:
+                    player = gPlayer.gPlayer()
+                    player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                else:
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
         else:
             mediaURLs = service.getPlaybackCall(0,None,title=title)
@@ -1162,28 +1192,33 @@ elif mode == 'audio':
             if download and not play:
                 service.downloadMediaFile('',playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
             elif cache:
-                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+")")
+#                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+")")
+                player = gPlayer.gPlayer()
+                player.play(str(playbackPath))
             #stream
             else:
                 item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
                 # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
                 item.setInfo( type="Video", infoLabels={ "Title": title } )
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
-
                 player = gPlayer.gPlayer()
                 player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                #xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
+
 #                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
 #                w.setPlayer(player)
 #                w.doModal()
 
-                #xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
 
         #direct playback from within plugin
         elif cache:
                 item = xbmcgui.ListItem(path=str(playbackPath))
                 # local, not remote. "Music" is ok
                 item.setInfo( type="Music", infoLabels={ "Title": title } )
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                if integratedPlayer:
+                    player = gPlayer.gPlayer()
+                    player.play(playbackPath, item)
+                else:
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
         #direct playback from within plugin
         else:
@@ -1191,8 +1226,13 @@ elif mode == 'audio':
             item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
             # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
             item.setInfo( type="Video", infoLabels={ "Title": title } )
-            xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
-#            xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
+            if integratedPlayer:
+                player = gPlayer.gPlayer()
+                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+            else:
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+
 
 #force stream - play a video given its url
 elif mode == 'streamurl':
@@ -1237,7 +1277,12 @@ elif mode == 'streamurl':
             # if invoked in .strm or as a direct-video (don't prompt for quality)
             item = xbmcgui.ListItem(path=playbackURL+ '|' + service.getHeadersEncoded(service.useWRITELY))
             item.setInfo( type="Video", infoLabels={ "Title": mediaURLs[ret].title , "Plot" : mediaURLs[ret].title } )
-            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+            if integratedPlayer:
+                player = gPlayer.gPlayer()
+                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+            else:
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
     else:
             xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30020),addon.getLocalizedString(30021))
             xbmc.log(addon.getAddonInfo('name') + ': ' + addon.getLocalizedString(20021), xbmc.LOGERROR)
@@ -1406,7 +1451,11 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
                 item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
                 item.setInfo( type="Video", infoLabels={ "Title": options[ret] , "Plot" : options[ret] } )
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                if integratedPlayer:
+                    player = gPlayer.gPlayer()
+                    player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                else:
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
         else:
             mediaURLs = service.getPlaybackCall(0,None,title=title)
@@ -1461,7 +1510,9 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
             if download and not play:
                 service.downloadMediaFile('',playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
             elif cache:
-                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+")")
+                player = gPlayer.gPlayer()
+                player.play(str(playbackPath))
+ #                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+")")
             #stream
             else:
                 item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
@@ -1469,24 +1520,33 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
                 player = gPlayer.gPlayer()
                 player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
-                while not (player.isPlaying()):
-                    xbmc.sleep(1)
+#                while not (player.isPlaying()):
+#                    xbmc.sleep(1)
 
-                player.seekTime(1000)
-                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
-                w.setPlayer(player)
-                w.doModal()
+#                player.seekTime(1000)
+#                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
+#                w.setPlayer(player)
+#                w.doModal()
 
 #                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
         elif cache:
                 item = xbmcgui.ListItem(path=str(playbackPath))
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                if integratedPlayer:
+                    player = gPlayer.gPlayer()
+                    player.play(playbackPath, item)
+                else:
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
         else:
 
                 item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-#            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                if integratedPlayer:
+                    player = gPlayer.gPlayer()
+                    player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                else:
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
                 player = gPlayer.gPlayer()
                 player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
 #                while not (player.isPlaying()):
@@ -1542,7 +1602,12 @@ elif mode == 'streamurl':
             # if invoked in .strm or as a direct-video (don't prompt for quality)
             item = xbmcgui.ListItem(path=playbackURL+ '|' + service.getHeadersEncoded(service.useWRITELY))
             item.setInfo( type="Video", infoLabels={ "Title": mediaURLs[ret].title , "Plot" : mediaURLs[ret].title } )
-            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+            if integratedPlayer:
+                    player = gPlayer.gPlayer()
+                    player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+            else:
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
     else:
             xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30020),addon.getLocalizedString(30021))
             xbmc.log(addon.getAddonInfo('name') + ': ' + addon.getLocalizedString(20021), xbmc.LOGERROR)

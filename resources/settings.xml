@@ -109,7 +109,6 @@
     <category label="30025">
         <setting label="30006" type="lsep"/>
     	<setting id="prompt_quality" type="bool" subsetting="true" label="30019" default="true" />
-    	<setting id="always_cache" type="bool" subsetting="true" label="30121" default="false" />
     	<setting id="never_stream" type="bool" subsetting="true" label="30122" default="false" />
         <setting label="30115" subsetting="true" enable="eq(-1,false)" type="lsep"/>
     	<setting id="preferred_quality" type="enum" enable="eq(-2,false)" subsetting="true" label="30011" values="perfer best (1080,720,<720)|prefer 720 (720,<720,>720)|prefer SD (480,<480)" default="0" />
@@ -126,7 +125,8 @@
 
     <category label="30116">
         <setting id="photo_folder" type="folder" label="30038" default="" />
-        <setting label="30095" type="lsep"/>
+        <setting label="30031" type="lsep"/>
+    	<setting id="always_cache" type="bool" subsetting="true" label="30121" default="false" />
         <setting id="cache_folder" type="folder" subsetting="true" label="30090" default="" />
         <setting id="cache_single" type="bool" subsetting="true" label="30132" default="false" />
         <setting id="chunk_size" type="enum" subsetting="true" label="30091" values="32224|32768|262144|1048576" default="2" />
@@ -136,6 +136,11 @@
         <setting id="encfs_target" type="folder" subsetting="true" label="30129" default="" />
 
     </category>
+
+    <category label="30134">
+    	<setting id="integrated_player" type="bool" label="30133" default="false" />
+    </category>
+
     <category label="30060">
         <setting label="30061" type="lsep"/>
         <setting id="strm_path" type="folder" label="30026" default="" />

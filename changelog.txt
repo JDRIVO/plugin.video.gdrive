@@ -1,3 +1,8 @@
+Version 0.6.3
+- fully implement override player playback (no longer displays "opening stream")
+- add toggle in settings for override player playback (advance-> use integrated player) [default disable]
+- cleanup of settings
+- remove "Play original" from context menu for "music"
 Version 0.6.2
 - add player controls (player + window) -- testing
 - override player playback (no longer displays "opening stream") -- testing
