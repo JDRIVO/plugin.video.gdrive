@@ -79,11 +79,15 @@ class cloudservice(object):
 
         if files:
             for media in files:
-                filename = xbmc.translatePath(os.path.join(path, media.title+'.strm'))
-                strmFile = open(filename, "w")
-
-                strmFile.write(self.PLUGIN_URL+'?mode=streamURL&url=' + self.FILE_URL+ media.id +'\n')
+#                filename = xbmc.translatePath(os.path.join(path, media.title+'.strm'))
+#                strmFile = open(filename, "w")
+                filename = path + '/' + str(media.title)+'.strm'
+                strmFile = xbmcvfs.File(filename, "w")
+                strmFile.write(self.PLUGIN_URL+'?mode=streamURL&url=' + self.FILE_URL+ str(media.id) +'\n')
                 strmFile.close()
+
+ #               strmFile.write(self.PLUGIN_URL+'?mode=streamURL&url=' + self.FILE_URL+ media.id +'\n')
+ #               strmFile.close()
 
         if folders and level == 1:
             count = 1
@@ -93,12 +97,12 @@ class cloudservice(object):
             for folder in folders:
                 max = len(folders)
                 progress.update(count/max*100,self.addon.getLocalizedString(30036),folder.title,'\n')
-                self.traverse( path+'/'+folder.title + '/',cacheType,folder.id,savePublic,0)
+                self.traverse( path+'/'+str(folder.title) + '/',cacheType,folder.id,savePublic,0)
                 count = count + 1
 
         if folders and level == 0:
             for folder in folders:
-                self.traverse( path+'/'+folder.title + '/',cacheType,folder.id,savePublic,0)
+                self.traverse( path+'/'+str(folder.title) + '/',cacheType,folder.id,savePublic,0)
 
     ##
     # build STRM files to a given path for a given folder ID
@@ -115,9 +119,12 @@ class cloudservice(object):
 
                 url = 0
                 if item.file is None:
-                    self.buildSTRM(path + '/'+item.folder.title, item.folder.id, pDialog=pDialog)
+                    self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog)
                 else:
-                    url = self.PLUGIN_URL+'?mode=video&title='+item.file.title+'&filename='+item.file.id+ '&username='+self.authorization.username
+                    #'content_type': 'video',
+                    values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
+                    url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
+                    #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
 
 
                 if url != 0:
@@ -126,8 +133,8 @@ class cloudservice(object):
                     if pDialog is not None:
                         pDialog.update(message=title)
 
-                    if not xbmcvfs.exists(path + title+'.strm'):
-                        filename = path + '/' + title+'.strm'
+                    if not xbmcvfs.exists(str(path) + str(title)+'.strm'):
+                        filename = str(path) + '/' + str(title)+'.strm'
                         strmFile = xbmcvfs.File(filename, "w")
 
                         strmFile.write(url+'\n')
@@ -179,8 +186,8 @@ class cloudservice(object):
                                 pathLib = self.addon.getSetting('movies_path')
 
                         if pathLib != '':
-                            if not xbmcvfs.exists(pathLib + title+'.strm'):
-                                filename = path + '/' + title+'.strm'
+                            if not xbmcvfs.exists(pathLib + str(title)+'.strm'):
+                                filename = str(path) + '/' + str(title)+'.strm'
                                 strmFile = xbmcvfs.File(filename, "w")
                                 strmFile.write(url+'\n')
                                 strmFile.close()

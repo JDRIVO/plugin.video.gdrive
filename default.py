@@ -94,12 +94,13 @@ def addMediaFile(service, package, contextType='video'):
     except:
         cleanURL = ''
 
-#    url = PLUGIN_URL+'?mode=streamurl&title='+package.file.title+'&url='+cleanURL
-    url = PLUGIN_URL+playbackURL+'&title='+package.file.title+'&filename='+package.file.id+'&instance='+str(service.instanceName)+'&filesize='+str(package.file.size)+'&folder='+str(package.folder.id)
-
+#    url = PLUGIN_URL+playbackURL+'&title='+package.file.title+'&filename='+package.file.id+'&instance='+str(service.instanceName)+'&filesize='+str(package.file.size)+'&folder='+str(package.folder.id)
+    values = {'instance': service.instanceName, 'title': package.file.title, 'filename': package.file.id, 'filesize': package.file.size, 'folder': package.folder.id}
+    url = PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)
 
     if (contextType != 'image' and package.file.type != package.file.PICTURE):
-        cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&username='+str(service.authorization.username)+'&title='+package.file.title+'&filename='+package.file.id+')', ))
+        valuesBS = {'username': service.authorization.username, 'title': package.file.title, 'filename': package.file.id, 'filesize': package.file.size, 'content_type': 'video'}
+        cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&'+urllib.urlencode(valuesBS)+')', ))
         if (service.protocol == 2):
             cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+url + '&download=true'+')', ))
             cm.append(( addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&original=true'+')', ))
@@ -108,12 +109,13 @@ def addMediaFile(service, package, contextType='video'):
             if (contextType == 'video'):
                 cm.append(( addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&original=true'+')', ))
 
-
+#'instance': service.instanceName
     elif contextType == 'image':
-        cm.append(( addon.getLocalizedString(30126), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&folder='+str(package.folder.id)+'&instance='+str(service.instanceName)+')', ))
+
+        cm.append(( addon.getLocalizedString(30126), 'XBMC.RunPlugin('+PLUGIN_URL+ '?mode=slideshow&' + urllib.urlencode(values)+')', ))
 
     #encfs
-    cm.append(( addon.getLocalizedString(30130), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&foldername='+str(package.folder.title)+'&folder='+str(package.folder.id)+'&instance='+str(service.instanceName)+')', ))
+    cm.append(( addon.getLocalizedString(30130), 'XBMC.RunPlugin('+PLUGIN_URL+ '?mode=downloadfolder&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
 
 
     url = url + '&content_type='+contextType
@@ -142,27 +144,33 @@ def addDirectory(service, folder, contextType='video', localPath=''):
 
         if folder.id == 'SAVED SEARCH':
             listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
+            values = {'instance': service.instanceName, 'title': folder.title}
 
-            url = PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType + '&title='+str(folder.title)
+            url = PLUGIN_URL+'?mode=search&content_type='+contextType + '&' + urllib.urlencode(values)
 
             xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=True, totalItems=0)
         else:
             listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
+            #values = {'instance': service.instanceName, 'title': folder.title}
 
             if folder.id != '':
                 cm=[]
                 if contextType != 'image':
-                    cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&title='+folder.title+'&username='+str(service.authorization.username)+'&folderID='+str(folder.id)+')', ))
-                    #        cm.append(( addon.getLocalizedString(30081), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=createbookmark&title='+folder.title+'&instanceName='+str(service.instanceName)+'&folderID='+str(folder.id)+')', ))
+                    values = {'username': service.authorization.username, 'title': folder.title, 'folder': folder.id, 'content_type': contextType }
+
+                    cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
                 elif contextType == 'image':
-                    cm.append(( addon.getLocalizedString(30126), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&title='+str(folder.title) + '&folder='+str(folder.id)+'&username='+str(service.authorization.username)+')', ))
+                    values = {'username': service.authorization.username, 'title': folder.title, 'folderID': folder.id}
+                    cm.append(( addon.getLocalizedString(30126), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&'+urllib.urlencode(values)+')', ))
 
                 if (service.protocol == 2):
-                    cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&title='+str(folder.title) + '&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
+                    values = {'instance': service.instanceName, 'title': folder.title, 'folder': folder.id}
+                    cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&'+urllib.urlencode(values)+')', ))
 
+                values = {'instance': service.instanceName, 'foldername': folder.title, 'folder': folder.id}
                 #encfs
-                cm.append(( addon.getLocalizedString(30130), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&foldername='+str(folder.title)+'&folder='+str(folder.id)+'&instance='+str(service.instanceName)+')', ))
+                cm.append(( addon.getLocalizedString(30130), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
 
             listitem.addContextMenuItems(cm, False)
             listitem.setProperty('fanart_image', fanart)
@@ -321,10 +329,6 @@ try:
 except:
         integratedPlayer = False
 
-try:
-    contextType = plugin_queries['integrated_player']
-except:
-    contextType = ''
 
 try:
     contextType = plugin_queries['content_type']
@@ -513,7 +517,7 @@ elif mode == 'buildstrm':
         else:
 
             try:
-                folderID = plugin_queries['folderID']
+                folderID = plugin_queries['folder']
                 title = plugin_queries['title']
             except:
                 folderID = ''
@@ -564,9 +568,9 @@ elif mode == 'buildstrm':
 
                 service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog)
 
-
             elif filename != '':
-                            url = PLUGIN_URL+'?mode=video&title='+title+'&filename='+filename + '&username='+invokedUsername
+                            values = {'title': title, 'filename': filename, 'username': invokedUsername}
+                            url = PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)
                             filename = path + '/' + title+'.strm'
                             strmFile = xbmcvfs.File(filename, "w")
                             strmFile.write(url+'\n')
@@ -583,7 +587,7 @@ elif mode == 'buildstrm':
                     except:
                         username = ''
 
-                    if username != '':
+                    if username != '' and username == invokedUsername:
                         if ( int(addon.getSetting(instanceName+'_type')) > 0):
                             service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
                         else:
@@ -1167,6 +1171,7 @@ elif mode == 'audio':
                 if integratedPlayer:
                     player = gPlayer.gPlayer()
                     player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
                 else:
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
@@ -1463,6 +1468,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 if integratedPlayer:
                     player = gPlayer.gPlayer()
                     player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
                 else:
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
@@ -1529,6 +1535,8 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
                 player = gPlayer.gPlayer()
                 player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
 #                while not (player.isPlaying()):
 #                    xbmc.sleep(1)
 
