@@ -382,7 +382,7 @@ class gdrive(cloudservice):
     #   parameters: given an entry
     #   returns: package (folder,file)
     ##
-    def getMediaPackage(self, entry, folderName='',contentType=0):
+    def getMediaPackage(self, entry, folderName='',contentType=2):
 
                 resourceID = 0
                 resourceType = ''
@@ -876,28 +876,9 @@ class gdrive(cloudservice):
 
             for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
                 entry = r1.group(1)
-
-
-                resourceType = ''
-                title = ''
-                url = ''
-                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  docid = r.group(1)
-                  break
-                for r in re.finditer('\"mimeType\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  resourceType = r.group(1)
-                  break
-                for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  title = r.group(1)
-                  break
-                for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  url = r.group(1)
-                  mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
-                  break
+                package = self.getMediaPackage(entry)
+                docid = package.file.id
+                mediaURLs.append(package.mediaurl)
 
         #given docid, fetch original playback
         else:
@@ -932,34 +913,12 @@ class gdrive(cloudservice):
 
             for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
                 entry = r1.group(1)
-
-
-                resourceType = ''
-                title = ''
-                url = ''
-                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  docid = r.group(1)
-                  break
-                for r in re.finditer('\"mimeType\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  resourceType = r.group(1)
-                  break
-                for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  title = r.group(1)
-                  break
-                for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  url = r.group(1)
-                  if package.file.type == self.MEDIA_TYPE_MUSIC:
-                      url = re.sub('\&gd\=true', '', url)
-
-                  mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
-                  break
+                package = self.getMediaPackage(entry)
+                docid = package.file.id
+                mediaURLs.append(package.mediaurl)
 
         if package.file.type == self.MEDIA_TYPE_MUSIC:
-            return mediaURLs
+            return (mediaURLs, package)
 
         # fetch streams
         if docid != '':
@@ -1130,7 +1089,7 @@ class gdrive(cloudservice):
                     except KeyError:
                         mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count))
 
-        return mediaURLs
+        return (mediaURLs, package)
 
 
 
