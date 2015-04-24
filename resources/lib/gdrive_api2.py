@@ -354,9 +354,35 @@ class gdrive(cloudservice):
             # parsing page for videos
             # video-entry
             for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\s+\]\s+\}' ,response_data, re.DOTALL):
-             entryS = r2.group(1)
-             for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,entryS, re.DOTALL):
-                entry = r1.group(1)
+                entryS = r2.group(1)
+                for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' , entryS, re.DOTALL):
+                    entry = r1.group(1)
+                    media = self.parseDetails(entry, folderName=folderName, contentType=contentType)
+                    if media is not None:
+                        mediaFiles.append(media)
+
+            # look for more pages of videos
+            nextURL = ''
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                nextURL = r.group(1)
+
+
+            # are there more pages to process?
+            if nextURL == '':
+                break
+            else:
+                url = nextURL
+
+        return mediaFiles
+
+
+    ##
+    # retrieve a media package
+    #   parameters: given an entry
+    #   returns: package (folder,file)
+    ##
+    def parseDetails(self, entry, folderName='',contentType=0):
 
                 resourceID = 0
                 resourceType = ''
@@ -397,7 +423,7 @@ class gdrive(cloudservice):
                         title = '*' + newtitle
                         resourceID = 'SAVED SEARCH'
                     media = package.package(None,folder.folder(resourceID,title))
-                    mediaFiles.append(media)
+                    return media
 
                 # entry is a video
                 elif (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType and contentType in (0,1,2,4,7)):
@@ -405,7 +431,7 @@ class gdrive(cloudservice):
 
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                    mediaFiles.append(media)
+                    return media
 
                 # entry is a music file
                 elif (resourceType == 'application/vnd.google-apps.audio' or 'audio' in resourceType and contentType in (1,2,3,4,6,7)):
@@ -413,7 +439,7 @@ class gdrive(cloudservice):
                     #url = re.sub('\&gd\=true', '', url)
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                    mediaFiles.append(media)
+                    return media
 
                 # entry is a photo
                 elif (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType and contentType in (2,4,5,6,7)):
@@ -421,7 +447,7 @@ class gdrive(cloudservice):
 
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                    mediaFiles.append(media)
+                    return media
 
                 # entry is unknown
                 elif (resourceType == 'application/vnd.google-apps.unknown'):
@@ -429,7 +455,7 @@ class gdrive(cloudservice):
 
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                    mediaFiles.append(media)
+                    return media
 
                 # all files (for saving to encfs)
                 elif (contentType == 8):
@@ -437,22 +463,8 @@ class gdrive(cloudservice):
 
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
-                    mediaFiles.append(media)
+                    return media
 
-            # look for more pages of videos
-            nextURL = ''
-            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
-                             response_data, re.DOTALL):
-                nextURL = r.group(1)
-
-
-            # are there more pages to process?
-            if nextURL == '':
-                break
-            else:
-                url = nextURL
-
-        return mediaFiles
 
 
     ##
@@ -629,11 +641,11 @@ class gdrive(cloudservice):
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
                         xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                        self.crashreport.sendError('getPlaybackCall',str(e))
+                        self.crashreport.sendError('getDownloadURL',str(e))
                         return
                 else:
                     xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    self.crashreport.sendError('getPlaybackCall',str(e))
+                    self.crashreport.sendError('getDownloadURL',str(e))
                     return
 
             response_data = response.read()
@@ -649,6 +661,47 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                   url = r.group(1)
                   return url
+
+
+    ##
+    # retrieve the details for a file given docid
+    #   parameters: resource ID
+    #   returns: download URL
+    ##
+    def getMediaDetails(self, docid):
+
+            url = self.API_URL +'files/' + docid
+
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+
+            # if action fails, validate login
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                if e.code == 403 or e.code == 401:
+                    self.refreshToken()
+                    req = urllib2.Request(url, None, self.getHeadersList())
+                    try:
+                        response = urllib2.urlopen(req)
+                    except urllib2.URLError, e:
+                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                        self.crashreport.sendError('getDownloadURL',str(e))
+                        return
+                else:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('getDownloadURL',str(e))
+                    return
+
+            response_data = response.read()
+            response.close()
+
+
+            for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
+                    entry = r1.group(1)
+                    return self.parseDetails(entry)
+
+
 
     #*** not used
     ##
