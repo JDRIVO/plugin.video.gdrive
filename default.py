@@ -1043,6 +1043,10 @@ elif mode == 'slideshow':
                         service.downloadPicture(item.mediaurl.url,str(path) + '/'+str(folder)+ '/'+item.file.title)
                         xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
 
+
+###
+# for audio files
+###
 elif mode == 'audio':
 
     #title
@@ -1133,7 +1137,7 @@ elif mode == 'audio':
     if (filename != ''):
         mediaFile = file.file(filename, title, '', service.MEDIA_TYPE_MUSIC, '','')
         mediaFolder = folder.folder(folderID,'')
-        mediaURLs = service.getPlaybackCall(0,package=package.package(mediaFile,mediaFolder))
+        mediaURLs = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
     else:
         if mode == 'search':
 
@@ -1176,7 +1180,7 @@ elif mode == 'audio':
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
         else:
-            mediaURLs = service.getPlaybackCall(0,None,title=title)
+            mediaURLs = service.getPlaybackCall(None,title=title)
 
 
     if playbackMedia:
@@ -1432,7 +1436,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
     if (filename != ''):
         mediaFile = file.file(filename, title, '', 0, '','')
         mediaFolder = folder.folder(folderID,'')
-        mediaURLs = service.getPlaybackCall(0,package=package.package(mediaFile,mediaFolder))
+        mediaURLs = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
     else:
         if mode == 'search':
 
@@ -1473,7 +1477,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
         else:
-            mediaURLs = service.getPlaybackCall(0,None,title=title)
+            mediaURLs = service.getPlaybackCall(None,title=title)
 
     originalURL = ''
     if playbackMedia:

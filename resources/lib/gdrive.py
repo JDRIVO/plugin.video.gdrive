@@ -613,7 +613,7 @@ class gdrive(cloudservice):
     # retrieve a playback url
     #   returns: url
     ##
-    def getPlaybackCall(self, playbackType, package=None, title='', isExact=True):
+    def getPlaybackCall(self, package=None, title='', isExact=True):
 
         try:
             pquality = int(self.addon.getSetting('preferred_quality'))
