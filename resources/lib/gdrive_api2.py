@@ -357,7 +357,7 @@ class gdrive(cloudservice):
                 entryS = r2.group(1)
                 for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' , entryS, re.DOTALL):
                     entry = r1.group(1)
-                    media = self.parseDetails(entry, folderName=folderName, contentType=contentType)
+                    media = self.getMediaPackage(entry, folderName=folderName, contentType=contentType)
                     if media is not None:
                         mediaFiles.append(media)
 
@@ -382,7 +382,7 @@ class gdrive(cloudservice):
     #   parameters: given an entry
     #   returns: package (folder,file)
     ##
-    def parseDetails(self, entry, folderName='',contentType=0):
+    def getMediaPackage(self, entry, folderName='',contentType=0):
 
                 resourceID = 0
                 resourceType = ''
@@ -699,7 +699,7 @@ class gdrive(cloudservice):
 
             for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
                     entry = r1.group(1)
-                    return self.parseDetails(entry)
+                    return self.getMediaPackage(entry)
 
 
 
