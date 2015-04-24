@@ -197,7 +197,9 @@ class cloudservice(object):
     #   returns: url
     ##
     def getDirectoryCall(self, folder, contextType='video'):
-        return self.PLUGIN_URL+'?mode=index&instance='+str(self.instanceName)+'&folder='+str(folder.id)+'&content_type='+str(contextType)
+        values = {'instance': service.instanceName, 'title': package.file.title,  'folder': folder.id, 'content_type': contextType}
+
+        return self.PLUGIN_URL+'?mode=index&' +  urllib.urlencode(values)
 
 
     ##

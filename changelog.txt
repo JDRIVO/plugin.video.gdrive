@@ -1,3 +1,4 @@
+
 Version 0.6.5
 - fix for handling special characters in STRM building process (such as &)
 - fixes for encfs function for special characters such as ,s in filenames
