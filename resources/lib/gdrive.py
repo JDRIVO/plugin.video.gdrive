@@ -79,6 +79,8 @@ class gdrive(cloudservice):
         self.addon = addon
         self.instanceName = instanceName
         self.protocol = 1
+        self.integratedPlayer = False
+
 
         # gdrive specific ***
         self.decrypt = False

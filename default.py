@@ -46,154 +46,6 @@ def parse_query(query):
     return q
 
 
-def addMediaFile(service, package, contextType='video'):
-
-    listitem = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail)
-
-    if package.file.type == package.file.AUDIO and contextType != 'image':
-        if package.file.hasMeta:
-            infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
-        else:
-            infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'size' : package.file.size })
-        listitem.setInfo('Music', infolabels)
-        playbackURL = '?mode=audio'
-        if integratedPlayer:
-            listitem.setProperty('IsPlayable', 'false')
-        else:
-            listitem.setProperty('IsPlayable', 'true')
-    elif package.file.type == package.file.AUDIO and contextType == 'image':
-        if package.file.hasMeta:
-            infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
-        else:
-            infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'size' : package.file.size })
-        listitem.setInfo('Music', infolabels)
-        playbackURL = '?mode=audio'
-        listitem.setProperty('IsPlayable', 'false')
-
-    elif package.file.type == package.file.VIDEO:
-        infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot, 'size' : package.file.size })
-        listitem.setInfo('Video', infolabels)
-        playbackURL = '?mode=video'
-        if integratedPlayer:
-            listitem.setProperty('IsPlayable', 'false')
-        else:
-            listitem.setProperty('IsPlayable', 'true')
-    elif package.file.type == package.file.PICTURE:
-        infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot })
-        listitem.setInfo('Pictures', infolabels)
-        playbackURL = '?mode=photo'
-        listitem.setProperty('IsPlayable', 'false')
-    else:
-        infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot, 'size' : package.file.size })
-        listitem.setInfo('Video', infolabels)
-        playbackURL = '?mode=video'
-        if integratedPlayer:
-            listitem.setProperty('IsPlayable', 'false')
-        else:
-            listitem.setProperty('IsPlayable', 'true')
-
-    listitem.setProperty('fanart_image', package.file.fanart)
-    cm=[]
-
-    try:
-        url = package.getMediaURL()
-        cleanURL = re.sub('---', '', url)
-        cleanURL = re.sub('&', '---', cleanURL)
-    except:
-        cleanURL = ''
-
-#    url = PLUGIN_URL+playbackURL+'&title='+package.file.title+'&filename='+package.file.id+'&instance='+str(service.instanceName)+'&filesize='+str(package.file.size)+'&folder='+str(package.folder.id)
-    values = {'instance': service.instanceName, 'title': package.file.title, 'filename': package.file.id, 'filesize': package.file.size, 'folder': package.folder.id}
-    url = PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)
-
-    if (contextType != 'image' and package.file.type != package.file.PICTURE):
-        valuesBS = {'username': service.authorization.username, 'title': package.file.title, 'filename': package.file.id, 'filesize': package.file.size, 'content_type': 'video'}
-        cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&'+urllib.urlencode(valuesBS)+')', ))
-
-        if (service.protocol == 2):
-            # download
-            cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+url + '&download=true'+')', ))
-            # download + watch
-            cm.append(( addon.getLocalizedString(30124), 'XBMC.RunPlugin('+url + '&play=true&download=true'+')', ))
-            # watch downloaded copy
-            cm.append(( addon.getLocalizedString(30125), 'XBMC.RunPlugin('+url + '&cache=true'+')', ))
-
-            # play-original for video only
-            if (contextType == 'video'):
-                cm.append(( addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&original=true'+')', ))
-
-
-    elif contextType == 'image':
-
-        cm.append(( addon.getLocalizedString(30126), 'XBMC.RunPlugin('+PLUGIN_URL+ '?mode=slideshow&' + urllib.urlencode(values)+')', ))
-
-    #encfs
-    cm.append(( addon.getLocalizedString(30130), 'XBMC.RunPlugin('+PLUGIN_URL+ '?mode=downloadfolder&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
-
-
-    url = url + '&content_type='+contextType
-
-#    listitem.addContextMenuItems( commands )
-#    if cm:
-    listitem.addContextMenuItems(cm, False)
-
-
-    xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
-                                isFolder=False, totalItems=0)
-    return url
-
-
-def addDirectory(service, folder, contextType='video', localPath=''):
-
-    fanart = addon.getAddonInfo('path') + '/fanart.jpg'
-
-    if folder is None:
-        listitem = xbmcgui.ListItem('[Decrypted Folder]')
-#        listitem.addContextMenuItems(cm, False)
-        listitem.setProperty('fanart_image', fanart)
-        xbmcplugin.addDirectoryItem(plugin_handle, localPath, listitem,
-                                isFolder=True, totalItems=0)
-    else:
-
-        if folder.id == 'SAVED SEARCH':
-            listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
-            values = {'instance': service.instanceName, 'title': folder.title}
-
-            url = PLUGIN_URL+'?mode=search&content_type='+contextType + '&' + urllib.urlencode(values)
-
-            xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
-                                isFolder=True, totalItems=0)
-        else:
-            listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
-            #values = {'instance': service.instanceName, 'title': folder.title}
-
-            if folder.id != '':
-                cm=[]
-                if contextType != 'image':
-                    values = {'username': service.authorization.username, 'title': folder.title, 'folder': folder.id, 'content_type': contextType }
-
-                    cm.append(( addon.getLocalizedString(30042), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
-                elif contextType == 'image':
-                    values = {'username': service.authorization.username, 'title': folder.title, 'folderID': folder.id}
-                    cm.append(( addon.getLocalizedString(30126), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=slideshow&'+urllib.urlencode(values)+')', ))
-
-                #download folder
-                if (service.protocol == 2):
-                    values = {'instance': service.instanceName, 'title': folder.title, 'folder': folder.id}
-                    cm.append(( addon.getLocalizedString(30113), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&'+urllib.urlencode(values)+')', ))
-
-                #encfs
-                values = {'instance': service.instanceName, 'foldername': folder.title, 'folder': folder.id}
-                cm.append(( addon.getLocalizedString(30130), 'XBMC.RunPlugin('+PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
-
-            listitem.addContextMenuItems(cm, False)
-            listitem.setProperty('fanart_image', fanart)
-
-            xbmcplugin.addDirectoryItem(plugin_handle, service.getDirectoryCall(folder, contextType), listitem,
-                                isFolder=True, totalItems=0)
-
-
 def addMenu(url, title, img='', fanart='', total_items=0):
     listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
     if not fanart:
@@ -216,11 +68,17 @@ def _callback(matches):
 def decode(data):
     return re.sub("&#(\d+)(;|(?=\s))", _callback, data).strip()
 
-def decode_dict(data):
-    for k, v in data.items():
-        if type(v) is str or type(v) is unicode:
-            data[k] = decode(v)
-    return data
+def getParameter(key,default=''):
+    try:
+        value = plugin_queries[key]
+        if value == 'true':
+            return True
+        elif value == 'false':
+            return False
+        else:
+            return value
+    except:
+        return default
 
 
 def numberOfAccounts(accountType):
@@ -252,7 +110,7 @@ addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 
 
-import os
+#import os
 #sys.path.append(os.path.join( addon_dir, 'resources', 'lib' ) )
 
 from resources.lib import gdrive
@@ -266,7 +124,6 @@ from resources.lib import mediaurl
 from resources.lib import crashreport
 from resources.lib import gPlayer
 from resources.lib import tvWindow
-
 
 
 try:
@@ -308,7 +165,7 @@ except :
     useWRITELY = True
 
 
-mode = plugin_queries['mode']
+mode = getParameter('mode','main')
 
 # make mode case-insensitive
 mode = mode.lower()
@@ -334,21 +191,9 @@ except:
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 
-# override playback
-try:
-    integratedPlayer = addon.getSetting('integrated_player')
-    if integratedPlayer == 'true':
-        integratedPlayer = True
-    else:
-        integratedPlayer = False
-except:
-        integratedPlayer = False
 
+contextType = getParameter('content_type')
 
-try:
-    contextType = plugin_queries['content_type']
-except:
-    contextType = ''
 
 
     #contentType
@@ -436,17 +281,8 @@ if mode == 'clearauth':
 elif mode == 'enroll':
 
 
-        invokedUsername = ''
-        try:
-            invokedUsername = plugin_queries['username']
-        except:
-            pass
-
-        code = ''
-        try:
-            code = plugin_queries['code']
-        except:
-            pass
+        invokedUsername = getParameter('username')
+        code = getParameter('code')
 
         count = 1
         max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
@@ -487,10 +323,8 @@ elif mode == 'buildstrm':
     except:
         silent = 0
 
-    try:
-        silent = int(plugin_queries['silent'])
-    except:
-        pass
+    silent = getParameter('silent')
+
 
     try:
         path = addon.getSetting('strm_path')
@@ -515,12 +349,9 @@ elif mode == 'buildstrm':
             except:
                 pass
 
-        try:
-            url = plugin_queries['streamurl']
-            title = plugin_queries['title']
-            url = re.sub('---', '&', url)
-        except:
-            url=''
+        url = getParameter('streamurl')
+        url = re.sub('---', '&', url)
+        title = getParameter('title')
 
         if url != '':
 
@@ -531,22 +362,10 @@ elif mode == 'buildstrm':
                 strmFile.close()
         else:
 
-            try:
-                folderID = plugin_queries['folder']
-                title = plugin_queries['title']
-            except:
-                folderID = ''
-
-            try:
-                filename = plugin_queries['filename']
-                title = plugin_queries['title']
-            except:
-                filename = ''
-
-            try:
-                    invokedUsername = plugin_queries['username']
-            except:
-                    invokedUsername = ''
+            folderID = getParameter('folder')
+            filename = getParameter('filename')
+            title = getParameter('title')
+            invokedUsername = getParameter('username')
 
             if folderID != '':
 
@@ -636,10 +455,7 @@ elif mode == 'buildstrm':
 
 numberOfAccounts = numberOfAccounts(PLUGIN_NAME)
 
-try:
-    invokedUsername = plugin_queries['username']
-except:
-    invokedUsername = ''
+invokedUsername = getParameter('username')
 
 # show list of services
 if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
@@ -809,6 +625,18 @@ else:
         else:
             service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
 
+# override playback
+try:
+    integratedPlayer = addon.getSetting('integrated_player')
+    if integratedPlayer == 'true':
+        integratedPlayer = True
+        service.integratedPlayer = True
+    else:
+        integratedPlayer = False
+except:
+        integratedPlayer = False
+
+
 
 #if mode == 'main':
 #    addMenu(PLUGIN_URL+'?mode=options','<< '+addon.getLocalizedString(30043)+' >>')
@@ -817,12 +645,7 @@ else:
 #dump a list of videos available to play
 if mode == 'main' or mode == 'index':
 
-    folderName = ''
-    try:
-      folderName = plugin_queries['folder']
-    except:
-      folderName = False
-
+    folderName = getParameter('folder', False)
 
     # gdrive specific ***
     try:
@@ -859,7 +682,7 @@ if mode == 'main' or mode == 'index':
         try:
             encfs_target = addon.getSetting('encfs_target')
             if encfs_target != '':
-                addDirectory(service, None, contextType, localPath=encfs_target)
+                service.addDirectory(None, contextType, localPath=encfs_target)
         except:
             pass
 
@@ -879,9 +702,9 @@ if mode == 'main' or mode == 'index':
             for item in mediaItems:
 
                     if item.file is None:
-                        addDirectory(service, item.folder, contextType=contextType)
+                        service.addDirectory(item.folder, contextType=contextType)
                     else:
-                        addMediaFile(service, item, contextType=contextType)
+                        service.addMediaFile(item, contextType=contextType)
 
  #   if contextType == 'image':
 #        item = xbmcgui.ListItem(path='/downloads/pics/0/')
@@ -893,20 +716,9 @@ if mode == 'main' or mode == 'index':
 
 elif mode == 'photo':
 
-    try:
-      title = plugin_queries['title']
-    except:
-      title = 0
-
-    try:
-      docid = plugin_queries['filename']
-    except:
-      docid = ''
-
-    try:
-      folder = plugin_queries['folder']
-    except:
-      folder = 0
+    title = getParameter('title',0)
+    docid = getParameter('filename')
+    folder = getParameter('folder',0)
 
 
     path = ''
@@ -927,10 +739,10 @@ elif mode == 'photo':
 
     if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
         xbmcvfs.mkdir(str(path) + '/'+str(folder))
-    try:
-        xbmcvfs.rmdir(str(path) + '/'+str(folder)+'/'+str(title))
-    except:
-        pass
+#    try:
+#        xbmcvfs.rmdir(str(path) + '/'+str(folder)+'/'+str(title))
+#    except:
+#        pass
 
     # don't redownload if present already
     if (not xbmcvfs.exists(str(path) + '/'+str(folder)+'/'+str(title))):
@@ -944,31 +756,10 @@ elif mode == 'photo':
 #*** needs updating
 elif mode == 'downloadfolder':
 
-    #title
-    try:
-        title = plugin_queries['title']
-    except:
-        title = ''
-
-    try:
-        folderID = plugin_queries['folder']
-    except:
-        folderID = ''
-
-    try:
-        folderName = plugin_queries['foldername']
-    except:
-        folderName = ''
-
-    #force encfs
-    try:
-        encfs = plugin_queries['encfs']
-        if encfs == 'true':
-            encfs = True
-        else:
-            encfs = False
-    except:
-        encfs = False
+    title = getParameter('title')
+    folderID = getParameter('folder')
+    folderName = getParameter('foldername')
+    encfs = getParameter('encfs', False)
 
     try:
         service
@@ -990,15 +781,9 @@ elif mode == 'downloadfolder':
 
 #*** needs updating
 elif mode == 'decryptfolder':
-    try:
-      folder = plugin_queries['folder']
-    except:
-      folder = 0
 
-    try:
-      title = plugin_queries['title']
-    except:
-      title = 0
+    folder = getParameter('folder',0)
+    title = getParameter('title',0)
 
     path = '/tmp/2/'
 
@@ -1013,15 +798,9 @@ elif mode == 'decryptfolder':
 
 
 elif mode == 'slideshow':
-    try:
-      folder = plugin_queries['folder']
-    except:
-      folder = 0
 
-    try:
-      title = plugin_queries['title']
-    except:
-      title = 0
+    folder = getParameter('folder',0)
+    title = getParameter('title',0)
 
     path = ''
     try:
@@ -1035,10 +814,10 @@ elif mode == 'slideshow':
 
     if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
         xbmcvfs.mkdir(str(path) + '/'+str(folder))
-    try:
-        xbmcvfs.rmdir(str(path) + '/'+str(folder)+'/'+str(title))
-    except:
-        pass
+#    try:
+#        xbmcvfs.rmdir(str(path) + '/'+str(folder)+'/'+str(title))
+#    except:
+#        pass
 
 
     while path == '':
@@ -1064,26 +843,11 @@ elif mode == 'slideshow':
 ###
 elif mode == 'audio':
 
-    #title
-    try:
-        title = plugin_queries['title']
-    except:
-        title = ''
-
-
-    #docid
-    try:
-        filename = plugin_queries['filename']
-    except:
-        filename = ''
-
-    #docid
-    try:
-        folderID = plugin_queries['folder']
-        if folderID == 'False':
+    title = getParameter('title')
+    filename = getParameter('filename')
+    folderID = getParameter('folder')
+    if folderID == 'False':
             folderID = 'SEARCH'
-    except:
-        folderID = ''
 
     try:
         service
@@ -1106,21 +870,8 @@ elif mode == 'audio':
         download = False
         play = False
 
-    #user selected to download
-    try:
-        download = plugin_queries['download']
-        if download == 'true':
-            download = True
-    except:
-        pass
-
-    #user selected to playback
-    try:
-        play = plugin_queries['play']
-        if play == 'true':
-            play = True
-    except:
-        pass
+    download = getParameter('download', False)
+    play = getParameter('play', False)
 
     #user selected to playback from cache
     try:
@@ -1134,11 +885,7 @@ elif mode == 'audio':
     except:
         cache = False
 
-    #filesize (used for downloading)
-    try:
-      fileSize = plugin_queries['filesize']
-    except:
-      fileSize = ''
+    filesize = getParameter('filesize')
 
     #cache folder (used for downloading)
     try:
@@ -1173,10 +920,10 @@ elif mode == 'audio':
             if mediaItems:
                 for item in mediaItems:
                     if item.file is None:
-                        addDirectory(service, item.folder, contextType=contextType)
+                        service.addDirectory(item.folder, contextType=contextType)
                     else:
                         options.append(item.file.title)
-                        urls.append(addMediaFile(service, item, contextType=contextType))
+                        urls.append(service.addMediaFile(item, contextType=contextType))
 
             #search from STRM
             if contextType == '':
@@ -1309,15 +1056,9 @@ elif mode == 'audio':
 ###
 elif mode == 'streamurl':
 
-    try:
-      url = plugin_queries['url']
-    except:
-      url = 0
+    url = getParameter('url',0)
+    title = getParameter('title')
 
-    try:
-      title = plugin_queries['title']
-    except:
-      title = ''
 
     promptQuality = True
     try:
@@ -1372,30 +1113,10 @@ elif mode == 'streamurl':
 # legacy (depreicated) - streamvideo [given title]
 elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycachevideo' or mode == 'playvideo' or mode == 'streamvideo':
 
-    #title
-    try:
-        title = plugin_queries['title']
-    except:
-        title = ''
-
-    #closed captions
-    srt = ''
-    try:
-        srt = plugin_queries['srt']
-    except:
-        srt = ''
-
-    #docid
-    try:
-        filename = plugin_queries['filename']
-    except:
-        filename = ''
-
-    #docid
-    try:
-        folderID = plugin_queries['folder']
-    except:
-        folderID = ''
+    title = getParameter('title')
+    srt = getParameter('srt')
+    filename = getParameter('filename')
+    folderID = getParameter('folder')
 
     try:
         service
@@ -1422,12 +1143,9 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
     except:
         playOriginal = False
 
-    try:
-        playOriginal = plugin_queries['original']
-        if playOriginal == 'true':
-            playOriginal = True
-    except:
-        pass
+    playOriginal = getParameter('original', False)
+
+
 
 
     try:
@@ -1442,19 +1160,9 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         download = False
         play = False
 
-    try:
-        download = plugin_queries['download']
-        if download == 'true':
-            download = True
-    except:
-        pass
+    download = getParameter('download', False)
+    play = getParameter('play', False)
 
-    try:
-        play = plugin_queries['play']
-        if play == 'true':
-            play = True
-    except:
-        pass
 
     if mode == 'memorycachevideo':
         play = True
@@ -1475,10 +1183,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
     except:
         cache = False
 
-    try:
-      fileSize = plugin_queries['filesize']
-    except:
-      fileSize = ''
+    filesize = getParameter('filesize')
 
     try:
         path = addon.getSetting('cache_folder')
@@ -1514,10 +1219,10 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
             if mediaItems:
                 for item in mediaItems:
                     if item.file is None:
-                        addDirectory(service, item.folder, contextType=contextType)
+                        service.addDirectory( item.folder, contextType=contextType)
                     else:
                         options.append(item.file.title)
-                        urls.append(addMediaFile(service, item, contextType=contextType))
+                        urls.append(service.addMediaFile(item, contextType=contextType))
 
             if contextType == '':
 
@@ -1617,8 +1322,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
-#                while not (player.isPlaying()):
-#                    xbmc.sleep(1)
 
 #                player.seekTime(1000)
 #                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
@@ -1646,6 +1349,14 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 if integratedPlayer:
                     player = gPlayer.gPlayer()
                     player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+
+                    while not (player.isPlaying()):
+                        xbmc.sleep(1)
+
+                    while (player.isPlaying()):
+                        xbmc.sleep(3)
+
+
                 else:
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 #                player = gPlayer.gPlayer()

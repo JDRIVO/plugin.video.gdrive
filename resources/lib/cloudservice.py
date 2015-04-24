@@ -17,13 +17,33 @@
 
 '''
 
-import os
+#import os
 import re
 import urllib, urllib2
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 import xbmcvfs
+import sys
 
+#global variables
+PLUGIN_URL = sys.argv[0]
+plugin_handle = int(sys.argv[1])
 
+def decode(data):
+        return re.sub("&#(\d+)(;|(?=\s))", _callback, data).strip()
+
+def decode_dict(data):
+        for k, v in data.items():
+            if type(v) is str or type(v) is unicode:
+                data[k] = decode(v)
+        return data
+
+#http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
+def _callback(matches):
+    id = matches.group(1)
+    try:
+        return unichr(int(id))
+    except:
+        return id
 #
 #
 #
@@ -354,3 +374,155 @@ class cloudservice(object):
             progress.close()
 
         except: pass
+
+
+
+    def addDirectory(self, folder, contextType='video', localPath=''):
+
+        fanart = self.addon.getAddonInfo('path') + '/fanart.jpg'
+
+        if folder is None:
+            listitem = xbmcgui.ListItem('[Decrypted Folder]')
+            #        listitem.addContextMenuItems(cm, False)
+            listitem.setProperty('fanart_image', fanart)
+            xbmcplugin.addDirectoryItem(plugin_handle, localPath, listitem,
+                                isFolder=True, totalItems=0)
+        else:
+
+            if folder.id == 'SAVED SEARCH':
+                listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
+                values = {'instance': self.instanceName, 'title': folder.title}
+
+                url = self.PLUGIN_URL+'?mode=search&content_type='+contextType + '&' + urllib.urlencode(values)
+
+                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=True, totalItems=0)
+            else:
+                listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
+
+                if folder.id != '':
+                    cm=[]
+                    if contextType != 'image':
+                        values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id, 'content_type': contextType }
+
+                        cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
+                    elif contextType == 'image':
+                        values = {'username': self.authorization.username, 'title': folder.title, 'folderID': folder.id}
+                        cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=slideshow&'+urllib.urlencode(values)+')', ))
+
+                    #download folder
+                    if (self.protocol == 2):
+                        values = {'instance': self.instanceName, 'title': folder.title, 'folder': folder.id}
+                        cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&'+urllib.urlencode(values)+')', ))
+
+                    #encfs
+                    values = {'instance': self.instanceName, 'foldername': folder.title, 'folder': folder.id}
+                    cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
+
+                listitem.addContextMenuItems(cm, False)
+                listitem.setProperty('fanart_image', fanart)
+
+                xbmcplugin.addDirectoryItem(plugin_handle, self.getDirectoryCall(folder, contextType), listitem,
+                                isFolder=True, totalItems=0)
+
+
+
+    def addMediaFile(self, package, contextType='video'):
+
+        listitem = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail)
+
+        if package.file.type == package.file.AUDIO and contextType != 'image':
+            if package.file.hasMeta:
+                infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
+            else:
+                infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'size' : package.file.size })
+            listitem.setInfo('Music', infolabels)
+            playbackURL = '?mode=audio'
+            if self.integratedPlayer:
+                listitem.setProperty('IsPlayable', 'false')
+            else:
+                listitem.setProperty('IsPlayable', 'true')
+        elif package.file.type == package.file.AUDIO and contextType == 'image':
+            if package.file.hasMeta:
+                infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
+            else:
+                infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'size' : package.file.size })
+            listitem.setInfo('Music', infolabels)
+            playbackURL = '?mode=audio'
+            listitem.setProperty('IsPlayable', 'false')
+
+        elif package.file.type == package.file.VIDEO:
+            infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot, 'size' : package.file.size })
+            listitem.setInfo('Video', infolabels)
+            playbackURL = '?mode=video'
+            if self.integratedPlayer:
+                listitem.setProperty('IsPlayable', 'false')
+            else:
+                listitem.setProperty('IsPlayable', 'true')
+        elif package.file.type == package.file.PICTURE:
+            infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot })
+            listitem.setInfo('Pictures', infolabels)
+            playbackURL = '?mode=photo'
+            listitem.setProperty('IsPlayable', 'false')
+        else:
+            infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot, 'size' : package.file.size })
+            listitem.setInfo('Video', infolabels)
+            playbackURL = '?mode=video'
+            if self.integratedPlayer:
+                listitem.setProperty('IsPlayable', 'false')
+            else:
+                listitem.setProperty('IsPlayable', 'true')
+
+        listitem.setProperty('fanart_image', package.file.fanart)
+        cm=[]
+
+        try:
+            url = package.getMediaURL()
+            cleanURL = re.sub('---', '', url)
+            cleanURL = re.sub('&', '---', cleanURL)
+        except:
+            cleanURL = ''
+
+    #    url = PLUGIN_URL+playbackURL+'&title='+package.file.title+'&filename='+package.file.id+'&instance='+str(self.instanceName)+'&filesize='+str(package.file.size)+'&folder='+str(package.folder.id)
+        values = {'instance': self.instanceName, 'title': package.file.title, 'filename': package.file.id, 'filesize': package.file.size, 'folder': package.folder.id}
+        url = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)
+
+        if (contextType != 'image' and package.file.type != package.file.PICTURE):
+            valuesBS = {'username': self.authorization.username, 'title': package.file.title, 'filename': package.file.id, 'filesize': package.file.size, 'content_type': 'video'}
+            cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+urllib.urlencode(valuesBS)+')', ))
+
+            if (self.protocol == 2):
+                # download
+                cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+url + '&download=true'+')', ))
+                # download + watch
+                cm.append(( self.addon.getLocalizedString(30124), 'XBMC.RunPlugin('+url + '&play=true&download=true'+')', ))
+                # watch downloaded copy
+                cm.append(( self.addon.getLocalizedString(30125), 'XBMC.RunPlugin('+url + '&cache=true'+')', ))
+
+                # play-original for video only
+                if (contextType == 'video'):
+                    cm.append(( self.addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&original=true'+')', ))
+
+
+        elif contextType == 'image':
+
+            cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=slideshow&' + urllib.urlencode(values)+')', ))
+
+        #encfs
+        cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=downloadfolder&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
+
+
+        url = url + '&content_type='+contextType
+
+        #    listitem.addContextMenuItems( commands )
+        #    if cm:
+        listitem.addContextMenuItems(cm, False)
+
+
+        xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=False, totalItems=0)
+        return url
+
+
+
