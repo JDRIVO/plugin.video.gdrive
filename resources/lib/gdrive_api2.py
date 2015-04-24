@@ -430,7 +430,7 @@ class gdrive(cloudservice):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder(folderName,''))
-                    media.setMediaURL(mediaurl.mediaurl(url, '','',''))
+                    media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
                     return media
 
                 # entry is a music file
@@ -438,7 +438,7 @@ class gdrive(cloudservice):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', '', size=fileSize)
                     #url = re.sub('\&gd\=true', '', url)
                     media = package.package(mediaFile,folder.folder(folderName,''))
-                    media.setMediaURL(mediaurl.mediaurl(url, '','',''))
+                    media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
                     return media
 
                 # entry is a photo
@@ -454,7 +454,7 @@ class gdrive(cloudservice):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder(folderName,''))
-                    media.setMediaURL(mediaurl.mediaurl(url, '','',''))
+                    media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
                     return media
 
                 # all files (for saving to encfs)
