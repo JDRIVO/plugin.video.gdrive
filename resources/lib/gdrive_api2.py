@@ -563,7 +563,7 @@ class gdrive(cloudservice):
         elif len(SRTURL) == 1:
             return SRTURL[0]
         else:
-            ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), SRTTitle)
+            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30139), SRTTitle)
             return SRTURL[ret]
 
 
