@@ -80,18 +80,27 @@ def getParameter(key,default=''):
     except:
         return default
 
+def getSetting(key,default=''):
+    try:
+        value = addon.getSetting(key)
+        if value == 'true':
+            return True
+        elif value == 'false':
+            return False
+        else:
+            return value
+    except:
+        return default
 
 def numberOfAccounts(accountType):
 
     count = 1
-    try:
-        max_count = int(addon.getSetting(accountType+'_numaccounts'))
-    except:
-        max_count = 10
+    max_count = int(getSetting(accountType+'_numaccounts',10))
+
     actualCount = 0
     while True:
         try:
-            if addon.getSetting(accountType+str(count)+'_username') != '':
+            if getSetting(accountType+str(count)+'_username') != '':
                 actualCount = actualCount + 1
         except:
             break
@@ -128,8 +137,8 @@ from resources.lib import tvWindow
 
 try:
 
-    remote_debugger = addon.getSetting('remote_debugger')
-    remote_debugger_host = addon.getSetting('remote_debugger_host')
+    remote_debugger = getSetting('remote_debugger')
+    remote_debugger_host = getSetting('remote_debugger_host')
 
     # append pydev remote debugger
     if remote_debugger == 'true':
@@ -146,23 +155,15 @@ except :
 
 
 # retrieve settings
-user_agent = addon.getSetting('user_agent')
+user_agent = getSetting('user_agent')
 #obsolete, replace, revents audio from streaming
 #if user_agent == 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)':
 #    addon.setSetting('user_agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0')
 
-#promptQuality = addon.getSetting('prompt_quality')
 
 
 # hidden parameters which may not even be defined
-try:
-    useWRITELY = addon.getSetting('force_writely')
-    if useWRITELY == 'true':
-        useWRITELY = True
-    else:
-        useWRITELY = False
-except :
-    useWRITELY = True
+useWRITELY = getSetting('force_writely')
 
 
 mode = getParameter('mode','main')
@@ -213,24 +214,26 @@ contextType = getParameter('content_type')
 
 try:
       contentType = 0
+      contentTypeDecider = int(getSetting('context_video'))
+
       if contextType == 'video':
-        if (int(addon.getSetting('context_video'))) == 2:
+        if contentTypeDecider == 2:
             contentType = 2
-        elif (int(addon.getSetting('context_video'))) == 1:
+        elif contentTypeDecider == 1:
             contentType = 1
         else:
             contentType = 0
 
       elif contextType == 'audio':
-        if (int(addon.getSetting('context_music'))) == 1:
+        if contentTypeDecider == 1:
             contentType = 4
         else:
             contentType = 3
 
       elif contextType == 'image':
-        if (int(addon.getSetting('context_photo'))) == 2:
+        if contentTypeDecider == 2:
             contentType = 7
-        elif (int(addon.getSetting('context_photo'))) == 1:
+        elif contentTypeDecider == 1:
             contentType = 6
         else:
             contentType = 5
@@ -261,7 +264,7 @@ if mode == 'clearauth':
     # clear all accounts
     else:
         count = 1
-        max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
+        max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
         while True:
             instanceName = PLUGIN_NAME+str(count)
             try:
@@ -285,12 +288,12 @@ elif mode == 'enroll':
         code = getParameter('code')
 
         count = 1
-        max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
+        max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
         loop = True
         while loop:
             instanceName = PLUGIN_NAME+str(count)
             try:
-                username = addon.getSetting(instanceName+'_username')
+                username = getSetting(instanceName+'_username')
                 if username == invokedUsername:
                     addon.setSetting(instanceName + '_type', str(1))
                     addon.setSetting(instanceName + '_code', str(code))
@@ -317,14 +320,7 @@ elif mode == 'enroll':
 #create strm files
 elif mode == 'buildstrm':
 
-    silent = 0
-    try:
-        silent = int(addon.getSetting('strm_silent'))
-    except:
-        silent = 0
-
-    silent = getParameter('silent')
-
+    silent = getParameter('silent', int(getSetting('strm_silent',0)))
 
     try:
         path = addon.getSetting('strm_path')
@@ -370,16 +366,16 @@ elif mode == 'buildstrm':
             if folderID != '':
 
                 count = 1
-                max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
+                max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
                 loop = True
                 while loop:
                     instanceName = PLUGIN_NAME+str(count)
                     try:
-                        username = addon.getSetting(instanceName+'_username')
+                        username = getSetting(instanceName+'_username')
                         if username == invokedUsername:
 
                             #let's log in
-                            if ( int(addon.getSetting(instanceName+'_type')) > 0):
+                            if ( int(getSetting(instanceName+'_type',0)) > 0):
                                 service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
                             else:
                                 service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
@@ -393,7 +389,7 @@ elif mode == 'buildstrm':
                             service
                         except NameError:
                             #fallback on first defined account
-                            if ( int(addon.getSetting(PLUGIN_NAME+'1'+'_type')) > 0):
+                            if ( int(getSetting(PLUGIN_NAME+'1'+'_type',0)) > 0):
                                 service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
                             else:
                                 service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
@@ -413,16 +409,13 @@ elif mode == 'buildstrm':
             else:
 
                 count = 1
-                max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
+                max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
                 while True:
                     instanceName = PLUGIN_NAME+str(count)
-                    try:
-                        username = addon.getSetting(instanceName+'_username')
-                    except:
-                        username = ''
+                    username = getSetting(instanceName+'_username')
 
                     if username != '' and username == invokedUsername:
-                        if ( int(addon.getSetting(instanceName+'_type')) > 0):
+                        if ( int(getSetting(instanceName+'_type',0)) > 0):
                             service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
                         else:
                             service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
@@ -435,7 +428,7 @@ elif mode == 'buildstrm':
                             service
                         except NameError:
                             #fallback on first defined account
-                            if ( int(addon.getSetting(PLUGIN_NAME+'1'+'_type')) > 0):
+                            if ( int(getSetting(PLUGIN_NAME+'1'+'_type',0)) > 0):
                                 service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
                             else:
                                 service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
@@ -461,11 +454,11 @@ invokedUsername = getParameter('username')
 if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
         mode = ''
         count = 1
-        max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
+        max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
         while True:
             instanceName = PLUGIN_NAME+str(count)
             try:
-                username = addon.getSetting(instanceName+'_username')
+                username = getSetting(instanceName+'_username')
                 if username != '':
                     addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username)
             except:
@@ -480,12 +473,12 @@ elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
         count = 1
         options = []
         accounts = []
-        max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
+        max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
 
         for count in range (1, max_count):
             instanceName = PLUGIN_NAME+str(count)
             try:
-                username = addon.getSetting(instanceName+'_username')
+                username = getSetting(instanceName+'_username')
                 if username != '':
                     options.append(username)
                     accounts.append(instanceName)
@@ -493,7 +486,7 @@ elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
                 if username != '':
 
                     #let's log in
-                    if ( int(addon.getSetting(instanceName+'_type')) > 0):
+                    if ( int(getSetting(instanceName+'_type',0)) > 0):
                         service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
                     else:
                         service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
@@ -507,7 +500,7 @@ elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
                     ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), options)
 
                     #fallback on first defined account
-                    if ( int(addon.getSetting(accounts[ret]+'_type')) > 0):
+                    if ( int(getSetting(accounts[ret]+'_type',0)) > 0):
                         service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
                     else:
                         service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
@@ -522,13 +515,13 @@ elif numberOfAccounts == 0:
 
         #legacy account conversion
         try:
-            username = addon.getSetting('username')
+            username = getSetting('username')
 
             if username != '':
                 addon.setSetting(PLUGIN_NAME+'1_username', username)
-                addon.setSetting(PLUGIN_NAME+'1_password', addon.getSetting('password'))
-                addon.setSetting(PLUGIN_NAME+'1_auth_writely', addon.getSetting('auth_writely'))
-                addon.setSetting(PLUGIN_NAME+'1_auth_wise', addon.getSetting('auth_wise'))
+                addon.setSetting(PLUGIN_NAME+'1_password', getSetting('password'))
+                addon.setSetting(PLUGIN_NAME+'1_auth_writely', getSetting('auth_writely'))
+                addon.setSetting(PLUGIN_NAME+'1_auth_wise', getSetting('auth_wise'))
                 addon.setSetting('username', '')
                 addon.setSetting('password', '')
                 addon.setSetting('auth_writely', '')
@@ -543,7 +536,7 @@ elif numberOfAccounts == 0:
             xbmcplugin.endOfDirectory(plugin_handle)
 
         #let's log in
-        if ( int(addon.getSetting(instanceName+'_type')) > 0):
+        if ( int(getSetting(instanceName+'_type',0)) > 0):
             service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
         else:
             service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
@@ -553,7 +546,7 @@ elif numberOfAccounts == 0:
 elif instanceName != '':
 
         #let's log in
-        if ( int(addon.getSetting(instanceName+'_type')) > 0):
+        if ( int(getSetting(instanceName+'_type',0)) > 0):
             service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
         else:
             service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
@@ -563,11 +556,11 @@ elif invokedUsername != '':
 
         options = []
         accounts = []
-        max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
+        max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
         for count in range (1, max_count):
             instanceName = PLUGIN_NAME+str(count)
             try:
-                username = addon.getSetting(instanceName+'_username')
+                username = getSetting(instanceName+'_username')
                 if username != '':
                     options.append(username)
                     accounts.append(instanceName)
@@ -575,7 +568,7 @@ elif invokedUsername != '':
                 if username == invokedUsername:
 
                     #let's log in
-                    if ( int(addon.getSetting(instanceName+'_type')) > 0):
+                    if ( int(getSetting(instanceName+'_type',0)) > 0):
                         service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
                     else:
                         service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
@@ -590,7 +583,7 @@ elif invokedUsername != '':
                     ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), options)
 
                     #fallback on first defined account
-                    if ( int(addon.getSetting(accounts[ret]+'_type')) > 0):
+                    if ( int(getSetting(accounts[ret]+'_type',0)) > 0):
                         service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
                     else:
                         service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
@@ -599,11 +592,11 @@ else:
 
         options = []
         accounts = []
-        max_count = int(addon.getSetting(PLUGIN_NAME+'_numaccounts'))
+        max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
         for count in range (1, max_count):
             instanceName = PLUGIN_NAME+str(count)
             try:
-                username = addon.getSetting(instanceName+'_username')
+                username = getSetting(instanceName+'_username',10)
                 if username != '':
                     options.append(username)
                     accounts.append(instanceName)
@@ -620,21 +613,18 @@ else:
         #fallback on first defined account
         if accounts[ret] == 'public':
             service = gdrive_api2.gdrive(PLUGIN_URL,addon,'', user_agent, authenticate=False)
-        elif ( int(addon.getSetting(accounts[ret]+'_type')) > 0):
+        elif ( int(getSetting(accounts[ret]+'_type',0)) > 0):
             service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
         else:
             service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
 
 # override playback
+integratedPlayer = getSetting('integrated_player')
 try:
-    integratedPlayer = addon.getSetting('integrated_player')
-    if integratedPlayer == 'true':
-        integratedPlayer = True
+    if integratedPlayer:
         service.integratedPlayer = True
-    else:
-        integratedPlayer = False
-except:
-        integratedPlayer = False
+except: pass
+
 
 
 
@@ -679,12 +669,9 @@ if mode == 'main' or mode == 'index':
         addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
         addMenu(PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
 
-        try:
-            encfs_target = addon.getSetting('encfs_target')
-            if encfs_target != '':
+        encfs_target = getSetting('encfs_target')
+        if encfs_target != '':
                 service.addDirectory(None, contextType, localPath=encfs_target)
-        except:
-            pass
 
 
     # ***
@@ -721,11 +708,7 @@ elif mode == 'photo':
     folder = getParameter('folder',0)
 
 
-    path = ''
-    try:
-        path = addon.getSetting('photo_folder')
-    except:
-        pass
+    path = getSetting('photo_folder')
 
     if not xbmcvfs.exists(path):
         path = ''
@@ -787,9 +770,9 @@ elif mode == 'decryptfolder':
 
     path = '/tmp/2/'
 
-    enc_password = str(addon.getSetting('enc_password'))
+    enc_password = getSetting('enc_password')
 
-    salt = encryption.read_salt(str(addon.getSetting('salt')))
+    salt = encryption.read_salt(strgetSetting('salt'))
 
     key = encryption.generate_key(enc_password,salt,encryption.NUMBER_OF_ITERATIONS)
 
@@ -802,11 +785,7 @@ elif mode == 'slideshow':
     folder = getParameter('folder',0)
     title = getParameter('title',0)
 
-    path = ''
-    try:
-        path = addon.getSetting('photo_folder')
-    except:
-        pass
+    path = getSetting('photo_folder')
 
     if not xbmcvfs.exists(path):
         path = ''
@@ -858,40 +837,19 @@ elif mode == 'audio':
 
 
     #force cache
-    try:
-        download = addon.getSetting('always_cache')
-        if download == 'true':
-            download = True
-            play = True
-        else:
-            download = False
-            play = False
-    except:
+
+    download = getSetting('always_cache', getParameter('download', False))
+    play = getSetting('always_cache', getParameter('play', False))
+
+    cache = getParameter('cache', False)
+    if cache:
         download = False
         play = False
-
-    download = getParameter('download', False)
-    play = getParameter('play', False)
-
-    #user selected to playback from cache
-    try:
-        cache = plugin_queries['cache']
-        if cache == 'true':
-            cache = True
-            download = False
-            play = False
-        else:
-            cache = False
-    except:
-        cache = False
 
     filesize = getParameter('filesize')
 
     #cache folder (used for downloading)
-    try:
-        path = addon.getSetting('cache_folder')
-    except:
-        path = ''
+    path = getSetting('cache_folder')
 
 
     playbackMedia = True
@@ -1060,13 +1018,7 @@ elif mode == 'streamurl':
     title = getParameter('title')
 
 
-    promptQuality = True
-    try:
-        promptQuality = addon.getSetting('prompt_quality')
-        if promptQuality == 'false':
-            promptQuality = False
-    except:
-        pass
+    promptQuality = getSetting('prompt_quality', True)
 
     mediaURLs = service.getPublicStream(url)
     options = []
@@ -1126,42 +1078,11 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         xbmcplugin.endOfDirectory(plugin_handle)
 
 
-    promptQuality = True
-    try:
-        promptQuality = addon.getSetting('prompt_quality')
-        if promptQuality == 'false':
-            promptQuality = False
-    except:
-        pass
+    promptQuality = getSetting('prompt_quality', True)
+    playOriginal = getSetting('never_stream', getParameter('original', False))
 
-    try:
-        playOriginal = addon.getSetting('never_stream')
-        if playOriginal == 'true':
-            playOriginal = True
-        else:
-            playOriginal = False
-    except:
-        playOriginal = False
-
-    playOriginal = getParameter('original', False)
-
-
-
-
-    try:
-        download = addon.getSetting('always_cache')
-        if download == 'true':
-            download = True
-            play = True
-        else:
-            download = False
-            play = False
-    except:
-        download = False
-        play = False
-
-    download = getParameter('download', False)
-    play = getParameter('play', False)
+    download = getSetting('always_cache', getParameter('download', False))
+    play = getSetting('always_cache', getParameter('play', False))
 
 
     if mode == 'memorycachevideo':
@@ -1172,23 +1093,14 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         download = False
         playOriginal = True
 
-    try:
-        cache = plugin_queries['cache']
-        if cache == 'true':
-            cache = True
+    cache = getParameter('cache', False)
+    if cache:
             download = False
             play = False
-        else:
-            cache = False
-    except:
-        cache = False
 
     filesize = getParameter('filesize')
 
-    try:
-        path = addon.getSetting('cache_folder')
-    except:
-        path = ''
+    path = getSetting('cache_folder')
 
     if srt != '':
         SRTURL = service.getSRT(title)
