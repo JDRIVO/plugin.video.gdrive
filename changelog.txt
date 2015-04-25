@@ -1,3 +1,6 @@
+Version 0.6.7
+- code refactoring
+- testing subtitle support (.srt): right-click, play with subtitles
 Version 0.6.6
 - code refactoring
 - fix: Titles of video/music files not displayed properly when using integrated player #26

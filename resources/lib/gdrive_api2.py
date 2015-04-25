@@ -484,7 +484,8 @@ class gdrive(cloudservice):
             url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
 
 
-        mediaFiles = []
+        SRTTitle = []
+        SRTURL = []
         while True:
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -538,7 +539,8 @@ class gdrive(cloudservice):
                 for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   url = r.group(1)
-                  return url
+                  SRTURL.append(url)
+                  SRTTitle.append(title)
                   break
 
 
@@ -555,6 +557,15 @@ class gdrive(cloudservice):
                 break
             else:
                 url = nextURL
+
+        if len(SRTURL) == 0:
+            return ''
+        elif len(SRTURL) == 1:
+            return SRTURL[0]
+        else:
+            ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), SRTTitle)
+            return SRTURL[ret]
+
 
         return ''
 

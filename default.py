@@ -1066,7 +1066,7 @@ elif mode == 'streamurl':
 elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycachevideo' or mode == 'playvideo' or mode == 'streamvideo':
 
     title = getParameter('title')
-    srt = getParameter('srt')
+    srt = getParameter('srt', False)
     filename = getParameter('filename')
     folderID = getParameter('folder')
 
@@ -1102,8 +1102,26 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
     path = getSetting('cache_folder')
 
-    if srt != '':
+    SRTURL = ''
+    srtpath = ''
+    if srt:
         SRTURL = service.getSRT(title)
+        if SRTURL != '':
+
+            try:
+                srtpath = addon.getSetting('srt_folder')
+            except:
+                srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
+                addon.setSetting('srt_folder', srtpath)
+
+            if srtpath == '':
+                srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
+                addon.setSetting('srt_folder', srtpath)
+
+            if srtpath != '':
+                srtpath = srtpath + '/subtitle.srt'
+                service.downloadPicture(SRTURL, srtpath)
+
 
     playbackMedia = True
     #if we don't have the docid, search for the video for playback
@@ -1226,6 +1244,22 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 player = gPlayer.gPlayer()
                 player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
 
+            elif srt:
+                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+
+                item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
+                player = gPlayer.gPlayer()
+                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+
+                while not (player.isPlaying()):
+                        xbmc.sleep(1)
+
+                if srtpath != '':
+                        player.setSubtitles(srtpath.encode("utf-8"))
+
+
+
             #for STRM
             else :
                 item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
@@ -1264,6 +1298,13 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
                     while not (player.isPlaying()):
                         xbmc.sleep(1)
+
+                    if srtpath != '':
+
+#                    xbmc.Player().setSubtitles(subtitle.encode("utf-8"))
+                    #player.setSubtitles(subtitle.encode("utf-8"))
+                        player.setSubtitles(srtpath.encode("utf-8"))
+
 
                     while (player.isPlaying()):
                         xbmc.sleep(3)

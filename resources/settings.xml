@@ -139,6 +139,8 @@
 
     <category label="30134">
     	<setting id="integrated_player" type="bool" label="30133" default="false" />
+    	<setting id="srt_folder" type="folder" label="30135" default="" />
+
     </category>
 
     <category label="30060">
