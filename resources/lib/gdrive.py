@@ -945,7 +945,7 @@ class gdrive(cloudservice):
                         mediaURLs.append(mediaurl.mediaurl(PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container, 0, order+count))
 #                videos[str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container] = PROTOCOL + videoURL
 
-        return mediaURLs
+        return (mediaURLs,package)
 
 
     def downloadPicture(self,url, file):

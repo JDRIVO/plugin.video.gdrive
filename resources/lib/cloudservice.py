@@ -415,9 +415,9 @@ class cloudservice(object):
                         values = {'instance': self.instanceName, 'title': folder.title, 'folder': folder.id}
                         cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&'+urllib.urlencode(values)+')', ))
 
-                    #encfs
-                    values = {'instance': self.instanceName, 'foldername': folder.title, 'folder': folder.id}
-                    cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
+                        #encfs
+                        values = {'instance': self.instanceName, 'foldername': folder.title, 'folder': folder.id}
+                        cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
 
                 listitem.addContextMenuItems(cm, False)
                 listitem.setProperty('fanart_image', fanart)
@@ -511,7 +511,8 @@ class cloudservice(object):
             cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=slideshow&' + urllib.urlencode(values)+')', ))
 
         #encfs
-        cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=downloadfolder&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
+        if (self.protocol == 2):
+            cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=downloadfolder&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
 
 
         url = url + '&content_type='+contextType
