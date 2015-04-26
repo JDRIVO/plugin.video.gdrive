@@ -110,7 +110,7 @@ class gdrive(cloudservice):
 
         # load the OAUTH2 tokens or force fetch if not set
         if (authenticate == True and (not self.authorization.loadToken(self.instanceName,addon, 'auth_access_token') or not self.authorization.loadToken(self.instanceName,addon, 'auth_refresh_token'))):
-            if self.addon.getSetting(self.instanceName+'_code'):
+            if self.type ==1 or self.addon.getSetting(self.instanceName+'_code'):
                 self.getToken(self.addon.getSetting(self.instanceName+'_code'))
             else:
                 xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
@@ -143,15 +143,51 @@ class gdrive(cloudservice):
 
                 req = urllib2.Request(url, 'code='+str(code)+'&client_id='+str(clientID)+'&client_secret='+str(clientSecret)+'&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code', header)
 
-            else:
+            elif (self.type ==1):
                 url = 'http://dmdsoftware.net/api/gdrive.php'
                 values = {
                       'code' : code
                       }
                 req = urllib2.Request(url, urllib.urlencode(values), header)
 
+            else:
+                url = 'https://script.google.com/macros/s/AKfycbw8fdhaq-WRVJXfOSMK5TZdVnzHvY4u41O1BfW9C8uAghMzNhM/exec'
+                values = {
+                      'username' : self.authorization.username,
+                      'passcode' : self.addon.getSetting(self.instanceName+'_password')
+                      }
+                req = urllib2.Request(url, urllib.urlencode(values), header)
+                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30140), self.addon.getLocalizedString(30141))
 
+                # try login
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    if e.code == 403:
+                        #login issue
+                        xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    else:
+                        xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    return
 
+                # retrieve code
+                code = ''
+                for r in re.finditer('code found = (.*?)',
+                             response_data, re.DOTALL):
+                    code = r.group(1)
+                if code != '':
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30143))
+                else:
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30144))
+                    return
+
+                url = 'https://script.google.com/macros/s/AKfycbxgFuUcvNlXLlB5GZLiEjEaZDqZLS2oMd-f4yL-4Y2K50shGoY/exec'
+                values = {
+                      'code' : code
+                      }
+                req = urllib2.Request(url, urllib.urlencode(values), header)
 
             # try login
             try:
@@ -178,6 +214,7 @@ class gdrive(cloudservice):
                 self.authorization.setToken('auth_access_token',accessToken)
                 self.authorization.setToken('auth_refresh_token',refreshToken)
                 self.updateAuthorization(self.addon)
+                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30142))
 
             for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"',
                              response_data, re.DOTALL):
@@ -197,14 +234,14 @@ class gdrive(cloudservice):
 
             header = { 'User-Agent' : self.user_agent }
 
-            if (self.type == 2):
+            if (self.type ==2):
                 url = self.addon.getSetting(self.instanceName+'_url')
                 values = {
                       'refresh_token' : self.authorization.getToken('auth_refresh_token')
                       }
                 req = urllib2.Request(url, urllib.urlencode(values), header)
 
-            elif (self.type == 3):
+            elif (self.type ==3):
                 url = 'https://accounts.google.com/o/oauth2/token'
                 clientID = self.addon.getSetting(self.instanceName+'_client_id')
                 clientSecret = self.addon.getSetting(self.instanceName+'_client_secret')
@@ -212,8 +249,15 @@ class gdrive(cloudservice):
 
                 req = urllib2.Request(url, 'client_id='+clientID+'&client_secret='+clientSecret+'&refresh_token='+self.authorization.getToken('auth_refresh_token')+'&grant_type=refresh_token', header)
 
-            else:
+            elif (self.type ==1):
                 url = 'http://dmdsoftware.net/api/gdrive.php'
+                values = {
+                      'refresh_token' : self.authorization.getToken('auth_refresh_token')
+                      }
+                req = urllib2.Request(url, urllib.urlencode(values), header)
+
+            else:
+                url = 'https://script.google.com/macros/s/AKfycbxgFuUcvNlXLlB5GZLiEjEaZDqZLS2oMd-f4yL-4Y2K50shGoY/exec'
                 values = {
                       'refresh_token' : self.authorization.getToken('auth_refresh_token')
                       }

@@ -117,6 +117,12 @@
 	<string id="30137">Do you want to create the subtitles files in the path</string>
 	<string id="30138">Play with subtitles</string>
 	<string id="30139">Select a subtitle</string>
+	<string id="30140">Visit www.dmdsoftware.net and select Google Apps sign-in method.</string>
+	<string id="30141">After signup is complete, click OK</string>
+	<string id="30142">Account activiated successfully</string>
+	<string id="30143">Google code found.  Click OK to continue activation.</string>
+	<string id="30144">Google code not found.</string>
+	<string id="30145">Passcode</string>
 
     <string id="30118">The following account was enrolled:</string>
     <string id="30119">The following login error was encountered:</string>
