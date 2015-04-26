@@ -81,6 +81,8 @@ class gdrive(cloudservice):
         self.addon = addon
         self.instanceName = instanceName
         self.protocol = 2
+        self.integratedPlayer = False
+
         if authenticate == True:
             self.type = int(addon.getSetting(instanceName+'_type'))
 

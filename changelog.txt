@@ -1,3 +1,6 @@
+Version 0.6.8
+- fix for playback for ClientLogin
+-- Google Drive API 2 module - fix for integrated player
 Version 0.6.7
 - code refactoring
 - testing subtitle support (.srt): right-click, play with subtitles
