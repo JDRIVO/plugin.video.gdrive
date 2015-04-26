@@ -1,3 +1,6 @@
+Version 0.6.9
+- implement new login type: Google Apps (allows users to provide a username + passcode and skip manually entering "the code")
+- fix for silent error on STRM creation
 Version 0.6.8
 - fix for playback for ClientLogin
 -- Google Drive API 2 module - fix for integrated player

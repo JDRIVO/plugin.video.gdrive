@@ -320,7 +320,9 @@ elif mode == 'enroll':
 #create strm files
 elif mode == 'buildstrm':
 
-    silent = getParameter('silent', int(getSetting('strm_silent',0)))
+    silent = getParameter('silent', getSetting('strm_silent',0))
+    if silent == '':
+        silent = 0
 
     try:
         path = addon.getSetting('strm_path')
