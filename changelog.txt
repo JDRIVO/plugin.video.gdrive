@@ -1,5 +1,6 @@
 Version 0.6.10
 - support for youtube closed caption tracks (timed text / tts) [these are "caption tracks" associated with a video), during testing you must right-click and "play with captions"
+- implemented: Support for closed captions in stream mode #10
 Version 0.6.9
 - implement new login type: Google Apps (allows users to provide a username + passcode and skip manually entering "the code")
 - fix for silent error on STRM creation
