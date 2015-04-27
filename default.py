@@ -1069,6 +1069,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
     title = getParameter('title')
     srt = getParameter('srt', False)
+    cc = getParameter('cc', False)
     filename = getParameter('filename')
     folderID = getParameter('folder')
 
@@ -1125,6 +1126,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 service.downloadPicture(SRTURL, srtpath)
 
 
+
     playbackMedia = True
     #if we don't have the docid, search for the video for playback
     if (filename != ''):
@@ -1175,6 +1177,24 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
     originalURL = ''
     if playbackMedia:
+
+        if cc:
+
+            try:
+                srtpath = addon.getSetting('srt_folder')
+            except:
+                srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
+                addon.setSetting('srt_folder', srtpath)
+
+            if srtpath == '':
+                srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
+                addon.setSetting('srt_folder', srtpath)
+
+            if srtpath != '':
+                srtpath = srtpath + '/subtitle.srt'
+                service.downloadTTS(package.file.srtURL, srtpath)
+
+
         options = []
         mediaURLs = sorted(mediaURLs)
         for mediaURL in mediaURLs:
@@ -1246,7 +1266,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 player = gPlayer.gPlayer()
                 player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
 
-            elif srt:
+            elif srt or cc:
                 item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                                 thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
 

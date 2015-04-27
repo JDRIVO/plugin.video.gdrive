@@ -1013,6 +1013,13 @@ class gdrive(cloudservice):
             urls = re.sub('\\\\u003d', '=', urls)
             urls = re.sub('\\\\u0026', '&', urls)
 
+            #set closed-caption
+            ttsURL=''
+            for r in re.finditer('&ttsurl\=(.*?)\&reportabuseurl' ,
+                               urls, re.DOTALL):
+                ttsURL = r.group(1)
+            ttsURL = ttsURL+'&v='+docid + '&type=track&lang=en&name&kind&fmt=1'
+            package.file.srtURL = ttsURL
 
             self.useWRITELY = True
             req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
@@ -1178,6 +1185,49 @@ class gdrive(cloudservice):
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                 self.crashreport.sendError('downloadPicture',str(e))
                 return
+
+    ##
+    # download remote picture
+    # parameters: url of picture, file location with path on disk
+    ##
+    def downloadTTS(self, url, file):
+
+        req = urllib2.Request(url, None, self.getHeadersList())
+
+        f = xbmcvfs.File(file, 'w')
+
+        # if action fails, validate login
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.URLError, e:
+              self.refreshToken()
+              req = urllib2.Request(url, None, self.getHeadersList())
+              try:
+                  response = urllib2.urlopen(req)
+              except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('downloadTTS',str(e))
+                return
+
+        response_data = response.read()
+        response.close()
+
+        count=0
+        for q in re.finditer('\<text start\=\"([^\"]+)\" dur\=\"([^\"]+)\"\>([^\<]+)\</text\>' ,
+                             response_data, re.DOTALL):
+            start,duration,text = q.groups()
+            count = count + 1
+            startTimeMin = float(start) % 60
+            startTimeHour = float(start) / 60
+            startTimeDay = float(start) / (60*24)
+            startTimeSec = (float(start) - int(float(start))) * 1000
+            endTimeMin = (float(start) + float(duration)) % 60
+            endTimeHour = (float(start) + float(duration)) / 60
+            endTimeDay = (float(start) + float(duration)) / (60*24)
+            endTimeSec = ((float(start) - int(float(start))) + (float(duration) - int(float(duration)))) * 1000
+            #print "%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n" % (count, startTimeDay, startTimeHour, startTimeMin, startTimeSec, endTimeDay, endTimeHour, endTimeMin, endTimeSec, text)
+            f.write("%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n\n" % (count, startTimeDay, startTimeHour, startTimeMin, startTimeSec, endTimeDay, endTimeHour, endTimeMin, endTimeSec, text))
+        f.close()
 
     #*** needs update
     def downloadDecryptPicture(self,key,url, file):
