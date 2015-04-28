@@ -1072,6 +1072,14 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
     cc = getParameter('cc', False)
     filename = getParameter('filename')
     folderID = getParameter('folder')
+    seek = getParameter('seek', 0)
+
+    if seek:
+        dialog = xbmcgui.Dialog()
+        seek = dialog.numeric(2, 'Time to seek to', '00:00')
+        for r in re.finditer('(\d+)\:(\d+)' ,seek, re.DOTALL):
+            seekHours, seekMins = r.groups()
+            seek = int(seekMins) + (int(seekHours)*60)
 
     try:
         service
@@ -1281,6 +1289,13 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 if srtpath != '':
                         player.setSubtitles(srtpath.encode("utf-8"))
 
+            elif seek:
+                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+
+                item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
+                player = gPlayer.gPlayer()
+                player.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
 
 
             #for STRM
@@ -1290,6 +1305,21 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+                if seek > 0:
+                    player = gPlayer.gPlayer()
+                    player.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
+
+#                    while not player.isPlaying(): #<== The should be    while self.isPlaying():
+#                        print "LOOP"
+#                        xbmc.sleep(2000)
+#                    xbmc.sleep(1000)
+#                    print "SEEK "+str(seek)
+#                    player.seekTime(seek)
+
+#                    while not (player.isPlaying()):
+#                        xbmc.sleep(1)
+#                    player.seekTime(seek)
 
 
 #                player.seekTime(1000)
@@ -1315,6 +1345,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                                 thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
 
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
+
                 if integratedPlayer:
                     player = gPlayer.gPlayer()
                     player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)

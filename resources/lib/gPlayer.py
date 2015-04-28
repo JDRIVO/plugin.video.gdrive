@@ -37,6 +37,8 @@ class gPlayer(xbmc.Player):
     def __init__( self, *args, **kwargs ):
         xbmc.Player.__init__( self )
         self.isExit = 0
+        self.seek = 0
+
 
     def setScheduler(self,scheduler):
         self.tvScheduler = scheduler
@@ -72,14 +74,20 @@ class gPlayer(xbmc.Player):
 
 
 
-    def PlayStream(self, url):
-        self.play(url)
-#        while self.isPlaying(): #<== The should be    while self.isPlaying():
-#            xbmc.sleep(1000)
+    def PlayStream(self, url, item, seek):
+        self.play(url, item)
+
+        while not self.isPlaying(): #<== The should be    while self.isPlaying():
+            print "LOOP"
+            xbmc.sleep(2000)
+        xbmc.sleep(2000)
+        print "SEEK "+str(seek)
+        self.seekTime(seek)
 
     def onPlayBackStarted(self):
         print "PLAYBACK STARTED"
-        print self.getPlayingFile()
+        if seek > 0:
+            self.seekTime(seek)
 
     def onPlayBackEnded(self):
         print "PLAYBACK ENDED"

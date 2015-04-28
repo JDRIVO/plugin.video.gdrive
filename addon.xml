@@ -4,10 +4,10 @@
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="default.py">
-        <provides>video audio image</provides>
+        <provides>video audio image programs</provides>
     </extension>
     <extension point="xbmc.addon.metadata">
-        <summary>Plays music and video from your Google Drive account</summary>
+        <summary>Listen to music, watch videos and view photos from your Google Drive account</summary>
         <description>Plays music and video from your Google Drive account.  Not affiliated with Google.</description>
         <platform>all</platform>
     </extension>

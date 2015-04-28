@@ -1299,8 +1299,9 @@ class gdrive(cloudservice):
             endTimeDay = (float(start) + float(duration)) / (60*24)
             endTimeSec = ((float(start) - int(float(start))) + (float(duration) - int(float(duration)))) * 1000
             #print "%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n" % (count, startTimeDay, startTimeHour, startTimeMin, startTimeSec, endTimeDay, endTimeHour, endTimeMin, endTimeSec, text)
-            text = re.sub('&', '', text)
-            f.write("%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n\n" % (count, startTimeDay, startTimeHour, startTimeMin, startTimeSec, endTimeDay, endTimeHour, endTimeMin, endTimeSec, str(entity_re.subn(self.substitute_entity, text)[0])))
+            text = re.sub('&amp;#39;', "'", text)
+            #str(entity_re.subn(self.substitute_entity, text)[0]
+            f.write("%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n\n" % (count, startTimeDay, startTimeHour, startTimeMin, startTimeSec, endTimeDay, endTimeHour, endTimeMin, endTimeSec, text))
         f.close()
 
     #*** needs update

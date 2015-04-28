@@ -1,3 +1,6 @@
+Version 0.6.12
+-- Google Drive API 2 module - added right-click "Play with seek" to seek to a specified point in the video
+-- Google Drive API 2 module - fix unicode issue with caption tracks
 Version 0.6.11
 -- Google Drive API 2 module - fix for videos with multiple caption tracks
 -- Google Drive API 2 module - fix format for html encoding in caption tracks
