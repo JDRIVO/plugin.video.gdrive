@@ -154,7 +154,7 @@ class gdrive(cloudservice):
                 url = 'https://script.google.com/macros/s/AKfycbw8fdhaq-WRVJXfOSMK5TZdVnzHvY4u41O1BfW9C8uAghMzNhM/exec'
                 values = {
                       'username' : self.authorization.username,
-                      'passcode' : self.addon.getSetting(self.instanceName+'_password')
+                      'passcode' : self.addon.getSetting(self.instanceName+'_passcode')
                       }
                 req = urllib2.Request(url, urllib.urlencode(values), header)
                 xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30140), self.addon.getLocalizedString(30141))
@@ -619,6 +619,76 @@ class gdrive(cloudservice):
         return ''
 
 
+
+    ##
+    # retrieve a tts file for playback
+    #   parameters: TTS Base URL
+    #   returns: download url for TTS
+    ##
+    def getTTS(self, baseURL):
+
+        # retrieve all items
+        url = baseURL +'&hl=en-US&type=list&tlangs=1&fmts=1&vssids=1'
+
+        ccLang = []
+        ccLanguage = []
+        ccURL = []
+        while True:
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.refreshToken()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                  self.crashreport.sendError('getTTS',str(e))
+                  return
+              else:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getTTS',str(e))
+                return
+
+            response_data = response.read()
+            response.close()
+
+            # parsing page for videos
+            # video-entry
+            for r in re.finditer('\<track id\=\"\d+\" .*? lang_code\=\"([^\"]+)\" .*? lang_translated\=\"([^\"]+)\" [^\>]+\>' ,response_data, re.DOTALL):
+                lang,language = r.groups()
+                ccURL.append(baseURL+'&type=track&lang='+str(lang)+'&name&kind&fmt=1')
+                ccLanguage.append(language)
+                ccLang.append(lang)
+
+            # look for more pages of videos
+            nextURL = ''
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                nextURL = r.group(1)
+
+
+            # are there more pages to process?
+            if nextURL == '':
+                break
+            else:
+                url = nextURL
+
+        if len(ccURL) == 0:
+            return '',''
+        elif len(ccURL) == 1:
+            return ccURL[0],ccLang[0]
+        else:
+            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30139), ccLanguage)
+            return ccURL[ret], ccLang[ret]
+
+
+        return '',''
+
     ##
     # retrieve the resource ID for root folder
     #   parameters: none
@@ -1018,7 +1088,7 @@ class gdrive(cloudservice):
             for r in re.finditer('&ttsurl\=(.*?)\&reportabuseurl' ,
                                urls, re.DOTALL):
                 ttsURL = r.group(1)
-            ttsURL = ttsURL+'&v='+docid + '&type=track&lang=en&name&kind&fmt=1'
+            ttsURL = ttsURL+'&v='+docid #+ '&type=track&lang=en&name&kind&fmt=1'
             package.file.srtURL = ttsURL
 
             self.useWRITELY = True
@@ -1192,6 +1262,9 @@ class gdrive(cloudservice):
     ##
     def downloadTTS(self, url, file):
 
+
+        entity_re = re.compile(r'(#?)(\w+);')
+
         req = urllib2.Request(url, None, self.getHeadersList())
 
         f = xbmcvfs.File(file, 'w')
@@ -1226,7 +1299,8 @@ class gdrive(cloudservice):
             endTimeDay = (float(start) + float(duration)) / (60*24)
             endTimeSec = ((float(start) - int(float(start))) + (float(duration) - int(float(duration)))) * 1000
             #print "%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n" % (count, startTimeDay, startTimeHour, startTimeMin, startTimeSec, endTimeDay, endTimeHour, endTimeMin, endTimeSec, text)
-            f.write("%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n\n" % (count, startTimeDay, startTimeHour, startTimeMin, startTimeSec, endTimeDay, endTimeHour, endTimeMin, endTimeSec, text))
+            text = re.sub('&', '', text)
+            f.write("%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n\n" % (count, startTimeDay, startTimeHour, startTimeMin, startTimeSec, endTimeDay, endTimeHour, endTimeMin, endTimeSec, str(entity_re.subn(self.substitute_entity, text)[0])))
         f.close()
 
     #*** needs update
@@ -1429,6 +1503,13 @@ class gdrive(cloudservice):
         return mediaURLs
 
 
+
+#    @see http://snippets.dzone.com/posts/show/4569
+    def substitute_entity(self,match):
+        ent = match.group(2)
+        if match.group(1) == "#":
+            # decoding by number
+            return unichr(int(ent))
 
 
 

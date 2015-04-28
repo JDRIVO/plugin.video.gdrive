@@ -1,3 +1,7 @@
+Version 0.6.11
+-- Google Drive API 2 module - fix for videos with multiple caption tracks
+-- Google Drive API 2 module - fix format for html encoding in caption tracks
+-- Google Drive API 2 module - fix for Google Apps login type
 Version 0.6.10
 - support for youtube closed caption tracks (timed text / tts) [these are "caption tracks" associated with a video), during testing you must right-click and "play with captions"
 - implemented: Support for closed captions in stream mode #10

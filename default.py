@@ -1105,27 +1105,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
     path = getSetting('cache_folder')
 
-    SRTURL = ''
-    srtpath = ''
-    if srt:
-        SRTURL = service.getSRT(title)
-        if SRTURL != '':
-
-            try:
-                srtpath = addon.getSetting('srt_folder')
-            except:
-                srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
-                addon.setSetting('srt_folder', srtpath)
-
-            if srtpath == '':
-                srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
-                addon.setSetting('srt_folder', srtpath)
-
-            if srtpath != '':
-                srtpath = srtpath + '/subtitle.srt'
-                service.downloadPicture(SRTURL, srtpath)
-
-
 
     playbackMedia = True
     #if we don't have the docid, search for the video for playback
@@ -1178,21 +1157,43 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
     originalURL = ''
     if playbackMedia:
 
+        SRTURL = ''
+        srtpath = ''
+        if srt:
+            SRTURL = service.getSRT(title)
+            if SRTURL != '':
+
+                try:
+                    srtpath = addon.getSetting('srt_folder')
+                except:
+                    srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
+                    addon.setSetting('srt_folder', srtpath)
+
+                if srtpath == '':
+                    srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
+                    addon.setSetting('srt_folder', srtpath)
+
+                if srtpath != '':
+                    srtpath = srtpath + '/subtitle.en.srt'
+                    service.downloadPicture(SRTURL, srtpath)
+
         if cc:
+            SRTURL,lang = service.getTTS(package.file.srtURL)
 
-            try:
-                srtpath = addon.getSetting('srt_folder')
-            except:
-                srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
-                addon.setSetting('srt_folder', srtpath)
+            if SRTURL != '':
+                try:
+                    srtpath = addon.getSetting('srt_folder')
+                except:
+                    srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
+                    addon.setSetting('srt_folder', srtpath)
 
-            if srtpath == '':
-                srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
-                addon.setSetting('srt_folder', srtpath)
+                if srtpath == '':
+                    srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
+                    addon.setSetting('srt_folder', srtpath)
 
-            if srtpath != '':
-                srtpath = srtpath + '/subtitle.srt'
-                service.downloadTTS(package.file.srtURL, srtpath)
+                if srtpath != '':
+                    srtpath = srtpath + '/subtitle.'+str(lang)+'.srt'
+                    service.downloadTTS(SRTURL, srtpath)
 
 
         options = []
