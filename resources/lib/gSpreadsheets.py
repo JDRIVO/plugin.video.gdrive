@@ -1,6 +1,6 @@
 '''
-    hive XBMC Plugin
-    Copyright (C) 2013-2014 ddurdle
+    gdrive XBMC Plugin
+    Copyright (C) 2013-2015 ddurdle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,78 +28,26 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 import authorization
 import crashreport
 
-#global variables
-PLUGIN_NAME = 'gdrive'
 
 
 
 class gSpreadsheets:
 
 
-    def __init__(self, addon, crashreport, user_agent):
+    def __init__(self, service, addon, user_agent):
         self.addon = addon
-        self.instanceName = 'gdrive'
         self.user_agent = user_agent
-
-        self.crashreport = crashreport
+        self.service = service
+#        self.crashreport = crashreport
 #        self.crashreport.sendError('test','test')
-
-
-        try:
-            username = self.addon.getSetting(self.instanceName+'_username')
-        except:
-            username = ''
-        self.authorization = authorization.authorization(username)
 
 
         self.cookiejar = cookielib.CookieJar()
 
         self.user_agent = user_agent
 
-        #token?
-        if (not self.authorization.loadToken(self.instanceName,addon, 'wise')):
-            self.login()
-
         return
 
-
-    def login(self):
-
-        self.authorization.isUpdated = True
-
-        url = 'https://www.google.com/accounts/ClientLogin'
-        header = { 'User-Agent' : self.user_agent }
-        values = {
-          'Email' : self.authorization.username,
-          'Passwd' : self.addon.getSetting(self.instanceName+'_password'),
-          'accountType' : 'HOSTED_OR_GOOGLE',
-          'source' : 'dmdHive',
-          'service' : 'wise'
-        }
-
-        req = urllib2.Request(url, urllib.urlencode(values), header)
-
-        try:
-            response = urllib2.urlopen(req)
-        except urllib2.URLError, e:
-            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-
-        response_data = response.read()
-
-        for r in re.finditer('SID=(.*).+?' +
-                             'LSID=(.*).+?' +
-                             'Auth=(.*).+?' ,
-                             response_data, re.DOTALL):
-            sid,lsid,auth = r.groups()
-
-
-        self.authorization.setToken('wise',auth)
-
-        self.updateAuthorization()
-
-
-    def returnHeaders(self):
-        return urllib.urlencode({ 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0' })
 
 
     #
@@ -108,18 +56,21 @@ class gSpreadsheets:
     def getSpreadsheetList(self):
 
         url = 'https://spreadsheets.google.com/feeds/spreadsheets/private/full'
-        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0' }
 
         spreadsheets = {}
         while True:
-            req = urllib2.Request(url, None, header)
+            req = urllib2.Request(url, None, self.service.getHeadersList())
 
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                if e.msg != '':
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), e.msg)
+                    xbmc.log(self.addon.getAddonInfo('getSpreadsheetList') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('getSpreadsheetList',str(e))
 
             response_data = response.read()
+            reponse.close()
 
 
             for r in re.finditer('<title>([^<]+)</title><content type=\'application/atom\+xml;type=feed\' src=\'([^\']+)\'' ,
@@ -132,7 +83,6 @@ class gSpreadsheets:
                              response_data, re.DOTALL):
                 nextURL = r.groups()
 
-            response.close()
 
             if nextURL == '':
                 break
@@ -214,11 +164,9 @@ class gSpreadsheets:
     #
     def getSpreadsheetWorksheets(self,url):
 
-        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0' }
-
         worksheets = {}
         while True:
-            req = urllib2.Request(url, None, header)
+            req = urllib2.Request(url, None, self.service.getHeadersList())
 
             try:
                 response = urllib2.urlopen(req)
@@ -250,7 +198,6 @@ class gSpreadsheets:
 
     def getShows(self,url,channel):
 
-        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0' }
 
         params = urllib.urlencode({'channel': channel})
         url = url + '?sq=' + params
@@ -258,7 +205,7 @@ class gSpreadsheets:
 
         shows = {}
         while True:
-            req = urllib2.Request(url, None, header)
+            req = urllib2.Request(url, None, self.service.getHeadersList())
 
             try:
                 response = urllib2.urlopen(req)
@@ -293,15 +240,13 @@ class gSpreadsheets:
 
     def getMediaInformation(self,url,folderID):
 
-        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0' }
-
         params = urllib.urlencode({'folderuid': folderID})
         url = url + '?sq=' + params
 
 
         media = {}
         while True:
-            req = urllib2.Request(url, None, header)
+            req = urllib2.Request(url, None, self.service.getHeadersList())
 
             try:
                 response = urllib2.urlopen(req)
@@ -333,15 +278,13 @@ class gSpreadsheets:
         return media
 
     def getVideo(self,url,show):
-        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0' }
-
         params = urllib.urlencode({'show': show})
         url = url + '?sq=' + params + '%20and%20watched=0'
 
 
         shows = {}
         while True:
-            req = urllib2.Request(url, None, header)
+            req = urllib2.Request(url, None, self.service.getHeadersList())
 
             try:
                 response = urllib2.urlopen(req)
@@ -383,13 +326,11 @@ class gSpreadsheets:
 #        urllib2.install_opener(opener)
 
 
-        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0' }
-
         source = re.sub(' ', '%20', source)
 #        params = urllib.urlencode(source)
         url = url + '?sq=source="' + source +'"'
 
-        req = urllib2.Request(url, None, header)
+        req = urllib2.Request(url, None, self.service.getHeadersList())
 
         try:
             response = urllib2.urlopen(req)
@@ -456,8 +397,6 @@ class gSpreadsheets:
 
 
     def getChannels(self,url):
-        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0' }
-
         params = urllib.urlencode({'orderby': 'channel'})
         url = url + '?' + params
 
@@ -466,7 +405,7 @@ class gSpreadsheets:
         count=0
 
         while True:
-            req = urllib2.Request(url, None, header)
+            req = urllib2.Request(url, None, self.service.getHeadersList())
 
             try:
                 response = urllib2.urlopen(req)
@@ -498,12 +437,4 @@ class gSpreadsheets:
 
         return channels
 
-
-    ##
-    # if we don't have an authorization token set for the plugin, set it with the recent login.
-    #   auth_token will permit "quicker" login in future executions by reusing the existing login session (less HTTPS calls = quicker video transitions between clips)
-    ##
-    def updateAuthorization(self):
-        if self.authorization.isUpdated and self.addon.getSetting(self.instanceName+'_save_auth_token') == 'true':
-            self.authorization.saveTokens(self.instanceName,self.addon)
 

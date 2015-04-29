@@ -133,6 +133,7 @@ from resources.lib import mediaurl
 from resources.lib import crashreport
 from resources.lib import gPlayer
 from resources.lib import tvWindow
+from resources.lib import gSpreadsheets
 
 
 try:
@@ -627,7 +628,14 @@ try:
         service.integratedPlayer = True
 except: pass
 
+spreadshetModule = getSetting('library', False)
 
+try:
+    if spreadshetModule:
+        gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+        spreadsheets = gSpreadsheet.getSpreadsheetList()
+except:
+    pass
 
 
 #if mode == 'main':
