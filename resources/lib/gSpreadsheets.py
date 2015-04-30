@@ -29,10 +29,27 @@ import authorization
 import crashreport
 
 
-
-
 class gSpreadsheets:
 
+    S_CHANNEL=0
+    S_MONTH=1
+    S_DAY=2
+    S_WEEKDAY=3
+    S_HOUR=4
+    S_MINUTE=5
+    S_SHOW=6
+    S_ORDER=7
+    S_INCLUDE_WATCHED=8
+
+
+    D_SOURCE=0
+    D_NFO=1
+    D_SHOW=2
+    D_SEASON=3
+    D_EPISODE=4
+    D_PART=5
+    D_WATCHED=6
+    D_DURATION=7
 
     def __init__(self, service, addon, user_agent):
         self.addon = addon
@@ -51,7 +68,7 @@ class gSpreadsheets:
 
 
     #
-    # returns a list of spreadsheets contained in the Google Docs account
+    # returns a list of spreadsheets and a link to their worksheets
     #
     def getSpreadsheetList(self):
 
@@ -70,10 +87,10 @@ class gSpreadsheets:
                     self.crashreport.sendError('getSpreadsheetList',str(e))
 
             response_data = response.read()
-            reponse.close()
+            response.close()
 
 
-            for r in re.finditer('<title>([^<]+)</title><content type=\'application/atom\+xml;type=feed\' src=\'([^\']+)\'' ,
+            for r in re.finditer('<title [^\>]+\>([^<]+)</title><content [^\>]+\>[^<]+</content><link rel=\'[^\#]+\#worksheetsfeed\' type=\'application/atom\+xml\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
                 title,url = r.groups()
                 spreadsheets[title] = url
@@ -160,7 +177,7 @@ class gSpreadsheets:
         return True
 
     #
-    # returns a list of worksheets contained in the Google Docs Spreadsheet
+    # returns a list of worksheets with a link to their listfeeds
     #
     def getSpreadsheetWorksheets(self,url):
 
@@ -171,12 +188,13 @@ class gSpreadsheets:
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                xbmc.log(self.addon.getAddonInfo('getSpreadsheetWorksheets') + ': ' + str(e), xbmc.LOGERROR)
 
             response_data = response.read()
+            response.close()
 
 
-            for r in re.finditer('<title>([^<]+)</title><content type=\'application/atom\+xml;type=feed\' src=\'([^\']+)\'' ,
+            for r in re.finditer('<title[^>]+\>([^<]+)</title><content[^>]+\>[^<]+</content><link rel=\'[^\#]+\#listfeed\' type=\'application/atom\+xml\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
                 title,url = r.groups()
                 worksheets[title] = url
@@ -186,7 +204,6 @@ class gSpreadsheets:
                              response_data, re.DOTALL):
                 nextURL = r.groups()
 
-            response.close()
 
             if nextURL == '':
                 break
@@ -279,7 +296,7 @@ class gSpreadsheets:
 
     def getVideo(self,url,show):
         params = urllib.urlencode({'show': show})
-        url = url + '?sq=' + params + '%20and%20watched=0'
+        url = url + '?sq=' + params + '+and+watched=0'
 
 
         shows = {}
@@ -294,7 +311,7 @@ class gSpreadsheets:
             response_data = response.read()
 
             count=0;
-            for r in re.finditer('<entry [^\>]+>.*?<gsx:source>([^<]*)</gsx:source><gsx:nfo>([^<]*)</gsx:nfo><gsx:show>([^<]*)</gsx:show><gsx:season>([^<]*)</gsx:season><gsx:episode>([^<]*)</gsx:episode><gsx:part>([^<]*)</gsx:part><gsx:watched>([^<]*)</gsx:watched><gsx:duration>([^<]*)</gsx:duration></entry>' ,
+            for r in re.finditer('<entry[^\>]*>.*?<gsx:source>([^<]*)</gsx:source><gsx:nfo>([^<]*)</gsx:nfo><gsx:show>([^<]*)</gsx:show><gsx:season>([^<]*)</gsx:season><gsx:episode>([^<]*)</gsx:episode><gsx:part>([^<]*)</gsx:part><gsx:watched>([^<]*)</gsx:watched><gsx:duration>([^<]*)</gsx:duration></entry>' ,
                              response_data, re.DOTALL):
                 shows[count] = r.groups()
                 #source,nfo,show,season,episode,part,watched,duration
@@ -339,6 +356,7 @@ class gSpreadsheets:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
 
         response_data = response.read()
+        response.close()
 
         editURL=''
         for r in re.finditer('<link rel=\'(edit)\' type=\'application/atom\+xml\' href=\'([^\']+)\'/>' ,
@@ -349,7 +367,6 @@ class gSpreadsheets:
                              response_data, re.DOTALL):
             (x,entry) = r.groups(1)
 
-        response.close()
 
 #        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 #        urllib2.install_opener(opener)
@@ -418,7 +435,7 @@ class gSpreadsheets:
             for r in re.finditer('<gsx:channel>([^<]*)</gsx:channel>' ,
                              response_data, re.DOTALL):
                 (channel) = r.groups()
-#channel,month,day,weekday,hour,minute,show,order,includeWatched
+                #channel,month,day,weekday,hour,minute,show,order,includeWatched
                 if not channels.__contains__(channel[0]):
                   channels.append(channel[0])
                   count = count + 1

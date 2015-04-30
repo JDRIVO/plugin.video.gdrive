@@ -470,6 +470,12 @@ if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mod
                 break
             count = count + 1
 
+        spreadshetModule = getSetting('library', False)
+        libraryAccount = getSetting('library_account')
+
+        if spreadshetModule:
+            addMenu(PLUGIN_URL+'?mode=kiosk&content_type='+str(contextType)+'&instance='+PLUGIN_NAME+str(libraryAccount),'[kiosk mode]')
+
     # show index of accounts
 elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
 
@@ -628,14 +634,6 @@ try:
         service.integratedPlayer = True
 except: pass
 
-spreadshetModule = getSetting('library', False)
-
-try:
-    if spreadshetModule:
-        gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
-        spreadsheets = gSpreadsheet.getSpreadsheetList()
-except:
-    pass
 
 
 #if mode == 'main':
@@ -709,6 +707,49 @@ if mode == 'main' or mode == 'index':
 #        xbmc.executebuiltin("XBMC.SlideShow(/downloads/pics/0/)")
 
     service.updateAuthorization(addon)
+
+elif mode == 'kiosk':
+
+    spreadshetModule = getSetting('library', False)
+
+
+    if spreadshetModule:
+            gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+            spreadsheets = gSpreadsheet.getSpreadsheetList()
+
+
+            channels = []
+            for title in spreadsheets.iterkeys():
+                if title == 'TVShows':
+                    worksheets = gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+
+                    import time
+                    hour = time.strftime("%H")
+                    minute = time.strftime("%M")
+                    weekDay = time.strftime("%w")
+                    month = time.strftime("%m")
+                    day = time.strftime("%d")
+
+                    for worksheet in worksheets.iterkeys():
+                         if worksheet == 'schedule':
+                             channels = gSpreadsheet.getChannels(worksheets[worksheet])
+                             ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), channels)
+                             shows = gSpreadsheet.getShows(worksheets[worksheet] ,channels[ret])
+                             showList = []
+                             for show in shows:
+                                 showList.append(shows[show][6])
+                             ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), showList)
+
+                    for worksheet in worksheets.iterkeys():
+                        if worksheet == 'data':
+                            episodes = gSpreadsheet.getVideo(worksheets[worksheet] ,showList[ret])
+                            player = gPlayer.gPlayer()
+                            player.setScheduler(gSpreadsheet)
+                            player.setContent(episodes)
+                            player.setWorksheet(worksheets['data'])
+                            player.next()
+                            while player.isExit == 0:
+                                xbmc.sleep(10000)
 
 
 elif mode == 'photo':

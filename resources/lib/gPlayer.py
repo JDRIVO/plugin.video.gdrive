@@ -60,17 +60,14 @@ class gPlayer(xbmc.Player):
 #                             img='None')
         # play video
 #            if self.isExit == 0:
-#                self.play('plugin://plugin.video.gdrive?mode=playvideo&amp;title='+self.content[self.current][0])
-                self.play(self.content[self.current][0])
+                self.play('plugin://plugin.video.gdrive-testing/?mode=video&instance='+str(self.tvScheduler.service.instanceName)+'&title='+self.content[self.current][0])
+#                self.play(self.content[self.current][0])
 
-                self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
+#                self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
                 if self.current < len(self.content):
                     self.current += 1
                 else:
                     self.current = 0
-
-#                while self.isPlaying():
-#                    xbmc.sleep(1000)
 
 
 
@@ -86,8 +83,8 @@ class gPlayer(xbmc.Player):
 
     def onPlayBackStarted(self):
         print "PLAYBACK STARTED"
-        if seek > 0:
-            self.seekTime(seek)
+        if self.seek > 0:
+            self.seekTime(self.seek)
 
     def onPlayBackEnded(self):
         print "PLAYBACK ENDED"

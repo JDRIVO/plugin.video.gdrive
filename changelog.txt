@@ -1,3 +1,6 @@
+Version 0.6.13
+-- Google Drive API 2 module - fix: captions stopping at certain point in playback
+-- Google Drive API 2 module - fix: captions supporting italic
 Version 0.6.12
 -- Google Drive API 2 module - added right-click "Play with seek" to seek to a specified point in the video
 -- Google Drive API 2 module - fix unicode issue with caption tracks

@@ -1290,18 +1290,22 @@ class gdrive(cloudservice):
                              response_data, re.DOTALL):
             start,duration,text = q.groups()
             count = count + 1
-            startTimeMin = float(start) % 60
-            startTimeHour = float(start) / 60
-            startTimeDay = float(start) / (60*24)
-            startTimeSec = (float(start) - int(float(start))) * 1000
-            endTimeMin = (float(start) + float(duration)) % 60
-            endTimeHour = (float(start) + float(duration)) / 60
-            endTimeDay = (float(start) + float(duration)) / (60*24)
-            endTimeSec = ((float(start) - int(float(start))) + (float(duration) - int(float(duration)))) * 1000
-            #print "%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n" % (count, startTimeDay, startTimeHour, startTimeMin, startTimeSec, endTimeDay, endTimeHour, endTimeMin, endTimeSec, text)
+            startTimeSec = float(start) % 60
+            startTimeMin = float(start) / 60 %60
+            startTimeHour = float(start) / (60*60)
+            startTimeMSec = (float(start) - int(float(start))) * 1000
+            endTimeSec = (float(start) + float(duration)) % 60
+            endTimeMin = (float(start) + float(duration)) / 60 %60
+            endTimeHour = (float(start) + float(duration)) / (60*60)
+            endTimeMSec = ((float(start) - int(float(start))) + (float(duration) - int(float(duration)))) * 1000
+            if endTimeMSec > 1000:
+                endTimeMSec = endTimeMSec % 1000
             text = re.sub('&amp;#39;', "'", text)
+            text = re.sub('&amp;lt;', "<", text)
+            text = re.sub('&amp;gt;', ">", text)
+
             #str(entity_re.subn(self.substitute_entity, text)[0]
-            f.write("%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n\n" % (count, startTimeDay, startTimeHour, startTimeMin, startTimeSec, endTimeDay, endTimeHour, endTimeMin, endTimeSec, text))
+            f.write("%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n\n" % (count, startTimeHour, startTimeMin, startTimeSec, startTimeMSec, endTimeHour, endTimeMin, endTimeSec, endTimeMSec, text))
         f.close()
 
     #*** needs update
