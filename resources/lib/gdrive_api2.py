@@ -1303,6 +1303,7 @@ class gdrive(cloudservice):
             text = re.sub('&amp;#39;', "'", text)
             text = re.sub('&amp;lt;', "<", text)
             text = re.sub('&amp;gt;', ">", text)
+            text = re.sub('&amp;quot;', '"', text)
 
             #str(entity_re.subn(self.substitute_entity, text)[0]
             f.write("%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n\n" % (count, startTimeHour, startTimeMin, startTimeSec, startTimeMSec, endTimeHour, endTimeMin, endTimeSec, endTimeMSec, text))
