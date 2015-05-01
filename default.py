@@ -721,14 +721,16 @@ elif mode == 'kiosk':
             channels = []
             for title in spreadsheets.iterkeys():
                 if title == 'TVShows':
-                    worksheets = gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+                  worksheets = gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
 
+                  if 1:
                     import time
                     hour = time.strftime("%H")
                     minute = time.strftime("%M")
                     weekDay = time.strftime("%w")
                     month = time.strftime("%m")
                     day = time.strftime("%d")
+
 
                     for worksheet in worksheets.iterkeys():
                          if worksheet == 'schedule':
@@ -743,6 +745,17 @@ elif mode == 'kiosk':
                     for worksheet in worksheets.iterkeys():
                         if worksheet == 'data':
                             episodes = gSpreadsheet.getVideo(worksheets[worksheet] ,showList[ret])
+                            player = gPlayer.gPlayer()
+                            player.setScheduler(gSpreadsheet)
+                            player.setContent(episodes)
+                            player.setWorksheet(worksheets['data'])
+                            player.next()
+                            while player.isExit == 0:
+                                xbmc.sleep(10000)
+                  else:
+                    for worksheet in worksheets.iterkeys():
+                        if worksheet == 'data2':
+                            episodes = gSpreadsheet.getMedia(worksheets[worksheet], service.getRootID())
                             player = gPlayer.gPlayer()
                             player.setScheduler(gSpreadsheet)
                             player.setContent(episodes)

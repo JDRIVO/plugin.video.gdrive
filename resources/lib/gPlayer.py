@@ -63,7 +63,8 @@ class gPlayer(xbmc.Player):
                 self.play('plugin://plugin.video.gdrive-testing/?mode=video&instance='+str(self.tvScheduler.service.instanceName)+'&title='+self.content[self.current][0])
 #                self.play(self.content[self.current][0])
 
-#                self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
+                self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
+#                self.tvScheduler.createRow(self.worksheet, '','','','')
                 if self.current < len(self.content):
                     self.current += 1
                 else:
@@ -73,6 +74,7 @@ class gPlayer(xbmc.Player):
 
     def PlayStream(self, url, item, seek):
         self.play(url, item)
+#        self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
 
         while not self.isPlaying(): #<== The should be    while self.isPlaying():
             print "LOOP"

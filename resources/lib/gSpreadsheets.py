@@ -137,9 +137,10 @@ class gSpreadsheets:
     def createRow(self,url, folderID, folderName, fileID, fileName):
 
 
-        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0',  'Content-Type': 'application/atom+xml'}
+#        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0',  'Content-Type': 'application/atom+xml'}
+        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.service.authorization.getToken('auth_access_token'), 'GData-Version' : '3.0',  'Content-Type': 'application/atom+xml'}
 
-        entry = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended"> <gsx:foldername>'+folderName+'</gsx:foldername> <gsx:folderuid>'+folderID+'</gsx:folderuid> <gsx:filename>'+fileName+'</gsx:filename> <gsx:fileuid>'+fileID+'</gsx:fileuid>  <gsx:season>1</gsx:season>  <gsx:episode>1</gsx:episode> <gsx:watched>1</gsx:watched> <gsx:sequence>1</gsx:sequence></entry>'
+        entry = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended"> <gsx:source>S3E12 - The Red Dot.avi-0002</gsx:source><gsx:nfo>test.nfo</gsx:nfo><gsx:show>Seinfeld</gsx:show><gsx:season>3</gsx:season><gsx:episode>1</gsx:episode><gsx:part>1</gsx:part><gsx:watched>0</gsx:watched><gsx:duration>1</gsx:duration></entry>'
 
         req = urllib2.Request(url, entry, header)
 
@@ -255,6 +256,48 @@ class gSpreadsheets:
         return shows
 
 
+    def getMedia(self,url,folderID, fileID=None):
+
+
+        if fileID is None:
+            params = urllib.urlencode({'folderid': folderID})
+        else:
+            params = urllib.urlencode({'fileid': fileID})
+        url = url + '?sq=' + params
+
+
+        media = {}
+        while True:
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+
+            response_data = response.read()
+
+            count=0;
+            for r in re.finditer('<gsx:folderid>([^<]*)</gsx:folderid><gsx:foldername>([^<]*)</gsx:foldername><gsx:fileid>([^<]*)</gsx:fileid><gsx:filename>([^<]*)</gsx:filename><gsx:nfo>([^<]*)</gsx:nfo><gsx:order>([^<]*)</gsx:order><gsx:watched>([^<]*)</gsx:watched><gsx:resume>([^<]*)</gsx:resume>' ,
+                             response_data, re.DOTALL):
+                media[count] = r.groups()
+                count = count + 1
+
+            nextURL = ''
+            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                nextURL = r.groups()
+
+            response.close()
+
+            if nextURL == '':
+                break
+            else:
+                url = nextURL[0]
+
+
+        return media
+
     def getMediaInformation(self,url,folderID):
 
         params = urllib.urlencode({'folderuid': folderID})
@@ -343,7 +386,7 @@ class gSpreadsheets:
 #        urllib2.install_opener(opener)
 
 
-        source = re.sub(' ', '%20', source)
+        source = re.sub(' ', '+', source)
 #        params = urllib.urlencode(source)
         url = url + '?sq=source="' + source +'"'
 
@@ -363,44 +406,31 @@ class gSpreadsheets:
                              response_data, re.DOTALL):
             (x,editURL) = r.groups(1)
 
-        for r in re.finditer('(.*?)(<entry .*?</entry>)' ,
+        for r in re.finditer('<link rel=\'edit\' [^\>]+>(.*?</entry>)' ,
                              response_data, re.DOTALL):
-            (x,entry) = r.groups(1)
-
-
-#        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-#        urllib2.install_opener(opener)
-
-#        req = urllib2.Request(editURL, None, header)
-
-#        try:
-#            response = urllib2.urlopen(req)
-#            response = opener.open(url, None,urllib.urlencode(header))
-#        except urllib2.URLError, e:
-#                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-
-#        response_data = response.read()
-
-#        response.close()
-
-#        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-
-       # data_encoded = urllib.urlencode(formdata)
-#        urllib2.install_opener(opener)
+            entry = r.group(1)
 
         entry = re.sub('<gsx:watched>([^\<]*)</gsx:watched>', '<gsx:watched>1</gsx:watched>', entry)
-        #editURL = re.sub('https', 'http', editURL)
-
-        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0', "If-Match" : '*', "Content-Type": 'application/atom+xml' }
 
 
-        entry = re.sub(' gd\:etag[^\>]+>', ' xmlns="http://www.w3.org/2005/Atom" xmlns:gs="http://schemas.google.com/spreadsheets/2006" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended">', entry)
-#        entry = "<?xml version='1.0' encoding='UTF-8'?>"+entry
+#        entry = re.sub(' gd\:etag[^\>]+>', ' xmlns="http://www.w3.org/2005/Atom" xmlns:gs="http://schemas.google.com/spreadsheets/2006" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended">', entry)
+#        entry = re.sub('<entry>', '<?xml version=\'1.0\' encoding=\'UTF-8\'?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended">', entry)
+        #entry = re.sub('<entry>', '<?xml version=\'1.0\' encoding=\'UTF-8\'?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended"> ', entry)
+        entry = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:gs="http://schemas.google.com/spreadsheets/2006" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended">' + entry
+#        entry  = "<?xml version='1.0' encoding='UTF-8'?><entry xmlns='http://www.w3.org/2005/Atom' xmlns:gsx='http://schemas.google.com/spreadsheets/2006/extended'><id>https://spreadsheets.google.com/feeds/list/147ajW3jRGUTwcuBSLx5dYw5ar17fo9NPtu8azHa3j0w/od6/private/full/1lcxsw</id><updated>2015-05-01T18:49:50.299Z</updated><category scheme='http://schemas.google.com/spreadsheets/2006' term='http://schemas.google.com/spreadsheets/2006#list'/><title type='text'>S3E12 - The Red Dot.avi-0002</title><content type='text'>nfo: test.nfo, show: Seinfeld, season: 3, episode: 1, part: 1, watched: 0, duration: 1</content><link rel='self' type='application/atom+xml' href='https://spreadsheets.google.com/feeds/list/147ajW3jRGUTwcuBSLx5dYw5ar17fo9NPtu8azHa3j0w/od6/private/full/1lcxsw'/><link rel='edit' type='application/atom+xml' href='https://spreadsheets.google.com/feeds/list/147ajW3jRGUTwcuBSLx5dYw5ar17fo9NPtu8azHa3j0w/od6/private/full/1lcxsw/in881g9gmnffm'/><gsx:source>S3E12 - The Red Dot.avi-0002</gsx:source><gsx:nfo>test.nfo</gsx:nfo><gsx:show>Seinfeld</gsx:show><gsx:season>3</gsx:season><gsx:episode>1</gsx:episode><gsx:part>1</gsx:part><gsx:watched>0</gsx:watched><gsx:duration>1</gsx:duration></entry>"
+#xmlns:gsx='http://schemas.google.com/spreadsheets/2006/extended'
+#        entry = " <?xml version='1.0' encoding='UTF-8'?><feed xmlns='http://www.w3.org/2005/Atom' xmlns:openSearch='http://a9.com/-/spec/opensearchrss/1.0/' xmlns:gsx='http://schemas.google.com/spreadsheets/2006/extended' xmlns:gd=\"http://schemas.google.com/g/2005\">"+entry
 #        entry = '<feed xmlns="http://www.w3.org/2005/Atom" xmlns:openSearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended" xmlns:gd="http://schemas.google.com/g/2005" gd:etag=\'W/"D0cERnk-eip7ImA9WBBXGEg."\'><entry>  <id>    https://spreadsheets.google.com/feeds/worksheets/key/private/full/worksheetId  </id>  <updated>2007-07-30T18:51:30.666Z</updated>  <category scheme="http://schemas.google.com/spreadsheets/2006"    term="http://schemas.google.com/spreadsheets/2006#worksheet"/>  <title type="text">Income</title>  <content type="text">Expenses</content>  <link rel="http://schemas.google.com/spreadsheets/2006#listfeed"    type="application/atom+xml" href="https://spreadsheets.google.com/feeds/list/key/worksheetId/private/full"/>  <link rel="http://schemas.google.com/spreadsheets/2006#cellsfeed"    type="application/atom+xml" href="https://spreadsheets.google.com/feeds/cells/key/worksheetId/private/full"/>  <link rel="self" type="application/atom+xml"    href="https://spreadsheets.google.com/feeds/worksheets/key/private/full/worksheetId"/>  <link rel="edit" type="application/atom+xml"    href="https://spreadsheets.google.com/feeds/worksheets/key/private/full/worksheetId/version"/>  <gs:rowCount>45</gs:rowCount>  <gs:colCount>15</gs:colCount></entry>'
 
-        req = urllib2.Request(editURL, entry, header)
+#        req = urllib2.Request(editURL, entry, header)
 #        urllib2.HTTPHandler(debuglevel=1)
+#        req.get_method = lambda: 'PUT'
+
+        req = urllib2.Request(editURL, entry, self.service.getHeadersList(isPOST=True))
         req.get_method = lambda: 'PUT'
+
+#        req.get_method = lambda: 'DELETE'
+
 
 
         try:
