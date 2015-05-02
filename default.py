@@ -470,11 +470,11 @@ if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mod
                 break
             count = count + 1
 
-        spreadshetModule = getSetting('library', False)
-        libraryAccount = getSetting('library_account')
+#        spreadshetModule = getSetting('library', False)
+#        libraryAccount = getSetting('library_account')
 
-        if spreadshetModule:
-            addMenu(PLUGIN_URL+'?mode=kiosk&content_type='+str(contextType)+'&instance='+PLUGIN_NAME+str(libraryAccount),'[kiosk mode]')
+ #       if spreadshetModule:
+ #           addMenu(PLUGIN_URL+'?mode=kiosk&content_type='+str(contextType)+'&instance='+PLUGIN_NAME+str(libraryAccount),'[kiosk mode]')
 
     # show index of accounts
 elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
@@ -723,7 +723,7 @@ elif mode == 'kiosk':
                 if title == 'TVShows':
                   worksheets = gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
 
-                  if 1:
+                  if 0:
                     import time
                     hour = time.strftime("%H")
                     minute = time.strftime("%M")
@@ -754,14 +754,16 @@ elif mode == 'kiosk':
                                 xbmc.sleep(10000)
                   else:
                     for worksheet in worksheets.iterkeys():
-                        if worksheet == 'data2':
+                        if worksheet == 'db':
                             episodes = gSpreadsheet.getMedia(worksheets[worksheet], service.getRootID())
                             player = gPlayer.gPlayer()
                             player.setScheduler(gSpreadsheet)
-                            player.setContent(episodes)
-                            player.setWorksheet(worksheets['data'])
-                            player.next()
+#                            player.setContent(episodes)
+                            player.setWorksheet(worksheets['db'])
+                            player.PlayStream('plugin://plugin.video.gdrive-testing/?mode=video&instance='+str(service.instanceName)+'&title='+episodes[0][3], None,episodes[0][7],episodes[0][2])
+                            #player.next()
                             while player.isExit == 0:
+                                player.saveTime()
                                 xbmc.sleep(10000)
 
 
@@ -1135,6 +1137,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
     filename = getParameter('filename')
     folderID = getParameter('folder')
     seek = getParameter('seek', 0)
+    resume = getParameter('resume', False)
 
     if seek:
         dialog = xbmcgui.Dialog()
@@ -1359,6 +1362,42 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 player = gPlayer.gPlayer()
                 player.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
 
+            elif resume:
+
+
+                spreadshetModule = getSetting('library', False)
+                spreadshetName = getSetting('library_filename', 'TVShows')
+
+                media = {}
+                if spreadshetModule:
+                    try:
+                        gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+                        spreadsheets = gSpreadsheet.getSpreadsheetList()
+                    except:
+                        spreadshetModule = False
+
+                    if spreadshetModule:
+                      for title in spreadsheets.iterkeys():
+                        if title == spreadshetName:
+                            worksheets = gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+
+                            for worksheet in worksheets.iterkeys():
+                                if worksheet == 'db':
+                                    media = gSpreadsheet.getMedia(worksheets[worksheet], fileID=package.file.id)
+                                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                                            thumbnailImage=package.file.thumbnail)
+
+                                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+                                    player = gPlayer.gPlayer()
+                                    player.setScheduler(gSpreadsheet)
+                                    player.setWorksheet(worksheets['db'])
+                                    if len(media) == 0:
+                                        player.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item, 0, package)
+                                    else:
+                                        player.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item,media[0][7],package)
+                                    while player.isExit == 0:
+                                        player.saveTime()
+                                        xbmc.sleep(5000)
 
             #for STRM
             else :
@@ -1368,7 +1407,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
-                if seek > 0:
+                if seek > 0 and seek!='':
                     player = gPlayer.gPlayer()
                     player.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
 

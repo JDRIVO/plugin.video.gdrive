@@ -38,6 +38,8 @@ class gPlayer(xbmc.Player):
         xbmc.Player.__init__( self )
         self.isExit = 0
         self.seek = 0
+        self.package = None
+        self.time = 0
 
 
     def setScheduler(self,scheduler):
@@ -63,7 +65,7 @@ class gPlayer(xbmc.Player):
                 self.play('plugin://plugin.video.gdrive-testing/?mode=video&instance='+str(self.tvScheduler.service.instanceName)+'&title='+self.content[self.current][0])
 #                self.play(self.content[self.current][0])
 
-                self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
+#                self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
 #                self.tvScheduler.createRow(self.worksheet, '','','','')
                 if self.current < len(self.content):
                     self.current += 1
@@ -71,34 +73,52 @@ class gPlayer(xbmc.Player):
                     self.current = 0
 
 
+    def saveTime(self):
+        try:
+            newTime = self.getTime()
+            if newTime > self.seek:
+                self.time = newTime
+        except:
+            pass
 
-    def PlayStream(self, url, item, seek):
+    def PlayStream(self, url, item, seek, package=None):
         self.play(url, item)
-#        self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
 
-        while not self.isPlaying(): #<== The should be    while self.isPlaying():
-            print "LOOP"
+        if package is not None:
+            self.package = package
+
+        if seek != '':
+            self.seek = float(seek)
+#        self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
+        if seek > 0 and seek !='':
+            while not self.isPlaying(): #<== The should be    while self.isPlaying():
+                print "LOOP"
+                xbmc.sleep(2000)
             xbmc.sleep(2000)
-        xbmc.sleep(2000)
-        print "SEEK "+str(seek)
-        self.seekTime(seek)
+            print "SEEK "+str(seek)
+            self.time = float(seek)
+            self.seekTime(float(seek))
 
     def onPlayBackStarted(self):
         print "PLAYBACK STARTED"
-        if self.seek > 0:
-            self.seekTime(self.seek)
+#        if self.seek > 0:
+#            self.seekTime(self.seek)
 
     def onPlayBackEnded(self):
         print "PLAYBACK ENDED"
-        self.next()
+#        self.next()
+        if self.package is not None:
+            self.tvScheduler.setMediaStatus(self.worksheet,self.package, watched=1)
 
     def onPlayBackStopped(self):
         print "PLAYBACK STOPPED"
+        if self.package is not None:
+            self.tvScheduler.setMediaStatus(self.worksheet,self.package, resume=self.time)
         self.isExit = 1
         if self.isExit == 0:
             print "don't exit"
 
     def onPlayBackPaused(self):
         print "PLAYBACK Paused"
-        self.seekTime(10)
+        #self.seekTime(10)
 

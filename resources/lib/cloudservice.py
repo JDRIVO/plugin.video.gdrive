@@ -506,6 +506,7 @@ class cloudservice(object):
                     cm.append(( self.addon.getLocalizedString(30138), 'XBMC.RunPlugin('+url + '&srt=true'+')', ))
                     cm.append(( self.addon.getLocalizedString(30146), 'XBMC.RunPlugin('+url + '&cc=true'+')', ))
                     cm.append(( self.addon.getLocalizedString(30147), 'XBMC.RunPlugin('+url + '&seek=true'+')', ))
+                    cm.append(( self.addon.getLocalizedString(30147), 'XBMC.RunPlugin('+url + '&resume=true'+')', ))
 
 
         elif contextType == 'image':
