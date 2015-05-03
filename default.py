@@ -268,7 +268,6 @@ if mode == 'clearauth':
     # clear all accounts
     else:
         count = 1
-        max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
         while True:
             instanceName = PLUGIN_NAME+str(count)
             try:
@@ -278,7 +277,7 @@ if mode == 'clearauth':
                 # ***
             except:
                 break
-            if count == max_count:
+            if count == numberOfAccounts:
                 break
             count = count + 1
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30023))
@@ -292,7 +291,6 @@ elif mode == 'enroll':
         code = getParameter('code')
 
         count = 1
-        max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
         loop = True
         while loop:
             instanceName = PLUGIN_NAME+str(count)
@@ -314,7 +312,7 @@ elif mode == 'enroll':
             except:
                 pass
 
-            if count == max_count:
+            if count == numberOfAccounts:
                 #fallback on first defined account
                 addon.setSetting(instanceName + '_type', str(1))
                 addon.setSetting(instanceName + '_code', code)
@@ -372,7 +370,6 @@ elif mode == 'buildstrm':
             if folderID != '':
 
                 count = 1
-                max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
                 loop = True
                 while loop:
                     instanceName = PLUGIN_NAME+str(count)
@@ -390,7 +387,7 @@ elif mode == 'buildstrm':
                     except:
                         break
 
-                    if count == max_count:
+                    if count == numberOfAccounts:
                         try:
                             service
                         except NameError:
@@ -415,7 +412,6 @@ elif mode == 'buildstrm':
             else:
 
                 count = 1
-                max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
                 while True:
                     instanceName = PLUGIN_NAME+str(count)
                     username = getSetting(instanceName+'_username')
@@ -428,7 +424,7 @@ elif mode == 'buildstrm':
 
                         service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog)
 
-                    if count == max_count:
+                    if count == numberOfAccounts:
                         #fallback on first defined account
                         try:
                             service
@@ -460,7 +456,6 @@ invokedUsername = getParameter('username')
 if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
         mode = ''
         count = 1
-        max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
         while True:
             instanceName = PLUGIN_NAME+str(count)
             try:
@@ -469,7 +464,7 @@ if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mod
                     addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username)
             except:
                 break
-            if count == max_count:
+            if count == numberOfAccounts:
                 break
             count = count + 1
 
@@ -485,9 +480,8 @@ elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
         count = 1
         options = []
         accounts = []
-        max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
 
-        for count in range (1, max_count):
+        for count in range (1, numberOfAccounts):
             instanceName = PLUGIN_NAME+str(count)
             try:
                 username = getSetting(instanceName+'_username')
@@ -568,8 +562,7 @@ elif invokedUsername != '':
 
         options = []
         accounts = []
-        max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
-        for count in range (1, max_count):
+        for count in range (1, numberOfAccounts):
             instanceName = PLUGIN_NAME+str(count)
             try:
                 username = getSetting(instanceName+'_username')
@@ -604,8 +597,7 @@ else:
 
         options = []
         accounts = []
-        max_count = int(getSetting(PLUGIN_NAME+'_numaccounts',10))
-        for count in range (1, max_count):
+        for count in range (1, numberOfAccounts):
             instanceName = PLUGIN_NAME+str(count)
             try:
                 username = getSetting(instanceName+'_username',10)
@@ -717,6 +709,7 @@ elif mode == 'kiosk':
 
     if spreadshetModule:
             gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+            service.gSpreadsheet = gSpreadsheet
             spreadsheets = gSpreadsheet.getSpreadsheetList()
 
 
@@ -748,7 +741,7 @@ elif mode == 'kiosk':
                         if worksheet == 'data':
                             episodes = gSpreadsheet.getVideo(worksheets[worksheet] ,showList[ret])
                             player = gPlayer.gPlayer()
-                            player.setScheduler(gSpreadsheet)
+                            player.setService(service)
                             player.setContent(episodes)
                             player.setWorksheet(worksheets['data'])
                             player.next()
@@ -759,7 +752,7 @@ elif mode == 'kiosk':
                         if worksheet == 'db':
                             episodes = gSpreadsheet.getMedia(worksheets[worksheet], service.getRootID())
                             player = gPlayer.gPlayer()
-                            player.setScheduler(gSpreadsheet)
+                            player.setService(service)
 #                            player.setContent(episodes)
                             player.setWorksheet(worksheets['db'])
                             player.PlayStream('plugin://plugin.video.gdrive-testing/?mode=video&instance='+str(service.instanceName)+'&title='+episodes[0][3], None,episodes[0][7],episodes[0][2])
@@ -909,7 +902,7 @@ elif mode == 'audio':
     settings.setCacheParameters()
 
 
-    filesize = getParameter('filesize')
+    fileSize = getParameter('filesize')
 
     #cache folder (used for downloading)
     path = getSetting('cache_folder')
@@ -1164,9 +1157,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
             settings.download = False
             settings.play = False
 
-    filesize = getParameter('filesize')
-
-    path = getSetting('cache_folder')
+    fileSize = getParameter('filesize')
 
 
     playbackMedia = True
@@ -1268,7 +1259,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     srtpath = srtpath + '/subtitle.'+str(lang)+'.srt'
                     service.downloadTTS(SRTURL, srtpath)
 
-        (playbackPath, playbackQuality) = service.getMediaSelection(mediaURLs)
+        (playbackPath, playbackQuality) = service.getMediaSelection(mediaURLs, folderID, filename)
 
         #download and play
         if settings.download and settings.play:
@@ -1286,11 +1277,11 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
             elif settings.cache:
                 item = xbmcgui.ListItem(path=str(playbackPath))
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-                if settings.integratedPlayer:
-                    player = gPlayer.gPlayer()
-                    player.play(playbackPath, item)
-                else:
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+#                if settings.integratedPlayer:
+                player = gPlayer.gPlayer()
+                player.play(playbackPath, item)
+#                else:
+#                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
             #right-click play original
             elif settings.playOriginal or settings.srt or settings.cc or settings.seek:
@@ -1317,6 +1308,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 if spreadshetModule:
                     try:
                         gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+                        service.gSpreadsheet = gSpreadsheet
                         spreadsheets = gSpreadsheet.getSpreadsheetList()
                     except:
                         spreadshetModule = False
@@ -1334,7 +1326,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
                                     item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
                                     player = gPlayer.gPlayer()
-                                    player.setScheduler(gSpreadsheet)
+                                    player.setService(service)
                                     player.setWorksheet(worksheets['db'])
                                     if len(media) == 0:
                                         player.PlayStream(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item, 0, package)

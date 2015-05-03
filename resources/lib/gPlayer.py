@@ -40,11 +40,11 @@ class gPlayer(xbmc.Player):
         self.seek = 0
         self.package = None
         self.time = 0
-        self.tvScheduler = None
+        self.service = None
 
 
-    def setScheduler(self,scheduler):
-        self.tvScheduler = scheduler
+    def setService(self,service):
+        self.service = service
 
     def setWorksheet(self,worksheet):
         self.worksheet = worksheet
@@ -67,7 +67,7 @@ class gPlayer(xbmc.Player):
 #                             img='None')
         # play video
 #            if self.isExit == 0:
-                self.play('plugin://plugin.video.gdrive-testing/?mode=video&instance='+str(self.tvScheduler.service.instanceName)+'&title='+self.content[self.current][0])
+                self.play('plugin://plugin.video.gdrive-testing/?mode=video&instance='+str(self.service.instanceName)+'&title='+self.content[self.current][0])
 #                self.play(self.content[self.current][0])
 
 #                self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
@@ -144,7 +144,7 @@ class gPlayer(xbmc.Player):
 #        self.next()
         if self.package is not None:
             try:
-                self.tvScheduler.setMediaStatus(self.worksheet,self.package, watched=1)
+                self.service.gSpreadsheet.setMediaStatus(self.worksheet,self.package, watched=1)
             except: pass
         self.current = self.current +1
 
@@ -152,7 +152,7 @@ class gPlayer(xbmc.Player):
         print "PLAYBACK STOPPED"
         if self.package is not None:
             try:
-                self.tvScheduler.setMediaStatus(self.worksheet,self.package, resume=self.time)
+                self.service.gSpreadsheet.setMediaStatus(self.worksheet,self.package, resume=self.time)
             except: pass
         #self.current = self.current +1
         self.isExit = True

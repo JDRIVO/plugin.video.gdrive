@@ -90,8 +90,10 @@ class settings:
 
     def setCacheParameters(self):
         self.cache = self.getParameter('cache', False)
-        self.download = self.getSetting('always_cache', getParameter('download', False))
-        self.play = self.getSetting('always_cache', getParameter('play', False))
+#        self.download = self.getSetting('always_cache', getParameter('download', False))
+        self.download = self.getParameter('download', getSetting('always_cache', False))
+        self.play = self.getParameter('play', getSetting('always_cache', False))
+        self.cachePath = self.getSetting('cache_folder')
 
         if self.cache:
             self.download = False

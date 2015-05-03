@@ -76,13 +76,14 @@ class gdrive(cloudservice):
     ##
     # initialize (save addon, instance name, user agent)
     ##
-    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, settings, authenticate=True):
+    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, settings, authenticate=True, gSpreadsheet=None):
         self.PLUGIN_URL = PLUGIN_URL
         self.addon = addon
         self.instanceName = instanceName
         self.protocol = 2
         self.integratedPlayer = False
         self.settings = settings
+        self.gSpreadsheet = gSpreadsheet
 
         if authenticate == True:
             self.type = int(addon.getSetting(instanceName+'_type'))
@@ -125,7 +126,6 @@ class gdrive(cloudservice):
     #   returns: none
     ##
     def getToken(self,code):
-
 
             header = { 'User-Agent' : self.user_agent }
 
@@ -1511,7 +1511,7 @@ class gdrive(cloudservice):
         return mediaURLs
 
 
-    def getMediaSelection(self, mediaURLs):
+    def getMediaSelection(self, mediaURLs, folderID,filename):
 
         options = []
         mediaURLs = sorted(mediaURLs)
@@ -1530,7 +1530,7 @@ class gdrive(cloudservice):
             playbackPath = mediaURLs[ret].url
             playbackQuality = mediaURLs[ret].quality
         elif self.settings.cache:
-            playbackPath = str(path) + '/' + str(folderID) + '/' + str(filename) + '/'
+            playbackPath = str(self.settings.cachePath) + '/' + str(folderID) + '/' + str(filename) + '/'
 
             if xbmcvfs.exists(playbackPath):
 

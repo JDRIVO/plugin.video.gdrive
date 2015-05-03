@@ -53,13 +53,9 @@ class gSpreadsheets:
 
     def __init__(self, service, addon, user_agent):
         self.addon = addon
-        self.user_agent = user_agent
         self.service = service
 #        self.crashreport = crashreport
 #        self.crashreport.sendError('test','test')
-
-
-        self.cookiejar = cookielib.CookieJar()
 
         self.user_agent = user_agent
 
