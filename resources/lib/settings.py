@@ -94,7 +94,11 @@ class settings:
     ##
     ##
     def __init__(self):
-        self.test = 0
+        self.integratedPlayer = getSetting('integrated_player')
 
-
+    def setVideoParameters(self):
+        self.seek = getParameter('seek', 0)
+        self.resume = getParameter('resume', False)
+        self.srt = getParameter('srt', False)
+        self.cc = getParameter('cc', False)
 

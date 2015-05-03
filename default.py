@@ -156,6 +156,7 @@ except ImportError:
 except :
     pass
 
+settings = settings.settings()
 
 # retrieve settings
 user_agent = getSetting('user_agent')
@@ -630,9 +631,8 @@ else:
             service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
 
 # override playback
-integratedPlayer = getSetting('integrated_player')
 try:
-    if integratedPlayer:
+    if settings.integratedPlayer:
         service.integratedPlayer = True
 except: pass
 
@@ -960,7 +960,7 @@ elif mode == 'audio':
                 item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
                 # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
                 item.setInfo( type="Video", infoLabels={ "Title": options[ret] } )
-                if integratedPlayer:
+                if settings.integratedPlayer:
                     player = gPlayer.gPlayer()
                     player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
@@ -1014,7 +1014,7 @@ elif mode == 'audio':
                                 thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
                 # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
                 item.setInfo( type="Video", infoLabels={ "Title": title } )
-                if integratedPlayer:
+                if settings.integratedPlayer:
                     player = gPlayer.gPlayer()
                     player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
                 else:
@@ -1047,7 +1047,7 @@ elif mode == 'audio':
                 item = xbmcgui.ListItem(path=str(playbackPath))
                 # local, not remote. "Music" is ok
                 item.setInfo( type="Music", infoLabels={ "Title": title } )
-                if integratedPlayer:
+                if settings.integratedPlayer:
                     player = gPlayer.gPlayer()
                     player.play(playbackPath, item)
                 else:
@@ -1069,7 +1069,7 @@ elif mode == 'audio':
                                 thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
             # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
             item.setInfo( type="Video", infoLabels={ "Title": title } )
-            if integratedPlayer:
+            if settings.integratedPlayer:
                 player = gPlayer.gPlayer()
                 player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
             else:
@@ -1110,7 +1110,7 @@ elif mode == 'streamurl':
             # if invoked in .strm or as a direct-video (don't prompt for quality)
             item = xbmcgui.ListItem(path=playbackURL+ '|' + service.getHeadersEncoded(service.useWRITELY))
             item.setInfo( type="Video", infoLabels={ "Title": mediaURLs[ret].title , "Plot" : mediaURLs[ret].title } )
-            if integratedPlayer:
+            if settings.integratedPlayer:
                 player = gPlayer.gPlayer()
                 player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
             else:
@@ -1137,12 +1137,9 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
     filename = getParameter('filename') #file ID
     folderID = getParameter('folder') #folder ID
 
-    seek = getParameter('seek', 0)
-    resume = getParameter('resume', False)
-    srt = getParameter('srt', False)
-    cc = getParameter('cc', False)
+    settings.setVideoParameters()
 
-    if seek:
+    if settings.seek:
         dialog = xbmcgui.Dialog()
         seek = dialog.numeric(2, 'Time to seek to', '00:00')
         for r in re.finditer('(\d+)\:(\d+)' ,seek, re.DOTALL):
@@ -1221,7 +1218,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
                 item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
                 item.setInfo( type="Video", infoLabels={ "Title": options[ret] , "Plot" : options[ret] } )
-                if integratedPlayer:
+                if settings.integratedPlayer:
                     player = gPlayer.gPlayer()
                     player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
@@ -1245,7 +1242,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
         SRTURL = ''
         srtpath = ''
-        if srt:
+        if settings.srt:
             SRTURL = service.getSRT(title)
             if SRTURL != '':
 
@@ -1263,7 +1260,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     srtpath = srtpath + '/subtitle.en.srt'
                     service.downloadPicture(SRTURL, srtpath)
 
-        if cc:
+        if settings.cc:
             SRTURL,lang = service.getTTS(package.file.srtURL)
 
             if SRTURL != '':
@@ -1337,7 +1334,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
             elif cache:
                 item = xbmcgui.ListItem(path=str(playbackPath))
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-                if integratedPlayer:
+                if settings.integratedPlayer:
                     player = gPlayer.gPlayer()
                     player.play(playbackPath, item)
                 else:
@@ -1353,7 +1350,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 player = gPlayer.gPlayer()
                 player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
 
-            elif srt or cc:
+            elif settings.srt or settings.cc:
                 item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                                 thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
 
@@ -1367,7 +1364,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 if srtpath != '':
                         player.setSubtitles(srtpath.encode("utf-8"))
 
-            elif seek:
+            elif settings.seek:
                 item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                                 thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
 
@@ -1375,7 +1372,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 player = gPlayer.gPlayer()
                 player.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
 
-            elif resume:
+            elif settings.resume:
 
 
                 spreadshetModule = getSetting('library', False)
@@ -1447,7 +1444,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         elif cache:
                 item = xbmcgui.ListItem(path=str(playbackPath))
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-                if integratedPlayer:
+                if settings.integratedPlayer:
                     player = gPlayer.gPlayer()
                     player.play(playbackPath, item)
                 else:
@@ -1460,7 +1457,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
 
-                if integratedPlayer:
+                if settings.integratedPlayer:
                     player = gPlayer.gPlayer()
                     player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
 
