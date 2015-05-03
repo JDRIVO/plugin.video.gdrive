@@ -42,7 +42,7 @@ def getParameter(key,default=''):
 
 def getSetting(key,default=''):
     try:
-        value = addon.getSetting(key)
+        value = self.addon.getSetting(key)
         if value == 'true':
             return True
         elif value == 'false':
@@ -61,29 +61,6 @@ def parse_query(query):
     return q
 
 
-def getParameter(key,default=''):
-    try:
-        value = plugin_queries[key]
-        if value == 'true':
-            return True
-        elif value == 'false':
-            return False
-        else:
-            return value
-    except:
-        return default
-
-def getSetting(key,default=''):
-    try:
-        value = addon.getSetting(key)
-        if value == 'true':
-            return True
-        elif value == 'false':
-            return False
-        else:
-            return value
-    except:
-        return default
 
 #
 #
@@ -93,12 +70,41 @@ class settings:
 
     ##
     ##
-    def __init__(self):
+    def __init__(self, addon):
         self.integratedPlayer = getSetting('integrated_player')
+        self.addon = addon
 
     def setVideoParameters(self):
-        self.seek = getParameter('seek', 0)
-        self.resume = getParameter('resume', False)
-        self.srt = getParameter('srt', False)
-        self.cc = getParameter('cc', False)
+        self.seek = self.getParameter('seek', 0)
+        self.resume = self.getParameter('resume', False)
+        self.srt = self.getParameter('srt', False)
+        self.cc = self.getParameter('cc', False)
 
+        self.promptQuality = self.getSetting('prompt_quality', True)
+        self.playOriginal = self.getSetting('never_stream', self.getParameter('original', False))
+        self.cache = self.getParameter('cache', False)
+
+
+    def getParameter(self, key, default=''):
+        try:
+            value = plugin_queries[key]
+            if value == 'true':
+                return True
+            elif value == 'false':
+                return False
+            else:
+                return value
+        except:
+            return default
+
+    def getSetting(self, key, default=''):
+        try:
+            value = self.addon.getSetting(key)
+            if value == 'true':
+                return True
+            elif value == 'false':
+                return False
+            else:
+                return value
+        except:
+            return default

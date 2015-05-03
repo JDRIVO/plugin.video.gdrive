@@ -76,12 +76,13 @@ class gdrive(cloudservice):
     ##
     # initialize (save addon, instance name, user agent)
     ##
-    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, authenticate=True):
+    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, settings, authenticate=True):
         self.PLUGIN_URL = PLUGIN_URL
         self.addon = addon
         self.instanceName = instanceName
         self.protocol = 2
         self.integratedPlayer = False
+        self.settings = settings
 
         if authenticate == True:
             self.type = int(addon.getSetting(instanceName+'_type'))
@@ -1266,7 +1267,6 @@ class gdrive(cloudservice):
     def downloadTTS(self, url, file):
 
 
-        entity_re = re.compile(r'(#?)(\w+);')
 
         req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -1308,7 +1308,6 @@ class gdrive(cloudservice):
             text = re.sub('&amp;gt;', ">", text)
             text = re.sub('&amp;quot;', '"', text)
 
-            #str(entity_re.subn(self.substitute_entity, text)[0]
             f.write("%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n\n" % (count, startTimeHour, startTimeMin, startTimeSec, startTimeMSec, endTimeHour, endTimeMin, endTimeSec, endTimeMSec, text))
         f.close()
 
@@ -1512,13 +1511,47 @@ class gdrive(cloudservice):
         return mediaURLs
 
 
+    def getMediaSelection(self, mediaURLs):
 
-#    @see http://snippets.dzone.com/posts/show/4569
-    def substitute_entity(self,match):
-        ent = match.group(2)
-        if match.group(1) == "#":
-            # decoding by number
-            return unichr(int(ent))
+        options = []
+        mediaURLs = sorted(mediaURLs)
+        for mediaURL in mediaURLs:
+            options.append(mediaURL.qualityDesc)
+            if mediaURL.qualityDesc == 'original':
+                originalURL = mediaURL.url
+
+        playbackQuality = ''
+        playbackPath = ''
+        if self.settings.playOriginal and not self.settings.cache:
+            playbackPath = originalURL
+            playbackQuality = 'original'
+        elif self.settings.promptQuality and len(options) > 1 and not self.settings.cache:
+            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), options)
+            playbackPath = mediaURLs[ret].url
+            playbackQuality = mediaURLs[ret].quality
+        elif self.settings.cache:
+            playbackPath = str(path) + '/' + str(folderID) + '/' + str(filename) + '/'
+
+            if xbmcvfs.exists(playbackPath):
+
+                    dirs,files = xbmcvfs.listdir(playbackPath)
+
+                    options = []
+                    files = sorted(files)
+                    for file in files:
+                        options.append(file)
+                    if self.settings.promptQuality:
+                        ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), options)
+                        playbackPath = str(playbackPath) + str(files[ret])
+                    else:
+                        playbackPath = str(playbackPath) + str(files[0])
+
+        else:
+            playbackPath = mediaURLs[0].url
+            playbackQuality = mediaURLs[0].quality
+
+        return (playbackPath, playbackQuality)
+
 
 
 

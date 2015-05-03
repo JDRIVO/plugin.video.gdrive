@@ -156,7 +156,7 @@ except ImportError:
 except :
     pass
 
-settings = settings.settings()
+settings = settings.settings(addon)
 
 # retrieve settings
 user_agent = getSetting('user_agent')
@@ -382,9 +382,9 @@ elif mode == 'buildstrm':
 
                             #let's log in
                             if ( int(getSetting(instanceName+'_type',0))==0):
-                                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
                             else:
-                                service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                                service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
                             loop = False
                     except:
@@ -396,9 +396,9 @@ elif mode == 'buildstrm':
                         except NameError:
                             #fallback on first defined account
                             if ( int(getSetting(instanceName+'_type',0))==0):
-                                service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
+                                service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
                             else:
-                                service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
+                                service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
                         break
                     count = count + 1
 
@@ -422,9 +422,9 @@ elif mode == 'buildstrm':
 
                     if username != '' and username == invokedUsername:
                         if ( int(getSetting(instanceName+'_type',0))==0):
-                                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
                         else:
-                            service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                            service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
                         service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog)
 
@@ -435,9 +435,9 @@ elif mode == 'buildstrm':
                         except NameError:
                             #fallback on first defined account
                             if ( int(getSetting(instanceName+'_type',0))==0):
-                                    service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
+                                    service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
                             else:
-                                service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent)
+                                service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
                         break
                     count = count + 1
 
@@ -499,9 +499,9 @@ elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
 
                     #let's log in
                     if ( int(getSetting(instanceName+'_type',0))==0):
-                            service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                            service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
                     else:
-                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
                     break
             except:
                 break
@@ -513,9 +513,9 @@ elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
 
                     #fallback on first defined account
                     if ( int(getSetting(instanceName+'_type',0))==0):
-                            service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
+                            service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent, settings)
                     else:
-                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
+                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent, settings)
 
 
 # no accounts defined and url provided; assume public
@@ -549,9 +549,9 @@ elif numberOfAccounts == 0:
 
         #let's log in
         if ( int(getSetting(instanceName+'_type',0))==0):
-                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
         else:
-            service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+            service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
 
     # show entries of a single account (such as folder)
@@ -559,9 +559,9 @@ elif instanceName != '':
 
         #let's log in
         if ( int(getSetting(instanceName+'_type',0))==0):
-                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
         else:
-            service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+            service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
 
 elif invokedUsername != '':
@@ -581,9 +581,9 @@ elif invokedUsername != '':
 
                     #let's log in
                     if ( int(getSetting(instanceName+'_type',0))==0):
-                        service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                        service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
                     else:
-                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
                     break
             except:
                 break
@@ -596,9 +596,9 @@ elif invokedUsername != '':
 
                     #fallback on first defined account
                     if ( int(getSetting(instanceName+'_type',0))==0):
-                        service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
+                        service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent, settings)
                     else:
-                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
+                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent, settings)
 #prompt before playback
 else:
 
@@ -626,9 +626,9 @@ else:
         if accounts[ret] == 'public':
             service = gdrive_api2.gdrive(PLUGIN_URL,addon,'', user_agent, authenticate=False)
         elif ( int(getSetting(instanceName+'_type',0))==0):
-            service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
+            service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent, settings)
         else:
-            service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent)
+            service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent, settings)
 
 # override playback
 try:
@@ -909,8 +909,7 @@ elif mode == 'audio':
     download = getSetting('always_cache', getParameter('download', False))
     play = getSetting('always_cache', getParameter('play', False))
 
-    cache = getParameter('cache', False)
-    if cache:
+    if settings.cache:
         download = False
         play = False
 
@@ -976,7 +975,7 @@ elif mode == 'audio':
         playbackURL = ''
         playbackQuality = ''
         playbackPath = ''
-        if cache:
+        if settings.cache:
             playbackPath = str(path) + '/' + str(folderID) + '/' + str(filename) + '/'
 
             if xbmcvfs.exists(playbackPath):
@@ -1003,13 +1002,13 @@ elif mode == 'audio':
                 service.downloadMediaFile('',playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
 
             #play cache
-            elif cache:
+            elif settings.cache:
 #                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+")")
                 player = gPlayer.gPlayer()
                 player.play(str(playbackPath))
 
             #right-click play-original
-            elif playOriginal:
+            elif settings.playOriginal:
                 item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                                 thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
                 # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
@@ -1035,7 +1034,7 @@ elif mode == 'audio':
 
         # from within pictures mode, music won't be playable, force
         #direct playback from within plugin
-        elif contextType == 'image' and cache:
+        elif contextType == 'image' and settings.cache:
                 item = xbmcgui.ListItem(path=str(playbackPath))
                 # local, not remote. "Music" is ok
                 item.setInfo( type="Music", infoLabels={ "Title": title } )
@@ -1043,7 +1042,7 @@ elif mode == 'audio':
                 player.play(playbackPath, item)
 
         #direct playback from within plugin
-        elif cache:
+        elif settings.cache:
                 item = xbmcgui.ListItem(path=str(playbackPath))
                 # local, not remote. "Music" is ok
                 item.setInfo( type="Music", infoLabels={ "Title": title } )
@@ -1139,6 +1138,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
     settings.setVideoParameters()
 
+    seek = 0
     if settings.seek:
         dialog = xbmcgui.Dialog()
         seek = dialog.numeric(2, 'Time to seek to', '00:00')
@@ -1154,9 +1154,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         xbmcplugin.endOfDirectory(plugin_handle)
 
 
-    promptQuality = getSetting('prompt_quality', True)
-    playOriginal = getSetting('never_stream', getParameter('original', False))
-
     download = getSetting('always_cache', getParameter('download', False))
     play = getSetting('always_cache', getParameter('play', False))
 
@@ -1167,10 +1164,9 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
     elif mode == 'playvideo':
         play = False
         download = False
-        playOriginal = True
+        settings.playOriginal = True
 
-    cache = getParameter('cache', False)
-    if cache:
+    if settings.cache:
             download = False
             play = False
 
@@ -1214,13 +1210,13 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
             if contextType == '':
 
                 ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), options)
-                playbackURL = urls[ret]
+                playbackPath = urls[ret]
 
-                item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+                item = xbmcgui.ListItem(path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
                 item.setInfo( type="Video", infoLabels={ "Title": options[ret] , "Plot" : options[ret] } )
                 if settings.integratedPlayer:
                     player = gPlayer.gPlayer()
-                    player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                    player.play(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item)
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
                 else:
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
@@ -1278,49 +1274,11 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     srtpath = srtpath + '/subtitle.'+str(lang)+'.srt'
                     service.downloadTTS(SRTURL, srtpath)
 
-
-        options = []
-        mediaURLs = sorted(mediaURLs)
-        for mediaURL in mediaURLs:
-            options.append(mediaURL.qualityDesc)
-            if mediaURL.qualityDesc == 'original':
-                originalURL = mediaURL.url
-
-        playbackURL = ''
-        playbackQuality = ''
-        playbackPath = ''
-        if playOriginal and not cache:
-            playbackURL = originalURL
-            playbackQuality = 'original'
-        elif promptQuality and len(options) > 1 and not cache:
-            ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
-            playbackURL = mediaURLs[ret].url
-            playbackQuality = mediaURLs[ret].quality
-        elif cache:
-            playbackPath = str(path) + '/' + str(folderID) + '/' + str(filename) + '/'
-
-            if xbmcvfs.exists(playbackPath):
-
-                    dirs,files = xbmcvfs.listdir(playbackPath)
-
-                    options = []
-
-                    files = sorted(files)
-                    for file in files:
-                        options.append(file)
-                    if promptQuality:
-                        ret = xbmcgui.Dialog().select(addon.getLocalizedString(30033), options)
-                        playbackPath = str(playbackPath) + str(files[ret])
-                    else:
-                        playbackPath = str(playbackPath) + str(files[0])
-
-        else:
-            playbackURL = mediaURLs[0].url
-            playbackQuality = mediaURLs[0].quality
+        (playbackPath, playbackQuality) = service.getMediaSelection(mediaURLs)
 
         #download and play
         if download and play:
-            service.downloadMediaFile(int(sys.argv[1]), playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
+            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
 
         ###
         #right-menu context OR STRM
@@ -1329,9 +1287,9 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
             #download only
             if download and not play:
-                service.downloadMediaFile('',playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
+                service.downloadMediaFile('',playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
 
-            elif cache:
+            elif settings.cache:
                 item = xbmcgui.ListItem(path=str(playbackPath))
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
                 if settings.integratedPlayer:
@@ -1341,22 +1299,14 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
             #right-click play original
-            elif playOriginal:
+            elif settings.playOriginal or settings.srt or settings.cc or settings.seek:
                 item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+                                thumbnailImage=package.file.thumbnail, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
 
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
 
                 player = gPlayer.gPlayer()
-                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
-
-            elif settings.srt or settings.cc:
-                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
-
-                item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-                player = gPlayer.gPlayer()
-                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                player.PlayStream(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
 
                 while not (player.isPlaying()):
                         xbmc.sleep(1)
@@ -1364,16 +1314,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 if srtpath != '':
                         player.setSubtitles(srtpath.encode("utf-8"))
 
-            elif settings.seek:
-                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
-
-                item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-                player = gPlayer.gPlayer()
-                player.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
-
             elif settings.resume:
-
 
                 spreadshetModule = getSetting('library', False)
                 spreadshetName = getSetting('library_filename', 'TVShows')
@@ -1402,9 +1343,9 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                                     player.setScheduler(gSpreadsheet)
                                     player.setWorksheet(worksheets['db'])
                                     if len(media) == 0:
-                                        player.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item, 0, package)
+                                        player.PlayStream(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item, 0, package)
                                     else:
-                                        player.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item,media[0][7],package)
+                                        player.PlayStream(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item,media[0][7],package)
                                     while not player.isExit:
                                         player.saveTime()
                                         xbmc.sleep(5000)
@@ -1412,36 +1353,24 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
             #for STRM
             else :
                 item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+                                thumbnailImage=package.file.thumbnail, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
 
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
-                if seek > 0 and seek!='':
+                if seek!='' and seek > 0:
                     player = gPlayer.gPlayer()
-                    player.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
-
-#                    while not player.isPlaying(): #<== The should be    while self.isPlaying():
-#                        print "LOOP"
-#                        xbmc.sleep(2000)
-#                    xbmc.sleep(1000)
-#                    print "SEEK "+str(seek)
-#                    player.seekTime(seek)
-
-#                    while not (player.isPlaying()):
-#                        xbmc.sleep(1)
-#                    player.seekTime(seek)
-
+                    player.PlayStream(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
 
 #                player.seekTime(1000)
 #                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
 #                w.setPlayer(player)
 #                w.doModal()
 
-#                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackURL)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
+#                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
 
         #direct-click
-        elif cache:
+        elif settings.cache:
                 item = xbmcgui.ListItem(path=str(playbackPath))
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
                 if settings.integratedPlayer:
@@ -1453,16 +1382,16 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         #direct-click
         else:
                 item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+                                thumbnailImage=package.file.thumbnail, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
 
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
 
                 if settings.integratedPlayer:
                     player = gPlayer.gPlayer()
-                    player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                    player.play(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item)
 
                     while not (player.isPlaying()):
-                        xbmc.sleep(1)
+                        xbmc.sleep(1000)
 
                     if srtpath != '':
 
