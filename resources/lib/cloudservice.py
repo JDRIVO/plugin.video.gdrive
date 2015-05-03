@@ -415,6 +415,9 @@ class cloudservice(object):
                         values = {'instance': self.instanceName, 'title': folder.title, 'folder': folder.id}
                         cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&'+urllib.urlencode(values)+')', ))
 
+                        values = {'instance': self.instanceName, 'folder': folder.id}
+                        cm.append(( 'watch folder', 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)+')', ))
+
                         #encfs
                         values = {'instance': self.instanceName, 'foldername': folder.title, 'folder': folder.id}
                         cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
@@ -507,7 +510,9 @@ class cloudservice(object):
                     cm.append(( self.addon.getLocalizedString(30146), 'XBMC.RunPlugin('+url + '&cc=true'+')', ))
                     cm.append(( self.addon.getLocalizedString(30147), 'XBMC.RunPlugin('+url + '&seek=true'+')', ))
                     cm.append(( self.addon.getLocalizedString(30148), 'XBMC.RunPlugin('+url + '&resume=true'+')', ))
-
+#                    values = {'instance': self.instanceName, 'folder': package.folder.id}
+#                    folderurl = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)
+#                    cm.append(( 'folder', 'XBMC.RunPlugin('+folderurl+')', ))
 
         elif contextType == 'image':
 

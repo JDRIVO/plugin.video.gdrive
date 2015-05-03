@@ -47,7 +47,8 @@ def parse_query(query):
 
 
 def addMenu(url, title, img='', fanart='', total_items=0):
-    listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
+#    listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
+    listitem = xbmcgui.ListItem(title, iconImage=img, thumbnailImage=img)
     if not fanart:
         fanart = addon.getAddonInfo('path') + '/fanart.jpg'
     listitem.setProperty('fanart_image', fanart)
@@ -134,6 +135,7 @@ from resources.lib import crashreport
 from resources.lib import gPlayer
 from resources.lib import tvWindow
 from resources.lib import gSpreadsheets
+from resources.lib import settings
 
 
 try:
@@ -750,7 +752,7 @@ elif mode == 'kiosk':
                             player.setContent(episodes)
                             player.setWorksheet(worksheets['data'])
                             player.next()
-                            while player.isExit == 0:
+                            while not player.isExit:
                                 xbmc.sleep(10000)
                   else:
                     for worksheet in worksheets.iterkeys():
@@ -762,7 +764,7 @@ elif mode == 'kiosk':
                             player.setWorksheet(worksheets['db'])
                             player.PlayStream('plugin://plugin.video.gdrive-testing/?mode=video&instance='+str(service.instanceName)+'&title='+episodes[0][3], None,episodes[0][7],episodes[0][2])
                             #player.next()
-                            while player.isExit == 0:
+                            while not player.isExit:
                                 player.saveTime()
                                 xbmc.sleep(10000)
 
@@ -1131,13 +1133,14 @@ elif mode == 'streamurl':
 # legacy (depreicated) - streamvideo [given title]
 elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycachevideo' or mode == 'playvideo' or mode == 'streamvideo':
 
-    title = getParameter('title')
-    srt = getParameter('srt', False)
-    cc = getParameter('cc', False)
-    filename = getParameter('filename')
-    folderID = getParameter('folder')
+    title = getParameter('title') #file title
+    filename = getParameter('filename') #file ID
+    folderID = getParameter('folder') #folder ID
+
     seek = getParameter('seek', 0)
     resume = getParameter('resume', False)
+    srt = getParameter('srt', False)
+    cc = getParameter('cc', False)
 
     if seek:
         dialog = xbmcgui.Dialog()
@@ -1180,13 +1183,14 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
 
     playbackMedia = True
-    #if we don't have the docid, search for the video for playback
+
+    # file ID provided
     if (filename != ''):
         mediaFile = file.file(filename, title, '', 0, '','')
         mediaFolder = folder.folder(folderID,'')
         (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
-    else:
-        if mode == 'search':
+    # search
+    elif mode == 'search':
 
             if title == '':
 
@@ -1223,8 +1227,17 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
                 else:
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-        else:
+    # folder only
+    elif folderID != '' and title == '':
+        mediaItems = service.getMediaList(folderName=folderID, contentType=contentType)
+        if mediaItems:
+            if contextType == '':
+                player = gPlayer.gPlayer()
+                player.setMedia(mediaItems)
+                player.playList(service)
+                playbackMedia = False
+    # title provided
+    else:
             (mediaURLs,package) = service.getPlaybackCall(None,title=title)
 
     originalURL = ''
@@ -1395,7 +1408,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                                         player.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item, 0, package)
                                     else:
                                         player.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item,media[0][7],package)
-                                    while player.isExit == 0:
+                                    while not player.isExit:
                                         player.saveTime()
                                         xbmc.sleep(5000)
 

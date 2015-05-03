@@ -158,13 +158,13 @@ class gSpreadsheets:
     #
     # returns a list of spreadsheets contained in the Google Docs account
     #
-    def createMediaStatus(self, url, package, resume='', watched=''):
+    def createMediaStatus(self, url, package, resume='', watched='', updated=''):
 
 
 #        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0',  'Content-Type': 'application/atom+xml'}
         header = { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.service.authorization.getToken('auth_access_token'), 'GData-Version' : '3.0',  'Content-Type': 'application/atom+xml'}
 
-        entry = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended"> <gsx:folderid>'+str(package.folder.id)+'</gsx:folderid><gsx:foldername>'+str(package.folder.title)+'</gsx:foldername><gsx:fileid>'+str(package.file.id)+'</gsx:fileid><gsx:filename>'+str(package.file.title)+'</gsx:filename><gsx:nfo></gsx:nfo><gsx:order></gsx:order><gsx:watched>'+str(watched)+'</gsx:watched><gsx:resume>'+str(resume)+'</gsx:resume></entry>'
+        entry = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended"> <gsx:folderid>'+str(package.folder.id)+'</gsx:folderid><gsx:foldername>'+str(package.folder.title)+'</gsx:foldername><gsx:fileid>'+str(package.file.id)+'</gsx:fileid><gsx:filename>'+str(package.file.title)+'</gsx:filename><gsx:nfo></gsx:nfo><gsx:order></gsx:order><gsx:watched>'+str(watched)+'</gsx:watched><gsx:resume>'+str(resume)+'</gsx:resume><gsx:updated>'+str(updated)+'</gsx:updated></entry>'
 
         req = urllib2.Request(url, entry, header)
 
@@ -282,6 +282,7 @@ class gSpreadsheets:
 
 
     def getMedia(self,url, folderID=None, fileID=None):
+
 
 
         if fileID is None:
@@ -472,6 +473,10 @@ class gSpreadsheets:
 
     def setMediaStatus(self, url, package, resume='', watched=''):
 
+
+        import time
+        updated = time.strftime("%Y%m%d%H%M")
+
         newurl = url + '?sq=fileid="' + str(package.file.id) +'"'
 
         req = urllib2.Request(newurl, None, self.service.getHeadersList())
@@ -503,6 +508,8 @@ class gSpreadsheets:
             if watched != '':
                 entry = re.sub('<gsx:watched>([^\<]*)</gsx:watched>', '<gsx:watched>'+str(watched)+'</gsx:watched>', entry)
 
+            entry = re.sub('<gsx:updated>([^\<]*)</gsx:updated>', '<gsx:updated>'+str(updated)+'</gsx:updated>', entry)
+
 
             entry = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:gs="http://schemas.google.com/spreadsheets/2006" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended">' + entry
 
@@ -518,13 +525,13 @@ class gSpreadsheets:
             response.close()
         else:
             if resume != '' and watched != '':
-                self.createMediaStatus(url,package,resume,watched)
+                self.createMediaStatus(url,package,resume,watched, updated=updated)
             elif resume != '' and watched == '':
-                self.createMediaStatus(url,package,resume=resume)
+                self.createMediaStatus(url,package,resume=resume, updated=updated)
             elif resume == '' and watched != '':
-                self.createMediaStatus(url,package,watched=watched)
+                self.createMediaStatus(url,package,watched=watched, updated=updated)
             else:
-                self.createMediaStatus(url,package)
+                self.createMediaStatus(url,package, updated=updated)
 
 
     def getChannels(self,url):

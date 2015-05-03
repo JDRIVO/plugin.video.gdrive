@@ -36,10 +36,11 @@ class gPlayer(xbmc.Player):
 
     def __init__( self, *args, **kwargs ):
         xbmc.Player.__init__( self )
-        self.isExit = 0
+        self.isExit = False
         self.seek = 0
         self.package = None
         self.time = 0
+        self.tvScheduler = None
 
 
     def setScheduler(self,scheduler):
@@ -51,6 +52,10 @@ class gPlayer(xbmc.Player):
 
     def setContent(self, episodes):
         self.content = episodes
+        self.current = 0
+
+    def setMedia(self, mediaItems):
+        self.mediaItems = mediaItems
         self.current = 0
 
     def next(self):
@@ -99,6 +104,36 @@ class gPlayer(xbmc.Player):
             self.time = float(seek)
             self.seekTime(float(seek))
 
+    def playNext(self, service, package):
+            (mediaURLs, package) = service.getPlaybackCall(package)
+
+            options = []
+            mediaURLs = sorted(mediaURLs)
+            for mediaURL in mediaURLs:
+                options.append(mediaURL.qualityDesc)
+                if mediaURL.qualityDesc == 'original':
+                    originalURL = mediaURL.url
+
+            playbackURL = ''
+            playbackQuality = ''
+            playbackPath = ''
+            ret = xbmcgui.Dialog().select(service.addon.getLocalizedString(30033), options)
+            playbackURL = mediaURLs[ret].url
+            playbackQuality = mediaURLs[ret].quality
+            item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+            item.setInfo( type="Video", infoLabels={ "Title": package.file.title } )
+            self.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY),item,0,package)
+
+    def playList(self, service):
+        while self.current < len(self.mediaItems) and not self.isExit:
+            self.playNext(service, self.mediaItems[self.current])
+            current = self.current
+            while current == self.current and not self.isExit:
+                xbmc.sleep(5000)
+
+
+
     def onPlayBackStarted(self):
         print "PLAYBACK STARTED"
 #        if self.seek > 0:
@@ -108,14 +143,20 @@ class gPlayer(xbmc.Player):
         print "PLAYBACK ENDED"
 #        self.next()
         if self.package is not None:
-            self.tvScheduler.setMediaStatus(self.worksheet,self.package, watched=1)
+            try:
+                self.tvScheduler.setMediaStatus(self.worksheet,self.package, watched=1)
+            except: pass
+        self.current = self.current +1
 
     def onPlayBackStopped(self):
         print "PLAYBACK STOPPED"
         if self.package is not None:
-            self.tvScheduler.setMediaStatus(self.worksheet,self.package, resume=self.time)
-        self.isExit = 1
-        if self.isExit == 0:
+            try:
+                self.tvScheduler.setMediaStatus(self.worksheet,self.package, resume=self.time)
+            except: pass
+        #self.current = self.current +1
+        self.isExit = True
+        if not self.isExit:
             print "don't exit"
 
     def onPlayBackPaused(self):
