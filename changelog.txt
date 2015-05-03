@@ -1,3 +1,5 @@
+Version 0.6.16
+- fix: issue introduced in 0.6.15 with playback
 Version 0.6.15
 -- Google Drive API 2 module - add: playback of folder
 - core refactoring

@@ -896,6 +896,7 @@ elif mode == 'audio':
     if folderID == 'False':
             folderID = 'SEARCH'
 
+
     try:
         service
     except NameError:
@@ -905,13 +906,8 @@ elif mode == 'audio':
 
 
     #force cache
+    settings.setCacheParameters()
 
-    download = getSetting('always_cache', getParameter('download', False))
-    play = getSetting('always_cache', getParameter('play', False))
-
-    if settings.cache:
-        download = False
-        play = False
 
     filesize = getParameter('filesize')
 
@@ -989,7 +985,7 @@ elif mode == 'audio':
             playbackQuality = mediaURLs[0].quality
 
         #download and play
-        if download and play:
+        if settings.download and settings.play:
             service.downloadMediaFile(int(sys.argv[1]), playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
 
         ###
@@ -998,7 +994,7 @@ elif mode == 'audio':
         elif contextType == '':
 
             #download
-            if download and not play:
+            if settings.download and not settings.play:
                 service.downloadMediaFile('',playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
 
             #play cache
@@ -1153,22 +1149,20 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         log(addon.getLocalizedString(30050)+ 'gdrive-login', True)
         xbmcplugin.endOfDirectory(plugin_handle)
 
-
-    download = getSetting('always_cache', getParameter('download', False))
-    play = getSetting('always_cache', getParameter('play', False))
+    settings.setCacheParameters()
 
 
     if mode == 'memorycachevideo':
-        play = True
-        download = True
+        settings.play = True
+        settings.download = True
     elif mode == 'playvideo':
-        play = False
-        download = False
+        settings.play = False
+        settings.download = False
         settings.playOriginal = True
 
     if settings.cache:
-            download = False
-            play = False
+            settings.download = False
+            settings.play = False
 
     filesize = getParameter('filesize')
 
@@ -1277,7 +1271,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         (playbackPath, playbackQuality) = service.getMediaSelection(mediaURLs)
 
         #download and play
-        if download and play:
+        if settings.download and settings.play:
             service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
 
         ###
@@ -1286,7 +1280,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         elif contextType == '':
 
             #download only
-            if download and not play:
+            if settings.download and not settings.play:
                 service.downloadMediaFile('',playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
 
             elif settings.cache:

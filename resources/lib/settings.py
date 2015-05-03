@@ -17,6 +17,10 @@
 
 '''
 
+import sys
+import cgi
+
+
 #http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
 def _callback(matches):
     id = matches.group(1)
@@ -60,6 +64,7 @@ def parse_query(query):
     q['mode'] = q.get('mode', 'main')
     return q
 
+plugin_queries = parse_query(sys.argv[2][1:])
 
 
 #
@@ -71,7 +76,7 @@ class settings:
     ##
     ##
     def __init__(self, addon):
-        self.integratedPlayer = getSetting('integrated_player')
+        self.integratedPlayer = self.getSetting('integrated_player')
         self.addon = addon
 
     def setVideoParameters(self):
@@ -82,8 +87,15 @@ class settings:
 
         self.promptQuality = self.getSetting('prompt_quality', True)
         self.playOriginal = self.getSetting('never_stream', self.getParameter('original', False))
-        self.cache = self.getParameter('cache', False)
 
+    def setCacheParameters(self):
+        self.cache = self.getParameter('cache', False)
+        self.download = self.getSetting('always_cache', getParameter('download', False))
+        self.play = self.getSetting('always_cache', getParameter('play', False))
+
+        if self.cache:
+            self.download = False
+            self.play = False
 
     def getParameter(self, key, default=''):
         try:
