@@ -78,12 +78,12 @@ class settings:
     def __init__(self, addon):
         self.integratedPlayer = self.getSetting('integrated_player')
         self.addon = addon
+        self.cc = self.getParameter('cc', self.getSetting('cc', True))
+        self.srt = self.getParameter('srt', self.getSetting('srt', True))
 
     def setVideoParameters(self):
         self.seek = self.getParameter('seek', 0)
         self.resume = self.getParameter('resume', False)
-        self.cc = self.getParameter('cc', self.getSetting('cc', True))
-        self.srt = self.getParameter('srt', self.getSetting('srt', True))
 
         self.promptQuality = self.getSetting('prompt_quality', True)
         self.playOriginal = self.getSetting('never_stream', self.getParameter('original', False))
