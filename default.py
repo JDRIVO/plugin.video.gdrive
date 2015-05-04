@@ -999,7 +999,7 @@ elif mode == 'audio':
             #right-click play-original
             elif settings.playOriginal:
                 item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+                                thumbnailImage=package.file.thumbnail)#, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
                 # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
                 item.setInfo( type="Video", infoLabels={ "Title": title } )
                 if settings.integratedPlayer:
@@ -1287,13 +1287,13 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
             #right-click play original
             elif settings.playOriginal or settings.srt or settings.cc or settings.seek:
                 item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
+                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
 
                 item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-
+                playbackPath = 'https://www.googleapis.com/drive/v2/files/' + str(package.file.id) + '?alt=media'#&acknowledgeAbuse=true'
                 player = gPlayer.gPlayer()
                 player.PlayStream(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
-
+                print "FILE " + playbackPath
                 while not (player.isPlaying()):
                         xbmc.sleep(1000)
 

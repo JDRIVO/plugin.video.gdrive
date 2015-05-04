@@ -1,3 +1,5 @@
+Version 0.6.20
+-- Google Drive API 2 module - testing a new "Playback with Original" method
 Version 0.6.19
 - fix for problem with 1 account
 Version 0.6.18
