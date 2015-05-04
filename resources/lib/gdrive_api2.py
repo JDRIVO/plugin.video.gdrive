@@ -525,7 +525,7 @@ class gdrive(cloudservice):
     #   parameters: title of the video file
     #   returns: download url for srt
     ##
-    def getSRT(self, title):
+    def getSRT(self, title, path):
 
         # retrieve all items
         url = self.API_URL +'files/'
@@ -579,22 +579,23 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                   fileExtension = r.group(1)
                   break
-                if fileExtension != 'srt':
-                    break
-                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
+                if fileExtension == 'srt':
+
+                    for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                  resourceID = r.group(1)
-                  break
-                for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
+                        resourceID = r.group(1)
+                        break
+                    for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                  title = r.group(1)
-                  break
-                for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
+                        title = r.group(1)
+                        break
+                    for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                  url = r.group(1)
-                  SRTURL.append(url)
-                  SRTTitle.append(title)
-                  break
+                        url = r.group(1)
+#                  SRTURL.append(url)
+#                  SRTTitle.append(title)
+                        self.downloadPicture(url, str(path) + str(title))
+                        break
 
 
 
@@ -611,25 +612,26 @@ class gdrive(cloudservice):
             else:
                 url = nextURL
 
-        if len(SRTURL) == 0:
-            return ''
-        elif len(SRTURL) == 1:
-            return SRTURL[0]
-        else:
-            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30139), SRTTitle)
-            return SRTURL[ret]
+#        if len(SRTURL) == 0:
+#            return ''
+#        elif len(SRTURL) == 1:
+#            return SRTURL[0]
+#        else:
+#            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30139), SRTTitle)
+#            return SRTURL[ret]
 
 
-        return ''
+#        return ''
 
 
 
     ##
-    # retrieve a tts file for playback
+    # retrieve tts file(s) for playback
+    #  -- will download tts file(s) associated with the video to path
     #   parameters: TTS Base URL
-    #   returns: download url for TTS
+    #   returns: nothing
     ##
-    def getTTS(self, baseURL):
+    def getTTS(self, baseURL, path):
 
         # retrieve all items
         url = baseURL +'&hl=en-US&type=list&tlangs=1&fmts=1&vssids=1'
@@ -663,11 +665,14 @@ class gdrive(cloudservice):
 
             # parsing page for videos
             # video-entry
+            count=0
             for r in re.finditer('\<track id\=\"\d+\" .*? lang_code\=\"([^\"]+)\" .*? lang_translated\=\"([^\"]+)\" [^\>]+\>' ,response_data, re.DOTALL):
                 lang,language = r.groups()
-                ccURL.append(baseURL+'&type=track&lang='+str(lang)+'&name&kind&fmt=1')
-                ccLanguage.append(language)
-                ccLang.append(lang)
+#                ccURL.append(baseURL+'&type=track&lang='+str(lang)+'&name&kind&fmt=1')
+#                ccLanguage.append(language)
+#                ccLang.append(lang)
+                if not xbmcvfs.exists(str(path) + '.'+str(count) + '.'+ str(lang) + '.srt'):
+                    self.downloadTTS(baseURL+'&type=track&lang='+str(lang)+'&name&kind&fmt=1', str(path) + '.'+str(count) + '.'+ str(lang) + '.srt' )
 
             # look for more pages of videos
             nextURL = ''
@@ -682,16 +687,14 @@ class gdrive(cloudservice):
             else:
                 url = nextURL
 
-        if len(ccURL) == 0:
-            return '',''
-        elif len(ccURL) == 1:
-            return ccURL[0],ccLang[0]
-        else:
-            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30139), ccLanguage)
-            return ccURL[ret], ccLang[ret]
+ #       if len(ccURL) == 0:
+ #           return '',''
+ #       elif len(ccURL) == 1:
+ #           return ccURL[0],ccLang[0]
+ #       else:
+ #           return ccURL[ret], ccLang[ret]
 
-
-        return '',''
+ #       return '',''
 
     ##
     # retrieve the resource ID for root folder

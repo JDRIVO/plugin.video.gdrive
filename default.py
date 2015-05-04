@@ -23,7 +23,7 @@ import urllib
 import cgi
 import re
 import xbmcvfs
-
+import os
 
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
@@ -1221,43 +1221,45 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
     originalURL = ''
     if playbackMedia:
 
-        SRTURL = ''
+       # SRTURL = ''
         srtpath = ''
         if settings.srt:
-            SRTURL = service.getSRT(title)
-            if SRTURL != '':
+#            SRTURL = service.getSRT(title)
+#            if SRTURL != '':
 
-                try:
-                    srtpath = addon.getSetting('srt_folder')
-                except:
-                    srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
-                    addon.setSetting('srt_folder', srtpath)
+                srtpath = settings.cachePath
 
                 if srtpath == '':
                     srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
-                    addon.setSetting('srt_folder', srtpath)
+                    addon.setSetting('cache_folder', srtpath)
+                    settings.cachePath = srtpath
 
                 if srtpath != '':
-                    srtpath = srtpath + '/subtitle.en.srt'
-                    service.downloadPicture(SRTURL, srtpath)
+                    srtpath = str(srtpath) + '/' + str(package.file.id) + '/'
+                    service.getSRT(title,srtpath)
+                    print "IN IN IN"
+#                    service.downloadPicture(SRTURL, srtpath)
 
+        # download closed-captions
         if settings.cc:
-            SRTURL,lang = service.getTTS(package.file.srtURL)
+#            SRTURL,lang = service.getTTS(package.file.srtURL)
 
-            if SRTURL != '':
-                try:
-                    srtpath = addon.getSetting('srt_folder')
-                except:
-                    srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
-                    addon.setSetting('srt_folder', srtpath)
+#            if SRTURL != '':
+
+                srtpath = settings.cachePath
 
                 if srtpath == '':
                     srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
-                    addon.setSetting('srt_folder', srtpath)
+                    addon.setSetting('cache_folder', srtpath)
 
                 if srtpath != '':
-                    srtpath = srtpath + '/subtitle.'+str(lang)+'.srt'
-                    service.downloadTTS(SRTURL, srtpath)
+
+                    srtpath = str(srtpath) + '/' + str(package.file.id)+'/'#+ '.'+str(lang)+'.srt'
+                    if not xbmcvfs.exists(srtpath):
+                        xbmcvfs.mkdir(srtpath)
+                    srtpath = str(srtpath) + str(package.file.id)
+                    service.getTTS(package.file.srtURL, srtpath)
+                    #service.downloadTTS(SRTURL, srtpath)
 
         (playbackPath, playbackQuality) = service.getMediaSelection(mediaURLs, folderID, filename)
 
@@ -1296,7 +1298,10 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 while not (player.isPlaying()):
                         xbmc.sleep(1)
 
-                if srtpath != '':
+                dirs, files = xbmcvfs.listdir(settings.cachePath + '/'+ str(package.file.id) + '/')
+                for file in files:
+                    if os.path.splitext(file)[1] == '.srt':
+                        srtpath = settings.cachePath + '/'+ str(package.file.id) + '/' + file
                         player.setSubtitles(srtpath.encode("utf-8"))
 
             elif settings.resume:

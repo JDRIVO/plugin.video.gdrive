@@ -141,7 +141,9 @@
 
     <category label="30134">
     	<setting id="integrated_player" type="bool" label="30133" default="false" />
-    	<setting id="srt_folder" type="folder" label="30135" default="" />
+<!-->    	<setting id="srt_folder" type="folder" label="30135" default="" />-->
+    	<setting id="cc" type="bool" label="30149" default="enable" />
+    	<setting id="srt" type="bool" label="30150" default="enable" />
 
     </category>
 

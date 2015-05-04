@@ -82,11 +82,12 @@ class settings:
     def setVideoParameters(self):
         self.seek = self.getParameter('seek', 0)
         self.resume = self.getParameter('resume', False)
-        self.srt = self.getParameter('srt', False)
-        self.cc = self.getParameter('cc', False)
+        self.cc = self.getParameter('cc', self.getSetting('cc', True))
+        self.srt = self.getParameter('srt', self.getSetting('srt', True))
 
         self.promptQuality = self.getSetting('prompt_quality', True)
         self.playOriginal = self.getSetting('never_stream', self.getParameter('original', False))
+
 
     def setCacheParameters(self):
         self.cache = self.getParameter('cache', False)
@@ -94,6 +95,7 @@ class settings:
         self.download = self.getParameter('download', getSetting('always_cache', False))
         self.play = self.getParameter('play', getSetting('always_cache', False))
         self.cachePath = self.getSetting('cache_folder')
+
 
         if self.cache:
             self.download = False

@@ -34,7 +34,7 @@
     <string id="30032">Music and Photos</string>
     <string id="30034">Photos</string>
     <string id="30037">Context</string>
-    <string id="30038">Photo cache folder</string>
+    <string id="30038">Photo offline/cache folder</string>
 
 
     <string id="30090">Location to store cache files</string>
@@ -137,6 +137,8 @@
 	<string id="30146">Play with captions</string>
 	<string id="30147">Play with seek</string>
 	<string id="30148">Play with resume</string>
+	<string id="30149">Enable closed-captions tracks</string>
+	<string id="30150">Enable SRT tracks</string>
 
     <string id="30201">OAUTH2 code</string>
     <string id="30202">OAUTH2 client id</string>
