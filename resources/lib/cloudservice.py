@@ -508,9 +508,9 @@ class cloudservice(object):
                     cm.append(( self.addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&original=true'+')', ))
 
                     # if the options are disabled in settings, display option to playback with feature
-                    if not settings.srt:
+                    if not self.settings.srt:
                         cm.append(( self.addon.getLocalizedString(30138), 'XBMC.RunPlugin('+url + '&srt=true'+')', ))
-                    if not settings.cc:
+                    if not self.settings.cc:
                         cm.append(( self.addon.getLocalizedString(30146), 'XBMC.RunPlugin('+url + '&cc=true'+')', ))
 
                     cm.append(( self.addon.getLocalizedString(30147), 'XBMC.RunPlugin('+url + '&seek=true'+')', ))
