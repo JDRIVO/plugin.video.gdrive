@@ -481,7 +481,7 @@ elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
         options = []
         accounts = []
 
-        for count in range (1, numberOfAccounts):
+        for count in range (1, numberOfAccounts+1):
             instanceName = PLUGIN_NAME+str(count)
             try:
                 username = getSetting(instanceName+'_username')
@@ -562,7 +562,7 @@ elif invokedUsername != '':
 
         options = []
         accounts = []
-        for count in range (1, numberOfAccounts):
+        for count in range (1, numberOfAccounts+1):
             instanceName = PLUGIN_NAME+str(count)
             try:
                 username = getSetting(instanceName+'_username')
@@ -597,7 +597,7 @@ else:
 
         options = []
         accounts = []
-        for count in range (1, numberOfAccounts):
+        for count in range (1, numberOfAccounts+1):
             instanceName = PLUGIN_NAME+str(count)
             try:
                 username = getSetting(instanceName+'_username',10)
@@ -1212,7 +1212,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
             if contextType == '':
                 player = gPlayer.gPlayer()
                 player.setMedia(mediaItems)
-                player.playList(service)
+                player.playLgist(service)
                 playbackMedia = False
     # title provided
     else:
@@ -1237,7 +1237,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 if srtpath != '':
                     srtpath = str(srtpath) + '/' + str(package.file.id) + '/'
                     service.getSRT(title,srtpath)
-                    print "IN IN IN"
 #                    service.downloadPicture(SRTURL, srtpath)
 
         # download closed-captions
@@ -1296,7 +1295,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 player.PlayStream(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
 
                 while not (player.isPlaying()):
-                        xbmc.sleep(1)
+                        xbmc.sleep(1000)
 
                 dirs, files = xbmcvfs.listdir(settings.cachePath + '/'+ str(package.file.id) + '/')
                 for file in files:
@@ -1383,20 +1382,28 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
                     while not (player.isPlaying()):
                         xbmc.sleep(1000)
-
-                    if srtpath != '':
-
-#                    xbmc.Player().setSubtitles(subtitle.encode("utf-8"))
-                    #player.setSubtitles(subtitle.encode("utf-8"))
-                        player.setSubtitles(srtpath.encode("utf-8"))
-
-
-                    while (player.isPlaying()):
-                        xbmc.sleep(3)
+                    if settings.srt or settings.cc:
+                        dirs, files = xbmcvfs.listdir(settings.cachePath + '/'+ str(package.file.id) + '/')
+                        for file in files:
+                            if os.path.splitext(file)[1] == '.srt':
+                                srtpath = settings.cachePath + '/'+ str(package.file.id) + '/' + file
+                                player.setSubtitles(srtpath.encode("utf-8"))
 
 
                 else:
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+                    if settings.srt or settings.cc:
+                        player = gPlayer.gPlayer()
+                        while not (player.isPlaying()):
+                            xbmc.sleep(1000)
+
+                        dirs, files = xbmcvfs.listdir(settings.cachePath + '/'+ str(package.file.id) + '/')
+                        for file in files:
+                            if os.path.splitext(file)[1] == '.srt':
+                                srtpath = settings.cachePath + '/'+ str(package.file.id) + '/' + file
+                                player.setSubtitles(srtpath.encode("utf-8"))
+
 #                player = gPlayer.gPlayer()
 #                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
 #                while not (player.isPlaying()):

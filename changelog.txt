@@ -1,3 +1,5 @@
+Version 0.6.19
+- fix for problem with 1 account
 Version 0.6.18
 -- Google Drive API 2 module - load and enable SRT and Caption tracks by default (add settings to disable, remove from right-click context if enabled in settings)
 Version 0.6.17
