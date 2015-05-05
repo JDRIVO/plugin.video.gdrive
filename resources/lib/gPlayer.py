@@ -163,3 +163,15 @@ class gPlayer(xbmc.Player):
         print "PLAYBACK Paused"
         #self.seekTime(10)
 
+    def seekTo(self, seek):
+        if seek != '':
+            self.seek = float(seek)
+#        self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
+        if seek > 0 and seek !='':
+            while not self.isPlaying(): #<== The should be    while self.isPlaying():
+                print "LOOP"
+                xbmc.sleep(500)
+            xbmc.sleep(1000)
+            print "SEEK "+str(seek)
+            self.time = float(seek)
+            self.seekTime(float(seek))

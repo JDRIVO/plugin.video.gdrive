@@ -226,7 +226,8 @@ class cloudservice(object):
     # retrieve a media file
     #   parameters: title of video, whether to prompt for quality/format (optional),
     ##
-    def downloadMediaFile(self, playback, url, title, folderID, filename, fileSize, force=False, encfs=False, folderName=''):
+#    def downloadMediaFile(self, playback, url, title, folderID, filename, fileSize, force=False, encfs=False, folderName=''):
+    def downloadMediaFile(self, playback, url, title, package, force=False, encfs=False, folderName=''):
 
 
         try:
@@ -238,7 +239,7 @@ class cloudservice(object):
             cachePercent = 1
         elif cachePercent > 100:
             cachePercent = 100
-        fileSize = (int)(fileSize)
+        fileSize = (int)(package.file.size)
         if fileSize == '' or fileSize < 1000:
             fileSize = 5000000
 
@@ -302,15 +303,15 @@ class cloudservice(object):
             playbackFile = str(path) + '/cache.mp4'
 
         else:
-            try:
-                xbmcvfs.mkdir(str(path) + '/'+str(folderID))
-            except: pass
+#            try:
+#                xbmcvfs.mkdir(str(path) + '/'+str(folderID))
+#            except: pass
 
             try:
-                xbmcvfs.mkdir(str(path) + '/'+str(folderID)+ '/' + str(filename))
+                xbmcvfs.mkdir(str(path) + '/'+ str(package.file.id))
             except: pass
 
-            playbackFile = str(path) + '/' + str(folderID) + '/' + str(filename) + '/' + str(title)
+            playbackFile = str(path) + '/' + str(package.file.id) + '/' + str(title)
 
 
         if not xbmcvfs.exists(playbackFile) or force:
@@ -358,8 +359,11 @@ class cloudservice(object):
             except:
                 pass
 
-            item = xbmcgui.ListItem(path=playbackFile)
-            item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
+            #item = xbmcgui.ListItem(path=playbackFile)
+            item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
+
+            item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
             xbmcplugin.setResolvedUrl(playback, True, item)
             xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
 

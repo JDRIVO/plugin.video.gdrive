@@ -989,6 +989,7 @@ elif mode == 'audio':
             #download
             if settings.download and not settings.play:
                 service.downloadMediaFile('',playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
+                playbackMedia = False
 
             #play cache
             elif settings.cache:
@@ -1260,50 +1261,50 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     service.getTTS(package.file.srtURL, srtpath)
                     #service.downloadTTS(SRTURL, srtpath)
 
+
         (playbackPath, playbackQuality) = service.getMediaSelection(mediaURLs, folderID, filename)
+        playbackPlayer = settings.integratedPlayer
+        playbackPath = playbackPath +'|' + service.getHeadersEncoded(service.useWRITELY)
 
         #download and play
         if settings.download and settings.play:
-            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
+#            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
+            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(playbackQuality) + '.stream', package)
+            playbackMedia = False
 
         ###
         #right-menu context OR STRM
         ##
         elif contextType == '':
 
-            #download only
+            # right-click force download only
             if settings.download and not settings.play:
-                service.downloadMediaFile('',playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
+#                service.downloadMediaFile('',playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
+                service.downloadMediaFile('',playbackPath, str(playbackQuality) + '.stream', package, force=True)
+                playbackMedia = False
 
+            # for STRM (force resolve) -- resolve-only
+            elif settings.username != '':
+                playbackPlayer = False
+
+            # right-click force cache playback
             elif settings.cache:
-                item = xbmcgui.ListItem(path=str(playbackPath))
-                item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-#                if settings.integratedPlayer:
-                player = gPlayer.gPlayer()
-                player.play(playbackPath, item)
-#                else:
-#                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-            #right-click play original
-            elif settings.playOriginal or settings.srt or settings.cc or settings.seek:
-                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
-
-                item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-                playbackPath = 'https://www.googleapis.com/drive/v2/files/' + str(package.file.id) + '?alt=media'#&acknowledgeAbuse=true'
-                player = gPlayer.gPlayer()
-                player.PlayStream(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
-                print "FILE " + playbackPath
-                while not (player.isPlaying()):
-                        xbmc.sleep(1000)
-
+                playbackPlayer = True
+                playbackMedia = False
                 dirs, files = xbmcvfs.listdir(settings.cachePath + '/'+ str(package.file.id) + '/')
                 for file in files:
-                    if os.path.splitext(file)[1] == '.srt':
-                        srtpath = settings.cachePath + '/'+ str(package.file.id) + '/' + file
-                        player.setSubtitles(srtpath.encode("utf-8"))
+                    if os.path.splitext(file)[1] == '.stream':
+                        playbackPath = settings.cachePath + '/'+ str(package.file.id) + '/' + file
+                        playbackMedia = True
 
+
+            # right-click play original, srt, caption, seek
+            elif settings.playOriginal or settings.srt or settings.cc or settings.seek:
+                playbackPlayer = True
+
+            # TESTING
             elif settings.resume:
+                playbackPlayer = False
 
                 spreadshetModule = getSetting('library', False)
                 spreadshetName = getSetting('library_filename', 'TVShows')
@@ -1333,68 +1334,47 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                                     player.setService(service)
                                     player.setWorksheet(worksheets['db'])
                                     if len(media) == 0:
-                                        player.PlayStream(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item, 0, package)
+                                        player.PlayStream(playbackPath, item, 0, package)
                                     else:
-                                        player.PlayStream(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item,media[0][7],package)
+                                        player.PlayStream(playbackPath, item,media[0][7],package)
                                     while not player.isExit:
                                         player.saveTime()
                                         xbmc.sleep(5000)
+                playbackMedia = False
 
-            #for STRM
-            else :
-                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
 
-                item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
-                if seek!='' and seek > 0:
+#                if seek!='' and seek > 0:
+#                    player = gPlayer.gPlayer()
+#                    player.PlayStream(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
+
+
+        # direct-click (resolve or use setting-default)
+#        elif settings.cache:
+
+        #direct-click (resolve or use setting-default)
+#        else:
+
+
+        if playbackMedia:
+
+                if playbackPlayer:
+
+                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
+
+                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+                    #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
                     player = gPlayer.gPlayer()
-                    player.PlayStream(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
+                    #player.play(playbackPath, item)
+                    if seek > 0:
+                        player.PlayStream(playbackPath, item, seek)
+                    else:
+                        player.PlayStream(playbackPath, item, 0)
 
-#                player.seekTime(1000)
-#                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
-#                w.setPlayer(player)
-#                w.doModal()
-
-#                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
-
-        #direct-click
-        elif settings.cache:
-                item = xbmcgui.ListItem(path=str(playbackPath))
-                item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-                if settings.integratedPlayer:
-                    player = gPlayer.gPlayer()
-                    player.play(playbackPath, item)
-                else:
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-        #direct-click
-        else:
-                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
-
-                item.setInfo( type="Video", infoLabels={ "Title": title , "Plot" : title } )
-
-                if settings.integratedPlayer:
-                    player = gPlayer.gPlayer()
-                    player.play(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item)
-
-                    while not (player.isPlaying()):
-                        xbmc.sleep(1000)
+                    #load any cc or srt
                     if settings.srt or settings.cc:
-                        dirs, files = xbmcvfs.listdir(settings.cachePath + '/'+ str(package.file.id) + '/')
-                        for file in files:
-                            if os.path.splitext(file)[1] == '.srt':
-                                srtpath = settings.cachePath + '/'+ str(package.file.id) + '/' + file
-                                player.setSubtitles(srtpath.encode("utf-8"))
-
-
-                else:
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-                    if settings.srt or settings.cc:
-                        player = gPlayer.gPlayer()
                         while not (player.isPlaying()):
                             xbmc.sleep(1000)
 
@@ -1403,6 +1383,34 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                             if os.path.splitext(file)[1] == '.srt':
                                 srtpath = settings.cachePath + '/'+ str(package.file.id) + '/' + file
                                 player.setSubtitles(srtpath.encode("utf-8"))
+
+                else:
+
+                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail, path=playbackPath)
+
+                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+                    #need a player?
+                    if seek > 0 or settings.srt or settings.cc:
+
+                        player = gPlayer.gPlayer()
+
+                        # need to seek?
+                        if seek > 0:
+                            player.seekTo(seek)
+
+                        # load captions
+                        if  settings.srt or settings.cc:
+                            while not (player.isPlaying()):
+                                xbmc.sleep(1000)
+
+                            dirs, files = xbmcvfs.listdir(settings.cachePath + '/'+ str(package.file.id) + '/')
+                            for file in files:
+                                if os.path.splitext(file)[1] == '.srt':
+                                    srtpath = settings.cachePath + '/'+ str(package.file.id) + '/' + file
+                                    player.setSubtitles(srtpath.encode("utf-8"))
 
 #                player = gPlayer.gPlayer()
 #                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
@@ -1414,6 +1422,12 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 #                w.setPlayer(player)
 #                w.doModal()
 
+#                player.seekTime(1000)
+#                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
+#                w.setPlayer(player)
+#                w.doModal()
+
+#                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
 
 
 

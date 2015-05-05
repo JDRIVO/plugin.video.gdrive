@@ -1021,43 +1021,50 @@ class gdrive(cloudservice):
         else:
             docid = package.file.id
 
-            url = self.API_URL +'files/' + docid
+            # new method of fetching original stream -- using alt=media
+            url = self.API_URL +'files/' + str(docid) + '?alt=media'
+            mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
 
-            req = urllib2.Request(url, None, self.getHeadersList())
+            # old method of fetching original stream -- using downloadURL
+            if 1:
+                url = self.API_URL +'files/' + str(docid)
+
+                req = urllib2.Request(url, None, self.getHeadersList())
 
 
-            # if action fails, validate login
-            try:
-                response = urllib2.urlopen(req)
-            except urllib2.URLError, e:
-                if e.code == 403 or e.code == 401:
-                    self.refreshToken()
-                    req = urllib2.Request(url, None, self.getHeadersList())
-                    try:
-                        response = urllib2.urlopen(req)
-                    except urllib2.URLError, e:
+                # if action fails, validate login
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    if e.code == 403 or e.code == 401:
+                        self.refreshToken()
+                        req = urllib2.Request(url, None, self.getHeadersList())
+                        try:
+                            response = urllib2.urlopen(req)
+                        except urllib2.URLError, e:
+                            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                            self.crashreport.sendError('getPlaybackCall',str(e))
+                            return
+                    else:
                         xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                         self.crashreport.sendError('getPlaybackCall',str(e))
                         return
-                else:
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    self.crashreport.sendError('getPlaybackCall',str(e))
-                    return
 
-            response_data = response.read()
-            response.close()
+                response_data = response.read()
+                response.close()
 
 
-            for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
-                entry = r1.group(1)
-                package = self.getMediaPackage(entry)
-                docid = package.file.id
-                mediaURLs.append(package.mediaurl)
+                for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
+                    entry = r1.group(1)
+                    package = self.getMediaPackage(entry)
+                    #docid = package.file.id
+                    #mediaURLs.append(package.mediaurl)
 
+        # there are no streams for music
         if package.file.type == self.MEDIA_TYPE_MUSIC:
             return (mediaURLs, package)
 
-        # fetch streams
+        # fetch streams (video)
         if docid != '':
             # player using docid
             params = urllib.urlencode({'docid': docid})
