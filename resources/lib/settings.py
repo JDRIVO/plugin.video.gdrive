@@ -81,6 +81,7 @@ class settings:
         self.cc = self.getParameter('cc', self.getSetting('cc', True))
         self.srt = self.getParameter('srt', self.getSetting('srt', True))
         self.username = self.getParameter('username', '')
+        self.setCacheParameters()
 
     def setVideoParameters(self):
         self.seek = self.getParameter('seek', 0)

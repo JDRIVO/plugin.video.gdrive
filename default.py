@@ -136,6 +136,7 @@ from resources.lib import gPlayer
 from resources.lib import tvWindow
 from resources.lib import gSpreadsheets
 from resources.lib import settings
+from resources.lib import cache
 
 
 try:
@@ -899,7 +900,7 @@ elif mode == 'audio':
 
 
     #force cache
-    settings.setCacheParameters()
+    #settings.setCacheParameters()
 
 
     fileSize = getParameter('filesize')
@@ -1143,8 +1144,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         log(addon.getLocalizedString(30050)+ 'gdrive-login', True)
         xbmcplugin.endOfDirectory(plugin_handle)
 
-    settings.setCacheParameters()
-
+    #settings.setCacheParameters()
 
     if mode == 'memorycachevideo':
         settings.play = True
@@ -1219,12 +1219,17 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
     else:
             (mediaURLs,package) = service.getPlaybackCall(None,title=title)
 
+    cache = cache.cache(service,package)
+    package.file.thumbnail = cache.setThumbnail()
+
     originalURL = ''
     if playbackMedia:
 
        # SRTURL = ''
         srtpath = ''
         if settings.srt:
+            cache.setSRT()
+            if 0:
 #            SRTURL = service.getSRT(title)
 #            if SRTURL != '':
 
@@ -1237,15 +1242,18 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
                 if srtpath != '':
                     srtpath = str(srtpath) + '/' + str(package.file.id) + '/'
+                    if not xbmcvfs.exists(srtpath):
+                        xbmcvfs.mkdir(srtpath)
                     service.getSRT(title,srtpath)
 #                    service.downloadPicture(SRTURL, srtpath)
 
         # download closed-captions
         if settings.cc:
+            cache.setCC()
 #            SRTURL,lang = service.getTTS(package.file.srtURL)
 
 #            if SRTURL != '':
-
+            if 0:
                 srtpath = settings.cachePath
 
                 if srtpath == '':
@@ -1378,11 +1386,9 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                         while not (player.isPlaying()):
                             xbmc.sleep(1000)
 
-                        dirs, files = xbmcvfs.listdir(settings.cachePath + '/'+ str(package.file.id) + '/')
+                        files = cache.getSRT()
                         for file in files:
-                            if os.path.splitext(file)[1] == '.srt':
-                                srtpath = settings.cachePath + '/'+ str(package.file.id) + '/' + file
-                                player.setSubtitles(srtpath.encode("utf-8"))
+                            player.setSubtitles(file.encode("utf-8"))
 
                 else:
 
@@ -1406,11 +1412,9 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                             while not (player.isPlaying()):
                                 xbmc.sleep(1000)
 
-                            dirs, files = xbmcvfs.listdir(settings.cachePath + '/'+ str(package.file.id) + '/')
+                            files = cache.getSRT()
                             for file in files:
-                                if os.path.splitext(file)[1] == '.srt':
-                                    srtpath = settings.cachePath + '/'+ str(package.file.id) + '/' + file
-                                    player.setSubtitles(srtpath.encode("utf-8"))
+                                player.setSubtitles(file.encode("utf-8"))
 
 #                player = gPlayer.gPlayer()
 #                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)

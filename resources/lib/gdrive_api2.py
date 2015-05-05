@@ -32,6 +32,8 @@ from resources.lib import file
 from resources.lib import package
 from resources.lib import mediaurl
 from resources.lib import crashreport
+from resources.lib import cache
+
 import unicodedata
 
 
@@ -84,6 +86,7 @@ class gdrive(cloudservice):
         self.integratedPlayer = False
         self.settings = settings
         self.gSpreadsheet = gSpreadsheet
+        self.cache = cache.cache(self)
 
         if authenticate == True:
             self.type = int(addon.getSetting(instanceName+'_type'))
@@ -462,6 +465,7 @@ class gdrive(cloudservice):
                 for r in re.finditer('\"thumbnailLink\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   thumbnail = r.group(1)
+                  thumbnail = self.cache.getThumbnail(thumbnail,resourceID)
                   break
                 for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
@@ -525,7 +529,7 @@ class gdrive(cloudservice):
     #   parameters: title of the video file
     #   returns: download url for srt
     ##
-    def getSRT(self, title, path):
+    def getSRT(self, title):
 
         # retrieve all items
         url = self.API_URL +'files/'
@@ -536,9 +540,9 @@ class gdrive(cloudservice):
             encodedTitle = re.sub(' ', '+', title)
             url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
 
-
-        SRTTitle = []
-        SRTURL = []
+        srt = []
+#        SRTTitle = []
+#        SRTURL = []
         while True:
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -594,7 +598,7 @@ class gdrive(cloudservice):
                         url = r.group(1)
 #                  SRTURL.append(url)
 #                  SRTTitle.append(title)
-                        self.downloadPicture(url, str(path) + str(title))
+                        srt.append([title,url])
                         break
 
 
@@ -612,6 +616,7 @@ class gdrive(cloudservice):
             else:
                 url = nextURL
 
+        return srt
 #        if len(SRTURL) == 0:
 #            return ''
 #        elif len(SRTURL) == 1:
@@ -631,14 +636,15 @@ class gdrive(cloudservice):
     #   parameters: TTS Base URL
     #   returns: nothing
     ##
-    def getTTS(self, baseURL, path):
+    def getTTS(self, baseURL):
 
         # retrieve all items
         url = baseURL +'&hl=en-US&type=list&tlangs=1&fmts=1&vssids=1'
 
-        ccLang = []
-        ccLanguage = []
-        ccURL = []
+#        ccLang = []
+#        ccLanguage = []
+#        ccURL = []
+        cc = []
         while True:
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -671,8 +677,9 @@ class gdrive(cloudservice):
 #                ccURL.append(baseURL+'&type=track&lang='+str(lang)+'&name&kind&fmt=1')
 #                ccLanguage.append(language)
 #                ccLang.append(lang)
-                if not xbmcvfs.exists(str(path) + '.'+str(count) + '.'+ str(lang) + '.srt'):
-                    self.downloadTTS(baseURL+'&type=track&lang='+str(lang)+'&name&kind&fmt=1', str(path) + '.'+str(count) + '.'+ str(lang) + '.srt' )
+                cc.append([ '.'+str(count) + '.'+ str(lang) + '.srt',baseURL+'&type=track&lang='+str(lang)+'&name&kind&fmt=1'])
+#                if not xbmcvfs.exists(str(path) + '.'+str(count) + '.'+ str(lang) + '.srt'):
+#                    self.downloadTTS(baseURL+'&type=track&lang='+str(lang)+'&name&kind&fmt=1', str(path) + '.'+str(count) + '.'+ str(lang) + '.srt' )
 
             # look for more pages of videos
             nextURL = ''
@@ -687,6 +694,7 @@ class gdrive(cloudservice):
             else:
                 url = nextURL
 
+        return cc
  #       if len(ccURL) == 0:
  #           return '',''
  #       elif len(ccURL) == 1:
@@ -1025,8 +1033,11 @@ class gdrive(cloudservice):
             url = self.API_URL +'files/' + str(docid) + '?alt=media'
             mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
 
+
             # old method of fetching original stream -- using downloadURL
-            if 1:
+            # fetch information if no thumbnail cache
+            if self.cache.getThumbnail(fileID=docid) == '':
+                print "XXXXXX"
                 url = self.API_URL +'files/' + str(docid)
 
                 req = urllib2.Request(url, None, self.getHeadersList())
