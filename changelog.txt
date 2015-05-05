@@ -1,5 +1,7 @@
+Version 0.6.22
 - add: thumbnail caching
 - add: srt/cc caching
+- improvements to offline caching playback
 Version 0.6.21
 - apply Playback with Original changes for all playback methods
 - fix: .STRM playback fix

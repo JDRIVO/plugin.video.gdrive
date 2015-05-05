@@ -124,7 +124,23 @@ class cache:
 
 
     def getFiles(self):
-        return files
+        cachePath = self.cachePath + '/' + self.package.file.id
+        localResolutions = []
+        localFiles = []
+        if xbmcvfs.exists(cachePath):
+            dirs,files = xbmcvfs.listdir(cachePath)
+            for file in files:
+                if os.path.splitext(file)[1] == '.stream':
+                    try:
+                        resolutionFile = xbmcvfs.File(cachePath + '/' + str(file) + '.resolution')
+                        resolution = resolutionFile.read()
+                        resolutionFile.close()
+                    except:
+                        resolution = file
+                    localResolutions.append(resolution)
+                    localFiles.append(file)
+
+        return (localResolutions,localFiles)
 
 
 

@@ -1219,11 +1219,12 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
     else:
             (mediaURLs,package) = service.getPlaybackCall(None,title=title)
 
-    cache = cache.cache(service,package)
-    package.file.thumbnail = cache.setThumbnail()
 
     originalURL = ''
     if playbackMedia:
+        cache = cache.cache(service,package)
+        service.cache = cache
+        package.file.thumbnail = cache.setThumbnail()
 
        # SRTURL = ''
         srtpath = ''
@@ -1272,7 +1273,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
         (playbackPath, playbackQuality) = service.getMediaSelection(mediaURLs, folderID, filename)
         playbackPlayer = settings.integratedPlayer
-        playbackPath = playbackPath +'|' + service.getHeadersEncoded(service.useWRITELY)
+        #playbackPath = playbackPath +'|' + service.getHeadersEncoded(service.useWRITELY)
 
         #download and play
         if settings.download and settings.play:
@@ -1296,14 +1297,14 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 playbackPlayer = False
 
             # right-click force cache playback
-            elif settings.cache:
-                playbackPlayer = True
-                playbackMedia = False
-                dirs, files = xbmcvfs.listdir(settings.cachePath + '/'+ str(package.file.id) + '/')
-                for file in files:
-                    if os.path.splitext(file)[1] == '.stream':
-                        playbackPath = settings.cachePath + '/'+ str(package.file.id) + '/' + file
-                        playbackMedia = True
+#            elif settings.cache:
+#                playbackPlayer = True
+#                playbackMedia = False
+#                dirs, files = xbmcvfs.listdir(settings.cachePath + '/'+ str(package.file.id) + '/')
+#                for file in files:
+#                    if os.path.splitext(file)[1] == '.stream':
+#                        playbackPath = settings.cachePath + '/'+ str(package.file.id) + '/' + file
+#                        playbackMedia = True
 
 
             # right-click play original, srt, caption, seek

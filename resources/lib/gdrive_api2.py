@@ -1037,7 +1037,6 @@ class gdrive(cloudservice):
             # old method of fetching original stream -- using downloadURL
             # fetch information if no thumbnail cache
             if self.cache.getThumbnail(fileID=docid) == '':
-                print "XXXXXX"
                 url = self.API_URL +'files/' + str(docid)
 
                 req = urllib2.Request(url, None, self.getHeadersList())
@@ -1544,31 +1543,34 @@ class gdrive(cloudservice):
         playbackQuality = ''
         playbackPath = ''
         if self.settings.playOriginal and not self.settings.cache:
-            playbackPath = originalURL
+            playbackPath = originalURL + '|' + self.getHeadersEncoded(self.useWRITELY)
             playbackQuality = 'original'
         elif self.settings.promptQuality and len(options) > 1 and not self.settings.cache:
             ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), options)
-            playbackPath = mediaURLs[ret].url
+            playbackPath = mediaURLs[ret].url + '|' + self.getHeadersEncoded(self.useWRITELY)
             playbackQuality = mediaURLs[ret].quality
         elif self.settings.cache:
-            playbackPath = str(self.settings.cachePath) + '/' + str(folderID) + '/' + str(filename) + '/'
+            playbackPath = str(self.settings.cachePath) + '/' + str(filename) + '/'
 
-            if xbmcvfs.exists(playbackPath):
+            (localResolutions,localFiles) = self.cache.getFiles()
+            totalList = localFiles + mediaURLs
+            mediaCount = len(localFiles)
 
-                    dirs,files = xbmcvfs.listdir(playbackPath)
+            if self.settings.promptQuality:
+                ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), localResolutions + options)
+                if ret > mediaCount:
+                    playbackPath = totalList[ret].url + '|' + self.getHeadersEncoded(self.useWRITELY)
+                else:
+                    playbackPath = str(playbackPath) + str(totalList[ret])
 
-                    options = []
-                    files = sorted(files)
-                    for file in files:
-                        options.append(file)
-                    if self.settings.promptQuality:
-                        ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), options)
-                        playbackPath = str(playbackPath) + str(files[ret])
-                    else:
-                        playbackPath = str(playbackPath) + str(files[0])
+            else:
+                if len(files) == 0:
+                    playbackPath = totalList[0].url + '|' + self.getHeadersEncoded(self.useWRITELY)
+                else:
+                    playbackPath = str(playbackPath) + str(totalList[0])
 
         else:
-            playbackPath = mediaURLs[0].url
+            playbackPath = mediaURLs[0].url + '|' + self.getHeadersEncoded(self.useWRITELY)
             playbackQuality = mediaURLs[0].quality
 
         return (playbackPath, playbackQuality)
