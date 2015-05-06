@@ -402,17 +402,20 @@ class cloudservice(object):
                         values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id, 'content_type': contextType }
 
                         cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
+
                     elif contextType == 'image':
-                        values = {'username': self.authorization.username, 'title': folder.title, 'folderID': folder.id}
+                        # slideshow
+                        values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id}
                         cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=slideshow&'+urllib.urlencode(values)+')', ))
 
                     #download folder
                     if (self.protocol == 2):
-                        values = {'instance': self.instanceName, 'title': folder.title, 'folder': folder.id}
-                        cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&'+urllib.urlencode(values)+')', ))
+                        if contextType != 'image':
+                            values = {'instance': self.instanceName, 'title': folder.title, 'folder': folder.id}
+                            cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&'+urllib.urlencode(values)+')', ))
 
-                        values = {'instance': self.instanceName, 'folder': folder.id}
-                        cm.append(( 'watch folder', 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)+')', ))
+                            values = {'instance': self.instanceName, 'folder': folder.id}
+                            cm.append(( 'watch folder', 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)+')', ))
 
                         #encfs
                         values = {'instance': self.instanceName, 'foldername': folder.title, 'folder': folder.id}
@@ -492,12 +495,14 @@ class cloudservice(object):
             cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+urllib.urlencode(valuesBS)+')', ))
 
             if (self.protocol == 2):
-                # download
-                cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+url + '&download=true'+')', ))
-                # download + watch
-                cm.append(( self.addon.getLocalizedString(30124), 'XBMC.RunPlugin('+url + '&play=true&download=true'+')', ))
-                # watch downloaded copy
-                cm.append(( self.addon.getLocalizedString(30125), 'XBMC.RunPlugin('+url + '&cache=true'+')', ))
+                if contextType != 'image':
+                    # download
+                    cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+url + '&download=true'+')', ))
+
+                    # download + watch
+                    cm.append(( self.addon.getLocalizedString(30124), 'XBMC.RunPlugin('+url + '&play=true&download=true'+')', ))
+                    # watch downloaded copy
+                    cm.append(( self.addon.getLocalizedString(30125), 'XBMC.RunPlugin('+url + '&cache=true'+')', ))
 
                 # play-original for video only
                 if (contextType == 'video'):
@@ -528,7 +533,7 @@ class cloudservice(object):
 
         #    listitem.addContextMenuItems( commands )
         #    if cm:
-        listitem.addContextMenuItems(cm, False)
+        listitem.addContextMenuItems(cm, True)
 
 
         xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
