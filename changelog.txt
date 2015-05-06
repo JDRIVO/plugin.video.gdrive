@@ -1,3 +1,5 @@
+Version 0.6.25
+- fix: playback issue when forced prompt is disabled.
 Version 0.6.24
 - fixes for slideshow playback
 Version 0.6.23

@@ -1574,7 +1574,8 @@ class gdrive(cloudservice):
                     mediaURL = mediaurl.mediaurl(str(playbackPath) + str(totalList[0]), 'offline', 0, 0)
 
         else:
-            mediaURL = mediaURLs[0]+'|' + self.getHeadersEncoded(self.useWRITELY)
+            mediaURLs[0].url = mediaURLs[0].url +'|' + self.getHeadersEncoded(self.useWRITELY)
+            mediaURL = mediaURLs[0]
 
         return mediaURL
 
