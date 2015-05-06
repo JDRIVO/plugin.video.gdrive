@@ -227,18 +227,16 @@ class cloudservice(object):
     #   parameters: title of video, whether to prompt for quality/format (optional),
     ##
 #    def downloadMediaFile(self, playback, url, title, folderID, filename, fileSize, force=False, encfs=False, folderName=''):
-    def downloadMediaFile(self, playback, url, title, package, force=False, encfs=False, folderName=''):
+    def downloadMediaFile(self, playback, mediaURL, package, force=False, encfs=False, folderName=''):
 
 
-        try:
-            cachePercent = int(self.addon.getSetting('cache_percent'))
-        except:
-            cachePercent = 10
+        cachePercent = int(self.settings.cachePercent)
 
         if cachePercent < 1:
             cachePercent = 1
         elif cachePercent > 100:
             cachePercent = 100
+
         fileSize = (int)(package.file.size)
         if fileSize == '' or fileSize < 1000:
             fileSize = 5000000
@@ -248,26 +246,12 @@ class cloudservice(object):
         if sizeDownload < 1000000:
             sizeDownload = 1000000
 
-        CHUNK = 0
-        try:
-            CHUNK = int(self.addon.getSetting('chunk_size'))
-        except:
-            CHUNK = 32 * 1024
+        CHUNK = int(self.settings.cacheChunkSize)
 
         if CHUNK < 1024:
             CHUNK = 16 * 1024
 
         count = 0
-
-        try:
-            cacheSingleFile = self.addon.getSetting('cache_single')
-            if cacheSingleFile == 'true':
-                cacheSingleFile = True
-                force = True
-            else:
-                cacheSingleFile = False
-        except:
-            cacheSingleFile = False
 
 
         if encfs:
@@ -297,26 +281,34 @@ class cloudservice(object):
                 xbmcvfs.mkdir(str(path) + '/'+str(folderName))
             except: pass
 
-            playbackFile = str(path) + '/' + str(folderName) + '/' + str(title)
+            playbackFile = str(path) + '/' + str(folderName) + '/' + str(mediaURL.order) + '.stream'
 
-        elif cacheSingleFile:
+        elif self.settings.cacheSingle:
             playbackFile = str(path) + '/cache.mp4'
 
         else:
-#            try:
-#                xbmcvfs.mkdir(str(path) + '/'+str(folderID))
-#            except: pass
-
             try:
                 xbmcvfs.mkdir(str(path) + '/'+ str(package.file.id))
             except: pass
 
-            playbackFile = str(path) + '/' + str(package.file.id) + '/' + str(title)
+            playbackFile = str(path) + '/' + str(package.file.id) + '/' + str(mediaURL.order) + '.stream'
+
+        if not xbmcvfs.exists(str(path) + '/' + str(package.file.id) + '/' + str(package.file.id) + '.name') or force:
+
+            nameFile = xbmcvfs.File(str(path) + '/' + str(package.file.id) + '/' + str(package.file.id)+'.name' , "w")
+            nameFile.write(package.file.title +'\n')
+            nameFile.close()
+
+        if not xbmcvfs.exists(playbackFile + '.resolution') or force:
+
+            resolutionFile = xbmcvfs.File(playbackFile+'.resolution' , "w")
+            resolutionFile.write(mediaURL.qualityDesc +'\n')
+            resolutionFile.close()
 
 
         if not xbmcvfs.exists(playbackFile) or force:
 
-            req = urllib2.Request(url, None, self.getHeadersList())
+            req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
 
             f = xbmcvfs.File(playbackFile, 'w')
 
@@ -324,11 +316,11 @@ class cloudservice(object):
             if playback != '':
                 progress = xbmcgui.DialogProgress()
                 progressBar = sizeDownload
-                progress.create(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30035), title)
+                progress.create(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30035), package.file.title)
             else:
                 progress = xbmcgui.DialogProgressBG()
                 progressBar = fileSize
-                progress.create(self.addon.getLocalizedString(30035), title)
+                progress.create(self.addon.getLocalizedString(30035), package.file.title)
 
             # if action fails, validate login
             try:
@@ -336,13 +328,13 @@ class cloudservice(object):
 
             except urllib2.URLError, e:
               self.refreshToken()
-              req = urllib2.Request(url, None, self.getHeadersList())
+              req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
               try:
                   response = urllib2.urlopen(req)
 
               except urllib2.URLError, e:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('downloadPicture',str(e))
+                self.crashreport.sendError('downloadMediaFile',str(e))
                 return
 
             downloadedBytes = 0
@@ -364,7 +356,7 @@ class cloudservice(object):
                                 thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
 
             item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-            xbmcplugin.setResolvedUrl(playback, True, item)
+            xbmcplugin.setResolvedUrl(playbackFile, True, item)
             xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
 
         try:
@@ -491,12 +483,12 @@ class cloudservice(object):
         except:
             cleanURL = ''
 
-    #    url = PLUGIN_URL+playbackURL+'&title='+package.file.title+'&filename='+package.file.id+'&instance='+str(self.instanceName)+'&filesize='+str(package.file.size)+'&folder='+str(package.folder.id)
-        values = {'instance': self.instanceName, 'title': package.file.title, 'filename': package.file.id, 'filesize': package.file.size, 'folder': package.folder.id}
+    #    url = PLUGIN_URL+playbackURL+'&title='+package.file.title+'&filename='+package.file.id+'&instance='+str(self.instanceName)+'&folder='+str(package.folder.id)
+        values = {'instance': self.instanceName, 'title': package.file.title, 'filename': package.file.id, 'folder': package.folder.id}
         url = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)
 
         if (contextType != 'image' and package.file.type != package.file.PICTURE):
-            valuesBS = {'username': self.authorization.username, 'title': package.file.title, 'filename': package.file.id, 'filesize': package.file.size, 'content_type': 'video'}
+            valuesBS = {'username': self.authorization.username, 'title': package.file.title, 'filename': package.file.id, 'content_type': 'video'}
             cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+urllib.urlencode(valuesBS)+')', ))
 
             if (self.protocol == 2):

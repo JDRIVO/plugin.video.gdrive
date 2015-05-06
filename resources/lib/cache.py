@@ -54,9 +54,10 @@ class cache:
             if not xbmcvfs.exists(cachePath):
                 xbmcvfs.mkdir(cachePath)
             srt = self.service.getSRT(self.package.file.title)
-            for file in srt:
-                if not xbmcvfs.exists(cachePath + str(file[0])):
-                    self.service.downloadPicture(file[1], cachePath + str(file[0]))
+            if srt:
+                for file in srt:
+                    if not xbmcvfs.exists(cachePath + str(file[0])):
+                        self.service.downloadPicture(file[1], cachePath + str(file[0]))
 
     def setCC(self):
         if self.cachePath == '':
@@ -75,9 +76,10 @@ class cache:
                 xbmcvfs.mkdir(cachePath)
             cachePath = str(cachePath) + str(self.package.file.id)
             cc = self.service.getTTS(self.package.file.srtURL)
-            for file in cc:
-                if not xbmcvfs.exists(cachePath + str(file[0])):
-                    self.service.downloadTTS(file[1], cachePath + str(file[0]))
+            if cc:
+                for file in cc:
+                    if not xbmcvfs.exists(cachePath + str(file[0])):
+                        self.service.downloadTTS(file[1], cachePath + str(file[0]))
 
 
     def getSRT(self):
@@ -137,10 +139,28 @@ class cache:
                         resolutionFile.close()
                     except:
                         resolution = file
-                    localResolutions.append(resolution)
-                    localFiles.append(file)
+                    localResolutions.append('offline - ' + str(resolution))
+                    localFiles.append(cachePath + '/' + file)
 
         return (localResolutions,localFiles)
+
+
+    def getOfflineFileList(self, fileID):
+        localFiles = []
+        if xbmcvfs.exists(self.cachePath):
+            dirs,files = xbmcvfs.listdir(self.cachePath)
+            for file in files:
+                if os.path.splitext(file)[1] == '.stream':
+                    try:
+                        nameFile = xbmcvfs.File(cachePath + '/' + + str(fileID) + '/' + str(fileID) + '.name')
+                        filename = nameFile.read()
+                        nameFile.close()
+                    except:
+                        filename = file
+                    localFiles.append(file)
+
+
+        return localFiles
 
 
 

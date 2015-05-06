@@ -97,7 +97,9 @@ class settings:
         self.download = self.getParameter('download', getSetting('always_cache', False))
         self.play = self.getParameter('play', getSetting('always_cache', False))
         self.cachePath = self.getSetting('cache_folder')
-
+        self.cacheSingle = self.getSetting('cache_single')
+        self.cachePercent = self.getSetting('cache_percent', 10)
+        self.cacheChunkSize = self.getSetting('chunk_size', 32 * 1024)
 
         if self.cache:
             self.download = False

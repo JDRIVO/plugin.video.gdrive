@@ -890,7 +890,6 @@ elif mode == 'audio':
     if folderID == 'False':
             folderID = 'SEARCH'
 
-
     try:
         service
     except NameError:
@@ -898,15 +897,6 @@ elif mode == 'audio':
         log(addon.getLocalizedString(30050)+ 'gdrive-login', True)
         xbmcplugin.endOfDirectory(plugin_handle)
 
-
-    #force cache
-    #settings.setCacheParameters()
-
-
-    fileSize = getParameter('filesize')
-
-    #cache folder (used for downloading)
-    path = getSetting('cache_folder')
 
 
     playbackMedia = True
@@ -926,6 +916,7 @@ elif mode == 'audio':
                 except:
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30100))
                     title = 'test'
+
             mediaItems = service.getMediaList(title=title, contentType=contentType)
             playbackMedia = False
 
@@ -961,27 +952,23 @@ elif mode == 'audio':
 
 
     if playbackMedia:
+        cache = cache.cache(service,package)
+        service.cache = cache
 
-        playbackURL = ''
-        playbackQuality = ''
-        playbackPath = ''
-        if settings.cache:
-            playbackPath = str(path) + '/' + str(folderID) + '/' + str(filename) + '/'
-
-            if xbmcvfs.exists(playbackPath):
-
-                    dirs,files = xbmcvfs.listdir(playbackPath)
-
-                    playbackPath = str(playbackPath) + str(files[0])
-
+        (localResolutions,localFiles) = service.cache.getFiles()
+        if len(localFiles) > 0:
+            mediaURL = mediaurl.mediaurl(str(localFiles[0]), 'offline', 0, 0)
         else:
-            playbackURL = mediaURLs[0].url
-            playbackQuality = mediaURLs[0].quality
+            mediaURL = mediaURLs[0]
+            if not settings.download:
+                mediaURL.url =  mediaURL.url +'|' + service.getHeadersEncoded(service.useWRITELY)
+
+        playbackPlayer = settings.integratedPlayer
 
         #download and play
         if settings.download and settings.play:
-            service.downloadMediaFile(int(sys.argv[1]), playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
-
+            service.downloadMediaFile(int(sys.argv[1]), mediaURL, package)
+            playbackMedia = False
         ###
         #right-menu context or STRM
         ##
@@ -989,38 +976,15 @@ elif mode == 'audio':
 
             #download
             if settings.download and not settings.play:
-                service.downloadMediaFile('',playbackURL, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
+                service.downloadMediaFile('',mediaURL, package, force=True)
                 playbackMedia = False
 
-            #play cache
-            elif settings.cache:
-#                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+")")
-                player = gPlayer.gPlayer()
-                player.play(str(playbackPath))
+            # for STRM (force resolve) -- resolve-only
+            elif settings.username != '':
+                playbackPlayer = False
 
-            #right-click play-original
-            elif settings.playOriginal:
-                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail)#, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
-                # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
-                item.setInfo( type="Video", infoLabels={ "Title": title } )
-                if settings.integratedPlayer:
-                    player = gPlayer.gPlayer()
-                    player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
-                else:
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-            #STRM
             else:
-                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
-                # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
-                item.setInfo( type="Video", infoLabels={ "Title": title } )
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-
-#                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
-#                w.setPlayer(player)
-#                w.doModal()
+                playbackPlayer = True
 
 
         # from within pictures mode, music won't be playable, force
@@ -1030,40 +994,40 @@ elif mode == 'audio':
                 # local, not remote. "Music" is ok
                 item.setInfo( type="Music", infoLabels={ "Title": title } )
                 player = gPlayer.gPlayer()
-                player.play(playbackPath, item)
-
-        #direct playback from within plugin
-        elif settings.cache:
-                item = xbmcgui.ListItem(path=str(playbackPath))
-                # local, not remote. "Music" is ok
-                item.setInfo( type="Music", infoLabels={ "Title": title } )
-                if settings.integratedPlayer:
-                    player = gPlayer.gPlayer()
-                    player.play(playbackPath, item)
-                else:
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                player.play(mediaURL.url, item)
+                playbackMedia = False
 
         # from within pictures mode, music won't be playable, force
         #direct playback from within plugin
         elif contextType == 'image':
             item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
             # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
             item.setInfo( type="Video", infoLabels={ "Title": title } )
             player = gPlayer.gPlayer()
-            player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+            player.play(mediaURL.url, item)
+            playbackMedia = False
 
-        else:
+        if playbackMedia:
+                if playbackPlayer:
 
-            item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
-            # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
-            item.setInfo( type="Video", infoLabels={ "Title": title } )
-            if settings.integratedPlayer:
-                player = gPlayer.gPlayer()
-                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
-            else:
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
+                    # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
+                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+                    #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+                    player = gPlayer.gPlayer()
+                    #player.play(playbackPath, item)
+                    player.PlayStream(mediaURL.url, item, 0)
+
+                else:
+
+                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
+                    # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
+                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 
 ###
@@ -1157,8 +1121,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
     if settings.cache:
             settings.download = False
             settings.play = False
-
-    fileSize = getParameter('filesize')
 
 
     playbackMedia = True
@@ -1271,14 +1233,14 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     #service.downloadTTS(SRTURL, srtpath)
 
 
-        (playbackPath, playbackQuality) = service.getMediaSelection(mediaURLs, folderID, filename)
+        mediaURL = service.getMediaSelection(mediaURLs, folderID, filename)
         playbackPlayer = settings.integratedPlayer
-        #playbackPath = playbackPath +'|' + service.getHeadersEncoded(service.useWRITELY)
+        #mediaURL.url = mediaURL.url +'|' + service.getHeadersEncoded(service.useWRITELY)
 
         #download and play
         if settings.download and settings.play:
 #            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
-            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(playbackQuality) + '.stream', package)
+            service.downloadMediaFile(int(sys.argv[1]), mediaURL, package)
             playbackMedia = False
 
         ###
@@ -1289,7 +1251,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
             # right-click force download only
             if settings.download and not settings.play:
 #                service.downloadMediaFile('',playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
-                service.downloadMediaFile('',playbackPath, str(playbackQuality) + '.stream', package, force=True)
+                service.downloadMediaFile('',mediaURL, package, force=True)
                 playbackMedia = False
 
             # for STRM (force resolve) -- resolve-only
@@ -1343,9 +1305,9 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                                     player.setService(service)
                                     player.setWorksheet(worksheets['db'])
                                     if len(media) == 0:
-                                        player.PlayStream(playbackPath, item, 0, package)
+                                        player.PlayStream(mediaURL.url, item, 0, package)
                                     else:
-                                        player.PlayStream(playbackPath, item,media[0][7],package)
+                                        player.PlayStream(mediaURL.url, item,media[0][7],package)
                                     while not player.isExit:
                                         player.saveTime()
                                         xbmc.sleep(5000)
@@ -1378,9 +1340,9 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     player = gPlayer.gPlayer()
                     #player.play(playbackPath, item)
                     if seek > 0:
-                        player.PlayStream(playbackPath, item, seek)
+                        player.PlayStream(mediaURL.url, item, seek)
                     else:
-                        player.PlayStream(playbackPath, item, 0)
+                        player.PlayStream(mediaURL.url, item, 0)
 
                     #load any cc or srt
                     if settings.srt or settings.cc:
@@ -1394,7 +1356,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 else:
 
                     item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=playbackPath)
+                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
 
                     item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)

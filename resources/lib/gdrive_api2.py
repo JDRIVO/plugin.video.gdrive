@@ -1035,8 +1035,8 @@ class gdrive(cloudservice):
 
 
             # old method of fetching original stream -- using downloadURL
-            # fetch information if no thumbnail cache
-            if self.cache.getThumbnail(fileID=docid) == '':
+            # fetch information if no thumbnail cache (we need thumbnail url) or we want to download (we need filesize)
+            if self.cache.getThumbnail(fileID=docid) == '' or self.settings.download :
                 url = self.API_URL +'files/' + str(docid)
 
                 req = urllib2.Request(url, None, self.getHeadersList())
@@ -1531,7 +1531,7 @@ class gdrive(cloudservice):
         return mediaURLs
 
 
-    def getMediaSelection(self, mediaURLs, folderID,filename):
+    def getMediaSelection(self, mediaURLs, folderID, filename):
 
         options = []
         mediaURLs = sorted(mediaURLs)
@@ -1540,15 +1540,16 @@ class gdrive(cloudservice):
             if mediaURL.qualityDesc == 'original':
                 originalURL = mediaURL.url
 
-        playbackQuality = ''
-        playbackPath = ''
+        mediaURL = ''
         if self.settings.playOriginal and not self.settings.cache:
-            playbackPath = originalURL + '|' + self.getHeadersEncoded(self.useWRITELY)
-            playbackQuality = 'original'
+            mediaURL = mediaurl.mediaurl(originalURL +'|' + self.getHeadersEncoded(self.useWRITELY), 'original', 0, 9999)
+
         elif self.settings.promptQuality and len(options) > 1 and not self.settings.cache:
             ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), options)
-            playbackPath = mediaURLs[ret].url + '|' + self.getHeadersEncoded(self.useWRITELY)
-            playbackQuality = mediaURLs[ret].quality
+            mediaURL = mediaURLs[ret]
+            if not self.settings.download:
+                mediaURLs[ret].url = mediaURLs[ret].url +'|' + self.getHeadersEncoded(self.useWRITELY)
+
         elif self.settings.cache:
             playbackPath = str(self.settings.cachePath) + '/' + str(filename) + '/'
 
@@ -1559,21 +1560,23 @@ class gdrive(cloudservice):
             if self.settings.promptQuality:
                 ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), localResolutions + options)
                 if ret > mediaCount:
-                    playbackPath = totalList[ret].url + '|' + self.getHeadersEncoded(self.useWRITELY)
+                    mediaURL = totalList[ret]
+                    mediaURL.url = totalList[ret].url
                 else:
-                    playbackPath = str(playbackPath) + str(totalList[ret])
+                    mediaURL = mediaurl.mediaurl(str(totalList[ret]), 'offline', 0, 0)
 
             else:
                 if len(files) == 0:
-                    playbackPath = totalList[0].url + '|' + self.getHeadersEncoded(self.useWRITELY)
+                    mediaURL = totalList[0]
+                    mediaURL.url = totalList[0].url
+
                 else:
-                    playbackPath = str(playbackPath) + str(totalList[0])
+                    mediaURL = mediaurl.mediaurl(str(playbackPath) + str(totalList[0]), 'offline', 0, 0)
 
         else:
-            playbackPath = mediaURLs[0].url + '|' + self.getHeadersEncoded(self.useWRITELY)
-            playbackQuality = mediaURLs[0].quality
+            mediaURL = mediaURLs[0]+'|' + self.getHeadersEncoded(self.useWRITELY)
 
-        return (playbackPath, playbackQuality)
+        return mediaURL
 
 
 
