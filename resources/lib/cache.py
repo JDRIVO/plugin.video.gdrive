@@ -16,8 +16,13 @@
 
 
 '''
-import xbmcvfs
+
+# cloudservice - standard modules
 import os
+
+# cloudservice - standard XBMC modules
+import xbmcgui, xbmcvfs
+
 
 #
 #
@@ -46,7 +51,7 @@ class cache:
 
         if cachePath == '':
             cachePath = xbmcgui.Dialog().browse(0,self.service.addon.getLocalizedString(30136), 'files','',False,False,'')
-            self.service.settings.setSetting('cache_folder', cachePath)
+            self.service.addon.setSetting('cache_folder', cachePath)
             self.cachePath = cachePath
 
         if cachePath != '':
@@ -67,7 +72,7 @@ class cache:
 
         if cachePath == '':
             cachePath = xbmcgui.Dialog().browse(0,self.service.addon.getLocalizedString(30136), 'files','',False,False,'')
-            self.service.settings.setSetting('cache_folder', cachePath)
+            self.service.addon.setSetting('cache_folder', cachePath)
             self.cachePath = cachePath
 
         if cachePath != '':
@@ -98,11 +103,15 @@ class cache:
 
         if cachePath == '':
             cachePath = xbmcgui.Dialog().browse(0,self.service.addon.getLocalizedString(30136), 'files','',False,False,'')
-            self.service.settings.setSetting('cache_folder', cachePath)
+            self.service.addon.setSetting('cache_folder', cachePath)
             self.cachePath = cachePath
 
         if url == '':
             url = self.package.file.thumbnail
+
+        #simply no thumbnail
+        if url == '':
+            return ""
 
         cachePath = str(cachePath) + str(self.package.file.id) + '/'
         if not xbmcvfs.exists(cachePath):
