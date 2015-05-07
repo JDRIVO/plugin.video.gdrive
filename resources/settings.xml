@@ -155,8 +155,6 @@
         <setting id="library" type="bool" label="30064" default="false" />
         <setting id="library_account" type="labelenum"  values="1|2|3|4|5|6|7|8|9" default="1" label="30062" />
         <setting id="library_filename" type="text" label="30063" default="" />
-
--->
     </category>
     <category label="30074">
         <setting id="crashreport_enable" type="bool" label="30075" default="false"/>

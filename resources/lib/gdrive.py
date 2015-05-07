@@ -18,24 +18,28 @@
 
 '''
 
+# cloudservice - required python modules
 import os
 import re
 import urllib, urllib2
 import cookielib
-from cloudservice import cloudservice
+import unicodedata
 
+#*** testing - gdrive
 from resources.lib import encryption
-from resources.lib import downloadfile
+##**
+
+# cloudservice - standard modules
+from cloudservice import cloudservice
 from resources.lib import authorization
 from resources.lib import folder
 from resources.lib import file
 from resources.lib import package
 from resources.lib import mediaurl
 from resources.lib import crashreport
-import unicodedata
 
 
-
+# cloudservice - standard XBMC modules
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
 # global variables

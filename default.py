@@ -1216,45 +1216,10 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         srtpath = ''
         if settings.srt:
             cache.setSRT()
-            if 0:
-#            SRTURL = service.getSRT(title)
-#            if SRTURL != '':
-
-                srtpath = settings.cachePath
-
-                if srtpath == '':
-                    srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
-                    addon.setSetting('cache_folder', srtpath)
-                    settings.cachePath = srtpath
-
-                if srtpath != '':
-                    srtpath = str(srtpath) + '/' + str(package.file.id) + '/'
-                    if not xbmcvfs.exists(srtpath):
-                        xbmcvfs.mkdir(srtpath)
-                    service.getSRT(title,srtpath)
-#                    service.downloadPicture(SRTURL, srtpath)
 
         # download closed-captions
         if settings.cc:
             cache.setCC()
-#            SRTURL,lang = service.getTTS(package.file.srtURL)
-
-#            if SRTURL != '':
-            if 0:
-                srtpath = settings.cachePath
-
-                if srtpath == '':
-                    srtpath = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30136), 'files','',False,False,'')
-                    addon.setSetting('cache_folder', srtpath)
-
-                if srtpath != '':
-
-                    srtpath = str(srtpath) + '/' + str(package.file.id)+'/'#+ '.'+str(lang)+'.srt'
-                    if not xbmcvfs.exists(srtpath):
-                        xbmcvfs.mkdir(srtpath)
-                    srtpath = str(srtpath) + str(package.file.id)
-                    service.getTTS(package.file.srtURL, srtpath)
-                    #service.downloadTTS(SRTURL, srtpath)
 
 
         mediaURL = service.getMediaSelection(mediaURLs, folderID, filename)
