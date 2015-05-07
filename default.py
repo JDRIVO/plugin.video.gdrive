@@ -16,27 +16,31 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+#*** testing - gdrive
 from resources.lib import encryption
+##**
 
+# cloudservice - required python modules
 import sys
 import urllib
 import cgi
 import re
-import xbmcvfs
 import os
 
-import xbmc, xbmcgui, xbmcplugin, xbmcaddon
+# cloudservice - standard XBMC modules
+import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
 
 # global variables
 PLUGIN_NAME = 'gdrive'
 
-#helper methods
+# cloudservice - helper methods
 def log(msg, err=False):
     if err:
         xbmc.log(addon.getAddonInfo('name') + ': ' + msg, xbmc.LOGERROR)
     else:
         xbmc.log(addon.getAddonInfo('name') + ': ' + msg, xbmc.LOGDEBUG)
 
+# cloudservice - helper methods
 def parse_query(query):
     queries = cgi.parse_qs(query)
     q = {}
@@ -45,7 +49,7 @@ def parse_query(query):
     q['mode'] = q.get('mode', 'main')
     return q
 
-
+# cloudservice - helper methods
 def addMenu(url, title, img='', fanart='', total_items=0):
 #    listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
     listitem = xbmcgui.ListItem(title, iconImage=img, thumbnailImage=img)
@@ -58,6 +62,7 @@ def addMenu(url, title, img='', fanart='', total_items=0):
     xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=True, totalItems=total_items)
 
+# cloudservice - helper methods
 #http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
 def _callback(matches):
     id = matches.group(1)
@@ -66,9 +71,11 @@ def _callback(matches):
     except:
         return id
 
+# cloudservice - helper methods
 def decode(data):
     return re.sub("&#(\d+)(;|(?=\s))", _callback, data).strip()
 
+# cloudservice - helper methods
 def getParameter(key,default=''):
     try:
         value = plugin_queries[key]
@@ -81,6 +88,7 @@ def getParameter(key,default=''):
     except:
         return default
 
+# cloudservice - helper methods
 def getSetting(key,default=''):
     try:
         value = addon.getSetting(key)
@@ -93,6 +101,7 @@ def getSetting(key,default=''):
     except:
         return default
 
+# cloudservice - helper methods
 def numberOfAccounts(accountType):
 
     count = 1
@@ -123,8 +132,14 @@ addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 #import os
 #sys.path.append(os.path.join( addon_dir, 'resources', 'lib' ) )
 
+#*** testing - gdrive
 from resources.lib import gdrive
 from resources.lib import gdrive_api2
+from resources.lib import tvWindow
+from resources.lib import gSpreadsheets
+##**
+
+# cloudservice - standard modules
 from resources.lib import cloudservice
 from resources.lib import authorization
 from resources.lib import folder
@@ -133,12 +148,11 @@ from resources.lib import package
 from resources.lib import mediaurl
 from resources.lib import crashreport
 from resources.lib import gPlayer
-from resources.lib import tvWindow
-from resources.lib import gSpreadsheets
 from resources.lib import settings
 from resources.lib import cache
 
 
+# cloudservice - standard debugging
 try:
 
     remote_debugger = getSetting('remote_debugger')
@@ -157,6 +171,8 @@ except ImportError:
 except :
     pass
 
+
+# cloudservice - create settings module
 settings = settings.settings(addon)
 
 # retrieve settings
@@ -167,9 +183,10 @@ user_agent = getSetting('user_agent')
 
 
 
+#*** old - gdrive
 # hidden parameters which may not even be defined
 useWRITELY = getSetting('force_writely')
-
+##**
 
 mode = getParameter('mode','main')
 
@@ -181,11 +198,14 @@ log('plugin url: ' + PLUGIN_URL)
 log('plugin queries: ' + str(plugin_queries))
 log('plugin handle: ' + str(plugin_handle))
 
+
+#*** old - gdrive
 # allow for playback of public videos without authentication
 if (mode == 'streamurl'):
   authenticate = False
 else:
   authenticate = True
+##**
 
 instanceName = ''
 try:
@@ -193,14 +213,13 @@ try:
 except:
     pass
 
-# sorting options
+# cloudservice - sorting options
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 
 
+# cloudservice - content type
 contextType = getParameter('content_type')
-
-
 
     #contentType
     #video context
@@ -250,10 +269,12 @@ try:
 except:
       contentType = 2
 
-#* utilities *
+
+# cloudservice - utilities
 #clear the authorization token(s) from the identified instanceName or all instances
 if mode == 'clearauth':
 
+    #*** old - needs to be re-written
     if instanceName != '':
 
         try:
@@ -283,6 +304,7 @@ if mode == 'clearauth':
             count = count + 1
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30023))
     xbmcplugin.endOfDirectory(plugin_handle)
+
 
 # enroll a new account
 elif mode == 'enroll':
@@ -640,17 +662,17 @@ if mode == 'main' or mode == 'index':
 
     folderName = getParameter('folder', False)
 
-    # gdrive specific ***
+    #** testing - gdrive specific
     try:
       decrypt = plugin_queries['decrypt']
       service.setDecrypt()
       log('decrypt ')
     except:
       decrypt = False
-    # ***
+    ##**
 
     # display option for all Videos/Music/Photos, across gdrive
-    # gdrive specific ***
+    #** gdrive specific
     if mode == 'main':
         if contentType in (2,4,7):
             addMenu(PLUGIN_URL+'?mode=index&folder=ALL&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30030)+']')
@@ -671,14 +693,14 @@ if mode == 'main' or mode == 'index':
         addMenu(PLUGIN_URL+'?mode=index&folder=SHARED&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30098)+']')
         addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
         addMenu(PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
+    ##**
 
         encfs_target = getSetting('encfs_target')
         if encfs_target != '':
                 service.addDirectory(None, contextType, localPath=encfs_target)
 
 
-    # ***
-
+    # cloudservice - validate service
     try:
         service
     except NameError:
@@ -703,6 +725,7 @@ if mode == 'main' or mode == 'index':
 
     service.updateAuthorization(addon)
 
+#** testing - gdrive
 elif mode == 'kiosk':
 
     spreadshetModule = getSetting('library', False)
@@ -762,6 +785,7 @@ elif mode == 'kiosk':
                                 player.saveTime()
                                 xbmc.sleep(10000)
 
+##**
 
 elif mode == 'photo':
 
