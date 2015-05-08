@@ -322,7 +322,7 @@ elif mode == 'enroll':
                 if username == invokedUsername:
                     addon.setSetting(instanceName + '_type', str(1))
                     addon.setSetting(instanceName + '_code', str(code))
-                    addon.setSetting(instanceName + '_auth_wise', str(invokedUsername))
+                    addon.setSetting(instanceName + '_username', str(invokedUsername))
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
                     loop = False
                 elif username == '':
@@ -339,7 +339,9 @@ elif mode == 'enroll':
                 #fallback on first defined account
                 addon.setSetting(instanceName + '_type', str(1))
                 addon.setSetting(instanceName + '_code', code)
-                addon.setSetting(instanceName + '_username', username)
+                addon.setSetting(instanceName + '_username', invokedUsername)
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
+                loop = False
             count = count + 1
 
 #create strm files

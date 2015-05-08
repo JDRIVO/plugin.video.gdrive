@@ -18,14 +18,17 @@
 
 '''
 
+# cloudservice - required python modules
 import os
 import re
+import sys
 import urllib, urllib2
 import cookielib
-from cloudservice import cloudservice
+import unicodedata
 
+# cloudservice - standard modules
+from cloudservice import cloudservice
 from resources.lib import encryption
-from resources.lib import downloadfile
 from resources.lib import authorization
 from resources.lib import folder
 from resources.lib import file
@@ -34,12 +37,10 @@ from resources.lib import mediaurl
 from resources.lib import crashreport
 from resources.lib import cache
 
-import unicodedata
 
 
-
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin
-import xbmcvfs
+# cloudservice - standard XBMC modules
+import xbmc, xbmcaddon, xbmcgui, xbmcplugin, xbmcvfs
 
 # global variables
 #PLUGIN_NAME = 'plugin.video.gdrive-testing'
@@ -49,7 +50,6 @@ import xbmcvfs
 #addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 SERVICE_NAME = 'dmdgdrive'
 
-import sys
 
 
 #
