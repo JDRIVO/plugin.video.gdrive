@@ -1,4 +1,5 @@
 - enrollment fix
+- fix: right-click exclusion for images
 Version 0.6.25
 - fix: playback issue when forced prompt is disabled.
 Version 0.6.24

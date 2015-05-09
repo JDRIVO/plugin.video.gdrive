@@ -533,8 +533,10 @@ class cloudservice(object):
 
         #    listitem.addContextMenuItems( commands )
         #    if cm:
-        listitem.addContextMenuItems(cm, True)
-
+        if contextType == 'image':
+            listitem.addContextMenuItems(cm, True)
+        else:
+            listitem.addContextMenuItems(cm, False)
 
         xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=False, totalItems=0)
