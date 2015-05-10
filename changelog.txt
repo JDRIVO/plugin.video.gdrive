@@ -1,3 +1,4 @@
+Version 0.6.26
 - enrollment fix
 - fix: right-click exclusion for images
 Version 0.6.25
