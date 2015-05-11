@@ -86,7 +86,7 @@ class gdrive(cloudservice):
         self.integratedPlayer = False
         self.settings = settings
         self.gSpreadsheet = gSpreadsheet
-        self.cache = cache.cache(self)
+        self.cache = cache.cache()
 
         if authenticate == True:
             self.type = int(addon.getSetting(instanceName+'_type'))
@@ -465,7 +465,7 @@ class gdrive(cloudservice):
                 for r in re.finditer('\"thumbnailLink\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   thumbnail = r.group(1)
-                  thumbnail = self.cache.getThumbnail(thumbnail,resourceID)
+                  thumbnail = self.cache.getThumbnail(self,thumbnail,resourceID)
                   break
                 for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
@@ -1036,7 +1036,7 @@ class gdrive(cloudservice):
 
             # old method of fetching original stream -- using downloadURL
             # fetch information if no thumbnail cache (we need thumbnail url) or we want to download (we need filesize)
-            if self.cache.getThumbnail(fileID=docid) == '' or self.settings.download :
+            if self.cache.getThumbnail(self, fileID=docid) == '' or self.settings.download :
                 url = self.API_URL +'files/' + str(docid)
 
                 req = urllib2.Request(url, None, self.getHeadersList())
@@ -1581,4 +1581,40 @@ class gdrive(cloudservice):
 
 
 
+    def setProperty(self, docid, key, value):
+
+        url = self.API_URL +'files/' + str(docid) + '/properties/' + str(key)
+        propertyValues = '{"value": "'+value+'", "key": "'+key+'", "visibility": "PUBLIC"}'
+
+        req = urllib2.Request(url, propertyValues, self.getHeadersList())
+        req.get_method = lambda: 'PUT'
+
+        try:
+            response = urllib2.urlopen(req)
+#            response = opener.open(url, None,urllib.urlencode(header))
+        except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.refreshToken()
+                req = urllib2.Request(url, propertyValues, self.getHeadersList())
+                req.get_method = lambda: 'PUT'
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                  self.crashreport.sendError('getMediaList',str(e))
+                  return
+
+              #maybe doesn't exist - try to create
+              else:
+                  req = urllib2.Request(url, propertyValues, self.getHeadersList())
+                  try:
+                      response = urllib2.urlopen(req)
+                  except:
+                      xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                      self.crashreport.sendError('setProperty',str(e))
+                      return
+
+
+        response_data = response.read()
+        response.close()
 

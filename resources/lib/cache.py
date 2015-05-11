@@ -23,7 +23,6 @@ import os
 # cloudservice - standard XBMC modules
 import xbmcgui, xbmcvfs
 
-
 #
 #
 #
@@ -32,10 +31,9 @@ class cache:
 
     ##
     ##
-    def __init__(self, service, package=None):
-        self.service = service
+    def __init__(self, package=None):
         self.package = package
-        self.cachePath = self.service.settings.cachePath
+        self.cachePath = ''
         self.files = []
 
     def setPackage(self, package):
@@ -43,36 +41,36 @@ class cache:
 
 
 
-    def setSRT(self):
+    def setSRT(self, service):
         if self.cachePath == '':
-            cachePath = self.service.settings.cachePath
+            cachePath = service.settings.cachePath
         else:
             cachePath = self.cachePath
 
         if cachePath == '':
-            cachePath = xbmcgui.Dialog().browse(0,self.service.addon.getLocalizedString(30136), 'files','',False,False,'')
-            self.service.addon.setSetting('cache_folder', cachePath)
+            cachePath = xbmcgui.Dialog().browse(0,service.addon.getLocalizedString(30136), 'files','',False,False,'')
+            service.addon.setSetting('cache_folder', cachePath)
             self.cachePath = cachePath
 
         if cachePath != '':
             cachePath = str(cachePath) + '/' + str(self.package.file.id)+'/'#+ '.'+str(lang)+'.srt'
             if not xbmcvfs.exists(cachePath):
                 xbmcvfs.mkdir(cachePath)
-            srt = self.service.getSRT(self.package.file.title)
+            srt = service.getSRT(self.package.file.title)
             if srt:
                 for file in srt:
                     if not xbmcvfs.exists(cachePath + str(file[0])):
-                        self.service.downloadPicture(file[1], cachePath + str(file[0]))
+                        service.downloadPicture(file[1], cachePath + str(file[0]))
 
-    def setCC(self):
+    def setCC(self, service):
         if self.cachePath == '':
-            cachePath = self.service.settings.cachePath
+            cachePath = service.settings.cachePath
         else:
             cachePath = self.cachePath
 
         if cachePath == '':
-            cachePath = xbmcgui.Dialog().browse(0,self.service.addon.getLocalizedString(30136), 'files','',False,False,'')
-            self.service.addon.setSetting('cache_folder', cachePath)
+            cachePath = xbmcgui.Dialog().browse(0,service.addon.getLocalizedString(30136), 'files','',False,False,'')
+            service.addon.setSetting('cache_folder', cachePath)
             self.cachePath = cachePath
 
         if cachePath != '':
@@ -80,30 +78,30 @@ class cache:
             if not xbmcvfs.exists(cachePath):
                 xbmcvfs.mkdir(cachePath)
             cachePath = str(cachePath) + str(self.package.file.id)
-            cc = self.service.getTTS(self.package.file.srtURL)
+            cc = service.getTTS(self.package.file.srtURL)
             if cc:
                 for file in cc:
                     if not xbmcvfs.exists(cachePath + str(file[0])):
-                        self.service.downloadTTS(file[1], cachePath + str(file[0]))
+                        service.downloadTTS(file[1], cachePath + str(file[0]))
 
 
-    def getSRT(self):
+    def getSRT(self, service):
         cc = []
-        dirs, files = xbmcvfs.listdir(self.service.settings.cachePath + '/'+ str(self.package.file.id) + '/')
+        dirs, files = xbmcvfs.listdir(service.settings.cachePath + '/'+ str(self.package.file.id) + '/')
         for file in files:
             if os.path.splitext(file)[1] == '.srt':
-                cc.append(self.service.settings.cachePath + '/'+ str(self.package.file.id) + '/' + file)
+                cc.append(service.settings.cachePath + '/'+ str(self.package.file.id) + '/' + file)
         return cc
 
-    def setThumbnail(self, url=''):
+    def setThumbnail(self, service, url=''):
         if self.cachePath == '':
-            cachePath = self.service.settings.cachePath
+            cachePath = service.settings.cachePath
         else:
             cachePath = self.cachePath
 
         if cachePath == '':
-            cachePath = xbmcgui.Dialog().browse(0,self.service.addon.getLocalizedString(30136), 'files','',False,False,'')
-            self.service.addon.setSetting('cache_folder', cachePath)
+            cachePath = xbmcgui.Dialog().browse(0,service.addon.getLocalizedString(30136), 'files','',False,False,'')
+            service.addon.setSetting('cache_folder', cachePath)
             self.cachePath = cachePath
 
         if url == '':
@@ -117,11 +115,12 @@ class cache:
         if not xbmcvfs.exists(cachePath):
             xbmcvfs.mkdir(cachePath)
         if not xbmcvfs.exists(cachePath + str(self.package.file.id) + '.jpg'):
-            self.service.downloadPicture(url, cachePath + str(self.package.file.id) + '.jpg')
+            service.downloadPicture(url, cachePath + str(self.package.file.id) + '.jpg')
+            print url
         return cachePath + str(self.package.file.id) + '.jpg'
 
 
-    def getThumbnail(self, url='', fileID=''):
+    def getThumbnail(self,service, url='', fileID=''):
         if fileID == '':
             if xbmcvfs.exists(str(self.cachePath) + str(self.package.file.id) + '/' + str(self.package.file.id) + '.jpg'):
                 return str(self.cachePath) + str(self.package.file.id) + '/' + str(self.package.file.id) + '.jpg'
@@ -131,7 +130,7 @@ class cache:
             if xbmcvfs.exists(str(self.cachePath) + str(fileID) + '/' + str(fileID) + '.jpg'):
                 return str(self.cachePath) + str(fileID) + '/' + str(fileID) + '.jpg'
             else:
-                return url
+                return url + '|' + service.getHeadersEncoded()
 
 
     def getFiles(self):

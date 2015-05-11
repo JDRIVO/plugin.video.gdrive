@@ -978,7 +978,7 @@ elif mode == 'audio':
 
 
     if playbackMedia:
-        cache = cache.cache(service,package)
+        cache = cache.cache(package)
         service.cache = cache
 
         (localResolutions,localFiles) = service.cache.getFiles()
@@ -1210,18 +1210,18 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
     originalURL = ''
     if playbackMedia:
-        cache = cache.cache(service,package)
+        cache = cache.cache(package)
         service.cache = cache
-        package.file.thumbnail = cache.setThumbnail()
+        package.file.thumbnail = cache.setThumbnail(service)
 
        # SRTURL = ''
         srtpath = ''
         if settings.srt:
-            cache.setSRT()
+            cache.setSRT(service)
 
         # download closed-captions
         if settings.cc:
-            cache.setCC()
+            cache.setCC(service)
 
 
         mediaURL = service.getMediaSelection(mediaURLs, folderID, filename)
@@ -1340,7 +1340,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                         while not (player.isPlaying()):
                             xbmc.sleep(1000)
 
-                        files = cache.getSRT()
+                        files = cache.getSRT(service)
                         for file in files:
                             player.setSubtitles(file.encode("utf-8"))
 
@@ -1366,7 +1366,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                             while not (player.isPlaying()):
                                 xbmc.sleep(1000)
 
-                            files = cache.getSRT()
+                            files = cache.getSRT(service)
                             for file in files:
                                 player.setSubtitles(file.encode("utf-8"))
 
