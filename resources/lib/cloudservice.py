@@ -430,7 +430,7 @@ class cloudservice(object):
 
 
     def addMediaFile(self, package, contextType='video'):
-
+        thumbnail = self.cache.getThumbnail(self, package.file.thumbnail,package.file.id)
         listitem = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                                 thumbnailImage=package.file.thumbnail)
 
@@ -455,7 +455,7 @@ class cloudservice(object):
             listitem.setProperty('IsPlayable', 'false')
 
         elif package.file.type == package.file.VIDEO:
-            infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot, 'size' : package.file.size })
+            infolabels = decode_dict({ 'title' : package.file.displayTitle() ,  'plot' : package.file.plot, 'size' : package.file.size })
             listitem.setInfo('Video', infolabels)
             playbackURL = '?mode=video'
             if self.integratedPlayer:

@@ -86,8 +86,10 @@ class gPlayer(xbmc.Player):
         except:
             pass
 
-    def PlayStream(self, url, item, seek, package=None):
-        self.play(url, item)
+    def PlayStream(self, url, item, seek, package=None, startPlayback=True):
+
+        if startPlayback:
+            self.play(url, item)
 
         if package is not None:
             self.package = package
@@ -98,8 +100,8 @@ class gPlayer(xbmc.Player):
         if seek > 0 and seek !='':
             while not self.isPlaying(): #<== The should be    while self.isPlaying():
                 print "LOOP"
-                xbmc.sleep(2000)
-            xbmc.sleep(2000)
+                xbmc.sleep(500)
+            xbmc.sleep(1000)
             print "SEEK "+str(seek)
             self.time = float(seek)
             self.seekTime(float(seek))
@@ -130,7 +132,7 @@ class gPlayer(xbmc.Player):
             self.playNext(service, self.mediaItems[self.current])
             current = self.current
             while current == self.current and not self.isExit:
-                xbmc.sleep(5000)
+                xbmc.sleep(3000)
 
 
 

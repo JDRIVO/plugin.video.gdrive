@@ -465,13 +465,17 @@ class gdrive(cloudservice):
                 for r in re.finditer('\"thumbnailLink\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   thumbnail = r.group(1)
-                  thumbnail = self.cache.getThumbnail(self,thumbnail,resourceID)
                   break
                 for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   url = r.group(1)
                   break
 
+                resume = 0
+                for r in re.finditer('\"key\"\:\s+\"resume\"[^\"]+\"visibility\"\:\s+\"[^\"]+\"[^\"]+\"value\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  resume = r.group(1)
+                  break
                 # entry is a folder
                 if (resourceType == 'application/vnd.google-apps.folder'):
                     for r in re.finditer('SAVED SEARCH\|([^\|]+)' ,
@@ -488,7 +492,13 @@ class gdrive(cloudservice):
 
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
+
+                    try:
+                        if float(resume) > 0:
+                            mediaFile.resume = float(resume)
+                    except: pass
                     return media
+
 
                 # entry is a music file
                 elif (resourceType == 'application/vnd.google-apps.audio' or 'audio' in resourceType and contentType in (1,2,3,4,6,7)):
@@ -1036,7 +1046,7 @@ class gdrive(cloudservice):
 
             # old method of fetching original stream -- using downloadURL
             # fetch information if no thumbnail cache (we need thumbnail url) or we want to download (we need filesize)
-            if self.cache.getThumbnail(self, fileID=docid) == '' or self.settings.download :
+            if self.cache.getThumbnail(self, fileID=docid) == '' or self.settings.download  or 1:
                 url = self.API_URL +'files/' + str(docid)
 
                 req = urllib2.Request(url, None, self.getHeadersList())
@@ -1064,9 +1074,7 @@ class gdrive(cloudservice):
                 response.close()
 
 
-                for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
-                    entry = r1.group(1)
-                    package = self.getMediaPackage(entry)
+                package = self.getMediaPackage(response_data)
                     #docid = package.file.id
                     #mediaURLs.append(package.mediaurl)
 
@@ -1584,10 +1592,11 @@ class gdrive(cloudservice):
     def setProperty(self, docid, key, value):
 
         url = self.API_URL +'files/' + str(docid) + '/properties/' + str(key)
-        propertyValues = '{"value": "'+value+'", "key": "'+key+'", "visibility": "PUBLIC"}'
+        propertyValues = '{"value": "'+str(value)+'", "key": "'+str(key)+'", "visibility": "PUBLIC"}'
 
         req = urllib2.Request(url, propertyValues, self.getHeadersList())
         req.get_method = lambda: 'PUT'
+        req.add_header('Content-Type', 'application/json')
 
         try:
             response = urllib2.urlopen(req)
@@ -1597,6 +1606,7 @@ class gdrive(cloudservice):
                 self.refreshToken()
                 req = urllib2.Request(url, propertyValues, self.getHeadersList())
                 req.get_method = lambda: 'PUT'
+                req.add_header('Content-Type', 'application/json')
                 try:
                     response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
@@ -1606,7 +1616,9 @@ class gdrive(cloudservice):
 
               #maybe doesn't exist - try to create
               else:
+                  url = self.API_URL +'files/' + str(docid) + '/properties'
                   req = urllib2.Request(url, propertyValues, self.getHeadersList())
+                  req.add_header('Content-Type', 'application/json')
                   try:
                       response = urllib2.urlopen(req)
                   except:

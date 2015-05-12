@@ -1332,8 +1332,11 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     #player.play(playbackPath, item)
                     if seek > 0:
                         player.PlayStream(mediaURL.url, item, seek)
+                    elif package.file.resume > 0:
+                        player.PlayStream(mediaURL.url, item, package.file.resume)
                     else:
                         player.PlayStream(mediaURL.url, item, 0)
+
 
                     #load any cc or srt
                     if settings.srt or settings.cc:
@@ -1344,6 +1347,15 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                         for file in files:
                             player.setSubtitles(file.encode("utf-8"))
 
+                    while not player.isExit:
+                        player.saveTime()
+                        xbmc.sleep(10000)
+                    #service.setProperty(package.file.id,'playcount', 1)
+
+                    # save new resume point
+                    if player.time > package.file.resume:
+                        service.setProperty(package.file.id,'resume', player.time)
+
                 else:
 
                     item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
@@ -1353,22 +1365,35 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
                     #need a player?
-                    if seek > 0 or settings.srt or settings.cc:
+#                    if seek > 0 or package.file.resume > 0 or settings.srt or settings.cc:
 
-                        player = gPlayer.gPlayer()
+                    player = gPlayer.gPlayer()
 
-                        # need to seek?
-                        if seek > 0:
-                            player.seekTo(seek)
+                    # need to seek?
+                    if seek > 0:
+                        player.PlayStream(mediaURL.url, item, seek, startPlayback=False)
+                    elif package.file.resume > 0:
+                        player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=False)
+                    else:
+                        player.PlayStream(mediaURL.url, item, 0, startPlayback=False)
 
-                        # load captions
-                        if  settings.srt or settings.cc:
-                            while not (player.isPlaying()):
-                                xbmc.sleep(1000)
+                    # load captions
+                    if  settings.srt or settings.cc:
+                        while not (player.isPlaying()):
+                            xbmc.sleep(1000)
 
-                            files = cache.getSRT(service)
-                            for file in files:
-                                player.setSubtitles(file.encode("utf-8"))
+                        files = cache.getSRT(service)
+                        for file in files:
+                            player.setSubtitles(file.encode("utf-8"))
+
+                    while not player.isExit:
+                        player.saveTime()
+                        xbmc.sleep(10000)
+                    #service.setProperty(package.file.id,'playcount', 1)
+
+                    # save new resume point
+                    if player.time > package.file.resume:
+                        service.setProperty(package.file.id,'resume', player.time)
 
 #                player = gPlayer.gPlayer()
 #                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)

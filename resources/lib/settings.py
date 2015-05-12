@@ -76,8 +76,8 @@ class settings:
     ##
     ##
     def __init__(self, addon):
-        self.integratedPlayer = self.getSetting('integrated_player')
         self.addon = addon
+        self.integratedPlayer = self.getSetting('integrated_player', False)
         self.cc = self.getParameter('cc', self.getSetting('cc', True))
         self.srt = self.getParameter('srt', self.getSetting('srt', True))
         self.username = self.getParameter('username', '')

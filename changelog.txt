@@ -1,3 +1,5 @@
+Version 0.6.27
+- add: track resume point on Google Drive (automatically resume where last left off) -- doesn't use spreadsheet, but requires readwrite authorization
 - fix a memory leak
 Version 0.6.26
 - enrollment fix
