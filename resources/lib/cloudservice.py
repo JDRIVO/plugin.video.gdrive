@@ -356,7 +356,7 @@ class cloudservice(object):
                                 thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
 
             item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-            xbmcplugin.setResolvedUrl(playbackFile, True, item)
+            xbmcplugin.setResolvedUrl(playback, True, item)
             xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
 
         try:
@@ -500,7 +500,7 @@ class cloudservice(object):
                     if self.settings.promptQuality:
                         cm.append(( self.addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&original=true'+')', ))
                     else:
-                        cm.append(( 'play ...', 'XBMC.RunPlugin('+url + '&promptquality=true'+')', ))
+                        cm.append(( self.addon.getLocalizedString(30151), 'XBMC.RunPlugin('+url + '&promptquality=true'+')', ))
 
                     # if the options are disabled in settings, display option to playback with feature
                     if not self.settings.srt:

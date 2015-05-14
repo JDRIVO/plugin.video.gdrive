@@ -21,7 +21,7 @@
 #
 #
 class mediaurl:
-    # CloudService v0.2.2
+    # CloudService v0.2.4
 
     ##
     ##
@@ -31,6 +31,7 @@ class mediaurl:
         self.quality = quality
         self.order = order
         self.title = title
+        self.offline = False
 
 
     def __repr__(self):

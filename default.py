@@ -1229,7 +1229,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         #mediaURL.url = mediaURL.url +'|' + service.getHeadersEncoded(service.useWRITELY)
 
         #download and play
-        if settings.download and settings.play:
+        if not mediaURL.offline and settings.download and settings.play:
 #            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
             service.downloadMediaFile(int(sys.argv[1]), mediaURL, package)
             playbackMedia = False
@@ -1240,7 +1240,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         elif contextType == '':
 
             # right-click force download only
-            if settings.download and not settings.play:
+            if not mediaURL.offline and settings.download and not settings.play:
 #                service.downloadMediaFile('',playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
                 service.downloadMediaFile('',mediaURL, package, force=True)
                 playbackMedia = False
@@ -1303,7 +1303,8 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                                         player.saveTime()
                                         xbmc.sleep(5000)
                 playbackMedia = False
-
+            elif mediaURL.offline:
+                playbackMedia = True
 
 
 #                if seek!='' and seek > 0:

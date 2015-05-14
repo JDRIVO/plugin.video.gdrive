@@ -1,6 +1,9 @@
 - known issue: Problem activating a second instance with the same account #32
 - known issue: Play from here in videos causes endless "opening stream" + error #29
 
+Version 0.6.28
+- fix cache playback
+- rename "Play with seek" with "Start at"
 - combine offline playback into default playback
 - add play... to right-click context menu to force prompt of selection (when force prompt is disabled in settings)
 Version 0.6.27

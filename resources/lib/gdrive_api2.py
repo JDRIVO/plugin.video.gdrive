@@ -1565,14 +1565,15 @@ class gdrive(cloudservice):
                 mediaURL.url = totalList[ret].url
             else:
                 mediaURL = mediaurl.mediaurl(str(totalList[ret]), 'offline', 0, 0)
+                mediaURL.offline = True
 
         else:
             if len(localFiles) == 0:
                 mediaURL = totalList[0]
                 mediaURL.url = totalList[0].url
-
             else:
                 mediaURL = mediaurl.mediaurl(str(totalList[0]), 'offline', 0, 0)
+                mediaURL.offline = True
 
 
 #        elif self.settings.promptQuality and len(options) > 1 and not self.settings.cache:
