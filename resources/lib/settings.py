@@ -82,13 +82,13 @@ class settings:
         self.srt = self.getParameter('srt', self.getSetting('srt', True))
         self.username = self.getParameter('username', '')
         self.setCacheParameters()
+        self.promptQuality = self.getParameter('promptquality', self.getSetting('prompt_quality', True))
 
     def setVideoParameters(self):
         self.seek = self.getParameter('seek', 0)
         self.resume = self.getParameter('resume', False)
 
-        self.promptQuality = self.getSetting('prompt_quality', True)
-        self.playOriginal = self.getSetting('never_stream', self.getParameter('original', False))
+        self.playOriginal = self.getParameter('original', self.getSetting('never_stream', False))
 
 
     def setCacheParameters(self):

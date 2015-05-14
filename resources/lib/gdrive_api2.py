@@ -79,14 +79,13 @@ class gdrive(cloudservice):
     # initialize (save addon, instance name, user agent)
     ##
     def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, settings, authenticate=True, gSpreadsheet=None):
+        self.integratedPlayer = False
         self.PLUGIN_URL = PLUGIN_URL
         self.addon = addon
         self.instanceName = instanceName
         self.protocol = 2
-        self.integratedPlayer = False
         self.settings = settings
         self.gSpreadsheet = gSpreadsheet
-        self.cache = cache.cache()
 
         if authenticate == True:
             self.type = int(addon.getSetting(instanceName+'_type'))
@@ -121,6 +120,7 @@ class gdrive(cloudservice):
                 xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
         #***
+        self.cache = cache.cache()
 
 
     ##
@@ -1549,41 +1549,41 @@ class gdrive(cloudservice):
                 originalURL = mediaURL.url
 
         mediaURL = ''
-        if self.settings.playOriginal and not self.settings.cache:
+        if self.settings.playOriginal:
             mediaURL = mediaurl.mediaurl(originalURL +'|' + self.getHeadersEncoded(self.useWRITELY), 'original', 0, 9999)
+            return mediaURL
 
-        elif self.settings.promptQuality and len(options) > 1 and not self.settings.cache:
-            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), options)
-            mediaURL = mediaURLs[ret]
-            if not self.settings.download:
-                mediaURLs[ret].url = mediaURLs[ret].url +'|' + self.getHeadersEncoded(self.useWRITELY)
+        #playbackPath = str(self.settings.cachePath) + '/' + str(filename) + '/'
+        (localResolutions,localFiles) = self.cache.getFiles(self)
+        totalList = localFiles + mediaURLs
+        mediaCount = len(localFiles)
 
-        elif self.settings.cache:
-            playbackPath = str(self.settings.cachePath) + '/' + str(filename) + '/'
-
-            (localResolutions,localFiles) = self.cache.getFiles()
-            totalList = localFiles + mediaURLs
-            mediaCount = len(localFiles)
-
-            if self.settings.promptQuality:
-                ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), localResolutions + options)
-                if ret > mediaCount:
-                    mediaURL = totalList[ret]
-                    mediaURL.url = totalList[ret].url
-                else:
-                    mediaURL = mediaurl.mediaurl(str(totalList[ret]), 'offline', 0, 0)
-
+        if self.settings.promptQuality:
+            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), localResolutions + options)
+            if ret > mediaCount:
+                mediaURL = totalList[ret]
+                mediaURL.url = totalList[ret].url
             else:
-                if len(files) == 0:
-                    mediaURL = totalList[0]
-                    mediaURL.url = totalList[0].url
-
-                else:
-                    mediaURL = mediaurl.mediaurl(str(playbackPath) + str(totalList[0]), 'offline', 0, 0)
+                mediaURL = mediaurl.mediaurl(str(totalList[ret]), 'offline', 0, 0)
 
         else:
-            mediaURLs[0].url = mediaURLs[0].url +'|' + self.getHeadersEncoded(self.useWRITELY)
-            mediaURL = mediaURLs[0]
+            if len(localFiles) == 0:
+                mediaURL = totalList[0]
+                mediaURL.url = totalList[0].url
+
+            else:
+                mediaURL = mediaurl.mediaurl(str(totalList[0]), 'offline', 0, 0)
+
+
+#        elif self.settings.promptQuality and len(options) > 1 and not self.settings.cache:
+#            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), options)
+#            mediaURL = mediaURLs[ret]
+#            if not self.settings.download:
+#                mediaURLs[ret].url = mediaURLs[ret].url +'|' + self.getHeadersEncoded(self.useWRITELY)
+
+#        else:
+#            mediaURLs[0].url = mediaURLs[0].url +'|' + self.getHeadersEncoded(self.useWRITELY)
+#            mediaURL = mediaURLs[0]
 
         return mediaURL
 

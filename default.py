@@ -772,7 +772,7 @@ elif mode == 'kiosk':
                             player.setWorksheet(worksheets['data'])
                             player.next()
                             while not player.isExit:
-                                xbmc.sleep(10000)
+                                xbmc.sleep(5000)
                   else:
                     for worksheet in worksheets.iterkeys():
                         if worksheet == 'db':
@@ -785,7 +785,7 @@ elif mode == 'kiosk':
                             #player.next()
                             while not player.isExit:
                                 player.saveTime()
-                                xbmc.sleep(10000)
+                                xbmc.sleep(5000)
 
 ##**
 
@@ -1345,11 +1345,17 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
                         files = cache.getSRT(service)
                         for file in files:
-                            player.setSubtitles(file.encode("utf-8"))
+                            if file != '':
+                                try:
+                                    file = file.decode('unicode-escape')
+                                    file = file.encode('utf-8')
+                                except:
+                                    pass
+                                player.setSubtitles(file)
 
                     while not player.isExit:
                         player.saveTime()
-                        xbmc.sleep(10000)
+                        xbmc.sleep(5000)
                     #service.setProperty(package.file.id,'playcount', 1)
 
                     # save new resume point
@@ -1384,11 +1390,18 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
                         files = cache.getSRT(service)
                         for file in files:
-                            player.setSubtitles(file.encode("utf-8"))
+                            if file != '':
+                                try:
+                                    file = file.decode('unicode-escape')
+                                    file = file.encode('utf-8')
+                                except:
+                                    pass
+                                player.setSubtitles(file)
+
 
                     while not player.isExit:
                         player.saveTime()
-                        xbmc.sleep(10000)
+                        xbmc.sleep(5000)
                     #service.setProperty(package.file.id,'playcount', 1)
 
                     # save new resume point

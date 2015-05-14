@@ -133,8 +133,13 @@ class cache:
                 return url + '|' + service.getHeadersEncoded()
 
 
-    def getFiles(self):
-        cachePath = self.cachePath + '/' + self.package.file.id
+    def getFiles(self,service):
+        if self.cachePath == '':
+            cachePath = service.settings.cachePath
+        else:
+            cachePath = self.cachePath
+
+        cachePath = cachePath + '/' + self.package.file.id + '/'
         localResolutions = []
         localFiles = []
         if xbmcvfs.exists(cachePath):
@@ -142,13 +147,13 @@ class cache:
             for file in files:
                 if os.path.splitext(file)[1] == '.stream':
                     try:
-                        resolutionFile = xbmcvfs.File(cachePath + '/' + str(file) + '.resolution')
+                        resolutionFile = xbmcvfs.File(cachePath  + str(file) + '.resolution')
                         resolution = resolutionFile.read()
                         resolutionFile.close()
                     except:
                         resolution = file
                     localResolutions.append('offline - ' + str(resolution))
-                    localFiles.append(cachePath + '/' + file)
+                    localFiles.append(cachePath + file)
 
         return (localResolutions,localFiles)
 
