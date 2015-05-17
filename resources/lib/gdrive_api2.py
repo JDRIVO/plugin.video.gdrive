@@ -564,14 +564,15 @@ class gdrive(cloudservice):
                 self.refreshToken()
                 req = urllib2.Request(url, None, self.getHeadersList())
                 try:
-                  response = urllib2.urlopen(req)
+                    response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                  self.crashreport.sendError('getMediaList',str(e))
+                    #skip SRT
+                    #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    #self.crashreport.sendError('getSRT',str(e))
                   return
               else:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('getMediaList',str(e))
+                self.crashreport.sendError('getSRT',str(e))
                 return
 
             response_data = response.read()
@@ -739,11 +740,11 @@ class gdrive(cloudservice):
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
                   xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                  self.crashreport.sendError('getMediaList',str(e))
+                  self.crashreport.sendError('getRootID',str(e))
                   return
               else:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('getMediaList',str(e))
+                self.crashreport.sendError('getRootID',str(e))
                 return
 
             response_data = response.read()
@@ -1018,11 +1019,11 @@ class gdrive(cloudservice):
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
                         xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                        self.crashreport.sendError('getPlaybackCall',str(e))
+                        self.crashreport.sendError('getPlaybackCall-0',str(e))
                         return
                 else:
                     xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    self.crashreport.sendError('getPlaybackCall',str(e))
+                    self.crashreport.sendError('getPlaybackCall-0',str(e))
                     return
 
             response_data = response.read()
@@ -1063,11 +1064,11 @@ class gdrive(cloudservice):
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
                             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                            self.crashreport.sendError('getPlaybackCall',str(e))
+                            self.crashreport.sendError('getPlaybackCall-1',str(e))
                             return
                     else:
                         xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                        self.crashreport.sendError('getPlaybackCall',str(e))
+                        self.crashreport.sendError('getPlaybackCall-1',str(e))
                         return
 
                 response_data = response.read()
@@ -1099,11 +1100,11 @@ class gdrive(cloudservice):
                          response = urllib2.urlopen(req)
                      except urllib2.URLError, e:
                          xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                         self.crashreport.sendError('getPlaybackCall',str(e))
+                         self.crashreport.sendError('getPlaybackCall-2',str(e))
                          return
                  else:
                      xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                     self.crashreport.sendError('getPlaybackCall',str(e))
+                     self.crashreport.sendError('getPlaybackCall-2',str(e))
                      return
 
             response_data = response.read()
@@ -1136,11 +1137,11 @@ class gdrive(cloudservice):
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
                             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                            self.crashreport.sendError('getPlaybackCall',str(e))
+                            self.crashreport.sendError('getPlaybackCall-3',str(e))
                             return
                     else:
                         xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                        self.crashreport.sendError('getPlaybackCall',str(e))
+                        self.crashreport.sendError('getPlaybackCall-3',str(e))
                         return
 
             response_data = response.read()
@@ -1591,7 +1592,7 @@ class gdrive(cloudservice):
 
 
     def setProperty(self, docid, key, value):
-
+        return
         url = self.API_URL +'files/' + str(docid) + '/properties/' + str(key)
         propertyValues = '{"value": "'+str(value)+'", "key": "'+str(key)+'", "visibility": "PUBLIC"}'
 
@@ -1603,7 +1604,7 @@ class gdrive(cloudservice):
             response = urllib2.urlopen(req)
 #            response = opener.open(url, None,urllib.urlencode(header))
         except urllib2.URLError, e:
-              if e.code == 403 or e.code == 401:
+              if e.code == 401:
                 self.refreshToken()
                 req = urllib2.Request(url, propertyValues, self.getHeadersList())
                 req.get_method = lambda: 'PUT'
@@ -1611,9 +1612,13 @@ class gdrive(cloudservice):
                 try:
                     response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                  self.crashreport.sendError('getMediaList',str(e))
-                  return
+                    #doesn't have access
+                    if e.code == 401 or e.code == 403:
+                        return
+                    else:
+                      xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                      self.crashreport.sendError('setProperty',str(e))
+                      return
 
               #maybe doesn't exist - try to create
               else:
@@ -1623,9 +1628,12 @@ class gdrive(cloudservice):
                   try:
                       response = urllib2.urlopen(req)
                   except:
-                      xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                      self.crashreport.sendError('setProperty',str(e))
-                      return
+                      if e.code == 401 or e.code == 403:
+                        return
+                      else:
+                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                        self.crashreport.sendError('setProperty',str(e))
+                        return
 
 
         response_data = response.read()
