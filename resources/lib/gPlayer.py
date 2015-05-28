@@ -101,7 +101,7 @@ class gPlayer(xbmc.Player):
             while not self.isPlaying(): #<== The should be    while self.isPlaying():
                 print "LOOP"
                 xbmc.sleep(500)
-            xbmc.sleep(1000)
+            xbmc.sleep(2000)
             print "SEEK "+str(seek)
             self.time = float(seek)
             self.seekTime(float(seek))
@@ -173,7 +173,7 @@ class gPlayer(xbmc.Player):
             while not self.isPlaying(): #<== The should be    while self.isPlaying():
                 print "LOOP"
                 xbmc.sleep(500)
-            xbmc.sleep(1000)
+            xbmc.sleep(2000)
             print "SEEK "+str(seek)
             self.time = float(seek)
             self.seekTime(float(seek))

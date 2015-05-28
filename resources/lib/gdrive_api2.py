@@ -571,8 +571,9 @@ class gdrive(cloudservice):
                     #self.crashreport.sendError('getSRT',str(e))
                   return
               else:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('getSRT',str(e))
+                #skip SRT
+                #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                #self.crashreport.sendError('getSRT',str(e))
                 return
 
             response_data = response.read()
@@ -580,7 +581,7 @@ class gdrive(cloudservice):
 
             # parsing page for videos
             # video-entry
-            for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\s+\]\s+\}' ,response_data, re.DOTALL):
+            for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\}\s+\]\s+\}' ,response_data, re.DOTALL):
              entryS = r2.group(1)
              for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,entryS, re.DOTALL):
                 entry = r1.group(1)
@@ -1592,12 +1593,12 @@ class gdrive(cloudservice):
 
 
     def setProperty(self, docid, key, value):
-        return
-        url = self.API_URL +'files/' + str(docid) + '/properties/' + str(key)
+
+        url = self.API_URL +'files/' + str(docid) + '/properties/' + str(key) + '?visibility=PUBLIC'
         propertyValues = '{"value": "'+str(value)+'", "key": "'+str(key)+'", "visibility": "PUBLIC"}'
 
         req = urllib2.Request(url, propertyValues, self.getHeadersList())
-        req.get_method = lambda: 'PUT'
+        req.get_method = lambda: 'PATCH'
         req.add_header('Content-Type', 'application/json')
 
         try:
@@ -1607,7 +1608,7 @@ class gdrive(cloudservice):
               if e.code == 401:
                 self.refreshToken()
                 req = urllib2.Request(url, propertyValues, self.getHeadersList())
-                req.get_method = lambda: 'PUT'
+                req.get_method = lambda: 'PATCH'
                 req.add_header('Content-Type', 'application/json')
                 try:
                     response = urllib2.urlopen(req)

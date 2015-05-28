@@ -1,6 +1,9 @@
 - known issue: Problem activating a second instance with the same account #32
 - known issue: Play from here in videos causes endless "opening stream" + error #29
 
+Version 0.6.31
+- fix error issue around resume points
+- re-enable resume points (Google Drive API 2)
 Version 0.6.30
 - accomodate a change in Google Drive API 2 (only 1 was returning)
 Version 0.6.29
