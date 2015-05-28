@@ -409,7 +409,7 @@ class gdrive(cloudservice):
 
             # parsing page for videos
             # video-entry
-            for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\s+\]\s+\}' ,response_data, re.DOTALL):
+            for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\}\s+\]\s+\}' ,response_data, re.DOTALL):
                 entryS = r2.group(1)
                 for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' , entryS, re.DOTALL):
                     entry = r1.group(1)
