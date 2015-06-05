@@ -37,6 +37,7 @@ from resources.lib import file
 from resources.lib import package
 from resources.lib import mediaurl
 from resources.lib import crashreport
+from resources.lib import cache
 
 
 # cloudservice - standard XBMC modules
@@ -112,6 +113,7 @@ class gdrive(cloudservice):
         if (authenticate == True):
             self.login()
         #***
+        self.cache = cache.cache()
 
 
     ##

@@ -1216,11 +1216,11 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
        # SRTURL = ''
         srtpath = ''
-        if settings.srt:
+        if settings.srt and service.protocol == 2:
             cache.setSRT(service)
 
         # download closed-captions
-        if settings.cc:
+        if settings.cc and service.protocol == 2:
             cache.setCC(service)
 
 
@@ -1340,7 +1340,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
 
                     #load any cc or srt
-                    if settings.srt or settings.cc:
+                    if (settings.srt or settings.cc) and  service.protocol == 2:
                         while not (player.isPlaying()):
                             xbmc.sleep(1000)
 
@@ -1385,7 +1385,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                         player.PlayStream(mediaURL.url, item, 0, startPlayback=False)
 
                     # load captions
-                    if  settings.srt or settings.cc:
+                    if  (settings.srt or settings.cc) and service.protocol == 2:
                         while not (player.isPlaying()):
                             xbmc.sleep(1000)
 

@@ -97,14 +97,14 @@ class gPlayer(xbmc.Player):
         if seek != '':
             self.seek = float(seek)
 #        self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
-        if seek > 0 and seek !='':
-            while not self.isPlaying(): #<== The should be    while self.isPlaying():
-                print "LOOP"
-                xbmc.sleep(500)
-            xbmc.sleep(2000)
-            print "SEEK "+str(seek)
-            self.time = float(seek)
-            self.seekTime(float(seek))
+#        if seek > 0 and seek !='':
+#            while not self.isPlaying(): #<== The should be    while self.isPlaying():
+#                print "LOOP"
+#                xbmc.sleep(500)
+#            xbmc.sleep(2000)
+#            print "SEEK "+str(seek)
+#            self.time = float(seek)
+#            self.seekTime(float(seek))
 
     def playNext(self, service, package):
             (mediaURLs, package) = service.getPlaybackCall(package)
@@ -140,6 +140,14 @@ class gPlayer(xbmc.Player):
         print "PLAYBACK STARTED"
 #        if self.seek > 0:
 #            self.seekTime(self.seek)
+        if self.seek > 0 and self.seek !='':
+#            while not self.isPlaying(): #<== The should be    while self.isPlaying():
+#                print "LOOP"
+#                xbmc.sleep(500)
+#            xbmc.sleep(2000)
+            print "SEEK "+str(self.seek)
+            self.time = float(self.seek)
+            self.seekTime(float(self.seek))
 
     def onPlayBackEnded(self):
         print "PLAYBACK ENDED"
