@@ -377,6 +377,7 @@ elif mode == 'buildstrm':
         url = getParameter('streamurl')
         url = re.sub('---', '&', url)
         title = getParameter('title')
+        type = int(getParameter('type'))
 
         if url != '':
 
@@ -428,7 +429,11 @@ elif mode == 'buildstrm':
 
             elif filename != '':
                             values = {'title': title, 'filename': filename, 'username': invokedUsername}
-                            url = PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)
+                            if type == 1:
+                                url = PLUGIN_URL+'?mode=audio&'+urllib.urlencode(values)
+                            else:
+                                url = PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)
+
                             filename = path + '/' + title+'.strm'
                             strmFile = xbmcvfs.File(filename, "w")
                             strmFile.write(url+'\n')
@@ -981,7 +986,7 @@ elif mode == 'audio':
         cache = cache.cache(package)
         service.cache = cache
 
-        (localResolutions,localFiles) = service.cache.getFiles()
+        (localResolutions,localFiles) = service.cache.getFiles(service)
         if len(localFiles) > 0:
             mediaURL = mediaurl.mediaurl(str(localFiles[0]), 'offline', 0, 0)
         else:

@@ -145,7 +145,11 @@ class cloudservice(object):
                 else:
                     #'content_type': 'video',
                     values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
-                    url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
+                    if item.file.type == 1:
+                        url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
+                    else:
+                        url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
+
                     #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
 
 
@@ -494,7 +498,7 @@ class cloudservice(object):
 
         if (contextType != 'image' and package.file.type != package.file.PICTURE):
             valuesBS = {'username': self.authorization.username, 'title': package.file.title, 'filename': package.file.id, 'content_type': 'video'}
-            cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+urllib.urlencode(valuesBS)+')', ))
+            cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&type='+str(package.file.type)+'&'+urllib.urlencode(valuesBS)+')', ))
 
             if (self.protocol == 2):
                 # play-original for video only

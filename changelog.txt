@@ -1,6 +1,9 @@
 - known issue: Problem activating a second instance with the same account #32
 - known issue: Play from here in videos causes endless "opening stream" + error #29
 
+Version 0.6.33
+- add music support for STRM files
+- fix for music playback
 Version 0.6.32
 - fix for force prompt playback
 - playblack fixes (ClientLogin)
