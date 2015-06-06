@@ -24,6 +24,8 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 import xbmcvfs
 import sys
 
+from resources.lib import mediaurl
+
 #global variables
 PLUGIN_URL = sys.argv[0]
 plugin_handle = int(sys.argv[1])
@@ -547,5 +549,54 @@ class cloudservice(object):
                                 isFolder=False, totalItems=0)
         return url
 
+
+    def getMediaSelection(self, mediaURLs, folderID, filename):
+
+        options = []
+        mediaURLs = sorted(mediaURLs)
+        for mediaURL in mediaURLs:
+            options.append(mediaURL.qualityDesc)
+            if mediaURL.qualityDesc == 'original':
+                originalURL = mediaURL.url
+
+        mediaURL = ''
+        if self.settings.playOriginal:
+            mediaURL = mediaurl.mediaurl(originalURL +'|' + self.getHeadersEncoded(self.useWRITELY), 'original', 0, 9999)
+            return mediaURL
+
+        #playbackPath = str(self.settings.cachePath) + '/' + str(filename) + '/'
+        (localResolutions,localFiles) = self.cache.getFiles(self)
+        totalList = localFiles + mediaURLs
+        mediaCount = len(localFiles)
+
+        if self.settings.promptQuality:
+            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), localResolutions + options)
+            if ret > mediaCount:
+                mediaURL = totalList[ret]
+                mediaURL.url = totalList[ret].url
+            else:
+                mediaURL = mediaurl.mediaurl(str(totalList[ret]), 'offline', 0, 0)
+                mediaURL.offline = True
+
+        else:
+            if len(localFiles) == 0:
+                mediaURL = totalList[0]
+                mediaURL.url = totalList[0].url
+            else:
+                mediaURL = mediaurl.mediaurl(str(totalList[0]), 'offline', 0, 0)
+                mediaURL.offline = True
+
+
+#        elif self.settings.promptQuality and len(options) > 1 and not self.settings.cache:
+#            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), options)
+#            mediaURL = mediaURLs[ret]
+#            if not self.settings.download:
+#                mediaURLs[ret].url = mediaURLs[ret].url +'|' + self.getHeadersEncoded(self.useWRITELY)
+
+#        else:
+#            mediaURLs[0].url = mediaURLs[0].url +'|' + self.getHeadersEncoded(self.useWRITELY)
+#            mediaURL = mediaURLs[0]
+
+        return mediaURL
 
 
