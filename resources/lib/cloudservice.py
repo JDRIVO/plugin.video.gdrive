@@ -577,7 +577,11 @@ class cloudservice(object):
             ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), localResolutions + options)
             if ret >= mediaCount:
                 mediaURL = totalList[ret]
-                mediaURL.url = totalList[ret].url
+                if self.settings.download or  self.settings.cache:
+                    mediaURL.url = totalList[ret].url
+                else:
+                    mediaURL.url = totalList[ret].url +'|' + self.getHeadersEncoded(self.useWRITELY)
+
             else:
                 mediaURL = mediaurl.mediaurl(str(totalList[ret]), 'offline', 0, 0)
                 mediaURL.offline = True
@@ -585,7 +589,11 @@ class cloudservice(object):
         else:
             if len(localFiles) == 0:
                 mediaURL = totalList[0]
-                mediaURL.url = totalList[0].url
+                if self.settings.download or  self.settings.cache:
+                    mediaURL.url = totalList[0].url
+                else:
+                    mediaURL.url = totalList[0].url +'|' + self.getHeadersEncoded(self.useWRITELY)
+
             else:
                 mediaURL = mediaurl.mediaurl(str(totalList[0]), 'offline', 0, 0)
                 mediaURL.offline = True
