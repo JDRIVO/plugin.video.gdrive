@@ -571,7 +571,7 @@ class cloudservice(object):
 
         if self.settings.promptQuality:
             ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), localResolutions + options)
-            if ret > mediaCount:
+            if ret >= mediaCount:
                 mediaURL = totalList[ret]
                 mediaURL.url = totalList[ret].url
             else:
