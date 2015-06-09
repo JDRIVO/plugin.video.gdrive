@@ -41,6 +41,7 @@ class gPlayer(xbmc.Player):
         self.package = None
         self.time = 0
         self.service = None
+        self.current = 1
 
 
     def setService(self,service):

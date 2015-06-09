@@ -1095,11 +1095,13 @@ elif mode == 'streamurl':
             # if invoked in .strm or as a direct-video (don't prompt for quality)
             item = xbmcgui.ListItem(path=playbackURL+ '|' + service.getHeadersEncoded(service.useWRITELY))
             item.setInfo( type="Video", infoLabels={ "Title": mediaURLs[ret].title , "Plot" : mediaURLs[ret].title } )
+            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
             if settings.integratedPlayer:
                 player = gPlayer.gPlayer()
                 player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
-            else:
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+#            else:
+#                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
     else:
             xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30020),addon.getLocalizedString(30021))
@@ -1326,6 +1328,12 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
         if playbackMedia:
 
+                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
+
+                item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
                 if playbackPlayer:
 
                     item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
@@ -1369,12 +1377,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                         service.setProperty(package.file.id,'resume', player.time)
 
                 else:
-
-                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
-
-                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
                     #need a player?
 #                    if seek > 0 or package.file.resume > 0 or settings.srt or settings.cc:

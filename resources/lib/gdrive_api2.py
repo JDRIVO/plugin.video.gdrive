@@ -1568,8 +1568,8 @@ class gdrive(cloudservice):
                     if e.code == 401 or e.code == 403:
                         return
                     else:
-                      xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                      self.crashreport.sendError('setProperty',str(e))
+                      #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                      #self.crashreport.sendError('setProperty',str(e))
                       return
 
               #maybe doesn't exist - try to create
@@ -1583,8 +1583,8 @@ class gdrive(cloudservice):
                       if e.code == 401 or e.code == 403:
                         return
                       else:
-                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                        self.crashreport.sendError('setProperty',str(e))
+                        #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                        #self.crashreport.sendError('setProperty',str(e))
                         return
 
 
