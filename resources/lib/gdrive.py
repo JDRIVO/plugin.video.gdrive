@@ -107,11 +107,10 @@ class gdrive(cloudservice):
         self.user_agent = user_agent
 
         # gdrive specific ***
-        if (not self.authorization.loadToken(self.instanceName,addon, 'auth_writely')) or (not self.authorization.loadToken(self.instanceName,addon, 'auth_wise')):
+        if (authenticate == True and not self.authorization.loadToken(self.instanceName,addon, 'auth_writely')) or (not self.authorization.loadToken(self.instanceName,addon, 'auth_wise')):
             self.login()
+            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30153), addon.getLocalizedString(30154))
 
-        if (authenticate == True):
-            self.login()
         #***
         self.cache = cache.cache()
 

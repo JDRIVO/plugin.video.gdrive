@@ -2,6 +2,7 @@
 - known issue: Play from here in videos causes endless "opening stream" + error #29
 
 - playback improvements for regression testing
+- ClientLogin obsolete, remove configuration ability
 Version 0.6.34
 - better playback controls
 Version 0.6.33

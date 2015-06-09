@@ -1373,7 +1373,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     #service.setProperty(package.file.id,'playcount', 1)
 
                     # save new resume point
-                    if player.time > package.file.resume:
+                    if service.protocol == 2 and player.time > package.file.resume:
                         service.setProperty(package.file.id,'resume', player.time)
 
                 else:
@@ -1413,7 +1413,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     #service.setProperty(package.file.id,'playcount', 1)
 
                     # save new resume point
-                    if player.time > package.file.resume:
+                    if service.protocol == 2 and player.time > package.file.resume:
                         service.setProperty(package.file.id,'resume', player.time)
 
 #                player = gPlayer.gPlayer()

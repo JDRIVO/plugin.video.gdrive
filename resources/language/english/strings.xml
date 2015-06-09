@@ -139,7 +139,10 @@
     <string id="30204">OAUTH2 URL</string>
     <string id="30205">Visit www.dmdsoftware.net for help setting up OAUTH2</string>
 
-    <string id="30118">Something went wrong with login setup.</string>
+    <string id="30152">Something went wrong with login setup.</string>
+
+    <string id="30153">ClientLogin type has been retired.</string>
+	<string id="30154">Please reconfigure account in settings.</string>
 
 
 </strings>
