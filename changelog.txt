@@ -1,6 +1,9 @@
 - known issue: Problem activating a second instance with the same account #32
-- known issue: Play from here in videos causes endless "opening stream" + error #29
 
+Version 0.7.0
+- promotion to stable
+- PASS - regression testing
+- fix: Play from here in videos causes endless "opening stream" + error #29
 Version 0.6.35
 - regression testing underway
 - playback improvements for regression testing

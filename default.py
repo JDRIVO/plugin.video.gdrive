@@ -646,7 +646,7 @@ else:
 
         #fallback on first defined account
         if accounts[ret] == 'public':
-            service = gdrive_api2.gdrive(PLUGIN_URL,addon,'', user_agent, authenticate=False)
+            service = gdrive_api2.gdrive(PLUGIN_URL,addon,'', user_agent, settings, authenticate=False)
         elif ( int(getSetting(instanceName+'_type',0))==0):
             service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent, settings)
         else:
@@ -901,13 +901,14 @@ elif mode == 'slideshow':
 
     mediaItems = service.getMediaList(folderName=folder, contentType=5)
 
-    xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
 
     if mediaItems:
                 for item in mediaItems:
                     if item.file is not None:
                         service.downloadPicture(item.mediaurl.url,str(path) + '/'+str(folder)+ '/'+item.file.title)
-                        xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
+                        #xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
+
+    xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
 
 
 ###

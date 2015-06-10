@@ -1272,6 +1272,10 @@ class gdrive(cloudservice):
 
         req = urllib2.Request(url, None, self.getHeadersList())
 
+        # already downloaded
+        if xbmcvfs.exists(file) and xbmcvfs.File(file).size() > 0:
+            return
+
         f = xbmcvfs.File(file, 'w')
 
         # if action fails, validate login
