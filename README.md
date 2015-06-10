@@ -18,6 +18,21 @@ Getting Started:
 Before starting the add-on for the first time, either "Configure" or right click and select "Add-on Settings".
 Visit www.dmdsoftware.net for directions on setting up an OAUTH2 login.
 
+Acount activation:
+
+GOOGLE APPS OAUTH2 - READ-only (DEFAULT)
+Visit in your browser and activate authorization, then create a username and passcode for the app:
+https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive.readonly+https://spreadsheets.google.com/feeds&access_type=offline&redirect_uri=https://script.google.com/macros/s/AKfycbzufq8WB4As_ksn28mFbfbX-WX5M75-JjB_AR_fejqXV49-TUvj/exec&response_type=code&client_id=772521706521-f97kus79uouccm1o60g7i08v02kqa584.apps.googleusercontent.com
+
+GOOGLE APPS OAUTH2 - READ/WRITE (for saving resume points)
+Visit in your browser and activate authorization, then create a username and passcode for the app:
+https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive+https://spreadsheets.google.com/feeds&access_type=offline&redirect_uri=https://script.google.com/macros/s/AKfycbzufq8WB4As_ksn28mFbfbX-WX5M75-JjB_AR_fejqXV49-TUvj/exec&response_type=code&client_id=772521706521-f97kus79uouccm1o60g7i08v02kqa584.apps.googleusercontent.com
+
+Other options:
+dmdsoftware.net OAUTH2 - READ-only (DEFAULT)
+https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive.readonly+https://spreadsheets.google.com/feeds&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com
+dmdsoftware.net OAUTH2 - READ/WRITE (for saving resume points)
+https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive+https://spreadsheets.google.com/feeds&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com
 
 Modes:
 1) standard index
