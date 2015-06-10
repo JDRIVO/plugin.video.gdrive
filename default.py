@@ -574,40 +574,19 @@ elif numberOfAccounts == 0:
             xbmcplugin.endOfDirectory(plugin_handle)
 
         #let's log in
-<<<<<<< HEAD
         if ( int(getSetting(instanceName+'_type',0))==0):
                 service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
         else:
             service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
-=======
-        try:
-            if ( int(addon.getSetting(instanceName+'_type')) > 0):
-                service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
-            else:
-                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
-        except:
-            service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
->>>>>>> master
 
     # show entries of a single account (such as folder)
 elif instanceName != '':
 
-<<<<<<< HEAD
         #let's log in
         if ( int(getSetting(instanceName+'_type',0))==0):
                 service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
         else:
             service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
-=======
-        try:
-            #let's log in
-            if ( int(addon.getSetting(instanceName+'_type')) > 0):
-                service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
-            else:
-                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
-        except:
-            service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
->>>>>>> master
 
 
 elif invokedUsername != '':
