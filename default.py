@@ -31,7 +31,8 @@ import os
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
 
 # global variables
-PLUGIN_NAME = 'gdrive'
+PLUGIN_NAME = 'gdrive-testing'
+#PLUGIN_NAME = 'gdrive-testing'
 
 # cloudservice - helper methods
 def log(msg, err=False):
