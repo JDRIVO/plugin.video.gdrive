@@ -31,7 +31,7 @@ import os
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
 
 # global variables
-PLUGIN_NAME = 'gdrive-testing'
+PLUGIN_NAME = 'gdrive'
 #PLUGIN_NAME = 'gdrive-testing'
 
 # cloudservice - helper methods
@@ -125,7 +125,8 @@ PLUGIN_URL = sys.argv[0]
 plugin_handle = int(sys.argv[1])
 plugin_queries = parse_query(sys.argv[2][1:])
 
-addon = xbmcaddon.Addon(id='plugin.video.gdrive')
+addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 
 addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 
@@ -269,6 +270,8 @@ try:
 
 except:
       contentType = 2
+
+numberOfAccounts = numberOfAccounts(PLUGIN_NAME)
 
 
 # cloudservice - utilities
@@ -480,7 +483,6 @@ elif mode == 'buildstrm':
     xbmcplugin.endOfDirectory(plugin_handle)
 
 
-numberOfAccounts = numberOfAccounts(PLUGIN_NAME)
 
 invokedUsername = getParameter('username')
 
@@ -729,11 +731,6 @@ if mode == 'main' or mode == 'index':
                     else:
                         service.addMediaFile(item, contextType=contextType)
 
- #   if contextType == 'image':
-#        item = xbmcgui.ListItem(path='/downloads/pics/0/')
-#        xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
-#        xbmc.executebuiltin("XBMC.SlideShow(/downloads/pics/0/)")
-
     service.updateAuthorization(addon)
 
 #** testing - gdrive
@@ -907,8 +904,13 @@ elif mode == 'slideshow':
 
 
     if mediaItems:
+                progress = xbmcgui.DialogProgressBG()
+                progress.create(addon.getLocalizedString(30035), 'Preparing list...')
+                count=0
                 for item in mediaItems:
                     if item.file is not None:
+                        count = count + 1;
+                        progress.update((int)(float(count)/len(mediaItems)*100),addon.getLocalizedString(30035), item.file.title)
                         service.downloadPicture(item.mediaurl.url,str(path) + '/'+str(folder)+ '/'+item.file.title)
                         #xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
 
