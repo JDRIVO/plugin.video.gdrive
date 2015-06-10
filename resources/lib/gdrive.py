@@ -18,32 +18,37 @@
 
 '''
 
+# cloudservice - required python modules
 import os
 import re
 import urllib, urllib2
 import cookielib
-from cloudservice import cloudservice
+import unicodedata
 
+#*** testing - gdrive
 from resources.lib import encryption
-from resources.lib import downloadfile
+##**
+
+# cloudservice - standard modules
+from cloudservice import cloudservice
 from resources.lib import authorization
 from resources.lib import folder
 from resources.lib import file
 from resources.lib import package
 from resources.lib import mediaurl
 from resources.lib import crashreport
-import unicodedata
+from resources.lib import cache
 
 
-
+# cloudservice - standard XBMC modules
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
 # global variables
-PLUGIN_NAME = 'plugin.video.gdrive'
-PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
+#PLUGIN_NAME = 'plugin.video.gdrive-testing'
+#PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
 
-addon = xbmcaddon.Addon(id='plugin.video.gdrive')
-addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
+#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+#addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 PROTOCOL = 'https://'
 SERVICE_NAME = 'dmdgdrive'
 
@@ -74,11 +79,13 @@ class gdrive(cloudservice):
     ##
     # initialize (save addon, instance name, user agent)
     ##
-    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, authenticate=True, useWRITELY=False):
+    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, settings, authenticate=True, useWRITELY=False):
         self.PLUGIN_URL = PLUGIN_URL
         self.addon = addon
         self.instanceName = instanceName
         self.protocol = 1
+        self.integratedPlayer = False
+        self.settings = settings
 
         # gdrive specific ***
         self.decrypt = False
@@ -100,12 +107,12 @@ class gdrive(cloudservice):
         self.user_agent = user_agent
 
         # gdrive specific ***
-        if (not self.authorization.loadToken(self.instanceName,addon, 'auth_writely')) or (not self.authorization.loadToken(self.instanceName,addon, 'auth_wise')):
+        if (authenticate == True and not self.authorization.loadToken(self.instanceName,addon, 'auth_writely')) or (not self.authorization.loadToken(self.instanceName,addon, 'auth_wise')):
             self.login()
+            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30153), addon.getLocalizedString(30154))
 
-        if (authenticate == True):
-            self.login()
         #***
+        self.cache = cache.cache()
 
 
     ##
@@ -613,12 +620,12 @@ class gdrive(cloudservice):
     # retrieve a playback url
     #   returns: url
     ##
-    def getPlaybackCall(self, playbackType, package=None, title='', isExact=True):
+    def getPlaybackCall(self, package=None, title='', isExact=True):
 
         try:
-            pquality = int(addon.getSetting('preferred_quality'))
-            pformat = int(addon.getSetting('preferred_format'))
-            acodec = int(addon.getSetting('avoid_codec'))
+            pquality = int(self.addon.getSetting('preferred_quality'))
+            pformat = int(self.addon.getSetting('preferred_format'))
+            acodec = int(self.addon.getSetting('avoid_codec'))
         except :
             pquality=-1
             pformat=-1
@@ -943,7 +950,7 @@ class gdrive(cloudservice):
                         mediaURLs.append(mediaurl.mediaurl(PROTOCOL + videoURL, str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container, 0, order+count))
 #                videos[str(order+count) + ' - ' + itagDB[itag]['resolution'] + ' - ' + container] = PROTOCOL + videoURL
 
-        return mediaURLs
+        return (mediaURLs,package)
 
 
     def downloadPicture(self,url, file):

@@ -1,3 +1,116 @@
+- known issue: Problem activating a second instance with the same account #32
+
+Version 0.7.0
+- promotion to stable
+- PASS - regression testing
+- fix: Play from here in videos causes endless "opening stream" + error #29
+Version 0.6.35
+- regression testing underway
+- playback improvements for regression testing
+- ClientLogin obsolete, remove configuration ability
+Version 0.6.34
+- better playback controls
+Version 0.6.33
+- add music support for STRM files
+- fix for music playback
+Version 0.6.32
+- fix for force prompt playback
+- playblack fixes (ClientLogin)
+- better seeking support
+Version 0.6.31
+- fix error issue around resume points
+- re-enable resume points (Google Drive API 2)
+Version 0.6.30
+- accomodate a change in Google Drive API 2 (only 1 was returning)
+Version 0.6.29
+- getMediaList - improved error handling
+Version 0.6.28
+- fix cache playback
+- rename "Play with seek" with "Start at"
+- combine offline playback into default playback
+- add play... to right-click context menu to force prompt of selection (when force prompt is disabled in settings)
+Version 0.6.27
+- add: track resume point on Google Drive (automatically resume where last left off) -- doesn't use spreadsheet, but requires readwrite authorization
+- fix a memory leak
+Version 0.6.26
+- enrollment fix
+- fix: right-click exclusion for images
+Version 0.6.25
+- fix: playback issue when forced prompt is disabled.
+Version 0.6.24
+- fixes for slideshow playback
+Version 0.6.23
+- improvements to offline caching playback
+Version 0.6.22
+- add: thumbnail caching
+- add: srt/cc caching
+- improvements to offline caching playback
+Version 0.6.21
+- apply Playback with Original changes for all playback methods
+- fix: .STRM playback fix
+Version 0.6.20
+- testing a new "Playback with Original" method
+Version 0.6.19
+- fix for problem with 1 account
+Version 0.6.18
+-- Google Drive API 2 module - load and enable SRT and Caption tracks by default (add settings to disable, remove from right-click context if enabled in settings)
+Version 0.6.17
+- fix: issue introduced in 0.6.15 with playback for offline media
+Version 0.6.16
+- fix: issue introduced in 0.6.15 with playback
+Version 0.6.15
+-- Google Drive API 2 module - add: playback of folder
+- core refactoring
+Version 0.6.14
+-- Google Drive API 2 module - fix: captions supporting "
+-- Google Drive API 2 module - read/write OAUTH2 - save resume point [right-click Play with resume] (testing)
+Version 0.6.13
+-- Google Drive API 2 module - fix: captions stopping at certain point in playback
+-- Google Drive API 2 module - fix: captions supporting italic
+Version 0.6.12
+-- Google Drive API 2 module - added right-click "Play with seek" to seek to a specified point in the video
+-- Google Drive API 2 module - fix unicode issue with caption tracks
+Version 0.6.11
+-- Google Drive API 2 module - fix for videos with multiple caption tracks
+-- Google Drive API 2 module - fix format for html encoding in caption tracks
+-- Google Drive API 2 module - fix for Google Apps login type
+Version 0.6.10
+- support for youtube closed caption tracks (timed text / tts) [these are "caption tracks" associated with a video), during testing you must right-click and "play with captions"
+- implemented: Support for closed captions in stream mode #10
+Version 0.6.9
+- implement new login type: Google Apps (allows users to provide a username + passcode and skip manually entering "the code")
+- fix for silent error on STRM creation
+Version 0.6.8
+- fix for playback for ClientLogin
+-- Google Drive API 2 module - fix for integrated player
+Version 0.6.7
+- code refactoring
+- testing subtitle support (.srt): right-click, play with subtitles
+Version 0.6.6
+- code refactoring
+- fix: Titles of video/music files not displayed properly when using integrated player #26
+- fix: files and folders with ,s in their name break the plugin URL for playback #28
+- fix: Direct playback of music files in pictures does not work #27
+- thumbnail support when playing back via STRM
+Version 0.6.5
+- fix for handling special characters in STRM building process (such as &)
+- fixes for encfs function for special characters such as ,s in filenames
+Version 0.6.4
+-- implement: support for saved-search #23
+-- Google Drive API 2 module - add: saved search (create a folder anywhere on your drive called 'SAVED SEARCH|search critera', and when viewing that folder, that entry will show up with a "*search critera", allowing you to search for content matching "search content"
+- bug fix for delayed playback on videos
+Version 0.6.3
+- fully implement override player playback (no longer displays "opening stream")
+- add toggle in settings for override player playback (advance-> use integrated player) [default disable]
+- cleanup of settings
+- remove "Play original" from context menu for "music"
+Version 0.6.2
+- add player controls (player + window) -- testing
+- override player playback (no longer displays "opening stream") -- testing
+- fix playback default for never transcode + always cache
+-- Google Drive API 2 module - add force cache to single file option
+Version 0.6.1
+- add encfs source + target support, decrypted folder support
 Version 0.6.0
 - Merge with stable
 Version 0.5.17

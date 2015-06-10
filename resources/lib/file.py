@@ -42,6 +42,8 @@ class file:
         self.isEncoded = False
         self.date = date
         self.size = size
+        self.srtURL = ''
+        self.resume = 0
 
     def setAlbumMeta(self,album,artist,releaseDate,trackNumber,genre):
         self.album = album

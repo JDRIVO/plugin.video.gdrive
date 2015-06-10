@@ -34,7 +34,7 @@
     <string id="30032">Music and Photos</string>
     <string id="30034">Photos</string>
     <string id="30037">Context</string>
-    <string id="30038">Photo cache folder</string>
+    <string id="30038">Photo offline/cache folder</string>
 
 
     <string id="30090">Location to store cache files</string>
@@ -67,8 +67,8 @@
 
     <string id="30060">Library</string>
     <string id="30061">Library Integration via Google Drive</string>
-    <string id="30062">Full Username (i.e. username@gmail.com)</string>
-    <string id="30063">Spredsheet Name</string>
+    <string id="30062">GDrive account number to use (registered under accounts)</string>
+    <string id="30063">Spredsheet name</string>
     <string id="30064">Use library integration?</string>
     <string id="30088">Location to store movie STRMs (optional) </string>
     <string id="30089">Location to store tv show STRMs (optional) </string>
@@ -114,10 +114,42 @@
 	<string id="30125">Play offline</string>
 	<string id="30126">Slideshow</string>
 
+
+	<string id="30127">encfs</string>
+	<string id="30128">encfs source</string>
+	<string id="30129">encfs target</string>
+	<string id="30130">Save to encfs</string>
+	<string id="30131">Decrypted Drive</string>
+	<string id="30132">Force cache into single file</string>
+	<string id="30133">Use integrated player</string>
+	<string id="30134">Advance</string>
+	<string id="30135">Subtitle cache folder</string>
+	<string id="30136">Select a subtitle cache folder</string>
+	<string id="30137">Do you want to create the subtitle files in the path</string>
+	<string id="30138">Play with subtitles</string>
+	<string id="30139">Select a subtitle</string>
+	<string id="30140">Visit www.dmdsoftware.net and select Google Apps sign-in method.</string>
+	<string id="30141">When signup is complete, click OK</string>
+	<string id="30142">Account activiated successfully</string>
+	<string id="30143">Google code found.  Click OK to continue activation.</string>
+	<string id="30144">Google code not found.</string>
+	<string id="30145">Passcode</string>
+	<string id="30146">Play with captions</string>
+	<string id="30147">Start at</string>
+	<string id="30148">Play with resume</string>
+	<string id="30149">Enable closed-captions tracks</string>
+	<string id="30150">Enable SRT tracks</string>
+	<string id="30151">Play ...</string>
+
     <string id="30201">OAUTH2 code</string>
     <string id="30202">OAUTH2 client id</string>
     <string id="30203">OAUTH2 client secret</string>
     <string id="30204">OAUTH2 URL</string>
     <string id="30205">Visit www.dmdsoftware.net for help setting up OAUTH2</string>
+
+    <string id="30152">Something went wrong with login setup.</string>
+
+    <string id="30153">ClientLogin type has been retired.</string>
+	<string id="30154">Please reconfigure account in settings.</string>
 
 </strings>
