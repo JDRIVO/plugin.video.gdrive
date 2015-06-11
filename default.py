@@ -853,8 +853,11 @@ elif mode == 'downloadfolder':
     if mediaItems:
         for item in mediaItems:
             if item.file is not None:
-                service.downloadMediaFile('', item.mediaurl.url, item.file.title, folderID, item.file.id, item.file.size, encfs=encfs, folderName=folderName)
-
+                service.downloadGeneralFile('',  item.mediaurl, item,  force=True, encfs=encfs, folderName=folderName)
+#            elif item.folder is not None:
+#                # create path if doesn't exist
+#                if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
+#                    xbmcvfs.mkdir(str(path) + '/'+str(folder))
 
 #*** needs updating
 elif mode == 'decryptfolder':
@@ -885,20 +888,16 @@ elif mode == 'slideshow':
         path = ''
 
 
-    if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
-        xbmcvfs.mkdir(str(path) + '/'+str(folder))
-#    try:
-#        xbmcvfs.rmdir(str(path) + '/'+str(folder)+'/'+str(title))
-#    except:
-#        pass
-
-
     while path == '':
         path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30038), 'files','',False,False,'')
         if not xbmcvfs.exists(path):
             path = ''
         else:
             addon.setSetting('photo_folder', path)
+
+    # create path if doesn't exist
+    if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
+        xbmcvfs.mkdir(str(path) + '/'+str(folder))
 
     mediaItems = service.getMediaList(folderName=folder, contentType=5)
 
@@ -914,7 +913,7 @@ elif mode == 'slideshow':
                         service.downloadPicture(item.mediaurl.url,str(path) + '/'+str(folder)+ '/'+item.file.title)
                         #xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
                 progress.close()
-    xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
+                xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
 
 
 ###

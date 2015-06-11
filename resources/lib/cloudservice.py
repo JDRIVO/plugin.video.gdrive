@@ -378,6 +378,141 @@ class cloudservice(object):
         except: pass
 
 
+    ##
+    # retrieve a general file
+    #   parameters: title of video, whether to prompt for quality/format (optional),
+    ##
+    def downloadGeneralFile(self, playback, mediaURL, package, force=False, encfs=False, folderName=''):
+
+
+        cachePercent = int(self.settings.cachePercent)
+
+        if cachePercent < 1:
+            cachePercent = 1
+        elif cachePercent > 100:
+            cachePercent = 100
+
+        fileSize = (int)(package.file.size)
+        if fileSize == '' or fileSize < 1000:
+            fileSize = 5000000
+
+        sizeDownload = fileSize * (cachePercent*0.01)
+
+        if sizeDownload < 1000000:
+            sizeDownload = 1000000
+
+        CHUNK = int(self.settings.cacheChunkSize)
+
+        if CHUNK < 1024:
+            CHUNK = 16 * 1024
+
+        count = 0
+
+
+        if encfs:
+            try:
+                path = self.addon.getSetting('encfs_source')
+            except:
+                pass
+        else:
+            try:
+                path = self.addon.getSetting('cache_folder')
+            except:
+                pass
+
+        if not xbmcvfs.exists(path):
+            path = ''
+
+        while path == '':
+            path = xbmcgui.Dialog().browse(0,self.addon.getLocalizedString(30090), 'files','',False,False,'')
+            if not xbmcvfs.exists(path):
+                path = ''
+            else:
+                self.addon.setSetting('cache_folder', path)
+
+
+        if encfs:
+            try:
+                xbmcvfs.mkdir(str(path) + '/'+str(folderName))
+            except: pass
+
+            playbackFile = str(path) + '/' + str(folderName) + '/' + str(package.file.title)
+
+        else:
+            try:
+                xbmcvfs.mkdir(str(path) + '/'+ str(package.file.id))
+            except: pass
+
+            playbackFile = str(path) + '/' + str(package.file.id) + '/' + str(mediaURL.order) + '.stream'
+
+
+        if not xbmcvfs.exists(playbackFile) or force:
+
+            req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
+
+            f = xbmcvfs.File(playbackFile, 'w')
+
+            print 'inode = ' + str(xbmcvfs.Stat(playbackFile).st_ino()) + "\n";
+
+
+            if playback != '':
+                progress = xbmcgui.DialogProgress()
+                progressBar = sizeDownload
+                progress.create(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30035), package.file.title)
+            else:
+                progress = xbmcgui.DialogProgressBG()
+                progressBar = fileSize
+                progress.create(self.addon.getLocalizedString(30035), package.file.title)
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+
+            except urllib2.URLError, e:
+              self.refreshToken()
+              req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
+              try:
+                  response = urllib2.urlopen(req)
+
+              except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('downloadMediaFile',str(e))
+                return
+
+            downloadedBytes = 0
+            while sizeDownload > downloadedBytes:
+                progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30035))
+                chunk = response.read(CHUNK)
+                if not chunk: break
+                f.write(chunk)
+                downloadedBytes = downloadedBytes + CHUNK
+
+        if playback != '':
+            try:
+                progress.close()
+            except:
+                pass
+
+            #item = xbmcgui.ListItem(path=playbackFile)
+            item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
+
+            item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+            xbmcplugin.setResolvedUrl(playback, True, item)
+            xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
+
+        try:
+            while True:
+                downloadedBytes = downloadedBytes + CHUNK
+                progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30092))
+                chunk = response.read(CHUNK)
+                if not chunk: break
+                f.write(chunk)
+            f.close()
+            progress.close()
+
+        except: pass
+
 
     def addDirectory(self, folder, contextType='video', localPath=''):
 
