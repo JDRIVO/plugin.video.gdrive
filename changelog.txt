@@ -1,5 +1,5 @@
 - known issue: Problem activating a second instance with the same account #32
-Version 0.7.1
+Version 0.7.2
 - fix for Save STRM on folders
 Version 0.7.0
 - promotion to stable
