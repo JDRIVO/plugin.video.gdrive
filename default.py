@@ -381,7 +381,7 @@ elif mode == 'buildstrm':
         url = getParameter('streamurl')
         url = re.sub('---', '&', url)
         title = getParameter('title')
-        type = int(getParameter('type'))
+        type = int(getParameter('type', 0))
 
         if url != '':
 
