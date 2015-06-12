@@ -27,6 +27,7 @@ class file:
     AUDIO = 1
     VIDEO = 2
     PICTURE = 3
+    UNKNOWN = 4
 
 
     ##
@@ -44,6 +45,7 @@ class file:
         self.size = size
         self.srtURL = ''
         self.resume = 0
+        self.decryptedTitle = ''
 
     def setAlbumMeta(self,album,artist,releaseDate,trackNumber,genre):
         self.album = album
@@ -54,7 +56,10 @@ class file:
         self.hasMeta = True
 
     def displayTitle(self):
-        return urllib.unquote(self.title)
+        if self.decryptedTitle != '':
+            return urllib.unquote(str(self.decryptedTitle) + ' [' + str(self.title) + ']')
+        else:
+            return urllib.unquote(self.title)
 
     def __repr__(self):
         return '{}: {} {}'.format(self.__class__.__name__,

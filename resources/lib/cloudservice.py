@@ -222,8 +222,11 @@ class cloudservice(object):
     # retrieve a directory url
     #   returns: url
     ##
-    def getDirectoryCall(self, folder, contextType='video'):
-        values = {'instance': self.instanceName,   'folder': folder.id, 'content_type': contextType}
+    def getDirectoryCall(self, folder, contextType='video', encfs=False):
+        if encfs:
+            values = {'instance': self.instanceName, 'encfs': 'true', 'folder': folder.id, 'content_type': contextType}
+        else:
+            values = {'instance': self.instanceName, 'folder': folder.id, 'content_type': contextType}
 
         return self.PLUGIN_URL+'?mode=index&' +  urllib.urlencode(values)
 
@@ -514,7 +517,7 @@ class cloudservice(object):
         except: pass
 
 
-    def addDirectory(self, folder, contextType='video', localPath=''):
+    def addDirectory(self, folder, contextType='video', localPath='', encfs=False):
 
         fanart = self.addon.getAddonInfo('path') + '/fanart.jpg'
 
@@ -561,20 +564,22 @@ class cloudservice(object):
                         #encfs
                         values = {'instance': self.instanceName, 'foldername': folder.title, 'folder': folder.id}
                         cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
+                        cm.append(( 'treat as encrypted', 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=index&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
 
                 listitem.addContextMenuItems(cm, False)
                 listitem.setProperty('fanart_image', fanart)
 
-                xbmcplugin.addDirectoryItem(plugin_handle, self.getDirectoryCall(folder, contextType), listitem,
+                xbmcplugin.addDirectoryItem(plugin_handle, self.getDirectoryCall(folder, contextType, encfs=encfs), listitem,
                                 isFolder=True, totalItems=0)
 
 
 
-    def addMediaFile(self, package, contextType='video'):
+    def addMediaFile(self, package, contextType='video', encfs=False):
         thumbnail = self.cache.getThumbnail(self, package.file.thumbnail,package.file.id)
         listitem = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                                 thumbnailImage=package.file.thumbnail)
 
+        # audio file, not in "pictures"
         if package.file.type == package.file.AUDIO and contextType != 'image':
             if package.file.hasMeta:
                 infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
@@ -586,6 +591,38 @@ class cloudservice(object):
                 listitem.setProperty('IsPlayable', 'false')
             else:
                 listitem.setProperty('IsPlayable', 'true')
+
+        # encrypted file, viewing in "pictures", assume image
+        elif package.file.type == package.file.UNKNOWN and contextType == 'image':
+            infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot })
+            listitem.setInfo('Pictures', infolabels)
+            playbackURL = '?mode=photo'
+            listitem.setProperty('IsPlayable', 'false')
+
+        # encrypted file, viewing in "video", assume video
+        elif package.file.type == package.file.UNKNOWN and contextType == 'video':
+            infolabels = decode_dict({ 'title' : package.file.displayTitle() ,  'plot' : package.file.plot, 'size' : package.file.size })
+            listitem.setInfo('Video', infolabels)
+            playbackURL = '?mode=video'
+            if self.integratedPlayer:
+                listitem.setProperty('IsPlayable', 'false')
+            else:
+                listitem.setProperty('IsPlayable', 'true')
+
+        # encrypted file, viewing in "music", assume audio
+        elif package.file.type == package.file.UNKNOWN and contextType == 'audio':
+            if package.file.hasMeta:
+                infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
+            else:
+                infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'size' : package.file.size })
+            listitem.setInfo('Music', infolabels)
+            playbackURL = '?mode=audio'
+            if self.integratedPlayer:
+                listitem.setProperty('IsPlayable', 'false')
+            else:
+                listitem.setProperty('IsPlayable', 'true')
+
+        # audio file, viewing in "pictures"
         elif package.file.type == package.file.AUDIO and contextType == 'image':
             if package.file.hasMeta:
                 infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
@@ -595,6 +632,7 @@ class cloudservice(object):
             playbackURL = '?mode=audio'
             listitem.setProperty('IsPlayable', 'false')
 
+        # video file
         elif package.file.type == package.file.VIDEO:
             infolabels = decode_dict({ 'title' : package.file.displayTitle() ,  'plot' : package.file.plot, 'size' : package.file.size })
             listitem.setInfo('Video', infolabels)
@@ -603,11 +641,15 @@ class cloudservice(object):
                 listitem.setProperty('IsPlayable', 'false')
             else:
                 listitem.setProperty('IsPlayable', 'true')
+
+        # image file
         elif package.file.type == package.file.PICTURE:
             infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot })
             listitem.setInfo('Pictures', infolabels)
             playbackURL = '?mode=photo'
             listitem.setProperty('IsPlayable', 'false')
+
+        # otherwise, assume video
         else:
             infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot, 'size' : package.file.size })
             listitem.setInfo('Video', infolabels)
@@ -628,7 +670,10 @@ class cloudservice(object):
             cleanURL = ''
 
     #    url = PLUGIN_URL+playbackURL+'&title='+package.file.title+'&filename='+package.file.id+'&instance='+str(self.instanceName)+'&folder='+str(package.folder.id)
-        values = {'instance': self.instanceName, 'title': package.file.title, 'filename': package.file.id, 'folder': package.folder.id}
+        if encfs:
+            values = {'instance': self.instanceName, 'encfs': 'true', 'title': package.file.title, 'filename': package.file.id, 'folder': package.folder.id}
+        else:
+            values = {'instance': self.instanceName, 'title': package.file.title, 'filename': package.file.id, 'folder': package.folder.id}
         url = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)
 
         if (contextType != 'image' and package.file.type != package.file.PICTURE):
@@ -673,6 +718,7 @@ class cloudservice(object):
         #encfs
         if (self.protocol == 2):
             cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=downloadfolder&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
+            cm.append(( 'treat as encrypted', 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=index&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
 
 
         url = url + '&content_type='+contextType
