@@ -65,6 +65,7 @@ class gdrive(cloudservice):
     MEDIA_TYPE_MUSIC = 1
     MEDIA_TYPE_VIDEO = 2
     MEDIA_TYPE_PICTURE = 3
+    MEDIA_TYPE_UNKNOWN = 4
 
     MEDIA_TYPE_FOLDER = 0
 
@@ -518,7 +519,7 @@ class gdrive(cloudservice):
 
                 # entry is unknown
                 elif (resourceType == 'application/vnd.google-apps.unknown'):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
@@ -526,7 +527,7 @@ class gdrive(cloudservice):
 
                 # all files (for saving to encfs)
                 elif (contentType == 8):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', '', size=fileSize)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, '', '', size=fileSize)
 
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))

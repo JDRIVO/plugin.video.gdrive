@@ -121,7 +121,7 @@
 	<string id="30130">Save to encfs</string>
 	<string id="30131">Decrypted Drive</string>
 	<string id="30132">Force cache into single file</string>
-	<string id="30133">Use integrated player</string>
+	<string id="30133">Hide "opening stream..." dialogs</string>
 	<string id="30134">Advance</string>
 	<string id="30135">Subtitle cache folder</string>
 	<string id="30136">Select a subtitle cache folder</string>
@@ -151,5 +151,7 @@
 
     <string id="30153">ClientLogin type has been retired.</string>
 	<string id="30154">Please reconfigure account in settings.</string>
+
+	<string id="30155">encfs Type</string>
 
 </strings>

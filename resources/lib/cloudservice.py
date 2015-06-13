@@ -1,5 +1,5 @@
 '''
-    Copyright (C) 2013-2014 ddurdle
+    Copyright (C) 2013-2015 ddurdle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -222,8 +222,11 @@ class cloudservice(object):
     # retrieve a directory url
     #   returns: url
     ##
-    def getDirectoryCall(self, folder, contextType='video'):
-        values = {'instance': self.instanceName,   'folder': folder.id, 'content_type': contextType}
+    def getDirectoryCall(self, folder, contextType='video', encfs=False):
+        if encfs:
+            values = {'instance': self.instanceName, 'encfs': 'true', 'folder': folder.id, 'content_type': contextType}
+        else:
+            values = {'instance': self.instanceName, 'folder': folder.id, 'content_type': contextType}
 
         return self.PLUGIN_URL+'?mode=index&' +  urllib.urlencode(values)
 
@@ -378,8 +381,141 @@ class cloudservice(object):
         except: pass
 
 
+    ##
+    # retrieve a general file
+    #   parameters: title of video, whether to prompt for quality/format (optional),
+    ##
+    def downloadGeneralFile(self, playback, mediaURL, package, force=False, encfs=False, folderName=''):
 
-    def addDirectory(self, folder, contextType='video', localPath=''):
+
+        cachePercent = int(self.settings.cachePercent)
+
+        if cachePercent < 1:
+            cachePercent = 1
+        elif cachePercent > 100:
+            cachePercent = 100
+
+        fileSize = (int)(package.file.size)
+        if fileSize == '' or fileSize < 1000:
+            fileSize = 5000000
+
+        sizeDownload = fileSize * (cachePercent*0.01)
+
+        if sizeDownload < 1000000:
+            sizeDownload = 1000000
+
+        CHUNK = int(self.settings.cacheChunkSize)
+
+        if CHUNK < 1024:
+            CHUNK = 16 * 1024
+
+        count = 0
+
+
+        if encfs:
+            try:
+                path = self.addon.getSetting('encfs_source')
+            except:
+                pass
+        else:
+            try:
+                path = self.addon.getSetting('cache_folder')
+            except:
+                pass
+
+        if not xbmcvfs.exists(path):
+            path = ''
+
+        while path == '':
+            path = xbmcgui.Dialog().browse(0,self.addon.getLocalizedString(30090), 'files','',False,False,'')
+            if not xbmcvfs.exists(path):
+                path = ''
+            else:
+                self.addon.setSetting('cache_folder', path)
+
+
+        if encfs:
+            try:
+                xbmcvfs.mkdir(str(path) + '/'+str(folderName))
+            except: pass
+
+            playbackFile = str(path) + '/' + str(folderName) + '/' + str(package.file.title)
+
+        else:
+            try:
+                xbmcvfs.mkdir(str(path) + '/'+ str(package.file.id))
+            except: pass
+
+            playbackFile = str(path) + '/' + str(package.file.id) + '/' + str(mediaURL.order) + '.stream'
+
+
+        if not xbmcvfs.exists(playbackFile) or force:
+
+            req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
+
+            f = xbmcvfs.File(playbackFile, 'w')
+
+
+            if playback != '':
+                progress = xbmcgui.DialogProgress()
+                progressBar = sizeDownload
+                progress.create(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30035), package.file.title)
+            else:
+                progress = xbmcgui.DialogProgressBG()
+                progressBar = fileSize
+                progress.create(self.addon.getLocalizedString(30035), package.file.title)
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+
+            except urllib2.URLError, e:
+              self.refreshToken()
+              req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
+              try:
+                  response = urllib2.urlopen(req)
+
+              except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('downloadMediaFile',str(e))
+                return
+
+            downloadedBytes = 0
+            while sizeDownload > downloadedBytes:
+                progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30035))
+                chunk = response.read(CHUNK)
+                if not chunk: break
+                f.write(chunk)
+                downloadedBytes = downloadedBytes + CHUNK
+
+        if playback != '':
+            try:
+                progress.close()
+            except:
+                pass
+
+            #item = xbmcgui.ListItem(path=playbackFile)
+            item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
+
+            item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+            xbmcplugin.setResolvedUrl(playback, True, item)
+            xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
+
+        try:
+            while True:
+                downloadedBytes = downloadedBytes + CHUNK
+                progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30092))
+                chunk = response.read(CHUNK)
+                if not chunk: break
+                f.write(chunk)
+            f.close()
+            progress.close()
+
+        except: pass
+
+
+    def addDirectory(self, folder, contextType='video', localPath='', encfs=False):
 
         fanart = self.addon.getAddonInfo('path') + '/fanart.jpg'
 
@@ -411,7 +547,10 @@ class cloudservice(object):
 
                     elif contextType == 'image':
                         # slideshow
-                        values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id}
+                        if encfs:
+                            values = {'encfs': 'true', 'username': self.authorization.username, 'title': folder.title, 'folder': folder.id}
+                        else:
+                            values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id}
                         cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=slideshow&'+urllib.urlencode(values)+')', ))
 
                     #download folder
@@ -430,16 +569,17 @@ class cloudservice(object):
                 listitem.addContextMenuItems(cm, False)
                 listitem.setProperty('fanart_image', fanart)
 
-                xbmcplugin.addDirectoryItem(plugin_handle, self.getDirectoryCall(folder, contextType), listitem,
+                xbmcplugin.addDirectoryItem(plugin_handle, self.getDirectoryCall(folder, contextType, encfs=encfs), listitem,
                                 isFolder=True, totalItems=0)
 
 
 
-    def addMediaFile(self, package, contextType='video'):
+    def addMediaFile(self, package, contextType='video', encfs=False):
         thumbnail = self.cache.getThumbnail(self, package.file.thumbnail,package.file.id)
         listitem = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                                 thumbnailImage=package.file.thumbnail)
 
+        # audio file, not in "pictures"
         if package.file.type == package.file.AUDIO and contextType != 'image':
             if package.file.hasMeta:
                 infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
@@ -451,6 +591,38 @@ class cloudservice(object):
                 listitem.setProperty('IsPlayable', 'false')
             else:
                 listitem.setProperty('IsPlayable', 'true')
+
+        # encrypted file, viewing in "pictures", assume image
+        elif package.file.type == package.file.UNKNOWN and contextType == 'image':
+            infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot })
+            listitem.setInfo('Pictures', infolabels)
+            playbackURL = '?mode=photo'
+            listitem.setProperty('IsPlayable', 'false')
+
+        # encrypted file, viewing in "video", assume video
+        elif package.file.type == package.file.UNKNOWN and contextType == 'video':
+            infolabels = decode_dict({ 'title' : package.file.displayTitle() ,  'plot' : package.file.plot, 'size' : package.file.size })
+            listitem.setInfo('Video', infolabels)
+            playbackURL = '?mode=video'
+            if self.integratedPlayer:
+                listitem.setProperty('IsPlayable', 'false')
+            else:
+                listitem.setProperty('IsPlayable', 'true')
+
+        # encrypted file, viewing in "music", assume audio
+        elif package.file.type == package.file.UNKNOWN and contextType == 'audio':
+            if package.file.hasMeta:
+                infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
+            else:
+                infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'size' : package.file.size })
+            listitem.setInfo('Music', infolabels)
+            playbackURL = '?mode=audio'
+            if self.integratedPlayer:
+                listitem.setProperty('IsPlayable', 'false')
+            else:
+                listitem.setProperty('IsPlayable', 'true')
+
+        # audio file, viewing in "pictures"
         elif package.file.type == package.file.AUDIO and contextType == 'image':
             if package.file.hasMeta:
                 infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
@@ -460,6 +632,7 @@ class cloudservice(object):
             playbackURL = '?mode=audio'
             listitem.setProperty('IsPlayable', 'false')
 
+        # video file
         elif package.file.type == package.file.VIDEO:
             infolabels = decode_dict({ 'title' : package.file.displayTitle() ,  'plot' : package.file.plot, 'size' : package.file.size })
             listitem.setInfo('Video', infolabels)
@@ -468,11 +641,15 @@ class cloudservice(object):
                 listitem.setProperty('IsPlayable', 'false')
             else:
                 listitem.setProperty('IsPlayable', 'true')
+
+        # image file
         elif package.file.type == package.file.PICTURE:
             infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot })
             listitem.setInfo('Pictures', infolabels)
             playbackURL = '?mode=photo'
             listitem.setProperty('IsPlayable', 'false')
+
+        # otherwise, assume video
         else:
             infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot, 'size' : package.file.size })
             listitem.setInfo('Video', infolabels)
@@ -493,7 +670,10 @@ class cloudservice(object):
             cleanURL = ''
 
     #    url = PLUGIN_URL+playbackURL+'&title='+package.file.title+'&filename='+package.file.id+'&instance='+str(self.instanceName)+'&folder='+str(package.folder.id)
-        values = {'instance': self.instanceName, 'title': package.file.title, 'filename': package.file.id, 'folder': package.folder.id}
+        if encfs:
+            values = {'instance': self.instanceName, 'encfs': 'true', 'title': package.file.title, 'filename': package.file.id, 'folder': package.folder.id}
+        else:
+            values = {'instance': self.instanceName, 'title': package.file.title, 'filename': package.file.id, 'folder': package.folder.id}
         url = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)
 
         if (contextType != 'image' and package.file.type != package.file.PICTURE):
@@ -533,11 +713,11 @@ class cloudservice(object):
 
         elif contextType == 'image':
 
-            cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=slideshow&' + urllib.urlencode(values)+')', ))
+                cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=slideshow&' + urllib.urlencode(values)+')', ))
 
         #encfs
-        if (self.protocol == 2):
-            cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=downloadfolder&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
+#        if (self.protocol == 2):
+#            cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=downloadfolder&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
 
 
         url = url + '&content_type='+contextType
