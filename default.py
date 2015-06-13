@@ -730,6 +730,7 @@ if mode == 'main' or mode == 'index':
     if encfs:
         encfs_source = getSetting('encfs_source')
         encfs_target = getSetting('encfs_target')
+        encfs_inode = int(getSetting('encfs_inode', 0))
 
         mediaItems = service.getMediaList(folderName,contentType=8)
 
@@ -740,16 +741,28 @@ if mode == 'main' or mode == 'index':
 
                     if item.file is None:
                         xbmcvfs.mkdir(encfs_source + '/' + str(item.folder.title))
-                        dirListINodes[(str(xbmcvfs.Stat(encfs_source + '/' + str(item.folder.title)).st_ino()))] = item.folder
+                        if encfs_inode == 0:
+                            dirListINodes[(str(xbmcvfs.Stat(encfs_source + '/' + str(item.folder.title)).st_ino()))] = item.folder
+                        else:
+                            dirListINodes[(str(xbmcvfs.Stat(encfs_source + '/' + str(item.folder.title)).st_ctime()))] = item.folder
                         #service.addDirectory(item.folder, contextType=contextType,  encfs=True)
                     else:
                         xbmcvfs.mkdir(encfs_source + '/' + str(item.file.title))
-                        fileListINodes[(str(xbmcvfs.Stat(encfs_source + '/' + str(item.file.title)).st_ino()))] = item
+                        if encfs_inode == 0:
+                            fileListINodes[(str(xbmcvfs.Stat(encfs_source + '/' + str(item.file.title)).st_ino()))] = item
+                        else:
+                            fileListINodes[(str(xbmcvfs.Stat(encfs_source + '/' + str(item.file.title)).st_ctime()))] = item
                         #service.addMediaFile(item, contextType=contextType)
+                    if encfs_inode > 0:
+                            xbmc.sleep(1000)
 
             dirs, files = xbmcvfs.listdir(encfs_target)
             for dir in dirs:
-                index = str(xbmcvfs.Stat(encfs_target + '/' + dir).st_ino())
+                index = ''
+                if encfs_inode == 0:
+                    index = str(xbmcvfs.Stat(encfs_target + '/' + dir).st_ino())
+                else:
+                    index = str(xbmcvfs.Stat(encfs_target + '/' + dir).st_ctime())
                 print "dir = " + dir + " index = " + index + "\n"
                 if index in dirListINodes.keys():
                     xbmcvfs.rmdir(encfs_target + '/' + dir)
@@ -848,26 +861,44 @@ elif mode == 'photo':
     if encfs:
         encfs_source = getSetting('encfs_source')
         encfs_target = getSetting('encfs_target')
+        encfs_inode = int(getSetting('encfs_inode', 0))
 
         if (not xbmcvfs.exists(str(encfs_target) + '/'+str(folder) + '/')):
             xbmcvfs.mkdir(str(encfs_target) + '/'+str(folder))
-        folderINode = str(xbmcvfs.Stat(encfs_target + '/' + str(folder)).st_ino())
+
+        folderINode = ''
+        if encfs_inode == 0:
+            folderINode = str(xbmcvfs.Stat(encfs_target + '/' + str(folder)).st_ino())
+        else:
+            folderINode = str(xbmcvfs.Stat(encfs_target + '/' + str(folder)).st_ctime())
 
 
         dirs, filesx = xbmcvfs.listdir(encfs_source)
         for dir in dirs:
-            index = str(xbmcvfs.Stat(encfs_source + '/' + dir).st_ino())
-            print "dirx = " + dir + "foldername = "+folderINode+" index = " + index + "\n"
+            index = ''
+            if encfs_inode == 0:
+                index = str(xbmcvfs.Stat(encfs_source + '/' + dir).st_ino())
+            else:
+                index = str(xbmcvfs.Stat(encfs_source + '/' + dir).st_ctime())
+
             if index == folderINode:
                 # don't redownload if present already
                 if (not xbmcvfs.exists(str(encfs_source) + '/'+str(dir)+'/'+str(title))):
-                    print "IN\n"
                     url = service.getDownloadURL(docid)
                     service.downloadPicture(url, str(encfs_source) + '/'+str(dir) + '/'+str(title))
-                fileINode = str(xbmcvfs.Stat(str(encfs_source) + '/'+str(dir)+'/'+str(title)).st_ino())
+                fileINode = ''
+                if encfs_inode ==0:
+                    fileINode = str(xbmcvfs.Stat(str(encfs_source) + '/'+str(dir)+'/'+str(title)).st_ino())
+                else:
+                    fileINode = str(xbmcvfs.Stat(str(encfs_source) + '/'+str(dir)+'/'+str(title)).st_ctime())
+
                 dirsx, files = xbmcvfs.listdir(encfs_target + '/' + str(folder))
                 for file in files:
-                    index = str(xbmcvfs.Stat(encfs_target + '/' + str(folder) + '/' + file).st_ino())
+                    index = ''
+                    if encfs_inode ==0:
+                        index = str(xbmcvfs.Stat(encfs_target + '/' + str(folder) + '/' + file).st_ino())
+                    else:
+                        index = str(xbmcvfs.Stat(encfs_target + '/' + str(folder) + '/' + file).st_ctime())
                     if index == fileINode:
                         xbmc.executebuiltin("XBMC.ShowPicture("+encfs_target + '/' + str(folder) + '/' + file+")")
                         item = xbmcgui.ListItem(path=encfs_target + '/' + str(folder) + '/' + file)
@@ -954,27 +985,77 @@ elif mode == 'slideshow':
     folder = getParameter('folder',0)
     title = getParameter('title',0)
 
-    path = getSetting('photo_folder')
 
-    if not xbmcvfs.exists(path):
-        path = ''
+    encfs = getParameter('encfs', False)
+
+    if encfs:
+        encfs_inode = int(getSetting('encfs_inode', 0))
+
+        encfs_source = getSetting('encfs_source')
+        encfs_target = getSetting('encfs_target')
+
+        if (not xbmcvfs.exists(str(encfs_target) + '/'+str(folder) + '/')):
+            xbmcvfs.mkdir(str(encfs_target) + '/'+str(folder))
+
+        folderINode = ''
+        if encfs_inode == 0:
+            folderINode = str(xbmcvfs.Stat(encfs_target + '/' + str(folder)).st_ino())
+        else:
+            folderINode = str(xbmcvfs.Stat(encfs_target + '/' + str(folder)).st_ctime())
+
+        mediaItems = service.getMediaList(folderName=folder, contentType=8)
+
+        if mediaItems:
+
+            dirs, filesx = xbmcvfs.listdir(encfs_source)
+            for dir in dirs:
+                index = ''
+                if encfs_inode == 0:
+                    index = str(xbmcvfs.Stat(encfs_source + '/' + dir).st_ino())
+                else:
+                    index = str(xbmcvfs.Stat(encfs_source + '/' + dir).st_ctime())
+
+                print "dirx = " + dir + "foldername = "+folderINode+" index = " + index + "\n"
+                if index == folderINode:
+
+                    progress = xbmcgui.DialogProgressBG()
+                    progress.create(addon.getLocalizedString(30035), 'Preparing list...')
+                    count=0
+                    for item in mediaItems:
+                        if item.file is not None:
+                            count = count + 1;
+                            progress.update((int)(float(count)/len(mediaItems)*100),addon.getLocalizedString(30035), item.file.title)
+                            if (not xbmcvfs.exists(str(encfs_source) + '/'+str(dir)+'/'+str(item.file.title))):
+                                service.downloadPicture(item.mediaurl.url,str(encfs_source) + '/'+str(dir)+ '/'+str(item.file.title))
+                                if encfs_inode > 0:
+                                    xbmc.sleep(100)
 
 
-    while path == '':
-        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30038), 'files','',False,False,'')
+                    progress.close()
+                    xbmc.executebuiltin("XBMC.SlideShow("+str(encfs_target) + '/'+str(folder)+"/)")
+
+    else:
+        path = getSetting('photo_folder')
+
         if not xbmcvfs.exists(path):
             path = ''
-        else:
-            addon.setSetting('photo_folder', path)
-
-    # create path if doesn't exist
-    if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
-        xbmcvfs.mkdir(str(path) + '/'+str(folder))
-
-    mediaItems = service.getMediaList(folderName=folder, contentType=5)
 
 
-    if mediaItems:
+        while path == '':
+            path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30038), 'files','',False,False,'')
+            if not xbmcvfs.exists(path):
+                path = ''
+            else:
+                addon.setSetting('photo_folder', path)
+
+            # create path if doesn't exist
+            if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
+                xbmcvfs.mkdir(str(path) + '/'+str(folder))
+
+            mediaItems = service.getMediaList(folderName=folder, contentType=5)
+
+
+            if mediaItems:
                 progress = xbmcgui.DialogProgressBG()
                 progress.create(addon.getLocalizedString(30035), 'Preparing list...')
                 count=0

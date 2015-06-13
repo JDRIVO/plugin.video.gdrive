@@ -455,8 +455,6 @@ class cloudservice(object):
 
             f = xbmcvfs.File(playbackFile, 'w')
 
-            print 'inode = ' + str(xbmcvfs.Stat(playbackFile).st_ino()) + "\n";
-
 
             if playback != '':
                 progress = xbmcgui.DialogProgress()
@@ -549,7 +547,10 @@ class cloudservice(object):
 
                     elif contextType == 'image':
                         # slideshow
-                        values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id}
+                        if encfs:
+                            values = {'encfs': 'true', 'username': self.authorization.username, 'title': folder.title, 'folder': folder.id}
+                        else:
+                            values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id}
                         cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=slideshow&'+urllib.urlencode(values)+')', ))
 
                     #download folder
@@ -564,7 +565,6 @@ class cloudservice(object):
                         #encfs
                         values = {'instance': self.instanceName, 'foldername': folder.title, 'folder': folder.id}
                         cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
-                        cm.append(( 'treat as encrypted', 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=index&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
 
                 listitem.addContextMenuItems(cm, False)
                 listitem.setProperty('fanart_image', fanart)
@@ -713,12 +713,11 @@ class cloudservice(object):
 
         elif contextType == 'image':
 
-            cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=slideshow&' + urllib.urlencode(values)+')', ))
+                cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=slideshow&' + urllib.urlencode(values)+')', ))
 
         #encfs
-        if (self.protocol == 2):
-            cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=downloadfolder&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
-            cm.append(( 'treat as encrypted', 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=index&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
+#        if (self.protocol == 2):
+#            cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=downloadfolder&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
 
 
         url = url + '&content_type='+contextType

@@ -136,6 +136,7 @@
         <setting label="30127" type="lsep"/>
         <setting id="encfs_source" type="folder" subsetting="true" label="30128" default="" />
         <setting id="encfs_target" type="folder" subsetting="true" label="30129" default="" />
+        <setting id="encfs_inode" type="enum" subsetting="true" label="30155" values="local|samba/nfs/remote/other" default="0" />
 
     </category>
 

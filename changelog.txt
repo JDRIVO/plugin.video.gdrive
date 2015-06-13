@@ -1,7 +1,7 @@
 - known issue: Problem activating a second instance with the same account #32
 
 Version 0.7.3
-- encfs: add folder navigation support, add photo support
+- encfs: add folder navigation support, add photo support, support for matching encrypted to decrypted filenames, support for local and remote
 Version 0.7.2
 - fix for Save STRM on folders
 Version 0.7.0
