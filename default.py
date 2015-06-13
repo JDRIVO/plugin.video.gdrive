@@ -32,7 +32,6 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
 
 # global variables
 PLUGIN_NAME = 'gdrive'
-#PLUGIN_NAME = 'gdrive-testing'
 
 # cloudservice - helper methods
 def log(msg, err=False):
@@ -125,7 +124,7 @@ PLUGIN_URL = sys.argv[0]
 plugin_handle = int(sys.argv[1])
 plugin_queries = parse_query(sys.argv[2][1:])
 
-addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+addon = xbmcaddon.Addon(id='plugin.video.gdrive')
 #addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 
 addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
