@@ -1,5 +1,6 @@
 - known issue: Problem activating a second instance with the same account #32
 
+- add support for application/x-flac and application/mp3
 Version 0.7.3
 - encfs: add folder navigation support, add photo support, support for matching encrypted to decrypted filenames, support for local (inode) and remote (c_time)
 Version 0.7.2

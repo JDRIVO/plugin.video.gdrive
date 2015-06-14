@@ -446,6 +446,8 @@ class gdrive(cloudservice):
                 title = ''
                 fileSize = 0
                 thumbnail = ''
+                fileExtension = ''
+
                 url = ''
                 for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
@@ -470,6 +472,10 @@ class gdrive(cloudservice):
                 for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   url = r.group(1)
+                  break
+                for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  fileExtension = r.group(1)
                   break
 
                 resume = 0
@@ -502,11 +508,12 @@ class gdrive(cloudservice):
 
 
                 # entry is a music file
-                elif (resourceType == 'application/vnd.google-apps.audio' or 'audio' in resourceType and contentType in (1,2,3,4,6,7)):
+                elif (resourceType == 'application/vnd.google-apps.audio' or fileExtension.lower() in ('flac', 'mp3') or 'audio' in resourceType and contentType in (1,2,3,4,6,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', '', size=fileSize)
                     #url = re.sub('\&gd\=true', '', url)
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
+                    print "entry = " + entry + "\n"
                     return media
 
                 # entry is a photo
