@@ -513,7 +513,6 @@ class gdrive(cloudservice):
                     #url = re.sub('\&gd\=true', '', url)
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
-                    print "entry = " + entry + "\n"
                     return media
 
                 # entry is a photo
