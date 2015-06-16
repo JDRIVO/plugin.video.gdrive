@@ -1,7 +1,7 @@
-KODI-gdrive / XBMC-gdrive
-=========================
+gdrive for KODI / XBMC
+======================
 
-Google Drive Video add-on for XBMC
+Google Drive Video add-on for KODI / XBMC
 
 A video add-on for XBMC that enables playback of videos stored in a Google Drive account.
 
