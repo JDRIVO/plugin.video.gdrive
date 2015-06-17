@@ -657,6 +657,8 @@ class gdrive(cloudservice):
     ##
     def getTTS(self, baseURL):
 
+        if baseURL == '':
+            return ''
         # retrieve all items
         url = baseURL +'&hl=en-US&type=list&tlangs=1&fmts=1&vssids=1'
 
@@ -1129,7 +1131,8 @@ class gdrive(cloudservice):
             for r in re.finditer('&ttsurl\=(.*?)\&reportabuseurl' ,
                                urls, re.DOTALL):
                 ttsURL = r.group(1)
-            ttsURL = ttsURL+'&v='+docid #+ '&type=track&lang=en&name&kind&fmt=1'
+                ttsURL = ttsURL+'&v='+docid #+ '&type=track&lang=en&name&kind&fmt=1'
+
             package.file.srtURL = ttsURL
 
             self.useWRITELY = True
@@ -1148,9 +1151,10 @@ class gdrive(cloudservice):
                             self.crashreport.sendError('getPlaybackCall-3',str(e))
                             return
                     else:
-                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                        self.crashreport.sendError('getPlaybackCall-3',str(e))
-                        return
+                        #return what we have -- video file may not have streams (not processed yet)
+                        #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                        #self.crashreport.sendError('getPlaybackCall-3',str(e))
+                        return (mediaURLs, package)
 
             response_data = response.read()
             response.close()
