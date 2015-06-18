@@ -504,6 +504,11 @@ class gdrive(cloudservice):
                 # entry is a music file
                 elif (resourceType == 'application/vnd.google-apps.audio' or fileExtension.lower() in ('flac', 'mp3') or 'audio' in resourceType and contentType in (1,2,3,4,6,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', '', size=fileSize)
+                    for r in re.finditer('([^\-]+) \- ([^\-]+) \- (\d+) \- ([^\.]+)\.' ,
+                             title, re.DOTALL):
+                        artist,album,track,trackTitle = r.groups()
+                        mediaFile.setAlbumMeta(album,artist,'',track,'')
+                        break
                     #url = re.sub('\&gd\=true', '', url)
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))

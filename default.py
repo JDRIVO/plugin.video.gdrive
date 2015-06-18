@@ -1204,7 +1204,7 @@ elif mode == 'audio':
                 item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                                 thumbnailImage=package.file.thumbnail, path=mediaURL.url)
 
-                item.setInfo( type="Music", infoLabels={ "Title": package.file.title} )
+                item.setInfo( type="Video", infoLabels={ "Title": package.file.title} )
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
                 if playbackPlayer:
