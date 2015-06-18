@@ -1193,30 +1193,39 @@ elif mode == 'audio':
                                 thumbnailImage=package.file.thumbnail, path=mediaURL.url)
             # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
             item.setInfo( type="Video", infoLabels={ "Title": title } )
+
             player = gPlayer.gPlayer()
             player.play(mediaURL.url, item)
             playbackMedia = False
 
+
         if playbackMedia:
+
+                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
+
+                item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
                 if playbackPlayer:
 
-                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
+#                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+#                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
                     # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
-                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+#                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
                     #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
                     player = gPlayer.gPlayer()
                     #player.play(playbackPath, item)
                     player.PlayStream(mediaURL.url, item, 0)
 
-                else:
+ #               else:
 
-                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
+#                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+   #                             thumbnailImage=package.file.thumbnail, path=mediaURL.url)
                     # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
-                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+ #                   item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+  #                  xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 
 ###
