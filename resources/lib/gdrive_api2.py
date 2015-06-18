@@ -1,6 +1,6 @@
 '''
-    gdrive XBMC Plugin
-    Copyright (C) 2013-2014 ddurdle
+    gdrive for KODI / XBMC Plugin
+    Copyright (C) 2013-2015 ddurdle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -42,12 +42,6 @@ from resources.lib import cache
 # cloudservice - standard XBMC modules
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin, xbmcvfs
 
-# global variables
-#PLUGIN_NAME = 'plugin.video.gdrive-testing'
-#PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
-
-#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
-#addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 SERVICE_NAME = 'dmdgdrive'
 
 
@@ -558,8 +552,6 @@ class gdrive(cloudservice):
             url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
 
         srt = []
-#        SRTTitle = []
-#        SRTURL = []
         while True:
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -615,8 +607,6 @@ class gdrive(cloudservice):
                     for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                         url = r.group(1)
-#                  SRTURL.append(url)
-#                  SRTTitle.append(title)
                         srt.append([title,url])
                         break
 
@@ -636,16 +626,6 @@ class gdrive(cloudservice):
                 url = nextURL
 
         return srt
-#        if len(SRTURL) == 0:
-#            return ''
-#        elif len(SRTURL) == 1:
-#            return SRTURL[0]
-#        else:
-#            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30139), SRTTitle)
-#            return SRTURL[ret]
-
-
-#        return ''
 
 
 
@@ -662,9 +642,6 @@ class gdrive(cloudservice):
         # retrieve all items
         url = baseURL +'&hl=en-US&type=list&tlangs=1&fmts=1&vssids=1'
 
-#        ccLang = []
-#        ccLanguage = []
-#        ccURL = []
         cc = []
         while True:
             req = urllib2.Request(url, None, self.getHeadersList())
@@ -695,12 +672,7 @@ class gdrive(cloudservice):
             count=0
             for r in re.finditer('\<track id\=\"\d+\" .*? lang_code\=\"([^\"]+)\" .*? lang_translated\=\"([^\"]+)\" [^\>]+\>' ,response_data, re.DOTALL):
                 lang,language = r.groups()
-#                ccURL.append(baseURL+'&type=track&lang='+str(lang)+'&name&kind&fmt=1')
-#                ccLanguage.append(language)
-#                ccLang.append(lang)
                 cc.append([ '.'+str(count) + '.'+ str(lang) + '.srt',baseURL+'&type=track&lang='+str(lang)+'&name&kind&fmt=1'])
-#                if not xbmcvfs.exists(str(path) + '.'+str(count) + '.'+ str(lang) + '.srt'):
-#                    self.downloadTTS(baseURL+'&type=track&lang='+str(lang)+'&name&kind&fmt=1', str(path) + '.'+str(count) + '.'+ str(lang) + '.srt' )
 
             # look for more pages of videos
             nextURL = ''
@@ -716,14 +688,7 @@ class gdrive(cloudservice):
                 url = nextURL
 
         return cc
- #       if len(ccURL) == 0:
- #           return '',''
- #       elif len(ccURL) == 1:
- #           return ccURL[0],ccLang[0]
- #       else:
- #           return ccURL[ret], ccLang[ret]
 
- #       return '',''
 
     ##
     # retrieve the resource ID for root folder
@@ -1435,12 +1400,6 @@ class gdrive(cloudservice):
                              response_data, re.DOTALL):
             title = r.group(1)
 
-#thumbnail
-#        downloadURL = ''
-#        for r in re.finditer('\,\[\,\"[^\"]+\"\,\"([^\"]+)\"' ,
-#                             response_data, re.DOTALL):
-#            downloadURL = r.group(1)
-#            downloadURL = re.sub('\\\\u003d', '=', downloadURL)
 
         itagDB={}
         containerDB = {'x-flv':'flv', 'webm': 'WebM', 'mp4;+codecs="avc1.42001E,+mp4a.40.2"': 'MP4'}
@@ -1466,12 +1425,8 @@ class gdrive(cloudservice):
         urls = re.sub('\\\\u0026', '&', urls)
 
 
-#        urls = re.sub('\d+\&url\='+self.PROTOCOL, '\@', urls)
         urls = re.sub('\&url\='+self.PROTOCOL, '\@', urls)
 
-#        for r in re.finditer('\@([^\@]+)' ,urls):
-#          videoURL = r.group(0)
-#        videoURL1 = self.PROTOCOL + videoURL
 
 
         # fetch format type and quality for each stream

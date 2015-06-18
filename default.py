@@ -1414,17 +1414,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
             elif settings.username != '':
                 playbackPlayer = False
 
-            # right-click force cache playback
-#            elif settings.cache:
-#                playbackPlayer = True
-#                playbackMedia = False
-#                dirs, files = xbmcvfs.listdir(settings.cachePath + '/'+ str(package.file.id) + '/')
-#                for file in files:
-#                    if os.path.splitext(file)[1] == '.stream':
-#                        playbackPath = settings.cachePath + '/'+ str(package.file.id) + '/' + file
-#                        playbackMedia = True
-
-
             # right-click play original, srt, caption, seek
             elif settings.playOriginal or settings.srt or settings.cc or settings.seek:
                 playbackPlayer = True
@@ -1471,17 +1460,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
             elif mediaURL.offline:
                 playbackMedia = True
 
-
-#                if seek!='' and seek > 0:
-#                    player = gPlayer.gPlayer()
-#                    player.PlayStream(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
-
-
-        # direct-click (resolve or use setting-default)
-#        elif settings.cache:
-
-        #direct-click (resolve or use setting-default)
-#        else:
 
 
         if playbackMedia:
