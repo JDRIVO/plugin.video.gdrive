@@ -552,7 +552,7 @@ class cloudservice(object):
                         cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
 
                 listitem.addContextMenuItems(cm, False)
-                listitem.setProperty('fanart_image', fanart)
+                listitem.setProperty('fanart_image',  folder.fanart)
 
                 xbmcplugin.addDirectoryItem(plugin_handle, self.getDirectoryCall(folder, contextType, encfs=encfs), listitem,
                                 isFolder=True, totalItems=0)
@@ -646,8 +646,9 @@ class cloudservice(object):
                 listitem.setProperty('IsPlayable', 'false')
             else:
                 listitem.setProperty('IsPlayable', 'true')
-
         listitem.setProperty('fanart_image', package.file.fanart)
+
+
         cm=[]
 
         try:

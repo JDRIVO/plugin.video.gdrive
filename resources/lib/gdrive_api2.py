@@ -407,9 +407,17 @@ class gdrive(cloudservice):
             # video-entry
             for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\}\s+\]\s+\}' ,response_data, re.DOTALL):
                 entryS = r2.group(1)
+                folderFanart = ''
                 for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' , entryS, re.DOTALL):
                     entry = r1.group(1)
-                    media = self.getMediaPackage(entry, folderName=folderName, contentType=contentType)
+                    fanart = self.getMediaInfo(entry, folderName=folderName)
+                    if fanart != '':
+                        fanart = re.sub('\&gd\=true', '', fanart)
+                        #need to cache
+                        folderFanart = fanart + '|' + self.getHeadersEncoded()
+                for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' , entryS, re.DOTALL):
+                    entry = r1.group(1)
+                    media = self.getMediaPackage(entry, folderName=folderName, contentType=contentType, fanart=folderFanart)
                     if media is not None:
                         mediaFiles.append(media)
 
@@ -434,7 +442,7 @@ class gdrive(cloudservice):
     #   parameters: given an entry
     #   returns: package (folder,file)
     ##
-    def getMediaPackage(self, entry, folderName='',contentType=2):
+    def getMediaPackage(self, entry, folderName='',contentType=2, fanart=''):
 
                 resourceID = 0
                 resourceType = ''
@@ -485,12 +493,12 @@ class gdrive(cloudservice):
                         newtitle = r.group(1)
                         title = '*' + newtitle
                         resourceID = 'SAVED SEARCH'
-                    media = package.package(None,folder.folder(resourceID,title))
+                    media = package.package(None,folder.folder(resourceID,title, fanart=fanart))
                     return media
 
                 # entry is a video
                 elif (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType and contentType in (0,1,2,4,7)):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, fanart, thumbnail, size=fileSize)
 
 
                     tv = mediaFile.regtv1.match(title)
@@ -540,6 +548,9 @@ class gdrive(cloudservice):
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     return media
 
+                # entry is a photo, but we are not in a photo display
+                elif (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType):
+                    return
                 # entry is unknown
                 elif (resourceType == 'application/vnd.google-apps.unknown'):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, '', thumbnail, size=fileSize)
@@ -555,6 +566,49 @@ class gdrive(cloudservice):
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     return media
+
+
+    ##
+    # retrieve a media package
+    #   parameters: given an entry
+    #   returns: package (folder,file)
+    ##
+    def getMediaInfo(self, entry, folderName=''):
+
+                resourceID = 0
+                resourceType = ''
+                title = ''
+                fileSize = 0
+                thumbnail = ''
+                fileExtension = ''
+
+                url = ''
+                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  resourceID = r.group(1)
+                  break
+                for r in re.finditer('\"mimeType\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  resourceType = r.group(1)
+                  break
+                for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  title = r.group(1)
+                  break
+                for r in re.finditer('\"thumbnailLink\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  thumbnail = r.group(1)
+                for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  fileExtension = r.group(1)
+                  break
+
+                # entry is a photo
+                if ('fanart' in title and (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType)):
+                    return self.API_URL +'files/' + str(resourceID) + '?alt=media'
+
+                return ''
+
 
 
 

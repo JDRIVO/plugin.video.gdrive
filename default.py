@@ -762,7 +762,6 @@ if mode == 'main' or mode == 'index':
                     index = str(xbmcvfs.Stat(encfs_target + '/' + dir).st_ino())
                 else:
                     index = str(xbmcvfs.Stat(encfs_target + '/' + dir).st_ctime())
-                print "dir = " + dir + " index = " + index + "\n"
                 if index in dirListINodes.keys():
                     xbmcvfs.rmdir(encfs_target + '/' + dir)
                     dirListINodes[index].title = dir + ' [' +dirListINodes[index].title+ ']'
@@ -1014,7 +1013,6 @@ elif mode == 'slideshow':
                 else:
                     index = str(xbmcvfs.Stat(encfs_source + '/' + dir).st_ctime())
 
-                print "dirx = " + dir + "foldername = "+folderINode+" index = " + index + "\n"
                 if index == folderINode:
 
                     progress = xbmcgui.DialogProgressBG()
