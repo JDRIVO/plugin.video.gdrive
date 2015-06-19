@@ -17,12 +17,13 @@
 
 '''
 import urllib
+import re
 
 #
 #
 #
 class file:
-    # CloudService v0.2.1
+    # CloudService v0.2.3
 
     AUDIO = 1
     VIDEO = 2
@@ -47,12 +48,37 @@ class file:
         self.resume = 0
         self.decryptedTitle = ''
 
+        # nekwebdev contribution
+        self.regtv1 = re.compile('(.+?)'
+                                       '[ .]S(\d\d?)E(\d\d?)'
+                                       '.*?'
+                                       '(?:[ .](\d{3}\d?p)|\Z)?')
+        self.regtv2 = re.compile('(.+?)'
+                                       '[ .]s(\d\d?)e(\d\d?)'
+                                       '.*?'
+                                       '(?:[ .](\d{3}\d?p)|\Z)?')
+        self.regtv3 = re.compile('(.+?)'
+                                       '[ .](\d\d?)x(\d\d?)'
+                                       '.*?'
+                                       '(?:[ .](\d{3}\d?p)|\Z)?')
+        self.regtv4 = re.compile('(.+?)'
+                                       '[ .](\d\d?)X(\d\d?)'
+                                       '.*?'
+                                       '(?:[ .](\d{3}\d?p)|\Z)?')
+
     def setAlbumMeta(self,album,artist,releaseDate,trackNumber,genre):
         self.album = album
         self.artist = artist
         self.trackNumber = trackNumber
         self.genre = genre
         self.releaseDate = releaseDate
+        self.hasMeta = True
+
+    def setTVMeta(self,show,season,episode,showtitle):
+        self.show = show
+        self.season = season
+        self.episode = episode
+        self.showtitle = showtitle
         self.hasMeta = True
 
     def displayTitle(self):

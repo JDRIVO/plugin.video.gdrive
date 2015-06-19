@@ -118,6 +118,7 @@ class gdrive(cloudservice):
         self.cache = cache.cache()
 
 
+
     ##
     # get OAUTH2 access and refresh token for provided code
     #   parameters: OAUTH2 code
@@ -490,6 +491,23 @@ class gdrive(cloudservice):
                 # entry is a video
                 elif (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType and contentType in (0,1,2,4,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, '', thumbnail, size=fileSize)
+
+
+                    tv = mediaFile.regtv1.match(title)
+                    if not tv:
+                            tv = mediaFile.regtv2.match(title)
+                    if not tv:
+                            tv = mediaFile.regtv3.match(title)
+                    if not tv:
+                            tv = mediaFile.regtv4.match(title)
+
+                    if tv:
+                            show = tv.group(1).replace(".", " ")
+                            show = show.replace('-',"")
+                            season = tv.group(2)
+                            episode = tv.group(3)
+                            showtitle = tv.group(4)
+                            mediaFile.setTVMeta(show,season,episode,showtitle)
 
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))

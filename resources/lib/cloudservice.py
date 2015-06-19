@@ -169,33 +169,18 @@ class cloudservice(object):
                     # nekwebdev contribution
                     if self.addon.getSetting('tvshows_path') != '' or self.addon.getSetting('movies_path') != '':
                         pathLib = ''
-                        regtv1 = re.compile('(.+?)'
-                                       '[ .]S(\d\d?)E(\d\d?)'
-                                       '.*?'
-                                       '(?:[ .](\d{3}\d?p)|\Z)?')
-                        regtv2 = re.compile('(.+?)'
-                                       '[ .]s(\d\d?)e(\d\d?)'
-                                       '.*?'
-                                       '(?:[ .](\d{3}\d?p)|\Z)?')
-                        regtv3 = re.compile('(.+?)'
-                                       '[ .](\d\d?)x(\d\d?)'
-                                       '.*?'
-                                       '(?:[ .](\d{3}\d?p)|\Z)?')
-                        regtv4 = re.compile('(.+?)'
-                                       '[ .](\d\d?)X(\d\d?)'
-                                       '.*?'
-                                       '(?:[ .](\d{3}\d?p)|\Z)?')
+
                         regmovie = re.compile('(.*?[ .]\d{4})'
                                           '.*?'
                                           '(?:[ .](\d{3}\d?p)|\Z)?')
 
-                        tv = regtv1.match(title)
+                        tv = item.file.regtv1.match(title)
                         if not tv:
-                            tv = regtv2.match(title)
+                            tv = item.file.regtv2.match(title)
                         if not tv:
-                            tv = regtv3.match(title)
+                            tv = item.file.regtv3.match(title)
                         if not tv:
-                            tv = regtv4.match(title)
+                            tv = item.file.regtv4.match(title)
 
                         if tv and self.addon.getSetting('tvshows_path') != '':
                             show = tv.group(1).replace(".", " ")
@@ -634,7 +619,10 @@ class cloudservice(object):
 
         # video file
         elif package.file.type == package.file.VIDEO:
-            infolabels = decode_dict({ 'title' : package.file.displayTitle() ,  'plot' : package.file.plot, 'size' : package.file.size })
+            if package.file.hasMeta:
+                infolabels = decode_dict({ 'title' : package.file.displayTitle() ,  'plot' : package.file.plot, 'TVShowTitle': package.file.show, 'EpisodeName': package.file.showtitle, 'season': package.file.season, 'episode': package.file.episode,'size' : package.file.size })
+            else:
+                infolabels = decode_dict({ 'title' : package.file.displayTitle() ,  'plot' : package.file.plot, 'size' : package.file.size })
             listitem.setInfo('Video', infolabels)
             playbackURL = '?mode=video'
             if self.integratedPlayer:
