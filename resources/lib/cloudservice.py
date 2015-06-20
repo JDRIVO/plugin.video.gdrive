@@ -567,7 +567,7 @@ class cloudservice(object):
         # audio file, not in "pictures"
         if package.file.type == package.file.AUDIO and contextType != 'image':
             if package.file.hasMeta:
-                infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
+                infolabels = decode_dict({ 'title' : package.file.displayTrackTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
             else:
                 infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'size' : package.file.size })
             listitem.setInfo('Music', infolabels)
@@ -597,7 +597,7 @@ class cloudservice(object):
         # encrypted file, viewing in "music", assume audio
         elif package.file.type == package.file.UNKNOWN and contextType == 'audio':
             if package.file.hasMeta:
-                infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
+                infolabels = decode_dict({ 'title' : package.file.displayTrackTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
             else:
                 infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'size' : package.file.size })
             listitem.setInfo('Music', infolabels)
@@ -610,7 +610,7 @@ class cloudservice(object):
         # audio file, viewing in "pictures"
         elif package.file.type == package.file.AUDIO and contextType == 'image':
             if package.file.hasMeta:
-                infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
+                infolabels = decode_dict({ 'title' : package.file.displayTrackTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
             else:
                 infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'size' : package.file.size })
             listitem.setInfo('Music', infolabels)

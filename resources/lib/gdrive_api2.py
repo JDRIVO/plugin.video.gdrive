@@ -536,7 +536,7 @@ class gdrive(cloudservice):
                         for r in re.finditer('([^\-]+) \- ([^\-]+) \- (\d+) \- ([^\.]+)\.' ,
                              title, re.DOTALL):
                             artist,album,track,trackTitle = r.groups()
-                            mediaFile.setAlbumMeta(album,artist,'',track,'')
+                            mediaFile.setAlbumMeta(album,artist,'',track,'', trackTitle)
                             break
 
                     media = package.package(mediaFile,folder.folder(folderName,''))

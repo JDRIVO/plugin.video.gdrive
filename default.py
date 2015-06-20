@@ -214,12 +214,6 @@ try:
 except:
     pass
 
-# cloudservice - sorting options
-xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_EPISODE)
-xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
-xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
-
-
 # cloudservice - content type
 contextType = getParameter('content_type')
 
@@ -238,6 +232,9 @@ contextType = getParameter('content_type')
     # 6 music and photos
     # 7 everything
 
+
+
+
 try:
       contentType = 0
       contentTypeDecider = int(getSetting('context_video'))
@@ -249,12 +246,16 @@ try:
             contentType = 1
         else:
             contentType = 0
+        # cloudservice - sorting options
+        xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_EPISODE)
 
       elif contextType == 'audio':
         if contentTypeDecider == 1:
             contentType = 4
         else:
             contentType = 3
+        # cloudservice - sorting options
+        xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TRACKNUM)
 
       elif contextType == 'image':
         if contentTypeDecider == 2:
@@ -270,6 +271,10 @@ try:
 
 except:
       contentType = 2
+
+# cloudservice - sorting options
+xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
+xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 
 numberOfAccounts = numberOfAccounts(PLUGIN_NAME)
 

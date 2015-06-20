@@ -72,12 +72,13 @@ class file:
 #                                       '(?:[ .](\d{3}\d?p)|\Z)?'
 #                                       '\..*')
 
-    def setAlbumMeta(self,album,artist,releaseDate,trackNumber,genre):
+    def setAlbumMeta(self,album,artist,releaseDate,trackNumber,genre, trackTitle):
         self.album = album
         self.artist = artist
         self.trackNumber = trackNumber
         self.genre = genre
         self.releaseDate = releaseDate
+        self.trackTitle = trackTitle
         self.hasMeta = True
 
     def setTVMeta(self,show,season,episode,showtitle):
@@ -97,8 +98,15 @@ class file:
         if self.decryptedTitle != '':
             return urllib.unquote(str(self.decryptedTitle) + ' [' + str(self.title) + ']')
         elif self.showtitle is not None and self.showtitle != '':
-            print "show = " + self.showtitle  + "\n"
             return urllib.unquote(self.showtitle)
+        else:
+            return urllib.unquote(self.title)
+
+    def displayTrackTitle(self):
+        if self.decryptedTitle != '':
+            return urllib.unquote(str(self.decryptedTitle) + ' [' + str(self.title) + ']')
+        elif self.showtitle is not None and self.trackTitle != '':
+            return urllib.unquote(self.trackTitle)
         else:
             return urllib.unquote(self.title)
 
