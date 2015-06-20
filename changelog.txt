@@ -1,5 +1,8 @@
 - known issue: Problem activating a second instance with the same account #32
 
+Version 0.7.5
+- add settings: advance - parse music, parse tv shows
+- add sort by episode
 - parsing tv show information from filename
 - parsing audio information from filename
 - fix playback issue introduced with CC with non-transcodable files (or videos currently being processed)

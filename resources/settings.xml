@@ -145,6 +145,8 @@
 <!-->    	<setting id="srt_folder" type="folder" label="30135" default="" />-->
     	<setting id="cc" type="bool" label="30149" default="true" />
     	<setting id="srt" type="bool" label="30150" default="true" />
+    	<setting id="parse_tv" type="bool" label="30156" default="true" />
+    	<setting id="parse_music" type="bool" label="30157" default="true" />
 
     </category>
 

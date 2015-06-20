@@ -620,7 +620,7 @@ class cloudservice(object):
         # video file
         elif package.file.type == package.file.VIDEO:
             if package.file.hasMeta:
-                infolabels = decode_dict({ 'title' : package.file.displayTitle() ,  'plot' : package.file.plot, 'TVShowTitle': package.file.show, 'EpisodeName': package.file.showtitle, 'season': package.file.season, 'episode': package.file.episode,'size' : package.file.size })
+                infolabels = decode_dict({ 'title' : package.file.displayShowTitle() ,  'plot' : package.file.plot, 'TVShowTitle': package.file.show, 'EpisodeName': package.file.showtitle, 'season': package.file.season, 'episode': package.file.episode,'size' : package.file.size })
             else:
                 infolabels = decode_dict({ 'title' : package.file.displayTitle() ,  'plot' : package.file.plot, 'size' : package.file.size })
             listitem.setInfo('Video', infolabels)

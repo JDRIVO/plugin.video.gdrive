@@ -145,6 +145,8 @@
 	<string id="30154">Please reconfigure account in settings.</string>
 
 	<string id="30155">encfs Type</string>
+	<string id="30156">Parse TV show info from title</string>
+	<string id="30157">Parse music info from title</string>
 
 
 </strings>

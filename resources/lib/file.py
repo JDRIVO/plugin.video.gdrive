@@ -36,6 +36,8 @@ class file:
     def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0):
         self.id = id
         self.title = title
+        self.showtitle = title
+
         self.plot = plot
         self.type = type
         self.fanart = fanart
@@ -51,20 +53,24 @@ class file:
         # nekwebdev contribution
         self.regtv1 = re.compile('(.+?)'
                                        '[ .]S(\d\d?)E(\d\d?)'
-                                       '.*?'
-                                       '(?:[ .](\d{3}\d?p)|\Z)?')
+                                       '(.*)'
+                                       '(?:[ .](\d{3}\d?p)|\Z)?'
+                                       '\..*', re.IGNORECASE)
         self.regtv2 = re.compile('(.+?)'
-                                       '[ .]s(\d\d?)e(\d\d?)'
-                                       '.*?'
-                                       '(?:[ .](\d{3}\d?p)|\Z)?')
+                                       '[ .]season\s?(\d\d?)\s?episode\s?(\d\d?)'
+                                       '(.*)'
+                                       '(?:[ .](\d{3}\d?p)|\Z)?'
+                                       '\..*', re.IGNORECASE)
         self.regtv3 = re.compile('(.+?)'
                                        '[ .](\d\d?)x(\d\d?)'
-                                       '.*?'
-                                       '(?:[ .](\d{3}\d?p)|\Z)?')
-        self.regtv4 = re.compile('(.+?)'
-                                       '[ .](\d\d?)X(\d\d?)'
-                                       '.*?'
-                                       '(?:[ .](\d{3}\d?p)|\Z)?')
+                                       '(.*)'
+                                       '(?:[ .](\d{3}\d?p)|\Z)?'
+                                       '\..*', re.IGNORECASE)
+#        self.regtv4 = re.compile('(.+?)'
+#                                       '[ .](\d\d?)X(\d\d?)'
+#                                       '(.*)'
+#                                       '(?:[ .](\d{3}\d?p)|\Z)?'
+#                                       '\..*')
 
     def setAlbumMeta(self,album,artist,releaseDate,trackNumber,genre):
         self.album = album
@@ -84,6 +90,15 @@ class file:
     def displayTitle(self):
         if self.decryptedTitle != '':
             return urllib.unquote(str(self.decryptedTitle) + ' [' + str(self.title) + ']')
+        else:
+            return urllib.unquote(self.title)
+
+    def displayShowTitle(self):
+        if self.decryptedTitle != '':
+            return urllib.unquote(str(self.decryptedTitle) + ' [' + str(self.title) + ']')
+        elif self.showtitle is not None and self.showtitle != '':
+            print "show = " + self.showtitle  + "\n"
+            return urllib.unquote(self.showtitle)
         else:
             return urllib.unquote(self.title)
 
