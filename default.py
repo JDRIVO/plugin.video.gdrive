@@ -248,6 +248,7 @@ try:
             contentType = 0
         # cloudservice - sorting options
         xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_EPISODE)
+        xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 
       elif contextType == 'audio':
         if contentTypeDecider == 1:
@@ -1495,7 +1496,8 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     #player.play(playbackPath, item)
                     if seek > 0:
                         player.PlayStream(mediaURL.url, item, seek)
-                    elif package.file.resume > 0:
+                    elif float(package.file.resume) > 0:
+                        print "SEEK\n"
                         player.PlayStream(mediaURL.url, item, package.file.resume)
                     else:
                         player.PlayStream(mediaURL.url, item, 0)
@@ -1535,7 +1537,8 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     # need to seek?
                     if seek > 0:
                         player.PlayStream(mediaURL.url, item, seek, startPlayback=False)
-                    elif package.file.resume > 0:
+                    elif float(package.file.resume) > 0:
+                        print "SEEK\n"
                         player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=False)
                     else:
                         player.PlayStream(mediaURL.url, item, 0, startPlayback=False)

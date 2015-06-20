@@ -23,7 +23,9 @@ import re
 #
 #
 class file:
-    # CloudService v0.2.3
+    # CloudService v0.2.4
+    #
+    # - add resolution (video) [2016/06/20]
 
     AUDIO = 1
     VIDEO = 2
@@ -33,7 +35,7 @@ class file:
 
     ##
     ##
-    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0):
+    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution=''):
         self.id = id
         self.title = title
         self.showtitle = title
@@ -49,6 +51,7 @@ class file:
         self.srtURL = ''
         self.resume = 0
         self.decryptedTitle = ''
+        self.resolution = resolution
 
         # nekwebdev contribution
         self.regtv1 = re.compile('(.+?)'

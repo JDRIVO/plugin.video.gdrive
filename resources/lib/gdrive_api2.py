@@ -415,7 +415,8 @@ class gdrive(cloudservice):
                         fanart = re.sub('\&gd\=true', '', fanart)
                         #need to cache
                         folderFanart = fanart + '|' + self.getHeadersEncoded()
-                for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' , entryS, re.DOTALL):
+
+                for r1 in re.finditer('\{(.*?)\"spaces\"\:' , entryS, re.DOTALL):
                     entry = r1.group(1)
                     media = self.getMediaPackage(entry, folderName=folderName, contentType=contentType, fanart=folderFanart)
                     if media is not None:
@@ -480,7 +481,16 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                   fileExtension = r.group(1)
                   break
-
+                height =0
+                width = 0
+                for r in re.finditer('\"height\"\:\s+(\d+)' ,
+                             entry, re.DOTALL):
+                  height = r.group(1)
+                  break
+                for r in re.finditer('\"width\"\:\s+(\d+)' ,
+                             entry, re.DOTALL):
+                  width = r.group(1)
+                  break
                 resume = 0
                 for r in re.finditer('\"key\"\:\s+\"resume\"[^\"]+\"visibility\"\:\s+\"[^\"]+\"[^\"]+\"value\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
@@ -498,7 +508,7 @@ class gdrive(cloudservice):
 
                 # entry is a video
                 elif (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType and contentType in (0,1,2,4,7)):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, fanart, thumbnail, size=fileSize)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, fanart, thumbnail, size=fileSize, resolution=[height,width])
 
                     if self.settings.parseTV:
                         tv = mediaFile.regtv1.match(title)
@@ -1128,7 +1138,6 @@ class gdrive(cloudservice):
 
                 response_data = response.read()
                 response.close()
-
 
                 package = self.getMediaPackage(response_data)
                     #docid = package.file.id

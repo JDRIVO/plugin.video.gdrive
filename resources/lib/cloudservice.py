@@ -593,6 +593,10 @@ class cloudservice(object):
                 listitem.setProperty('IsPlayable', 'false')
             else:
                 listitem.setProperty('IsPlayable', 'true')
+            if float(package.file.resume) > 0:
+                listitem.setProperty('isResumable', 1)
+
+
 
         # encrypted file, viewing in "music", assume audio
         elif package.file.type == package.file.UNKNOWN and contextType == 'audio':
@@ -629,6 +633,12 @@ class cloudservice(object):
                 listitem.setProperty('IsPlayable', 'false')
             else:
                 listitem.setProperty('IsPlayable', 'true')
+            if float(package.file.resume) > 0:
+                listitem.setProperty('isResumable', "1")
+                listitem.setProperty('PlayCount', "1")
+            if int(package.file.resolution[0]) > 0:
+#                print "resolution"+package.file.resolution+"\n"
+                listitem.addStreamInfo('video', {'width': package.file.resolution[1], 'height': package.file.resolution[0]})
 
         # image file
         elif package.file.type == package.file.PICTURE:
@@ -646,6 +656,9 @@ class cloudservice(object):
                 listitem.setProperty('IsPlayable', 'false')
             else:
                 listitem.setProperty('IsPlayable', 'true')
+            if float(package.file.resume) > 0:
+                listitem.setProperty('isResumable', 1)
+
         listitem.setProperty('fanart_image', package.file.fanart)
 
 
