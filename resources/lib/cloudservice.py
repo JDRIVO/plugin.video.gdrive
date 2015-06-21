@@ -635,7 +635,9 @@ class cloudservice(object):
                 listitem.setProperty('IsPlayable', 'true')
             if float(package.file.resume) > 0:
                 listitem.setProperty('isResumable', "1")
-                listitem.setProperty('PlayCount', "1")
+            if int(package.file.playcount) > 0:
+                listitem.setInfo('video', {'playcount':1})
+
             if int(package.file.resolution[0]) > 0:
 #                print "resolution"+package.file.resolution+"\n"
                 listitem.addStreamInfo('video', {'width': package.file.resolution[1], 'height': package.file.resolution[0]})

@@ -491,11 +491,18 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                   width = r.group(1)
                   break
+
                 resume = 0
                 for r in re.finditer('\"key\"\:\s+\"resume\"[^\"]+\"visibility\"\:\s+\"[^\"]+\"[^\"]+\"value\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   resume = r.group(1)
                   break
+                playcount = 0
+                for r in re.finditer('\"key\"\:\s+\"playcount\"[^\"]+\"visibility\"\:\s+\"[^\"]+\"[^\"]+\"value\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  playcount = r.group(1)
+                  break
+
                 # entry is a folder
                 if (resourceType == 'application/vnd.google-apps.folder'):
                     for r in re.finditer('SAVED SEARCH\|([^\|]+)' ,
@@ -508,7 +515,7 @@ class gdrive(cloudservice):
 
                 # entry is a video
                 elif (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType and contentType in (0,1,2,4,7)):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, fanart, thumbnail, size=fileSize, resolution=[height,width])
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, fanart, thumbnail, size=fileSize, resolution=[height,width], playcount=int(playcount))
 
                     if self.settings.parseTV:
                         tv = mediaFile.regtv1.match(title)

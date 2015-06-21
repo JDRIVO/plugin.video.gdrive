@@ -1495,12 +1495,12 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     player = gPlayer.gPlayer()
                     #player.play(playbackPath, item)
                     if seek > 0:
-                        player.PlayStream(mediaURL.url, item, seek)
+                        player.PlayStream(mediaURL.url, item, seek, package=package)
                     elif float(package.file.resume) > 0:
                         print "SEEK\n"
-                        player.PlayStream(mediaURL.url, item, package.file.resume)
+                        player.PlayStream(mediaURL.url, item, package.file.resume, package=package)
                     else:
-                        player.PlayStream(mediaURL.url, item, 0)
+                        player.PlayStream(mediaURL.url, item, 0, package=package)
 
 
                     #load any cc or srt
@@ -1533,15 +1533,15 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 #                    if seek > 0 or package.file.resume > 0 or settings.srt or settings.cc:
 
                     player = gPlayer.gPlayer()
-
+                    player.setService(service)
                     # need to seek?
                     if seek > 0:
-                        player.PlayStream(mediaURL.url, item, seek, startPlayback=False)
+                        player.PlayStream(mediaURL.url, item, seek, startPlayback=False, package=package)
                     elif float(package.file.resume) > 0:
                         print "SEEK\n"
-                        player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=False)
+                        player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=False, package=package)
                     else:
-                        player.PlayStream(mediaURL.url, item, 0, startPlayback=False)
+                        player.PlayStream(mediaURL.url, item, 0, startPlayback=False, package=package)
 
                     # load captions
                     if  (settings.srt or settings.cc) and service.protocol == 2:

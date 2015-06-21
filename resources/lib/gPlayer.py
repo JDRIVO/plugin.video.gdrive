@@ -1,6 +1,6 @@
 
 '''
-    gdrive XBMC Plugin
+    gdrive for KODI / XBMC Plugin
     Copyright (C) 2013-12015 ddurdle
 
     This program is free software: you can redistribute it and/or modify
@@ -155,10 +155,14 @@ class gPlayer(xbmc.Player):
 #        self.next()
         if self.package is not None:
             try:
-                self.service.gSpreadsheet.setMediaStatus(self.worksheet,self.package, watched=1)
+                print "SET PLAYCOUNT\n"
+
+                self.service.setProperty(package.file.id,'playcount', int(package.file.playcount)+1)
+                #self.service.gSpreadsheet.setMediaStatus(self.worksheet,self.package, watched=1)
             except: pass
         self.current = self.current +1
-
+        print "SET X\n"
+        self.isExit = True
     def onPlayBackStopped(self):
         print "PLAYBACK STOPPED"
         if self.package is not None:

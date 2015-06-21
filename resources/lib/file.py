@@ -26,6 +26,8 @@ class file:
     # CloudService v0.2.4
     #
     # - add resolution (video) [2016/06/20]
+    # - add playcount (video/music) [2016/06/20]
+
 
     AUDIO = 1
     VIDEO = 2
@@ -35,7 +37,7 @@ class file:
 
     ##
     ##
-    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution=''):
+    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution='', playcount=0):
         self.id = id
         self.title = title
         self.showtitle = title
@@ -52,6 +54,7 @@ class file:
         self.resume = 0
         self.decryptedTitle = ''
         self.resolution = resolution
+        self.playcount = playcount
 
         # nekwebdev contribution
         self.regtv1 = re.compile('(.+?)'
