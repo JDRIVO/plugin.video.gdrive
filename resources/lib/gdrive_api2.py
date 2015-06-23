@@ -1637,9 +1637,10 @@ class gdrive(cloudservice):
                       #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                       #self.crashreport.sendError('setProperty',str(e))
                       return
-
               #maybe doesn't exist - try to create
-              else:
+              elif e.code != 403:
+
+#              else:
                   url = self.API_URL +'files/' + str(docid) + '/properties'
                   req = urllib2.Request(url, propertyValues, self.getHeadersList())
                   req.add_header('Content-Type', 'application/json')

@@ -87,7 +87,7 @@ class gPlayer(xbmc.Player):
         except:
             pass
 
-    def PlayStream(self, url, item, seek, package=None, startPlayback=True):
+    def PlayStream(self, url, item, seek, startPlayback=True, package=None):
 
         if startPlayback:
             self.play(url, item)
@@ -154,14 +154,13 @@ class gPlayer(xbmc.Player):
         print "PLAYBACK ENDED"
 #        self.next()
         if self.package is not None:
-            try:
-                print "SET PLAYCOUNT\n"
+            self.service.setProperty(self.package.file.id,'playcount', int(self.package.file.playcount)+1)
 
-                self.service.setProperty(package.file.id,'playcount', int(package.file.playcount)+1)
-                #self.service.gSpreadsheet.setMediaStatus(self.worksheet,self.package, watched=1)
-            except: pass
+            #try:
+
+            #    self.service.gSpreadsheet.setMediaStatus(self.worksheet,self.package, watched=1)
+            #except: pass
         self.current = self.current +1
-        print "SET X\n"
         self.isExit = True
     def onPlayBackStopped(self):
         print "PLAYBACK STOPPED"
@@ -171,8 +170,8 @@ class gPlayer(xbmc.Player):
             except: pass
         #self.current = self.current +1
         self.isExit = True
-        if not self.isExit:
-            print "don't exit"
+#        if not self.isExit:
+#            print "don't exit"
 
     def onPlayBackPaused(self):
         print "PLAYBACK Paused"

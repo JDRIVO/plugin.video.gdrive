@@ -639,7 +639,6 @@ class cloudservice(object):
                 listitem.setInfo('video', {'playcount':1})
 
             if int(package.file.resolution[0]) > 0:
-#                print "resolution"+package.file.resolution+"\n"
                 listitem.addStreamInfo('video', {'width': package.file.resolution[1], 'height': package.file.resolution[0]})
 
         # image file

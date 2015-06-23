@@ -1497,7 +1497,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     if seek > 0:
                         player.PlayStream(mediaURL.url, item, seek, package=package)
                     elif float(package.file.resume) > 0:
-                        print "SEEK\n"
                         player.PlayStream(mediaURL.url, item, package.file.resume, package=package)
                     else:
                         player.PlayStream(mediaURL.url, item, 0, package=package)
@@ -1538,7 +1537,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     if seek > 0:
                         player.PlayStream(mediaURL.url, item, seek, startPlayback=False, package=package)
                     elif float(package.file.resume) > 0:
-                        print "SEEK\n"
                         player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=False, package=package)
                     else:
                         player.PlayStream(mediaURL.url, item, 0, startPlayback=False, package=package)
