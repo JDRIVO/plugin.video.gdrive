@@ -1,5 +1,6 @@
 - known issue: Problem activating a second instance with the same account #32
 
+- add ability to remove account definiton automatically (right-click on account, remove account)
 - music: add sort by track
 Version 0.7.5
 - add settings: advance - parse music, parse tv shows

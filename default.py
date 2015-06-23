@@ -32,6 +32,7 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
 
 # global variables
 PLUGIN_NAME = 'gdrive'
+addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 
 # cloudservice - helper methods
 def log(msg, err=False):
@@ -50,7 +51,7 @@ def parse_query(query):
     return q
 
 # cloudservice - helper methods
-def addMenu(url, title, img='', fanart='', total_items=0):
+def addMenu(url, title, img='', fanart='', total_items=0, instanceName=''):
 #    listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
     listitem = xbmcgui.ListItem(title, iconImage=img, thumbnailImage=img)
     if not fanart:
@@ -59,6 +60,15 @@ def addMenu(url, title, img='', fanart='', total_items=0):
 
     # disallow play controls on menus
     listitem.setProperty('IsPlayable', 'false')
+
+
+    if instanceName != '':
+        cm=[]
+        cm.append(( addon.getLocalizedString(30159), 'XBMC.RunPlugin('+PLUGIN_URL+ '?mode=delete&instance='+instanceName+')' ))
+        listitem.addContextMenuItems(cm, True)
+
+
+
     xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=True, totalItems=total_items)
 
@@ -124,8 +134,6 @@ PLUGIN_URL = sys.argv[0]
 plugin_handle = int(sys.argv[1])
 plugin_queries = parse_query(sys.argv[2][1:])
 
-addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
-#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 
 addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 
@@ -281,39 +289,33 @@ numberOfAccounts = numberOfAccounts(PLUGIN_NAME)
 
 
 # cloudservice - utilities
-#clear the authorization token(s) from the identified instanceName or all instances
-if mode == 'clearauth':
+
+if mode == 'dummy':
+    xbmc.executebuiltin("XBMC.Container.Refresh")
+
+# delete the configuration for the specified account
+elif mode == 'delete':
 
     #*** old - needs to be re-written
     if instanceName != '':
 
         try:
             # gdrive specific ***
-            addon.setSetting(instanceName + '_auth_writely', '')
-            addon.setSetting(instanceName + '_auth_wise', '')
+            addon.setSetting(instanceName + '_username', '')
+            addon.setSetting(instanceName + '_code', '')
+            addon.setSetting(instanceName + '_client_id', '')
+            addon.setSetting(instanceName + '_client_secret', '')
+            addon.setSetting(instanceName + '_url', '')
+            addon.setSetting(instanceName + '_password', '')
+            addon.setSetting(instanceName + '_passcode', '')
+            addon.setSetting(instanceName + '_auth_access_token', '')
+            addon.setSetting(instanceName + '_auth_refresh_token', '')
             # ***
-            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30023))
+            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30158))
         except:
             #error: instance doesn't exist
             pass
-
-    # clear all accounts
-    else:
-        count = 1
-        while True:
-            instanceName = PLUGIN_NAME+str(count)
-            try:
-                # gdrive specific ***
-                addon.setSetting(instanceName + '_auth_writely', '')
-                addon.setSetting(instanceName + '_auth_wise', '')
-                # ***
-            except:
-                break
-            if count == numberOfAccounts:
-                break
-            count = count + 1
-        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30023))
-    xbmcplugin.endOfDirectory(plugin_handle)
+    xbmc.executebuiltin("XBMC.Container.Refresh")
 
 
 # enroll a new account
@@ -493,7 +495,10 @@ elif mode == 'buildstrm':
 invokedUsername = getParameter('username')
 
 # show list of services
-if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
+if mode == 'delete' or mode == 'dummy':
+            count = 1
+
+elif numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
         mode = ''
         count = 1
         while True:
@@ -501,7 +506,7 @@ if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mod
             try:
                 username = getSetting(instanceName+'_username')
                 if username != '':
-                    addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username)
+                    addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
             except:
                 break
             if count == numberOfAccounts:

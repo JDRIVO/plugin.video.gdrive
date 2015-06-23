@@ -155,5 +155,7 @@
 	<string id="30155">encfs Type</string>
 	<string id="30156">Parse TV show info from title</string>
 	<string id="30157">Parse music info from title</string>
+	<string id="30158">Account removed from plugin</string>
+	<string id="30159">Remove account from plugin</string>
 
 </strings>
