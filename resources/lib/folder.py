@@ -22,13 +22,15 @@ import urllib
 #
 #
 class folder:
-    # CloudService v0.2.0
+    # CloudService v0.2.4
+    # - add fanart [2016/06/19]h
 
     ##
     ##
-    def __init__(self, id, title, thumb=''):
+    def __init__(self, id, title, fanart='', thumb=''):
         self.id = id
         self.title = title
+        self.fanart = fanart
         self.thumb = thumb
 
     def displayTitle(self):

@@ -169,33 +169,18 @@ class cloudservice(object):
                     # nekwebdev contribution
                     if self.addon.getSetting('tvshows_path') != '' or self.addon.getSetting('movies_path') != '':
                         pathLib = ''
-                        regtv1 = re.compile('(.+?)'
-                                       '[ .]S(\d\d?)E(\d\d?)'
-                                       '.*?'
-                                       '(?:[ .](\d{3}\d?p)|\Z)?')
-                        regtv2 = re.compile('(.+?)'
-                                       '[ .]s(\d\d?)e(\d\d?)'
-                                       '.*?'
-                                       '(?:[ .](\d{3}\d?p)|\Z)?')
-                        regtv3 = re.compile('(.+?)'
-                                       '[ .](\d\d?)x(\d\d?)'
-                                       '.*?'
-                                       '(?:[ .](\d{3}\d?p)|\Z)?')
-                        regtv4 = re.compile('(.+?)'
-                                       '[ .](\d\d?)X(\d\d?)'
-                                       '.*?'
-                                       '(?:[ .](\d{3}\d?p)|\Z)?')
+
                         regmovie = re.compile('(.*?[ .]\d{4})'
                                           '.*?'
                                           '(?:[ .](\d{3}\d?p)|\Z)?')
 
-                        tv = regtv1.match(title)
+                        tv = item.file.regtv1.match(title)
                         if not tv:
-                            tv = regtv2.match(title)
+                            tv = item.file.regtv2.match(title)
                         if not tv:
-                            tv = regtv3.match(title)
+                            tv = item.file.regtv3.match(title)
                         if not tv:
-                            tv = regtv4.match(title)
+                            tv = item.file.regtv4.match(title)
 
                         if tv and self.addon.getSetting('tvshows_path') != '':
                             show = tv.group(1).replace(".", " ")
@@ -567,7 +552,7 @@ class cloudservice(object):
                         cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
 
                 listitem.addContextMenuItems(cm, False)
-                listitem.setProperty('fanart_image', fanart)
+                listitem.setProperty('fanart_image',  folder.fanart)
 
                 xbmcplugin.addDirectoryItem(plugin_handle, self.getDirectoryCall(folder, contextType, encfs=encfs), listitem,
                                 isFolder=True, totalItems=0)
@@ -582,7 +567,7 @@ class cloudservice(object):
         # audio file, not in "pictures"
         if package.file.type == package.file.AUDIO and contextType != 'image':
             if package.file.hasMeta:
-                infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
+                infolabels = decode_dict({ 'title' : package.file.displayTrackTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
             else:
                 infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'size' : package.file.size })
             listitem.setInfo('Music', infolabels)
@@ -608,11 +593,15 @@ class cloudservice(object):
                 listitem.setProperty('IsPlayable', 'false')
             else:
                 listitem.setProperty('IsPlayable', 'true')
+            if float(package.file.resume) > 0:
+                listitem.setProperty('isResumable', 1)
+
+
 
         # encrypted file, viewing in "music", assume audio
         elif package.file.type == package.file.UNKNOWN and contextType == 'audio':
             if package.file.hasMeta:
-                infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
+                infolabels = decode_dict({ 'title' : package.file.displayTrackTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
             else:
                 infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'size' : package.file.size })
             listitem.setInfo('Music', infolabels)
@@ -625,7 +614,7 @@ class cloudservice(object):
         # audio file, viewing in "pictures"
         elif package.file.type == package.file.AUDIO and contextType == 'image':
             if package.file.hasMeta:
-                infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
+                infolabels = decode_dict({ 'title' : package.file.displayTrackTitle(), 'tracknumber' : package.file.trackNumber, 'artist': package.file.artist, 'album': package.file.album,'genre': package.file.genre,'premiered': package.file.releaseDate, 'size' : package.file.size })
             else:
                 infolabels = decode_dict({ 'title' : package.file.displayTitle(), 'size' : package.file.size })
             listitem.setInfo('Music', infolabels)
@@ -634,13 +623,23 @@ class cloudservice(object):
 
         # video file
         elif package.file.type == package.file.VIDEO:
-            infolabels = decode_dict({ 'title' : package.file.displayTitle() ,  'plot' : package.file.plot, 'size' : package.file.size })
+            if package.file.hasMeta:
+                infolabels = decode_dict({ 'title' : package.file.displayShowTitle() ,  'plot' : package.file.plot, 'TVShowTitle': package.file.show, 'EpisodeName': package.file.showtitle, 'season': package.file.season, 'episode': package.file.episode,'size' : package.file.size })
+            else:
+                infolabels = decode_dict({ 'title' : package.file.displayTitle() ,  'plot' : package.file.plot, 'size' : package.file.size })
             listitem.setInfo('Video', infolabels)
             playbackURL = '?mode=video'
             if self.integratedPlayer:
                 listitem.setProperty('IsPlayable', 'false')
             else:
                 listitem.setProperty('IsPlayable', 'true')
+            if float(package.file.resume) > 0:
+                listitem.setProperty('isResumable', "1")
+            if int(package.file.playcount) > 0:
+                listitem.setInfo('video', {'playcount':1})
+
+            if int(package.file.resolution[0]) > 0:
+                listitem.addStreamInfo('video', {'width': package.file.resolution[1], 'height': package.file.resolution[0]})
 
         # image file
         elif package.file.type == package.file.PICTURE:
@@ -658,8 +657,12 @@ class cloudservice(object):
                 listitem.setProperty('IsPlayable', 'false')
             else:
                 listitem.setProperty('IsPlayable', 'true')
+            if float(package.file.resume) > 0:
+                listitem.setProperty('isResumable', 1)
 
         listitem.setProperty('fanart_image', package.file.fanart)
+
+
         cm=[]
 
         try:

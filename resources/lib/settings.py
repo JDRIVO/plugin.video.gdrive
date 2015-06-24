@@ -83,6 +83,8 @@ class settings:
         self.username = self.getParameter('username', '')
         self.setCacheParameters()
         self.promptQuality = self.getParameter('promptquality', self.getSetting('prompt_quality', True))
+        self.parseTV = self.getSetting('parse_tv', True)
+        self.parseMusic = self.getSetting('parse_music', True)
 
     def setVideoParameters(self):
         self.seek = self.getParameter('seek', 0)

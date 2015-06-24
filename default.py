@@ -32,6 +32,8 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
 
 # global variables
 PLUGIN_NAME = 'gdrive'
+addon = xbmcaddon.Addon(id='plugin.video.gdrive')
+#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 
 # cloudservice - helper methods
 def log(msg, err=False):
@@ -50,7 +52,7 @@ def parse_query(query):
     return q
 
 # cloudservice - helper methods
-def addMenu(url, title, img='', fanart='', total_items=0):
+def addMenu(url, title, img='', fanart='', total_items=0, instanceName=''):
 #    listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
     listitem = xbmcgui.ListItem(title, iconImage=img, thumbnailImage=img)
     if not fanart:
@@ -59,6 +61,15 @@ def addMenu(url, title, img='', fanart='', total_items=0):
 
     # disallow play controls on menus
     listitem.setProperty('IsPlayable', 'false')
+
+
+    if instanceName != '':
+        cm=[]
+        cm.append(( addon.getLocalizedString(30159), 'XBMC.RunPlugin('+PLUGIN_URL+ '?mode=delete&instance='+instanceName+')' ))
+        listitem.addContextMenuItems(cm, True)
+
+
+
     xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=True, totalItems=total_items)
 
@@ -104,8 +115,9 @@ def getSetting(key,default=''):
 # cloudservice - helper methods
 def numberOfAccounts(accountType):
 
+    return 9
     count = 1
-    max_count = int(getSetting(accountType+'_numaccounts',10))
+    max_count = int(getSetting(accountType+'_numaccounts',9))
 
     actualCount = 0
     while True:
@@ -124,8 +136,6 @@ PLUGIN_URL = sys.argv[0]
 plugin_handle = int(sys.argv[1])
 plugin_queries = parse_query(sys.argv[2][1:])
 
-addon = xbmcaddon.Addon(id='plugin.video.gdrive')
-#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 
 addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 
@@ -214,11 +224,6 @@ try:
 except:
     pass
 
-# cloudservice - sorting options
-xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
-xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
-
-
 # cloudservice - content type
 contextType = getParameter('content_type')
 
@@ -237,6 +242,9 @@ contextType = getParameter('content_type')
     # 6 music and photos
     # 7 everything
 
+
+
+
 try:
       contentType = 0
       contentTypeDecider = int(getSetting('context_video'))
@@ -248,12 +256,17 @@ try:
             contentType = 1
         else:
             contentType = 0
+        # cloudservice - sorting options
+        xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_EPISODE)
+        xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 
       elif contextType == 'audio':
         if contentTypeDecider == 1:
             contentType = 4
         else:
             contentType = 3
+        # cloudservice - sorting options
+        xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TRACKNUM)
 
       elif contextType == 'image':
         if contentTypeDecider == 2:
@@ -270,43 +283,41 @@ try:
 except:
       contentType = 2
 
+# cloudservice - sorting options
+xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
+xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
+
 numberOfAccounts = numberOfAccounts(PLUGIN_NAME)
 
 
 # cloudservice - utilities
-#clear the authorization token(s) from the identified instanceName or all instances
-if mode == 'clearauth':
+
+if mode == 'dummy':
+    xbmc.executebuiltin("XBMC.Container.Refresh")
+
+# delete the configuration for the specified account
+elif mode == 'delete':
 
     #*** old - needs to be re-written
     if instanceName != '':
 
         try:
             # gdrive specific ***
-            addon.setSetting(instanceName + '_auth_writely', '')
-            addon.setSetting(instanceName + '_auth_wise', '')
+            addon.setSetting(instanceName + '_username', '')
+            addon.setSetting(instanceName + '_code', '')
+            addon.setSetting(instanceName + '_client_id', '')
+            addon.setSetting(instanceName + '_client_secret', '')
+            addon.setSetting(instanceName + '_url', '')
+            addon.setSetting(instanceName + '_password', '')
+            addon.setSetting(instanceName + '_passcode', '')
+            addon.setSetting(instanceName + '_auth_access_token', '')
+            addon.setSetting(instanceName + '_auth_refresh_token', '')
             # ***
-            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30023))
+            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30158))
         except:
             #error: instance doesn't exist
             pass
-
-    # clear all accounts
-    else:
-        count = 1
-        while True:
-            instanceName = PLUGIN_NAME+str(count)
-            try:
-                # gdrive specific ***
-                addon.setSetting(instanceName + '_auth_writely', '')
-                addon.setSetting(instanceName + '_auth_wise', '')
-                # ***
-            except:
-                break
-            if count == numberOfAccounts:
-                break
-            count = count + 1
-        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30023))
-    xbmcplugin.endOfDirectory(plugin_handle)
+    xbmc.executebuiltin("XBMC.Container.Refresh")
 
 
 # enroll a new account
@@ -486,7 +497,10 @@ elif mode == 'buildstrm':
 invokedUsername = getParameter('username')
 
 # show list of services
-if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
+if mode == 'delete' or mode == 'dummy':
+            count = 1
+
+elif numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
         mode = ''
         count = 1
         while True:
@@ -494,9 +508,10 @@ if numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mod
             try:
                 username = getSetting(instanceName+'_username')
                 if username != '':
-                    addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username)
+                    addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
+
             except:
-                break
+                pass
             if count == numberOfAccounts:
                 break
             count = count + 1
@@ -684,6 +699,7 @@ if mode == 'main' or mode == 'index':
 
     # treat as an encrypted folder?
     encfs = getParameter('encfs', False)
+    encfs_target = getSetting('encfs_target')
 
 
     # display option for all Videos/Music/Photos, across gdrive
@@ -710,11 +726,10 @@ if mode == 'main' or mode == 'index':
         addMenu(PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
     ##**
 
-        encfs_target = getSetting('encfs_target')
         if encfs_target != '':
                 service.addDirectory(None, contextType, localPath=encfs_target)
 
-    if encfs == False and folderName != False and folderName != '':
+    if encfs_target != '' and encfs == False and folderName != False and folderName != '':
                     service.addDirectory(folder.folder(folderName,'[decrypted]'), contextType, encfs=True)
 
     # cloudservice - validate service
@@ -762,7 +777,6 @@ if mode == 'main' or mode == 'index':
                     index = str(xbmcvfs.Stat(encfs_target + '/' + dir).st_ino())
                 else:
                     index = str(xbmcvfs.Stat(encfs_target + '/' + dir).st_ctime())
-                print "dir = " + dir + " index = " + index + "\n"
                 if index in dirListINodes.keys():
                     xbmcvfs.rmdir(encfs_target + '/' + dir)
                     dirListINodes[index].title = dir + ' [' +dirListINodes[index].title+ ']'
@@ -1014,7 +1028,6 @@ elif mode == 'slideshow':
                 else:
                     index = str(xbmcvfs.Stat(encfs_source + '/' + dir).st_ctime())
 
-                print "dirx = " + dir + "foldername = "+folderINode+" index = " + index + "\n"
                 if index == folderINode:
 
                     progress = xbmcgui.DialogProgressBG()
@@ -1193,30 +1206,39 @@ elif mode == 'audio':
                                 thumbnailImage=package.file.thumbnail, path=mediaURL.url)
             # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
             item.setInfo( type="Video", infoLabels={ "Title": title } )
+
             player = gPlayer.gPlayer()
             player.play(mediaURL.url, item)
             playbackMedia = False
 
+
         if playbackMedia:
+
+                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
+
+                item.setInfo( type="Video", infoLabels={ "Title": package.file.title} )
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
                 if playbackPlayer:
 
-                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
+#                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+#                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
                     # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
-                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+#                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
                     #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
                     player = gPlayer.gPlayer()
                     #player.play(playbackPath, item)
                     player.PlayStream(mediaURL.url, item, 0)
 
-                else:
+ #               else:
 
-                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
+#                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+   #                             thumbnailImage=package.file.thumbnail, path=mediaURL.url)
                     # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
-                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+ #                   item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+  #                  xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 
 ###
@@ -1414,17 +1436,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
             elif settings.username != '':
                 playbackPlayer = False
 
-            # right-click force cache playback
-#            elif settings.cache:
-#                playbackPlayer = True
-#                playbackMedia = False
-#                dirs, files = xbmcvfs.listdir(settings.cachePath + '/'+ str(package.file.id) + '/')
-#                for file in files:
-#                    if os.path.splitext(file)[1] == '.stream':
-#                        playbackPath = settings.cachePath + '/'+ str(package.file.id) + '/' + file
-#                        playbackMedia = True
-
-
             # right-click play original, srt, caption, seek
             elif settings.playOriginal or settings.srt or settings.cc or settings.seek:
                 playbackPlayer = True
@@ -1472,17 +1483,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 playbackMedia = True
 
 
-#                if seek!='' and seek > 0:
-#                    player = gPlayer.gPlayer()
-#                    player.PlayStream(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item, seek)
-
-
-        # direct-click (resolve or use setting-default)
-#        elif settings.cache:
-
-        #direct-click (resolve or use setting-default)
-#        else:
-
 
         if playbackMedia:
 
@@ -1503,11 +1503,11 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                     player = gPlayer.gPlayer()
                     #player.play(playbackPath, item)
                     if seek > 0:
-                        player.PlayStream(mediaURL.url, item, seek)
-                    elif package.file.resume > 0:
-                        player.PlayStream(mediaURL.url, item, package.file.resume)
+                        player.PlayStream(mediaURL.url, item, seek, package=package)
+                    elif float(package.file.resume) > 0:
+                        player.PlayStream(mediaURL.url, item, package.file.resume, package=package)
                     else:
-                        player.PlayStream(mediaURL.url, item, 0)
+                        player.PlayStream(mediaURL.url, item, 0, package=package)
 
 
                     #load any cc or srt
@@ -1540,14 +1540,14 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 #                    if seek > 0 or package.file.resume > 0 or settings.srt or settings.cc:
 
                     player = gPlayer.gPlayer()
-
+                    player.setService(service)
                     # need to seek?
                     if seek > 0:
-                        player.PlayStream(mediaURL.url, item, seek, startPlayback=False)
-                    elif package.file.resume > 0:
-                        player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=False)
+                        player.PlayStream(mediaURL.url, item, seek, startPlayback=False, package=package)
+                    elif float(package.file.resume) > 0:
+                        player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=False, package=package)
                     else:
-                        player.PlayStream(mediaURL.url, item, 0, startPlayback=False)
+                        player.PlayStream(mediaURL.url, item, 0, startPlayback=False, package=package)
 
                     # load captions
                     if  (settings.srt or settings.cc) and service.protocol == 2:
