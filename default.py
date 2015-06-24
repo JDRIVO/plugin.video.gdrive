@@ -114,8 +114,9 @@ def getSetting(key,default=''):
 # cloudservice - helper methods
 def numberOfAccounts(accountType):
 
+    return 9
     count = 1
-    max_count = int(getSetting(accountType+'_numaccounts',10))
+    max_count = int(getSetting(accountType+'_numaccounts',9))
 
     actualCount = 0
     while True:
@@ -507,8 +508,9 @@ elif numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and m
                 username = getSetting(instanceName+'_username')
                 if username != '':
                     addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
+
             except:
-                break
+                pass
             if count == numberOfAccounts:
                 break
             count = count + 1
