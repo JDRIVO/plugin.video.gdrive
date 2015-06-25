@@ -1637,6 +1637,7 @@ class gdrive(cloudservice):
                       #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                       #self.crashreport.sendError('setProperty',str(e))
                       return
+
               #maybe doesn't exist - try to create
               elif e.code != 403:
 
@@ -1653,7 +1654,9 @@ class gdrive(cloudservice):
                         #xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                         #self.crashreport.sendError('setProperty',str(e))
                         return
-
+              # some other kind of error
+              else:
+                  return
 
         response_data = response.read()
         response.close()
