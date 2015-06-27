@@ -445,6 +445,7 @@ class gdrive(cloudservice):
     ##
     def getMediaPackage(self, entry, folderName='',contentType=2, fanart=''):
 
+
                 resourceID = 0
                 resourceType = ''
                 title = ''
@@ -503,6 +504,12 @@ class gdrive(cloudservice):
                   playcount = r.group(1)
                   break
 
+                duration = 0
+                for r in re.finditer('\"durationMillis\"\:\s+\"(\d+)\"' ,
+                             entry, re.DOTALL):
+                  duration = r.group(1)
+                  duration = int(int(duration) / 1000)
+                  break
                 # entry is a folder
                 if (resourceType == 'application/vnd.google-apps.folder'):
                     for r in re.finditer('SAVED SEARCH\|([^\|]+)' ,
@@ -515,7 +522,7 @@ class gdrive(cloudservice):
 
                 # entry is a video
                 elif (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType and contentType in (0,1,2,4,7)):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, fanart, thumbnail, size=fileSize, resolution=[height,width], playcount=int(playcount))
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, fanart, thumbnail, size=fileSize, resolution=[height,width], playcount=int(playcount), duration=duration)
 
                     if self.settings.parseTV:
                         tv = mediaFile.regtv1.match(title)
@@ -537,9 +544,18 @@ class gdrive(cloudservice):
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
 
+                    #don't push resume if > 90%
+                    #print "setting = "+str( float(100 - int(self.settings.skipResume))/100)  + "\n"
+
                     try:
                         if float(resume) > 0:
-                            mediaFile.resume = float(resume)
+
+                            if duration > 0 and float(resume)/duration < float((100 - int(self.settings.skipResume))/100):
+                                mediaFile.resume = float(resume)
+                            else:
+                                mediaFile.playcount = mediaFile.playcount + 1
+
+
                     except: pass
                     return media
 

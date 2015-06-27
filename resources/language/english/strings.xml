@@ -149,6 +149,8 @@
 	<string id="30157">Parse music info from title</string>
 	<string id="30158">Account removed from plugin</string>
 	<string id="30159">Remove account from plugin</string>
+    <string id="30160">Pictures</string>
+    <string id="30161">% complete to mark watched</string>
 
 
 </strings>

@@ -37,7 +37,7 @@ class file:
 
     ##
     ##
-    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution='', playcount=0):
+    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution='', playcount=0, duration=-1):
         self.id = id
         self.title = title
         self.showtitle = title
@@ -55,6 +55,7 @@ class file:
         self.decryptedTitle = ''
         self.resolution = resolution
         self.playcount = playcount
+        self.duration = duration
 
         # nekwebdev contribution
         self.regtv1 = re.compile('(.+?)'

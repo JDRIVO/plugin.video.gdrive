@@ -109,6 +109,9 @@
     </category>
 
     <category label="30025">
+        <setting id="video_skip" type="slider" label="30161" default="10" option="percent" range="0,1,100" />
+        <setting label="30037" type="lsep"/>
+        <setting id="context_video" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Everything" default="0"/>
         <setting label="30006" type="lsep"/>
     	<setting id="prompt_quality" type="bool" subsetting="true" label="30019" default="true" />
     	<setting id="never_stream" type="bool" subsetting="true" label="30122" default="false" />
@@ -117,16 +120,18 @@
     	<setting id="preferred_format" type="enum" enable="eq(-3,false)" subsetting="true" label="30012" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
     	<setting id="avoid_codec" type="enum" enable="eq(-4,false)" subsetting="true" label="30013" values="none|VP8/vorbis" default="0"/>
     </category>
-
-    <category label="30117">
+    <category label="30094">
         <setting label="30037" type="lsep"/>
-        <setting id="context_video" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Everything" default="0"/>
         <setting id="context_music" type="enum" subsetting="true" label="30023" values="Music only|Everything" default="0"/>
+    </category>
+    <category label="30160">
+        <setting label="30037" type="lsep"/>
         <setting id="context_photo" type="enum" subsetting="true" label="30024" values="Photos only|Music and Photos|Everything" default="0"/>
+
+        <setting id="photo_folder" type="folder" label="30038" default="" />
     </category>
 
     <category label="30116">
-        <setting id="photo_folder" type="folder" label="30038" default="" />
         <setting label="30031" type="lsep"/>
     	<setting id="always_cache" type="bool" subsetting="true" label="30121" default="false" />
         <setting id="cache_folder" type="folder" subsetting="true" label="30090" default="" />

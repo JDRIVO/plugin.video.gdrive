@@ -85,6 +85,7 @@ class settings:
         self.promptQuality = self.getParameter('promptquality', self.getSetting('prompt_quality', True))
         self.parseTV = self.getSetting('parse_tv', True)
         self.parseMusic = self.getSetting('parse_music', True)
+        self.skipResume = self.getSetting('video_skip', 0.10)
 
     def setVideoParameters(self):
         self.seek = self.getParameter('seek', 0)
