@@ -408,17 +408,27 @@ class gdrive(cloudservice):
             for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\}\s+\]\s+\}' ,response_data, re.DOTALL):
                 entryS = r2.group(1)
                 folderFanart = ''
+                folderIcon = ''
                 for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' , entryS, re.DOTALL):
                     entry = r1.group(1)
-                    fanart = self.getMediaInfo(entry, folderName=folderName)
-                    if fanart != '':
-                        fanart = re.sub('\&gd\=true', '', fanart)
-                        #need to cache
-                        folderFanart = fanart + '|' + self.getHeadersEncoded()
+
+                    if 'fanart' in entry:
+                        fanart = self.getMediaInfo(entry, folderName=folderName)
+                        if fanart != '':
+                            fanart = re.sub('\&gd\=true', '', fanart)
+                            #need to cache
+                            folderFanart = fanart + '|' + self.getHeadersEncoded()
+                    elif 'folder' in entry:
+                        foldericon = self.getMediaInfo(entry, folderName=folderName)
+                        if foldericon != '':
+                            foldericon = re.sub('\&gd\=true', '', foldericon)
+                            #need to cache
+                            folderIcon = foldericon + '|' + self.getHeadersEncoded()
+
 
                 for r1 in re.finditer('\{(.*?)\"spaces\"\:' , entryS, re.DOTALL):
                     entry = r1.group(1)
-                    media = self.getMediaPackage(entry, folderName=folderName, contentType=contentType, fanart=folderFanart)
+                    media = self.getMediaPackage(entry, folderName=folderName, contentType=contentType, fanart=folderFanart, icon=folderIcon)
                     if media is not None:
                         mediaFiles.append(media)
 
@@ -443,7 +453,7 @@ class gdrive(cloudservice):
     #   parameters: given an entry
     #   returns: package (folder,file)
     ##
-    def getMediaPackage(self, entry, folderName='',contentType=2, fanart=''):
+    def getMediaPackage(self, entry, folderName='',contentType=2, fanart='', icon=''):
 
 
                 resourceID = 0
@@ -517,7 +527,7 @@ class gdrive(cloudservice):
                         newtitle = r.group(1)
                         title = '*' + newtitle
                         resourceID = 'SAVED SEARCH'
-                    media = package.package(None,folder.folder(resourceID,title, fanart=fanart))
+                    media = package.package(None,folder.folder(resourceID,title, thumb=icon))
                     return media
 
                 # entry is a video
@@ -641,6 +651,10 @@ class gdrive(cloudservice):
 
                 # entry is a photo
                 if ('fanart' in title and (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType)):
+                    return self.API_URL +'files/' + str(resourceID) + '?alt=media'
+                # entry is a photo
+                elif ('folder' in title and (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType)):
+                    print "folder\n"
                     return self.API_URL +'files/' + str(resourceID) + '?alt=media'
 
                 return ''
