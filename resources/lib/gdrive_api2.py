@@ -550,7 +550,7 @@ class gdrive(cloudservice):
                     try:
                         if float(resume) > 0:
 
-                            if duration > 0 and float(resume)/duration < float((100 - int(self.settings.skipResume))/100):
+                            if duration > 0 and float(resume)/duration < (float(100 - int(self.settings.skipResume))/100):
                                 mediaFile.resume = float(resume)
                             else:
                                 mediaFile.playcount = mediaFile.playcount + 1
