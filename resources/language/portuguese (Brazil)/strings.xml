@@ -158,5 +158,8 @@
 	<string id="30158">Account removed from plugin</string>
 	<string id="30159">Remove account from plugin</string>
     <string id="30160">Pictures</string>
+    <string id="30161">% complete to mark watched</string>
+	<string id="30162">Watch Folder</string>
+	<string id="30163">Scan Media Info</string>
 
 </strings>
