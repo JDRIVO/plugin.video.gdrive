@@ -415,13 +415,13 @@ class gdrive(cloudservice):
                     if 'fanart' in entry:
                         fanart = self.getMediaInfo(entry, folderName=folderName)
                         if fanart != '':
-                            fanart = re.sub('\&gd\=true', '', fanart)
+#                            fanart = re.sub('\&gd\=true', '', fanart)
                             #need to cache
                             folderFanart = fanart + '|' + self.getHeadersEncoded()
                     elif 'folder' in entry:
                         foldericon = self.getMediaInfo(entry, folderName=folderName)
                         if foldericon != '':
-                            foldericon = re.sub('\&gd\=true', '', foldericon)
+#                            foldericon = re.sub('\&gd\=true', '', foldericon)
                             #need to cache
                             folderIcon = foldericon + '|' + self.getHeadersEncoded()
 
@@ -447,6 +447,84 @@ class gdrive(cloudservice):
 
         return mediaFiles
 
+
+
+
+    ##
+    # retrieve a list of videos, using playback type stream
+    #   parameters: prompt for video quality (optional), cache type (optional)
+    #   returns: list of videos
+    ##
+    def scanMediaList(self, folderName):
+
+        # retrieve all items
+        url = self.API_URL +'files/'
+
+        url = url + "?q='"+str(folderName)+"'+in+parents"
+
+        mediaFiles = []
+        while True:
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.refreshToken()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                  self.crashreport.sendError('getMediaList',str(e))
+                  return
+              else:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getMediaList',str(e))
+                return
+
+            response_data = response.read()
+            response.close()
+
+            # parsing page for videos
+            # video-entry
+            for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\}\s+\]\s+\}' ,response_data, re.DOTALL):
+                entryS = r2.group(1)
+                folderFanart = ''
+                folderIcon = ''
+                for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' , entryS, re.DOTALL):
+                    entry = r1.group(1)
+
+                    if 'fanart' in entry:
+                        fanart = self.getMediaInfo(entry, folderName=folderName)
+                        if fanart != '':
+#                            fanart = re.sub('\&gd\=true', '', fanart)
+                            #need to cache
+                            folderFanart = fanart + '|' + self.getHeadersEncoded()
+                    elif 'folder' in entry:
+                        foldericon = self.getMediaInfo(entry, folderName=folderName)
+                        if foldericon != '':
+#                            foldericon = re.sub('\&gd\=true', '', foldericon)
+                            #need to cache
+                            folderIcon = foldericon + '|' + self.getHeadersEncoded()
+
+                    self.setProperty(folderName,'icon', 1)
+
+            # look for more pages of videos
+            nextURL = ''
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                nextURL = r.group(1)
+
+
+            # are there more pages to process?
+            if nextURL == '':
+                break
+            else:
+                url = nextURL
+
+        return mediaFiles
 
     ##
     # retrieve a media package
