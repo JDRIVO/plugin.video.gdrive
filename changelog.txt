@@ -1,5 +1,7 @@
 - known issue: Problem activating a second instance with the same account #32
 
+Version 0.7.8
+- add an [enroll account] option for an interactive account setup for Google Apps
 Version 0.7.7
 - implement: Purge cache folder #46
 - add force download / ignore cache for SRT and CC

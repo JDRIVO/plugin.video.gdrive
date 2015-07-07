@@ -325,38 +325,86 @@ elif mode == 'enroll':
 
 
         invokedUsername = getParameter('username')
-        code = getParameter('code')
+        code = getParameter('code', '')
 
-        count = 1
-        loop = True
-        while loop:
-            instanceName = PLUGIN_NAME+str(count)
-            try:
-                username = getSetting(instanceName+'_username')
-                if username == invokedUsername:
-                    addon.setSetting(instanceName + '_type', str(1))
-                    addon.setSetting(instanceName + '_code', str(code))
-                    addon.setSetting(instanceName + '_username', str(invokedUsername))
+
+        if code == '':
+            options = []
+            options.append('Google Apps')
+            ret = xbmcgui.Dialog().select('select type', options)
+
+            invokedUsername = ''
+            password = ''
+            if ret == 0:
+                try:
+                    dialog = xbmcgui.Dialog()
+                    invokedUsername = dialog.input('username', type=xbmcgui.INPUT_ALPHANUM)
+                    passcode = dialog.input('passcode', type=xbmcgui.INPUT_ALPHANUM)
+                except:
+                    pass
+
+            count = 1
+            loop = True
+            while loop:
+                instanceName = PLUGIN_NAME+str(count)
+                try:
+                    username = getSetting(instanceName+'_username')
+                    if username == invokedUsername:
+                        addon.setSetting(instanceName + '_type', str(4))
+                        addon.setSetting(instanceName + '_username', str(invokedUsername))
+                        addon.setSetting(instanceName + '_passcode', str(passcode))
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
+                        loop = False
+                    elif username == '':
+                        addon.setSetting(instanceName + '_type', str(4))
+                        addon.setSetting(instanceName + '_username', str(invokedUsername))
+                        addon.setSetting(instanceName + '_passcode', str(passcode))
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
+                        loop = False
+
+                except:
+                    pass
+
+                if count == numberOfAccounts:
+                    #fallback on first defined account
+                    addon.setSetting(instanceName + '_type', str(4))
+                    addon.setSetting(instanceName + '_username', invokedUsername)
+                    addon.setSetting(instanceName + '_passcode', str(passcode))
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
                     loop = False
-                elif username == '':
+                count = count + 1
+
+        else:
+            count = 1
+            loop = True
+            while loop:
+                instanceName = PLUGIN_NAME+str(count)
+                try:
+                    username = getSetting(instanceName+'_username')
+                    if username == invokedUsername:
+                        addon.setSetting(instanceName + '_type', str(1))
+                        addon.setSetting(instanceName + '_code', str(code))
+                        addon.setSetting(instanceName + '_username', str(invokedUsername))
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
+                        loop = False
+                    elif username == '':
+                        addon.setSetting(instanceName + '_type', str(1))
+                        addon.setSetting(instanceName + '_code', str(code))
+                        addon.setSetting(instanceName + '_username', str(invokedUsername))
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
+                        loop = False
+
+                except:
+                    pass
+
+                if count == numberOfAccounts:
+                    #fallback on first defined account
                     addon.setSetting(instanceName + '_type', str(1))
-                    addon.setSetting(instanceName + '_code', str(code))
-                    addon.setSetting(instanceName + '_username', str(invokedUsername))
+                    addon.setSetting(instanceName + '_code', code)
+                    addon.setSetting(instanceName + '_username', invokedUsername)
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
                     loop = False
-
-            except:
-                pass
-
-            if count == numberOfAccounts:
-                #fallback on first defined account
-                addon.setSetting(instanceName + '_type', str(1))
-                addon.setSetting(instanceName + '_code', code)
-                addon.setSetting(instanceName + '_username', invokedUsername)
-                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                loop = False
-            count = count + 1
+                count = count + 1
 
 #create strm files
 elif mode == 'buildstrm':
@@ -501,6 +549,9 @@ if mode == 'delete' or mode == 'dummy':
             count = 1
 
 elif numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
+
+        addMenu(PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'[enroll account]')
+
         mode = ''
         count = 1
         while True:
