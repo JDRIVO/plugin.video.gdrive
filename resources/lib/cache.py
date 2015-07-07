@@ -59,7 +59,7 @@ class cache:
             srt = service.getSRT(self.package.file.title)
             if srt:
                 for file in srt:
-                    if not xbmcvfs.exists(cachePath + str(file[0])):
+                    if not service.settings.cachePath or not xbmcvfs.exists(cachePath + str(file[0])):
                         service.downloadPicture(file[1], cachePath + str(file[0]))
 
     def setCC(self, service):
@@ -81,7 +81,7 @@ class cache:
             cc = service.getTTS(self.package.file.srtURL)
             if cc:
                 for file in cc:
-                    if not xbmcvfs.exists(cachePath + str(file[0])):
+                    if not service.settings.cachePath or not xbmcvfs.exists(cachePath + str(file[0])):
                         service.downloadTTS(file[1], cachePath + str(file[0]))
 
 

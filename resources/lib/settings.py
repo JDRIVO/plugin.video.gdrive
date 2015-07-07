@@ -80,6 +80,8 @@ class settings:
         self.integratedPlayer = self.getSetting('integrated_player', False)
         self.cc = self.getParameter('cc', self.getSetting('cc', True))
         self.srt = self.getParameter('srt', self.getSetting('srt', True))
+        self.srtforce = self.getParameter('srtforce', self.getSetting('srtforce', False))
+
         self.username = self.getParameter('username', '')
         self.setCacheParameters()
         self.promptQuality = self.getParameter('promptquality', self.getSetting('prompt_quality', True))
