@@ -1,5 +1,7 @@
 - known issue: Problem activating a second instance with the same account #32
 
+Version 0.7.9
+- fix: Filenames with invalid characters #49
 Version 0.7.8
 - add an [enroll account] option for an interactive account setup for Google Apps
 Version 0.7.7

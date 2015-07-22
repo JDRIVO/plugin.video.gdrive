@@ -917,6 +917,8 @@ elif mode == 'kiosk':
 elif mode == 'photo':
 
     title = getParameter('title',0)
+    title = re.sub('/', '_', title) #remap / from titles (google photos)
+
     docid = getParameter('filename')
     folder = getParameter('folder',0)
 
