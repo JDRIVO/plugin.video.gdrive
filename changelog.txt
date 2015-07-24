@@ -1,5 +1,6 @@
 - known issue: Problem activating a second instance with the same account #32
 
+- fix: STRM creation should only be for video and music
 - fix: regex for TV STRM scraping
 Version 0.7.9
 - fix: Filenames with invalid characters #49

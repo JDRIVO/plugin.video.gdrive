@@ -129,7 +129,7 @@ class cloudservice(object):
     ##
     # build STRM files to a given path for a given folder ID
     ##
-    def buildSTRM(self, path, folderID='', contentType=7, pDialog=None):
+    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None):
 
         import xbmcvfs
         xbmcvfs.mkdir(path)
@@ -159,7 +159,7 @@ class cloudservice(object):
                     if pDialog is not None:
                         pDialog.update(message=title)
 
-                    if not xbmcvfs.exists(str(path) + str(title)+'.strm'):
+                    if not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm'):
                         filename = str(path) + '/' + str(title)+'.strm'
                         strmFile = xbmcvfs.File(filename, "w")
 
@@ -170,9 +170,9 @@ class cloudservice(object):
                     if self.addon.getSetting('tvshows_path') != '' or self.addon.getSetting('movies_path') != '':
                         pathLib = ''
 
-                        regmovie = re.compile('(.*?[ .]\d{4})'
+                        regmovie = re.compile('(.*?\(\d{4}\))'
                                           '.*?'
-                                          '(?:[ .](\d{3}\d?p)|\Z)?')
+                                          '(?:(\d{3}\d?p)|\Z)?')
 
                         tv = item.file.regtv1.match(title)
                         if not tv:
@@ -198,7 +198,7 @@ class cloudservice(object):
 
                         if pathLib != '':
                             if not xbmcvfs.exists(pathLib + str(title)+'.strm'):
-                                filename = str(path) + '/' + str(title)+'.strm'
+                                filename = str(pathLib) + str(title)+'.strm'
                                 strmFile = xbmcvfs.File(filename, "w")
                                 strmFile.write(url+'\n')
                                 strmFile.close()
