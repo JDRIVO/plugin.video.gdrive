@@ -179,8 +179,8 @@ class cloudservice(object):
                             tv = item.file.regtv2.match(title)
                         if not tv:
                             tv = item.file.regtv3.match(title)
-                        if not tv:
-                            tv = item.file.regtv4.match(title)
+#                        if not tv:
+#                            tv = item.file.regtv4.match(title)
 
                         if tv and self.addon.getSetting('tvshows_path') != '':
                             show = tv.group(1).replace(".", " ")
