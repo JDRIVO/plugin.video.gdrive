@@ -777,11 +777,12 @@ if mode == 'main' or mode == 'index':
         addMenu(PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
     ##**
 
-        if encfs_target != '':
-                service.addDirectory(None, contextType, localPath=encfs_target)
+#        if encfs_target != '':
+#                service.addDirectory(None, contextType, localPath=encfs_target)
 
-    if encfs_target != '' and encfs == False and folderName != False and folderName != '':
-                    service.addDirectory(folder.folder(folderName,'[decrypted]'), contextType, encfs=True)
+#    if encfs_target != '' and encfs == False and folderName != False and folderName != '':
+#                    service.addDirectory(folder.folder(folderName,'[decrypted]'), contextType, encfs=True)
+
 
     # cloudservice - validate service
     try:
@@ -837,6 +838,7 @@ if mode == 'main' or mode == 'index':
                     fileListINodes[index].file.decryptedTitle = dir
                     service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True)
 
+        #xbmc.executebuiltin("XBMC.Container.Refresh")
 
 
     else:
