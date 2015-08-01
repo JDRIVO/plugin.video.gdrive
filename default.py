@@ -794,6 +794,12 @@ if mode == 'main' or mode == 'index':
 
     #if encrypted, get everything(as encrypted files will be of type application/ostream)
     if encfs:
+
+        encryptedPath = getParameter('epath', '')
+        dencryptedPath = getParameter('dpath', '')
+
+        print "folderPath = " + str(encryptedPath)
+
         encfs_source = getSetting('encfs_source')
         encfs_target = getSetting('encfs_target')
         encfs_inode = int(getSetting('encfs_inode', 0))
@@ -806,35 +812,41 @@ if mode == 'main' or mode == 'index':
             for item in mediaItems:
 
                     if item.file is None:
-                        xbmcvfs.mkdir(encfs_source + '/' + str(item.folder.title))
+                        xbmcvfs.mkdir(encfs_source + str(encryptedPath))
+                        xbmcvfs.mkdir(encfs_source + str(encryptedPath) + str(item.folder.title) + '/' )
+
                         if encfs_inode == 0:
-                            dirListINodes[(str(xbmcvfs.Stat(encfs_source + '/' + str(item.folder.title)).st_ino()))] = item.folder
+                            dirListINodes[(str(xbmcvfs.Stat(encfs_source + str(encryptedPath) + str(item.folder.title)).st_ino()))] = item.folder
                         else:
-                            dirListINodes[(str(xbmcvfs.Stat(encfs_source + '/' + str(item.folder.title)).st_ctime()))] = item.folder
+                            dirListINodes[(str(xbmcvfs.Stat(encfs_source + str(encryptedPath) + str(item.folder.title)).st_ctime()))] = item.folder
                         #service.addDirectory(item.folder, contextType=contextType,  encfs=True)
                     else:
-                        xbmcvfs.mkdir(encfs_source + '/' + str(item.file.title))
+                        xbmcvfs.mkdir(encfs_source +  str(encryptedPath))
+                        xbmcvfs.mkdir(encfs_source +  str(encryptedPath) + str(item.file.title))
                         if encfs_inode == 0:
-                            fileListINodes[(str(xbmcvfs.Stat(encfs_source + '/' + str(item.file.title)).st_ino()))] = item
+                            fileListINodes[(str(xbmcvfs.Stat(encfs_source +  str(encryptedPath)+ str(item.file.title)).st_ino()))] = item
                         else:
-                            fileListINodes[(str(xbmcvfs.Stat(encfs_source + '/' + str(item.file.title)).st_ctime()))] = item
+                            fileListINodes[(str(xbmcvfs.Stat(encfs_source +  str(encryptedPath) + str(item.file.title)).st_ctime()))] = item
                         #service.addMediaFile(item, contextType=contextType)
                     if encfs_inode > 0:
                             xbmc.sleep(1000)
 
-            dirs, files = xbmcvfs.listdir(encfs_target)
+            dirs, files = xbmcvfs.listdir(encfs_target + str(dencryptedPath) )
             for dir in dirs:
                 index = ''
                 if encfs_inode == 0:
-                    index = str(xbmcvfs.Stat(encfs_target + '/' + dir).st_ino())
+                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + dir).st_ino())
                 else:
-                    index = str(xbmcvfs.Stat(encfs_target + '/' + dir).st_ctime())
+                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + dir).st_ctime())
                 if index in dirListINodes.keys():
-                    xbmcvfs.rmdir(encfs_target + '/' + dir)
+                    xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
+                    print "delete = " + encfs_target + str(dencryptedPath) + dir
+#                    dirTitle = dir + ' [' +dirListINodes[index].title+ ']'
+                    encryptedDir = dirListINodes[index].title
                     dirListINodes[index].title = dir + ' [' +dirListINodes[index].title+ ']'
-                    service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True)
+                    service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
                 elif index in fileListINodes.keys():
-                    xbmcvfs.rmdir(encfs_target + '/' + dir)
+                    xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
                     fileListINodes[index].file.decryptedTitle = dir
                     service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True)
 

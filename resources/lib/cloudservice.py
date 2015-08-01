@@ -207,9 +207,9 @@ class cloudservice(object):
     # retrieve a directory url
     #   returns: url
     ##
-    def getDirectoryCall(self, folder, contextType='video', encfs=False):
+    def getDirectoryCall(self, folder, contextType='video', encfs=False, dpath='', epath=''):
         if encfs:
-            values = {'instance': self.instanceName, 'encfs': 'true', 'folder': folder.id, 'content_type': contextType}
+            values = {'instance': self.instanceName, 'encfs': 'true', 'folder': folder.id, 'content_type': contextType, 'dpath': dpath, 'epath':epath}
         else:
             values = {'instance': self.instanceName, 'folder': folder.id, 'content_type': contextType}
 
@@ -500,7 +500,7 @@ class cloudservice(object):
         except: pass
 
 
-    def addDirectory(self, folder, contextType='video', localPath='', encfs=False):
+    def addDirectory(self, folder, contextType='video', localPath='', encfs=False, dpath='', epath=''):
 
         fanart = self.addon.getAddonInfo('path') + '/fanart.jpg'
 
@@ -557,7 +557,7 @@ class cloudservice(object):
                 listitem.addContextMenuItems(cm, False)
                 listitem.setProperty('fanart_image',  folder.fanart)
 
-                xbmcplugin.addDirectoryItem(plugin_handle, self.getDirectoryCall(folder, contextType, encfs=encfs), listitem,
+                xbmcplugin.addDirectoryItem(plugin_handle, self.getDirectoryCall(folder, contextType, encfs=encfs, dpath=dpath, epath=epath), listitem,
                                 isFolder=True, totalItems=0)
 
 
