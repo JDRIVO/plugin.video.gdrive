@@ -847,8 +847,9 @@ if mode == 'main' or mode == 'index':
                     service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
                 elif index in fileListINodes.keys():
                     xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
+                    print "delete = " + encfs_target + str(dencryptedPath) + dir
                     fileListINodes[index].file.decryptedTitle = dir
-                    service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True)
+                    service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(dir), epath=str(encryptedPath) )
 
         #xbmc.executebuiltin("XBMC.Container.Refresh")
 
@@ -939,51 +940,54 @@ elif mode == 'photo':
     encfs = getParameter('encfs', False)
 
     if encfs:
+
+        encryptedPath = getParameter('epath', '')
+        dencryptedPath = getParameter('dpath', '')
+
+        print "folderPath = " + str(encryptedPath)
+
         encfs_source = getSetting('encfs_source')
         encfs_target = getSetting('encfs_target')
         encfs_inode = int(getSetting('encfs_inode', 0))
 
-        if (not xbmcvfs.exists(str(encfs_target) + '/'+str(folder) + '/')):
-            xbmcvfs.mkdir(str(encfs_target) + '/'+str(folder))
+#        if (not xbmcvfs.exists(str(encfs_target) + dencryptedPath)):
+#            xbmcvfs.mkdir(str(encfs_target) + dencryptedPath)
 
-        folderINode = ''
-        if encfs_inode == 0:
-            folderINode = str(xbmcvfs.Stat(encfs_target + '/' + str(folder)).st_ino())
-        else:
-            folderINode = str(xbmcvfs.Stat(encfs_target + '/' + str(folder)).st_ctime())
+#        folderINode = ''
+#        if encfs_inode == 0:
+#            folderINode = str(xbmcvfs.Stat(encfs_target + dencryptedPath + str(folder)).st_ino())
+#        else:
+#            folderINode = str(xbmcvfs.Stat(encfs_target + dencryptedPath + str(folder)).st_ctime())
 
 
-        dirs, filesx = xbmcvfs.listdir(encfs_source)
-        for dir in dirs:
-            index = ''
-            if encfs_inode == 0:
-                index = str(xbmcvfs.Stat(encfs_source + '/' + dir).st_ino())
-            else:
-                index = str(xbmcvfs.Stat(encfs_source + '/' + dir).st_ctime())
+        # don't redownload if present already
+        if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
+            url = service.getDownloadURL(docid)
+            service.downloadPicture(url, str(encfs_source) + encryptedPath +str(title))
+#        fileINode = ''
+#        if encfs_inode ==0:
+#            fileINode = str(xbmcvfs.Stat(str(encfs_source) + encryptedPath +str(title)).st_ino())
+#        else:
+#            fileINode = str(xbmcvfs.Stat(str(encfs_source) + encryptedPath +str(title)).st_ctime())
+        print "IN" + encfs_target + dencryptedPath
 
-            if index == folderINode:
-                # don't redownload if present already
-                if (not xbmcvfs.exists(str(encfs_source) + '/'+str(dir)+'/'+str(title))):
-                    url = service.getDownloadURL(docid)
-                    service.downloadPicture(url, str(encfs_source) + '/'+str(dir) + '/'+str(title))
-                fileINode = ''
-                if encfs_inode ==0:
-                    fileINode = str(xbmcvfs.Stat(str(encfs_source) + '/'+str(dir)+'/'+str(title)).st_ino())
-                else:
-                    fileINode = str(xbmcvfs.Stat(str(encfs_source) + '/'+str(dir)+'/'+str(title)).st_ctime())
+        xbmc.executebuiltin("XBMC.ShowPicture("+encfs_target + dencryptedPath+")")
+        item = xbmcgui.ListItem(path=encfs_target + dencryptedPath)
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
+        print "file ="+encfs_target + dencryptedPath
 
-                dirsx, files = xbmcvfs.listdir(encfs_target + '/' + str(folder))
-                for file in files:
-                    index = ''
-                    if encfs_inode ==0:
-                        index = str(xbmcvfs.Stat(encfs_target + '/' + str(folder) + '/' + file).st_ino())
-                    else:
-                        index = str(xbmcvfs.Stat(encfs_target + '/' + str(folder) + '/' + file).st_ctime())
-                    if index == fileINode:
-                        xbmc.executebuiltin("XBMC.ShowPicture("+encfs_target + '/' + str(folder) + '/' + file+")")
-                        item = xbmcgui.ListItem(path=encfs_target + '/' + str(folder) + '/' + file)
-                        xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
-
+#        dirsx, files = xbmcvfs.listdir(encfs_target + dencryptedPath)
+#        for file in files:
+#                    index = ''
+#                    if encfs_inode ==0:
+#                        index = str(xbmcvfs.Stat(encfs_target + dencryptedPath + file).st_ino())
+#                    else:
+#                        index = str(xbmcvfs.Stat(encfs_target + dencryptedPath + file).st_ctime())
+#                    if index == fileINode:
+#                        xbmc.executebuiltin("XBMC.ShowPicture("+encfs_target + dencryptedPath + file+")")
+#                        item = xbmcgui.ListItem(path=encfs_target + dencryptedPath + file)
+#                        xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
+#                        print "file ="+encfs_target + dencryptedPath + file
     else:
         path = getSetting('photo_folder')
 
