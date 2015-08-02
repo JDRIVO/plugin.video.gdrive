@@ -1172,13 +1172,39 @@ elif mode == 'audio':
 
 
 
-    playbackMedia = True
+    encfs = getParameter('encfs', False)
+
+    if encfs:
+
+        encryptedPath = getParameter('epath', '')
+        dencryptedPath = getParameter('dpath', '')
+
+        print "folderPath = " + str(encryptedPath)
+
+        encfs_source = getSetting('encfs_source')
+        encfs_target = getSetting('encfs_target')
+        encfs_inode = int(getSetting('encfs_inode', 0))
+
+        # don't redownload if present already
+        if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
+            url = service.getDownloadURL(filename)
+            service.downloadPicture(url, str(encfs_source) + encryptedPath +str(title))
+
+        #xbmc.executebuiltin("XBMC.ShowPicture("+encfs_target + dencryptedPath+")")
+        item = xbmcgui.ListItem(path=encfs_target + dencryptedPath)
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+        playbackMedia = False
+
+    else:
+        playbackMedia = True
+
     #if we don't have the docid, search for the video for playback
-    if (filename != ''):
+    if (playbackMedia and filename != ''):
         mediaFile = file.file(filename, title, '', service.MEDIA_TYPE_MUSIC, '','')
         mediaFolder = folder.folder(folderID,'')
         (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
-    else:
+    elif playbackMedia:
         if mode == 'search':
 
             if title == '':
@@ -1222,6 +1248,7 @@ elif mode == 'audio':
 
         else:
             (mediaURLs,package) = service.getPlaybackCall(None,title=title)
+
 
 
     if playbackMedia:

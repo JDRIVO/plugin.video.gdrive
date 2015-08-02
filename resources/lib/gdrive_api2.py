@@ -1258,6 +1258,10 @@ class gdrive(cloudservice):
                     #docid = package.file.id
                     #mediaURLs.append(package.mediaurl)
 
+        # encryption?
+        if package is None:
+            return (mediaURLs, package)
+
         # there are no streams for music
         if package.file.type == self.MEDIA_TYPE_MUSIC:
             return (mediaURLs, package)
