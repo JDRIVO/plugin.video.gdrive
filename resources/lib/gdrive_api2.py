@@ -1168,10 +1168,12 @@ class gdrive(cloudservice):
             pquality = int(self.addon.getSetting('preferred_quality'))
             pformat = int(self.addon.getSetting('preferred_format'))
             acodec = int(self.addon.getSetting('avoid_codec'))
+            aformat = int(self.addon.getSetting('avoid_format'))
         except :
             pquality=-1
             pformat=-1
             acodec=-1
+            aformat=-1
 
         mediaURLs = []
 
@@ -1414,6 +1416,7 @@ class gdrive(cloudservice):
                     except :
                         order = order + 30000
 
+
                     try:
                         if containerDB[container] == 'MP4':
                             if pformat == 0 or pformat == 1:
@@ -1429,6 +1432,11 @@ class gdrive(cloudservice):
                                 order = order + 200
                             else:
                                 order = order + 300
+
+                            if aformat == 1:
+                                order = order + 90000
+
+
                         elif containerDB[container] == 'WebM':
                             if pformat == 4 or pformat == 5:
                                 order = order + 100

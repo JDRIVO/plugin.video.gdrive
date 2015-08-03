@@ -119,6 +119,9 @@
     	<setting id="preferred_quality" type="enum" enable="eq(-2,false)" subsetting="true" label="30011" values="perfer best (1080,720,<720)|prefer 720 (720,<720,>720)|prefer SD (480,<480)" default="0" />
     	<setting id="preferred_format" type="enum" enable="eq(-3,false)" subsetting="true" label="30012" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
     	<setting id="avoid_codec" type="enum" enable="eq(-4,false)" subsetting="true" label="30013" values="none|VP8/vorbis" default="0"/>
+    	<setting id="avoid_format" type="enum" enable="eq(-5,false)" subsetting="true" label="30167" values="none|flv" default="0"/>
+        <setting subsetting="true" label="30168" type="lsep"/>
+
     </category>
     <category label="30094">
         <setting label="30037" type="lsep"/>
