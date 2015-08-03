@@ -226,55 +226,90 @@ except:
 
 # cloudservice - content type
 contextType = getParameter('content_type')
+encfs = getParameter('encfs', False)
 
     #contentType
     #video context
     # 0 video
     # 1 video and music
     # 2 everything
+    # 9 encrypted video
     #
     #music context
     # 3 music
     # 4 everything
+    # 10 encrypted video
     #
     #photo context
     # 5 photo
     # 6 music and photos
     # 7 everything
+    # 11 encrypted photo
 
 
 
 
 try:
       contentType = 0
-      contentTypeDecider = int(getSetting('context_video'))
+      print "context type = " + contextType
 
       if contextType == 'video':
-        if contentTypeDecider == 2:
-            contentType = 2
-        elif contentTypeDecider == 1:
-            contentType = 1
+
+        if encfs:
+            contentTypeDecider =  int(getSetting('context_evideo',0))
+
+            if contentTypeDecider == 1:
+                contentType = 8
+            else:
+                contentType = 9
+
         else:
-            contentType = 0
+            contentTypeDecider = int(getSetting('context_video',0))
+
+            if contentTypeDecider == 2:
+                contentType = 2
+            elif contentTypeDecider == 1:
+                contentType = 1
+            else:
+                contentType = 0
         # cloudservice - sorting options
         xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_EPISODE)
         xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 
       elif contextType == 'audio':
-        if contentTypeDecider == 1:
-            contentType = 4
+        if encfs:
+            contentTypeDecider =  int(getSetting('context_emusic',0))
+            if contentTypeDecider == 1:
+                contentType = 8
+            else:
+                contentType = 10
         else:
-            contentType = 3
+
+            contentTypeDecider = int(getSetting('context_music', 0))
+
+            if contentTypeDecider == 1:
+                contentType = 4
+            else:
+                contentType = 3
         # cloudservice - sorting options
         xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TRACKNUM)
 
       elif contextType == 'image':
-        if contentTypeDecider == 2:
-            contentType = 7
-        elif contentTypeDecider == 1:
-            contentType = 6
+        if encfs:
+            contentTypeDecider =  int(getSetting('context_ephotos',0))
+            if contentTypeDecider == 1:
+                contentType = 8
+            else:
+                contentType = 11
         else:
-            contentType = 5
+            contentTypeDecider = int(getSetting('context_photos', 0))
+
+            if contentTypeDecider == 2:
+                contentType = 7
+            elif contentTypeDecider == 1:
+                contentType = 6
+            else:
+                contentType = 5
 
       # show all (for encfs)
       elif contextType == 'all':
@@ -749,7 +784,7 @@ if mode == 'main' or mode == 'index':
     ##**
 
     # treat as an encrypted folder?
-    encfs = getParameter('encfs', False)
+#    encfs = getParameter('encfs', False)
     encfs_target = getSetting('encfs_target')
 
 
@@ -804,7 +839,7 @@ if mode == 'main' or mode == 'index':
         encfs_target = getSetting('encfs_target')
         encfs_inode = int(getSetting('encfs_inode', 0))
 
-        mediaItems = service.getMediaList(folderName,contentType=8)
+        mediaItems = service.getMediaList(folderName,contentType=contentType)
 
         if mediaItems:
             dirListINodes = {}
@@ -831,6 +866,16 @@ if mode == 'main' or mode == 'index':
                     if encfs_inode > 0:
                             xbmc.sleep(1000)
 
+
+            if contentType == 9:
+                mediaList = ['.mp4', '.flv', '.mov', '.webm', '.avi', '.ogg']
+            elif contentType == 10:
+                mediaList = ['.mp3', '.flac']
+            else:# contentType == 11:
+                mediaList = ['.jpg', '.png']
+            media_re = re.compile("|".join(mediaList))
+            print "contentType =" + str(contentType)
+
             dirs, files = xbmcvfs.listdir(encfs_target + str(dencryptedPath) )
             for dir in dirs:
                 index = ''
@@ -849,7 +894,21 @@ if mode == 'main' or mode == 'index':
                     xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
                     print "delete = " + encfs_target + str(dencryptedPath) + dir
                     fileListINodes[index].file.decryptedTitle = dir
-                    service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(dir), epath=str(encryptedPath) )
+                    if contentType == 8 or media_re.search(str(file)):
+                        service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(dir), epath=str(encryptedPath) )
+
+
+            # file is already downloaded
+            for file in files:
+                index = ''
+                if encfs_inode == 0:
+                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + file).st_ino())
+                else:
+                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + file).st_ctime())
+                if index in fileListINodes.keys():
+                    fileListINodes[index].file.decryptedTitle = file
+                    if contentType == 8 or media_re.search(str(file)):
+                        service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(file), epath=str(encryptedPath) )
 
         #xbmc.executebuiltin("XBMC.Container.Refresh")
 
@@ -1430,19 +1489,43 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         settings.playOriginal = True
 
     if settings.cache:
-            settings.download = False
-            settings.play = False
+        settings.download = False
+        settings.play = False
 
 
-    playbackMedia = True
+    encfs = getParameter('encfs', False)
+
+    if encfs:
+
+        encryptedPath = getParameter('epath', '')
+        dencryptedPath = getParameter('dpath', '')
+
+        print "folderPath = " + str(encryptedPath)
+
+        encfs_source = getSetting('encfs_source')
+        encfs_target = getSetting('encfs_target')
+        encfs_inode = int(getSetting('encfs_inode', 0))
+
+        # don't redownload if present already
+        if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
+            url = service.getDownloadURL(filename)
+            service.downloadPicture(url, str(encfs_source) + encryptedPath +str(title))
+
+        item = xbmcgui.ListItem(path=encfs_target + dencryptedPath)
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+        playbackMedia = False
+
+    else:
+        playbackMedia = True
 
     # file ID provided
-    if (filename != ''):
+    if (playbackMedia and filename != ''):
         mediaFile = file.file(filename, title, '', 0, '','')
         mediaFolder = folder.folder(folderID,'')
         (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
     # search
-    elif mode == 'search':
+    elif playbackMedia and mode == 'search':
 
             if title == '':
 
@@ -1480,7 +1563,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 else:
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
     # folder only
-    elif folderID != '' and title == '':
+    elif playbackMedia and folderID != '' and title == '':
         mediaItems = service.getMediaList(folderName=folderID, contentType=contentType)
         if mediaItems:
             if contextType == '':
@@ -1489,7 +1572,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 player.playLgist(service)
                 playbackMedia = False
     # title provided
-    else:
+    elif playbackMedia:
             (mediaURLs,package) = service.getPlaybackCall(None,title=title)
 
 

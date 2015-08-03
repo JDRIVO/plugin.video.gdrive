@@ -358,6 +358,7 @@ class gdrive(cloudservice):
 
         # search for title
         elif title != False or folderName == 'SAVED SEARCH':
+            print "TITLE " + str(title)
             encodedTitle = re.sub(' ', '+', title)
             url = url + "?q=title+contains+'" + str(encodedTitle) + "'" + "+and+not+title+contains+'SAVED+SEARCH'"
 
@@ -598,6 +599,7 @@ class gdrive(cloudservice):
                   duration = r.group(1)
                   duration = int(int(duration) / 1000)
                   break
+
                 # entry is a folder
                 if (resourceType == 'application/vnd.google-apps.folder'):
                     for r in re.finditer('SAVED SEARCH\|([^\|]+)' ,
@@ -675,21 +677,21 @@ class gdrive(cloudservice):
                 # entry is a photo, but we are not in a photo display
                 elif (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType):
                     return
+
                 # entry is unknown
                 elif (resourceType == 'application/vnd.google-apps.unknown'):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, '', thumbnail, size=fileSize)
-
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
                     return media
 
                 # all files (for saving to encfs)
-                elif (contentType == 8):
+                elif (contentType >= 8):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, '', '', size=fileSize)
-
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     return media
+
 
 
     ##

@@ -138,11 +138,17 @@
         <setting id="cache_single" type="bool" subsetting="true" label="30132" default="false" />
         <setting id="chunk_size" type="enum" subsetting="true" label="30091" values="32224|32768|262144|1048576" default="2" />
         <setting id="cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100" />
+    </category>
+    <category label="30165">
         <setting label="30127" type="lsep"/>
         <setting id="encfs_source" type="folder" subsetting="true" label="30128" default="" />
         <setting id="encfs_target" type="folder" subsetting="true" label="30129" default="" />
         <setting id="encfs_inode" type="enum" subsetting="true" label="30155" values="local|samba/nfs/remote/other" default="0" />
-
+        <setting label="30037" type="lsep"/>
+        <setting id="context_evideo" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Don't Filter" default="0"/>
+        <setting id="context_emusic" type="enum" subsetting="true" label="30023" values="Music only|Don't Filter" default="0"/>
+        <setting id="context_ephoto" type="enum" subsetting="true" label="30024" values="Photos only|Don't Filter" default="0"/>
+        <setting label="30166" subsetting="true" type="lsep"/>
     </category>
 
     <category label="30134">
