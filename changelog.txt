@@ -1,6 +1,10 @@
 - known issue: Problem activating a second instance with the same account #32
 
-
+- Resume playback issue in 480p (flv) #45
+- add Filename Initialization Vector Chaining support
+- improvements to audio/music encfs support
+- improvements to video encfs support
+- improvements to photos encfs support
 - fix: STRM creation should only be for video and music
 - fix: regex for TV STRM scraping
 Version 0.7.9
