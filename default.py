@@ -248,10 +248,8 @@ encfs = getParameter('encfs', False)
 
 
 
-
 try:
       contentType = 0
-      print "context type = " + contextType
 
       if contextType == 'video':
 
@@ -296,13 +294,13 @@ try:
 
       elif contextType == 'image':
         if encfs:
-            contentTypeDecider =  int(getSetting('context_ephotos',0))
+            contentTypeDecider =  int(getSetting('context_ephoto',0))
             if contentTypeDecider == 1:
                 contentType = 8
             else:
                 contentType = 11
         else:
-            contentTypeDecider = int(getSetting('context_photos', 0))
+            contentTypeDecider = int(getSetting('context_photo', 0))
 
             if contentTypeDecider == 2:
                 contentType = 7
@@ -839,7 +837,7 @@ if mode == 'main' or mode == 'index':
         encfs_target = getSetting('encfs_target')
         encfs_inode = int(getSetting('encfs_inode', 0))
 
-        mediaItems = service.getMediaList(folderName,contentType=contentType)
+        mediaItems = service.getMediaList(folderName,contentType=8)
 
         if mediaItems:
             dirListINodes = {}
@@ -894,7 +892,7 @@ if mode == 'main' or mode == 'index':
                     xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
                     print "delete = " + encfs_target + str(dencryptedPath) + dir
                     fileListINodes[index].file.decryptedTitle = dir
-                    if contentType == 8 or media_re.search(str(file)):
+                    if contentType < 9 or media_re.search(str(dir)):
                         service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(dir), epath=str(encryptedPath) )
 
 
@@ -907,7 +905,7 @@ if mode == 'main' or mode == 'index':
                     index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + file).st_ctime())
                 if index in fileListINodes.keys():
                     fileListINodes[index].file.decryptedTitle = file
-                    if contentType == 8 or media_re.search(str(file)):
+                    if contentType < 9 or media_re.search(str(file)):
                         service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(file), epath=str(encryptedPath) )
 
         #xbmc.executebuiltin("XBMC.Container.Refresh")
