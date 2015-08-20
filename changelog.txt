@@ -1,5 +1,5 @@
-- known issue: Problem activating a second instance with the same account #32
 
+- fix: Problem activating a second instance with the same account #32
 Version 0.7.10
 - encfs filter fix
 - Resume playback issue in 480p (flv) #45
