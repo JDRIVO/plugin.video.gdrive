@@ -116,130 +116,18 @@ encfs = kodi_common.getParameter('encfs', False)
 contentType = kodi_common.getContentType(contextType,encfs)
 
 
-
-
 # cloudservice - sorting options
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 
-numberOfAccounts = kodi_common.numberOfAccounts(PLUGIN_NAME)
+numberOfAccounts = cloudservice.numberOfAccounts(PLUGIN_NAME)
 
 # cloudservice - utilities
 ###
 
-if mode == 'dummy':
-    xbmc.executebuiltin("XBMC.Container.Refresh")
+if mode == 'dummy' or mode == 'delete' or mode == 'enroll':
 
-# delete the configuration for the specified account
-elif mode == 'delete':
-
-    #*** old - needs to be re-written
-    if instanceName != '':
-
-        try:
-            # gdrive specific ***
-            addon.setSetting(instanceName + '_username', '')
-            addon.setSetting(instanceName + '_code', '')
-            addon.setSetting(instanceName + '_client_id', '')
-            addon.setSetting(instanceName + '_client_secret', '')
-            addon.setSetting(instanceName + '_url', '')
-            addon.setSetting(instanceName + '_password', '')
-            addon.setSetting(instanceName + '_passcode', '')
-            addon.setSetting(instanceName + '_auth_access_token', '')
-            addon.setSetting(instanceName + '_auth_refresh_token', '')
-            # ***
-            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30158))
-        except:
-            #error: instance doesn't exist
-            pass
-    xbmc.executebuiltin("XBMC.Container.Refresh")
-
-
-# enroll a new account
-elif mode == 'enroll':
-
-
-        invokedUsername = kodi_common.getParameter('username')
-        code = kodi_common.getParameter('code', '')
-
-
-        if code == '':
-            options = []
-            options.append('Google Apps')
-            ret = xbmcgui.Dialog().select('select type', options)
-
-            invokedUsername = ''
-            password = ''
-            if ret == 0:
-                try:
-                    dialog = xbmcgui.Dialog()
-                    invokedUsername = dialog.input('username', type=xbmcgui.INPUT_ALPHANUM)
-                    passcode = dialog.input('passcode', type=xbmcgui.INPUT_ALPHANUM)
-                except:
-                    pass
-
-            count = 1
-            loop = True
-            while loop:
-                instanceName = PLUGIN_NAME+str(count)
-                try:
-                    username = kodi_common.getSetting(instanceName+'_username')
-                    if username == invokedUsername:
-                        addon.setSetting(instanceName + '_type', str(4))
-                        addon.setSetting(instanceName + '_username', str(invokedUsername))
-                        addon.setSetting(instanceName + '_passcode', str(passcode))
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                        loop = False
-                    elif username == '':
-                        addon.setSetting(instanceName + '_type', str(4))
-                        addon.setSetting(instanceName + '_username', str(invokedUsername))
-                        addon.setSetting(instanceName + '_passcode', str(passcode))
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                        loop = False
-
-                except:
-                    pass
-
-                if count == numberOfAccounts:
-                    #fallback on first defined account
-                    addon.setSetting(instanceName + '_type', str(4))
-                    addon.setSetting(instanceName + '_username', invokedUsername)
-                    addon.setSetting(instanceName + '_passcode', str(passcode))
-                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                    loop = False
-                count = count + 1
-
-        else:
-            count = 1
-            loop = True
-            while loop:
-                instanceName = PLUGIN_NAME+str(count)
-                try:
-                    username = kodi_common.getSetting(instanceName+'_username')
-                    if username == invokedUsername:
-                        addon.setSetting(instanceName + '_type', str(1))
-                        addon.setSetting(instanceName + '_code', str(code))
-                        addon.setSetting(instanceName + '_username', str(invokedUsername))
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                        loop = False
-                    elif username == '':
-                        addon.setSetting(instanceName + '_type', str(1))
-                        addon.setSetting(instanceName + '_code', str(code))
-                        addon.setSetting(instanceName + '_username', str(invokedUsername))
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                        loop = False
-
-                except:
-                    pass
-
-                if count == numberOfAccounts:
-                    #fallback on first defined account
-                    addon.setSetting(instanceName + '_type', str(1))
-                    addon.setSetting(instanceName + '_code', code)
-                    addon.setSetting(instanceName + '_username', invokedUsername)
-                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                    loop = False
-                count = count + 1
+    cloudservice.accountActions(mode, instanceName, numberOfAccounts)
 
 #create strm files
 elif mode == 'buildstrm':
@@ -563,7 +451,7 @@ try:
 except: pass
 
 
-
+# options menu
 #if mode == 'main':
 #    addMenu(PLUGIN_URL+'?mode=options','<< '+addon.getLocalizedString(30043)+' >>')
 

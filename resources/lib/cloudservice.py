@@ -25,10 +25,16 @@ import xbmcvfs
 import sys
 
 from resources.lib import mediaurl
+from resources.lib import kodi_common
+
 
 #global variables
 PLUGIN_URL = sys.argv[0]
 plugin_handle = int(sys.argv[1])
+PLUGIN_NAME = 'gdrive'
+#addon = xbmcaddon.Addon(id='plugin.video.gdrive')
+addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+
 
 def decode(data):
         return re.sub("&#(\d+)(;|(?=\s))", _callback, data).strip()
@@ -46,6 +52,151 @@ def _callback(matches):
         return unichr(int(id))
     except:
         return id
+
+
+##
+# Calculate the number of accounts defined in settings
+#   parameters: the account type (usually plugin name)
+##
+def numberOfAccounts(accountType):
+
+    return 9
+    count = 1
+    max_count = int(kodi_common.getSetting(accountType+'_numaccounts',9))
+
+    actualCount = 0
+    while True:
+        try:
+            if kodi_common.getSetting(accountType+str(count)+'_username') != '':
+                actualCount = actualCount + 1
+        except:
+            break
+        if count == max_count:
+            break
+        count = count + 1
+    return actualCount
+
+
+
+##
+# Delete an account, enroll an account or refresh the current listings
+#   parameters: mode
+##
+def accountActions(mode, instanceName, numberOfAccounts):
+
+    if mode == 'dummy':
+        xbmc.executebuiltin("XBMC.Container.Refresh")
+
+    # delete the configuration for the specified account
+    elif mode == 'delete':
+
+        #*** old - needs to be re-written
+        if instanceName != '':
+
+            try:
+                # gdrive specific ***
+                addon.setSetting(instanceName + '_username', '')
+                addon.setSetting(instanceName + '_code', '')
+                addon.setSetting(instanceName + '_client_id', '')
+                addon.setSetting(instanceName + '_client_secret', '')
+                addon.setSetting(instanceName + '_url', '')
+                addon.setSetting(instanceName + '_password', '')
+                addon.setSetting(instanceName + '_passcode', '')
+                addon.setSetting(instanceName + '_auth_access_token', '')
+                addon.setSetting(instanceName + '_auth_refresh_token', '')
+                # ***
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30158))
+            except:
+                #error: instance doesn't exist
+                pass
+        xbmc.executebuiltin("XBMC.Container.Refresh")
+
+
+    # enroll a new account
+    elif mode == 'enroll':
+
+
+            invokedUsername = kodi_common.getParameter('username')
+            code = kodi_common.getParameter('code', '')
+
+
+            if code == '':
+                options = []
+                options.append('Google Apps')
+                ret = xbmcgui.Dialog().select('select type', options)
+
+                invokedUsername = ''
+                password = ''
+                if ret == 0:
+                    try:
+                        dialog = xbmcgui.Dialog()
+                        invokedUsername = dialog.input('username', type=xbmcgui.INPUT_ALPHANUM)
+                        passcode = dialog.input('passcode', type=xbmcgui.INPUT_ALPHANUM)
+                    except:
+                        pass
+
+                count = 1
+                loop = True
+                while loop:
+                    instanceName = PLUGIN_NAME+str(count)
+                    try:
+                        username = kodi_common.getSetting(instanceName+'_username')
+                        if username == invokedUsername:
+                            addon.setSetting(instanceName + '_type', str(4))
+                            addon.setSetting(instanceName + '_username', str(invokedUsername))
+                            addon.setSetting(instanceName + '_passcode', str(passcode))
+                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
+                            loop = False
+                        elif username == '':
+                            addon.setSetting(instanceName + '_type', str(4))
+                            addon.setSetting(instanceName + '_username', str(invokedUsername))
+                            addon.setSetting(instanceName + '_passcode', str(passcode))
+                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
+                            loop = False
+
+                    except:
+                        pass
+
+                    if count == numberOfAccounts:
+                        #fallback on first defined account
+                        addon.setSetting(instanceName + '_type', str(4))
+                        addon.setSetting(instanceName + '_username', invokedUsername)
+                        addon.setSetting(instanceName + '_passcode', str(passcode))
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
+                        loop = False
+                    count = count + 1
+
+            else:
+                count = 1
+                loop = True
+                while loop:
+                    instanceName = PLUGIN_NAME+str(count)
+                    try:
+                        username = kodi_common.getSetting(instanceName+'_username')
+                        if username == invokedUsername:
+                            addon.setSetting(instanceName + '_type', str(1))
+                            addon.setSetting(instanceName + '_code', str(code))
+                            addon.setSetting(instanceName + '_username', str(invokedUsername))
+                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
+                            loop = False
+                        elif username == '':
+                            addon.setSetting(instanceName + '_type', str(1))
+                            addon.setSetting(instanceName + '_code', str(code))
+                            addon.setSetting(instanceName + '_username', str(invokedUsername))
+                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
+                            loop = False
+
+                    except:
+                        pass
+
+                    if count == numberOfAccounts:
+                        #fallback on first defined account
+                        addon.setSetting(instanceName + '_type', str(1))
+                        addon.setSetting(instanceName + '_code', code)
+                        addon.setSetting(instanceName + '_username', invokedUsername)
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
+                        loop = False
+                    count = count + 1
 #
 #
 #
@@ -796,5 +947,38 @@ class cloudservice(object):
 #            mediaURL = mediaURLs[0]
 
         return mediaURL
+
+
+    ##
+    # download remote picture
+    # parameters: url of picture, file location with path on disk
+    ##
+    def downloadPicture(self, url, file):
+
+        req = urllib2.Request(url, None, self.getHeadersList())
+
+        # already downloaded
+        if xbmcvfs.exists(file) and xbmcvfs.File(file).size() > 0:
+            return
+
+        f = xbmcvfs.File(file, 'w')
+
+        # if action fails, validate login
+        try:
+            f.write(urllib2.urlopen(req).read())
+            f.close()
+
+        except urllib2.URLError, e:
+              self.refreshToken()
+              req = urllib2.Request(url, None, self.getHeadersList())
+              try:
+                f.write(urllib2.urlopen(req).read())
+                f.close()
+              except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('downloadPicture',str(e))
+                return
+
+
 
 

@@ -523,6 +523,7 @@ class gdrive(cloudservice):
 
         return mediaFiles
 
+
     ##
     # retrieve a media package
     #   parameters: given an entry
@@ -1152,8 +1153,10 @@ class gdrive(cloudservice):
 
 
     ##
+    # Google Drive specific
     # retrieve a playback url
-    #   returns: url
+    #   parameters: package (optional), title of media file, isExact allowing for fuzzy searches
+    #   returns: url for playback
     ##
     def getPlaybackCall(self, package=None, title='', isExact=True):
 
@@ -1450,43 +1453,14 @@ class gdrive(cloudservice):
 
 
 
+
     ##
-    # download remote picture
+    # Google Drive specific
+    # download a TTS and save as a SRT
     # parameters: url of picture, file location with path on disk
-    ##
-    def downloadPicture(self, url, file):
-
-        req = urllib2.Request(url, None, self.getHeadersList())
-
-        # already downloaded
-        if xbmcvfs.exists(file) and xbmcvfs.File(file).size() > 0:
-            return
-
-        f = xbmcvfs.File(file, 'w')
-
-        # if action fails, validate login
-        try:
-            f.write(urllib2.urlopen(req).read())
-            f.close()
-
-        except urllib2.URLError, e:
-              self.refreshToken()
-              req = urllib2.Request(url, None, self.getHeadersList())
-              try:
-                f.write(urllib2.urlopen(req).read())
-                f.close()
-              except urllib2.URLError, e:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('downloadPicture',str(e))
-                return
-
-    ##
-    # download remote picture
-    # parameters: url of picture, file location with path on disk
+    # returns: nothing
     ##
     def downloadTTS(self, url, file):
-
-
 
         req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -1509,6 +1483,7 @@ class gdrive(cloudservice):
         response.close()
 
         count=0
+        #convert TTS (google drive) to SRT
         for q in re.finditer('\<text start\=\"([^\"]+)\" dur\=\"([^\"]+)\"\>([^\<]+)\</text\>' ,
                              response_data, re.DOTALL):
             start,duration,text = q.groups()
@@ -1530,6 +1505,7 @@ class gdrive(cloudservice):
 
             f.write("%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n\n" % (count, startTimeHour, startTimeMin, startTimeSec, startTimeMSec, endTimeHour, endTimeMin, endTimeSec, endTimeMSec, text))
         f.close()
+
 
     #*** needs update
     def downloadDecryptPicture(self,key,url, file):
@@ -1561,7 +1537,13 @@ class gdrive(cloudservice):
                 return
 
 
-    # for playing public URLs
+
+    ##
+    # Google Drive specific
+    # get videos streams for a public URL
+    # parameters: public url
+    # returns: list of MediaURLs
+    ##
     def getPublicStream(self,url):
 
         try:
@@ -1722,7 +1704,11 @@ class gdrive(cloudservice):
 
 
 
-
+    ##
+    # Google Drive API2 specific
+    # set a file property
+    # parameters: doc id, key, value
+    ##
     def setProperty(self, docid, key, value):
 
         url = self.API_URL +'files/' + str(docid) + '/properties/' + str(key) + '?visibility=PUBLIC'
