@@ -87,7 +87,7 @@ try:
         # stdoutToServer and stderrToServer redirect stdout and stderr to eclipse console
         pydevd.settrace(remote_debugger_host, stdoutToServer=True, stderrToServer=True)
 except ImportError:
-    kodi_common.log(addon.getLocalizedString(30016), True)
+    xbmc.log(addon.getLocalizedString(30016), xbmc.LOGERROR)
     sys.exit(1)
 except :
     pass
@@ -104,18 +104,10 @@ user_agent = kodi_common.getSetting('user_agent')
 
 
 
-#*** old - gdrive
-# hidden parameters which may not even be defined
-useWRITELY = kodi_common.getSetting('force_writely')
-##**
-
 mode = kodi_common.getParameter('mode','main')
 
 # make mode case-insensitive
 mode = mode.lower()
-
-
-kodi_common.log('plugin url: ' + PLUGIN_URL)
 
 
 #*** old - gdrive
@@ -229,7 +221,6 @@ xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 
 numberOfAccounts = kodi_common.numberOfAccounts(PLUGIN_NAME)
-kodi_common.log('accounts = '+str(numberOfAccounts))
 
 # cloudservice - utilities
 
@@ -727,7 +718,7 @@ if mode == 'main' or mode == 'index':
         service
     except NameError:
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
-        kodi_common.log(addon.getLocalizedString(30050)+ 'gdrive-login', True)
+        xbmc.log(addon.getLocalizedString(30050)+ 'gdrive-login', xbmc.LOGERROR)
         xbmcplugin.endOfDirectory(plugin_handle)
 
     #if encrypted, get everything(as encrypted files will be of type application/ostream)
@@ -991,7 +982,7 @@ elif mode == 'downloadfolder':
         service
     except NameError:
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
-        kodi_common.log(addon.getLocalizedString(30050)+ 'gdrive-login', True)
+        xbmc.log(addon.getLocalizedString(30050)+ 'gdrive-login',xbmc.LOGERROR)
         xbmcplugin.endOfDirectory(plugin_handle)
 
     if encfs:
@@ -1129,7 +1120,7 @@ elif mode == 'audio':
         service
     except NameError:
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
-        kodi_common.log(addon.getLocalizedString(30050)+ 'gdrive-login', True)
+        xbmc.log(addon.getLocalizedString(30050)+ 'gdrive-login', xbmc.LOGERROR)
         xbmcplugin.endOfDirectory(plugin_handle)
 
 
@@ -1198,12 +1189,12 @@ elif mode == 'audio':
                 ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), options)
                 playbackURL = urls[ret]
 
-                item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+                item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded())
                 # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
                 item.setInfo( type="Video", infoLabels={ "Title": options[ret] } )
                 if settings.integratedPlayer:
                     player = gPlayer.gPlayer()
-                    player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                    player.play(playbackURL+'|' + service.getHeadersEncoded(), item)
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
                 else:
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
@@ -1223,7 +1214,7 @@ elif mode == 'audio':
         else:
             mediaURL = mediaURLs[0]
             if not settings.download:
-                mediaURL.url =  mediaURL.url +'|' + service.getHeadersEncoded(service.useWRITELY)
+                mediaURL.url =  mediaURL.url +'|' + service.getHeadersEncoded()
 
         playbackPlayer = settings.integratedPlayer
 
@@ -1283,7 +1274,7 @@ elif mode == 'audio':
                 if playbackPlayer:
 
 #                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-#                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
+#                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded())
                     # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
 #                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
                     #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
@@ -1333,13 +1324,13 @@ elif mode == 'streamurl':
             xbmc.log(addon.getAddonInfo('name') + ': ' + addon.getLocalizedString(20021), xbmc.LOGERROR)
         else:
             # if invoked in .strm or as a direct-video (don't prompt for quality)
-            item = xbmcgui.ListItem(path=playbackURL+ '|' + service.getHeadersEncoded(service.useWRITELY))
+            item = xbmcgui.ListItem(path=playbackURL+ '|' + service.getHeadersEncoded())
             item.setInfo( type="Video", infoLabels={ "Title": mediaURLs[ret].title , "Plot" : mediaURLs[ret].title } )
             xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
             if settings.integratedPlayer:
                 player = gPlayer.gPlayer()
-                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                player.play(playbackURL+'|' + service.getHeadersEncoded(), item)
 #            else:
 #                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
@@ -1378,7 +1369,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         service
     except NameError:
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
-        kodi_common.log(addon.getLocalizedString(30050)+ 'gdrive-login', True)
+        xbmc.log(addon.getLocalizedString(30050)+ 'gdrive-login', xbmc.LOGERROR)
         xbmcplugin.endOfDirectory(plugin_handle)
 
     #settings.setCacheParameters()
@@ -1457,11 +1448,11 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), options)
                 playbackPath = urls[ret]
 
-                item = xbmcgui.ListItem(path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
+                item = xbmcgui.ListItem(path=playbackPath+'|' + service.getHeadersEncoded())
                 item.setInfo( type="Video", infoLabels={ "Title": options[ret] , "Plot" : options[ret] } )
                 if settings.integratedPlayer:
                     player = gPlayer.gPlayer()
-                    player.play(playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+                    player.play(playbackPath+'|' + service.getHeadersEncoded(), item)
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
                 else:
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
@@ -1497,7 +1488,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
         mediaURL = service.getMediaSelection(mediaURLs, folderID, filename)
         playbackPlayer = settings.integratedPlayer
-        #mediaURL.url = mediaURL.url +'|' + service.getHeadersEncoded(service.useWRITELY)
+        #mediaURL.url = mediaURL.url +'|' + service.getHeadersEncoded()
 
         #download and play
         if not mediaURL.offline and settings.download and settings.play:
@@ -1579,7 +1570,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 if playbackPlayer:
 
                     item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
+                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded())
 
                     item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
                     #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
@@ -1659,7 +1650,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                         service.setProperty(package.file.id,'resume', player.time)
 
 #                player = gPlayer.gPlayer()
-#                player.play(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY), item)
+#                player.play(playbackURL+'|' + service.getHeadersEncoded(), item)
 #                while not (player.isPlaying()):
 #                    xbmc.sleep(1)
 
@@ -1673,18 +1664,9 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 #                w.setPlayer(player)
 #                w.doModal()
 
-#                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+'|' + service.getHeadersEncoded(service.useWRITELY)+")")
+#                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+'|' + service.getHeadersEncoded()+")")
 
 
 
-
-# the parameter set for wise vs writely was detected as incorrect during this run; reset as necessary
-try:
-    if useWRITELY == True  and service.useWRITELY == False:
-        addon.setSetting('force_writely','false')
-    elif useWRITELY == False and service.useWRITELY == True:
-        addon.setSetting('force_writely','true')
-except:
-    pass
 xbmcplugin.endOfDirectory(plugin_handle)
 

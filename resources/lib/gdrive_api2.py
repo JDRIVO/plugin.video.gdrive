@@ -89,9 +89,6 @@ class gdrive(cloudservice):
         # gdrive specific ***
         self.decrypt = False
 
-        #depreciated - backward compatibility
-        self.useWRITELY = False
-        #***
 
         self.crashreport = crashreport.crashreport(self.addon)
 #        self.crashreport.sendError('test','test')
@@ -302,7 +299,7 @@ class gdrive(cloudservice):
     # return the appropriate "headers" for Google Drive requests that include 1) user agent, 2) authorization token
     #   returns: list containing the header
     ##
-    def getHeadersList(self, forceWritely=True, isPOST=False):
+    def getHeadersList(self, isPOST=False):
         if self.authorization.isToken(self.instanceName,self.addon, 'auth_access_token') and not isPOST:
 #            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
             return { 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
@@ -322,8 +319,8 @@ class gdrive(cloudservice):
     # return the appropriate "headers" for Google Drive requests that include 1) user agent, 2) authorization token, 3) api version
     #   returns: URL-encoded header string
     ##
-    def getHeadersEncoded(self, forceWritely=True):
-        return urllib.urlencode(self.getHeadersList(forceWritely))
+    def getHeadersEncoded(self):
+        return urllib.urlencode(self.getHeadersList())
 
 
 
@@ -1275,14 +1272,14 @@ class gdrive(cloudservice):
             # player using docid
             params = urllib.urlencode({'docid': docid})
             url = self.PROTOCOL+ 'drive.google.com/get_video_info?docid=' + str(docid)
-            req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
+            req = urllib2.Request(url, None, self.getHeadersList())
             # if action fails, validate login
             try:
                  response = urllib2.urlopen(req)
             except urllib2.URLError, e:
                  if e.code == 403 or e.code == 401:
                      self.refreshToken()
-                     req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
+                     req = urllib2.Request(url, None, self.getHeadersList())
                      try:
                          response = urllib2.urlopen(req)
                      except urllib2.URLError, e:
@@ -1312,15 +1309,14 @@ class gdrive(cloudservice):
 
             package.file.srtURL = ttsURL
 
-            self.useWRITELY = True
-            req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
+            req = urllib2.Request(url, None, self.getHeadersList())
 
             try:
                     response = urllib2.urlopen(req)
             except urllib2.URLError, e:
                     if e.code == 403 or e.code == 401:
                         self.refreshToken()
-                        req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
+                        req = urllib2.Request(url, None, self.getHeadersList())
                         try:
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
@@ -1593,7 +1589,7 @@ class gdrive(cloudservice):
         except urllib2.URLError, e:
             if e.code == 403 or e.code == 401:
               self.refreshToken()
-              req = urllib2.Request(url, None, self.getHeadersList(self.useWRITELY))
+              req = urllib2.Request(url, None, self.getHeadersList())
               try:
                 response = urllib2.urlopen(req)
               except urllib2.URLError, e:
