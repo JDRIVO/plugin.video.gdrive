@@ -355,7 +355,6 @@ class gdrive(cloudservice):
 
         # search for title
         elif title != False or folderName == 'SAVED SEARCH':
-            print "TITLE " + str(title)
             encodedTitle = re.sub(' ', '+', title)
             url = url + "?q=title+contains+'" + str(encodedTitle) + "'" + "+and+not+title+contains+'SAVED+SEARCH'"
 
@@ -608,7 +607,7 @@ class gdrive(cloudservice):
                     return media
 
                 # entry is a video
-                elif (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType and contentType in (0,1,2,4,7)):
+                elif ((resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType) and contentType in (0,1,2,4,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, fanart, thumbnail, size=fileSize, resolution=[height,width], playcount=int(playcount), duration=duration)
 
                     if self.settings.parseTV:
@@ -631,8 +630,6 @@ class gdrive(cloudservice):
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
 
-                    #don't push resume if > 90%
-                    #print "setting = "+str( float(100 - int(self.settings.skipResume))/100)  + "\n"
 
                     try:
                         if float(resume) > 0:
@@ -648,7 +645,7 @@ class gdrive(cloudservice):
 
 
                 # entry is a music file
-                elif (resourceType == 'application/vnd.google-apps.audio' or fileExtension.lower() in ('flac', 'mp3') or 'audio' in resourceType and contentType in (1,2,3,4,6,7)):
+                elif ((resourceType == 'application/vnd.google-apps.audio' or fileExtension.lower() in ('flac', 'mp3') or 'audio' in resourceType) and contentType in (1,2,3,4,6,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', '', size=fileSize)
 
                     if self.settings.parseMusic:
@@ -664,7 +661,7 @@ class gdrive(cloudservice):
                     return media
 
                 # entry is a photo
-                elif (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType and contentType in (2,4,5,6,7)):
+                elif ((resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType) and contentType in (2,4,5,6,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, '', thumbnail, size=fileSize)
 
                     media = package.package(mediaFile,folder.folder(folderName,''))
@@ -731,7 +728,6 @@ class gdrive(cloudservice):
                     return self.API_URL +'files/' + str(resourceID) + '?alt=media'
                 # entry is a photo
                 elif ('folder' in title and (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType)):
-                    print "folder\n"
                     return self.API_URL +'files/' + str(resourceID) + '?alt=media'
 
                 return ''

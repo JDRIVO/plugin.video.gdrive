@@ -109,10 +109,12 @@ except:
 
 # cloudservice - content type
 contextType = kodi_common.getParameter('content_type')
-contentType = kodi_common.getContentType(contextType)
 
-#support encfs
+#support encfs?
 encfs = kodi_common.getParameter('encfs', False)
+
+contentType = kodi_common.getContentType(contextType,encfs)
+
 
 
 
