@@ -72,25 +72,7 @@ from resources.lib import settings
 from resources.lib import cache
 
 
-
-# cloudservice - standard debugging
-try:
-
-    remote_debugger = kodi_common.getSetting('remote_debugger')
-    remote_debugger_host = kodi_common.getSetting('remote_debugger_host')
-
-    # append pydev remote debugger
-    if remote_debugger == 'true':
-        # Make pydev debugger works for auto reload.
-        # Note pydevd module need to be copied in XBMC\system\python\Lib\pysrc
-        import pysrc.pydevd as pydevd
-        # stdoutToServer and stderrToServer redirect stdout and stderr to eclipse console
-        pydevd.settrace(remote_debugger_host, stdoutToServer=True, stderrToServer=True)
-except ImportError:
-    xbmc.log(addon.getLocalizedString(30016), xbmc.LOGERROR)
-    sys.exit(1)
-except :
-    pass
+kodi_common.debugger()
 
 
 # cloudservice - create settings module
@@ -118,6 +100,7 @@ else:
   authenticate = True
 ##**
 
+
 instanceName = ''
 try:
     instanceName = (plugin_queries['instance']).lower()
@@ -126,95 +109,12 @@ except:
 
 # cloudservice - content type
 contextType = kodi_common.getParameter('content_type')
+contentType = kodi_common.getContentType(contextType)
+
+#support encfs
 encfs = kodi_common.getParameter('encfs', False)
 
-    #contentType
-    #video context
-    # 0 video
-    # 1 video and music
-    # 2 everything
-    # 9 encrypted video
-    #
-    #music context
-    # 3 music
-    # 4 everything
-    # 10 encrypted video
-    #
-    #photo context
-    # 5 photo
-    # 6 music and photos
-    # 7 everything
-    # 11 encrypted photo
 
-
-
-try:
-      contentType = 0
-
-      if contextType == 'video':
-
-        if encfs:
-            contentTypeDecider =  int(kodi_common.getSetting('context_evideo',0))
-
-            if contentTypeDecider == 1:
-                contentType = 8
-            else:
-                contentType = 9
-
-        else:
-            contentTypeDecider = int(kodi_common.getSetting('context_video',0))
-
-            if contentTypeDecider == 2:
-                contentType = 2
-            elif contentTypeDecider == 1:
-                contentType = 1
-            else:
-                contentType = 0
-        # cloudservice - sorting options
-        xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_EPISODE)
-        xbmcplugin.setContent(int(sys.argv[1]), 'movies')
-
-      elif contextType == 'audio':
-        if encfs:
-            contentTypeDecider =  int(kodi_common.getSetting('context_emusic',0))
-            if contentTypeDecider == 1:
-                contentType = 8
-            else:
-                contentType = 10
-        else:
-
-            contentTypeDecider = int(kodi_common.getSetting('context_music', 0))
-
-            if contentTypeDecider == 1:
-                contentType = 4
-            else:
-                contentType = 3
-        # cloudservice - sorting options
-        xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TRACKNUM)
-
-      elif contextType == 'image':
-        if encfs:
-            contentTypeDecider =  int(kodi_common.getSetting('context_ephoto',0))
-            if contentTypeDecider == 1:
-                contentType = 8
-            else:
-                contentType = 11
-        else:
-            contentTypeDecider = int(kodi_common.getSetting('context_photo', 0))
-
-            if contentTypeDecider == 2:
-                contentType = 7
-            elif contentTypeDecider == 1:
-                contentType = 6
-            else:
-                contentType = 5
-
-      # show all (for encfs)
-      elif contextType == 'all':
-            contentType = 8
-
-except:
-      contentType = 2
 
 # cloudservice - sorting options
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
@@ -223,6 +123,7 @@ xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 numberOfAccounts = kodi_common.numberOfAccounts(PLUGIN_NAME)
 
 # cloudservice - utilities
+###
 
 if mode == 'dummy':
     xbmc.executebuiltin("XBMC.Container.Refresh")
@@ -472,6 +373,7 @@ elif mode == 'buildstrm':
             xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
     xbmcplugin.endOfDirectory(plugin_handle)
 
+###
 
 
 invokedUsername = kodi_common.getParameter('username')

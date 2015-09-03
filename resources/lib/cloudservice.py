@@ -347,7 +347,7 @@ class cloudservice(object):
 
             #item = xbmcgui.ListItem(path=playbackFile)
             item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
+                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded())
 
             item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
             xbmcplugin.setResolvedUrl(playback, True, item)
@@ -481,7 +481,7 @@ class cloudservice(object):
 
             #item = xbmcgui.ListItem(path=playbackFile)
             item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded(service.useWRITELY))
+                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded())
 
             item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
             xbmcplugin.setResolvedUrl(playback, True, item)
@@ -751,7 +751,7 @@ class cloudservice(object):
 
         mediaURL = ''
         if self.settings.playOriginal:
-            mediaURL = mediaurl.mediaurl(originalURL +'|' + self.getHeadersEncoded(self.useWRITELY), 'original', 0, 9999)
+            mediaURL = mediaurl.mediaurl(originalURL +'|' + self.getHeadersEncoded(), 'original', 0, 9999)
             return mediaURL
 
         #playbackPath = str(self.settings.cachePath) + '/' + str(filename) + '/'
@@ -766,7 +766,7 @@ class cloudservice(object):
                 if self.settings.download or  self.settings.cache:
                     mediaURL.url = totalList[ret].url
                 else:
-                    mediaURL.url = totalList[ret].url +'|' + self.getHeadersEncoded(self.useWRITELY)
+                    mediaURL.url = totalList[ret].url +'|' + self.getHeadersEncoded()
 
             else:
                 mediaURL = mediaurl.mediaurl(str(totalList[ret]), 'offline', 0, 0)
@@ -778,7 +778,7 @@ class cloudservice(object):
                 if self.settings.download or  self.settings.cache:
                     mediaURL.url = totalList[0].url
                 else:
-                    mediaURL.url = totalList[0].url +'|' + self.getHeadersEncoded(self.useWRITELY)
+                    mediaURL.url = totalList[0].url +'|' + self.getHeadersEncoded()
 
             else:
                 mediaURL = mediaurl.mediaurl(str(totalList[0]), 'offline', 0, 0)
@@ -789,10 +789,10 @@ class cloudservice(object):
 #            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), options)
 #            mediaURL = mediaURLs[ret]
 #            if not self.settings.download:
-#                mediaURLs[ret].url = mediaURLs[ret].url +'|' + self.getHeadersEncoded(self.useWRITELY)
+#                mediaURLs[ret].url = mediaURLs[ret].url +'|' + self.getHeadersEncoded()
 
 #        else:
-#            mediaURLs[0].url = mediaURLs[0].url +'|' + self.getHeadersEncoded(self.useWRITELY)
+#            mediaURLs[0].url = mediaURLs[0].url +'|' + self.getHeadersEncoded()
 #            mediaURL = mediaURLs[0]
 
         return mediaURL
