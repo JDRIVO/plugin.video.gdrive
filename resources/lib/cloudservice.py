@@ -380,52 +380,10 @@ class cloudservice(object):
     def getHeadersEncoded(self):
         return urllib.urlencode(self.getHeadersList())
 
-    # helper methods
-    def log(msg, err=False):
-        if err:
-            xbmc.log(self.addon.getAddonInfo('name') + ': ' + msg, xbmc.LOGERROR)
-        else:
-            xbmc.log(self.addon.getAddonInfo('name') + ': ' + msg, xbmc.LOGDEBUG)
-
-
-    def traverse(self, path, cacheType, folderID, savePublic, level):
-        import os
-        import xbmcvfs
-
-        xbmcvfs.mkdir(path)
-
-        folders = self.getFolderList(folderID)
-        files = self.getMediaList(folderID,contentType=contentType)
-
-        if files:
-            for media in files:
-#                filename = xbmc.translatePath(os.path.join(path, media.title+'.strm'))
-#                strmFile = open(filename, "w")
-                filename = path + '/' + str(media.title)+'.strm'
-                strmFile = xbmcvfs.File(filename, "w")
-                strmFile.write(self.PLUGIN_URL+'?mode=streamURL&url=' + self.FILE_URL+ str(media.id) +'\n')
-                strmFile.close()
-
- #               strmFile.write(self.PLUGIN_URL+'?mode=streamURL&url=' + self.FILE_URL+ media.id +'\n')
- #               strmFile.close()
-
-        if folders and level == 1:
-            count = 1
-            progress = xbmcgui.DialogProgress()
-            progress.create(self.addon.getLocalizedString(30000),self.addon.getLocalizedString(30036),'\n','\n')
-
-            for folder in folders:
-                max = len(folders)
-                progress.update(count/max*100,self.addon.getLocalizedString(30036),folder.title,'\n')
-                self.traverse( path+'/'+str(folder.title) + '/',cacheType,folder.id,savePublic,0)
-                count = count + 1
-
-        if folders and level == 0:
-            for folder in folders:
-                self.traverse( path+'/'+str(folder.title) + '/',cacheType,folder.id,savePublic,0)
 
     ##
     # build STRM files to a given path for a given folder ID
+    #   parameters: path, folder id, content type, dialog object (optional)
     ##
     def buildSTRM(self, path, folderID='', contentType=1, pDialog=None):
 
@@ -503,7 +461,8 @@ class cloudservice(object):
 
     ##
     # retrieve a directory url
-    #   returns: url
+    #   parameters: folder id, context type, whether the directory is encfs, encfs:decryption path, encfs:encryption path
+    #   returns: fully qualified url
     ##
     def getDirectoryCall(self, folder, contextType='video', encfs=False, dpath='', epath=''):
         if encfs:
@@ -515,8 +474,8 @@ class cloudservice(object):
 
 
     ##
-    # retrieve a media file
-    #   parameters: title of video, whether to prompt for quality/format (optional),
+    # download/retrieve a media file
+    #   parameters: whether to playback file, media url object, package object, whether to force download (overwrite), whether the file is encfs, folder name (option)
     ##
 #    def downloadMediaFile(self, playback, url, title, folderID, filename, fileSize, force=False, encfs=False, folderName=''):
     def downloadMediaFile(self, playback, mediaURL, package, force=False, encfs=False, folderName=''):
@@ -665,8 +624,8 @@ class cloudservice(object):
 
 
     ##
-    # retrieve a general file
-    #   parameters: title of video, whether to prompt for quality/format (optional),
+    # retrieve/download a general file
+    #   parameters: title of video, whether to prompt for quality/format (optional), medial url object, package object, whether to force download (overwrite), whether folder is encrypted, folder name
     ##
     def downloadGeneralFile(self, playback, mediaURL, package, force=False, encfs=False, folderName=''):
 
@@ -798,6 +757,10 @@ class cloudservice(object):
         except: pass
 
 
+    ##
+    # Add a directory to a directory listing screen
+    #   parameters: folder object, context type, local path (optional), whether folder is encfs, encfs:decryption path, encfs:encryption path
+    ##
     def addDirectory(self, folder, contextType='video', localPath='', encfs=False, dpath='', epath=''):
 
         fanart = self.addon.getAddonInfo('path') + '/fanart.jpg'
@@ -859,7 +822,10 @@ class cloudservice(object):
                                 isFolder=True, totalItems=0)
 
 
-
+    ##
+    # Add a media file to a directory listing screen
+    #   parameters: package, context type, whether file is encfs, encfs:decryption path, encfs:encryption path
+    ##
     def addMediaFile(self, package, contextType='video', encfs=False, dpath='', epath=''):
         thumbnail = self.cache.getThumbnail(self, package.file.thumbnail,package.file.id)
         listitem = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
@@ -1038,6 +1004,11 @@ class cloudservice(object):
         return url
 
 
+    ##
+    # Return the user selected media source
+    #   parameters: list of media url objects, folder id, file id
+    #   returns: select media url object
+    ##
     def getMediaSelection(self, mediaURLs, folderID, filename):
 
         options = []
