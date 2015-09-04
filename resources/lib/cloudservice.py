@@ -31,9 +31,7 @@ from resources.lib import kodi_common
 #global variables
 PLUGIN_URL = sys.argv[0]
 plugin_handle = int(sys.argv[1])
-PLUGIN_NAME = 'gdrive'
-#addon = xbmcaddon.Addon(id='plugin.video.gdrive')
-addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+
 
 
 def decode(data):
@@ -82,7 +80,7 @@ def numberOfAccounts(accountType):
 # Delete an account, enroll an account or refresh the current listings
 #   parameters: mode
 ##
-def accountActions(mode, instanceName, numberOfAccounts):
+def accountActions(addon, PLUGIN_NAME, mode, instanceName, numberOfAccounts):
 
     if mode == 'dummy':
         xbmc.executebuiltin("XBMC.Container.Refresh")
@@ -197,6 +195,154 @@ def accountActions(mode, instanceName, numberOfAccounts):
                         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
                         loop = False
                     count = count + 1
+
+##
+# Delete an account, enroll an account or refresh the current listings
+#   parameters: addon, plugin name, mode, instance name, user provided username, number of accounts, current context
+#   returns: selected instance name
+##
+def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, numberOfAccounts, contextType):
+
+    # show list of services
+    if mode == 'delete' or mode == 'dummy':
+                count = 1
+
+    elif numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
+
+            kodi_common.addMenu(PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'[enroll account]')
+
+            mode = ''
+            count = 1
+            while True:
+                instanceName = PLUGIN_NAME+str(count)
+                try:
+                    username = kodi_common.getSetting(instanceName+'_username')
+                    if username != '':
+                        kodi_common.addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
+
+                except:
+                    pass
+                if count == numberOfAccounts:
+                    break
+                count = count + 1
+            return None
+
+    #        spreadshetModule = getSetting('library', False)
+    #        libraryAccount = getSetting('library_account')
+
+     #       if spreadshetModule:
+     #           kodi_common.addMenu(PLUGIN_URL+'?mode=kiosk&content_type='+str(contextType)+'&instance='+PLUGIN_NAME+str(libraryAccount),'[kiosk mode]')
+
+    elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
+
+            count = 1
+            options = []
+            accounts = []
+
+            for count in range (1, numberOfAccounts+1):
+                instanceName = PLUGIN_NAME+str(count)
+                try:
+                    username = kodi_common.getSetting(instanceName+'_username')
+                    if username != '':
+                        options.append(username)
+                        accounts.append(instanceName)
+
+                    if username != '':
+
+                        return instanceName
+                except:
+                    return instanceName
+
+            #fallback on first defined account
+            return accounts[ret]
+
+    # no accounts defined and url provided; assume public
+    elif numberOfAccounts == 0 and mode=='streamurl':
+        return None
+
+        # no accounts defined
+    elif numberOfAccounts == 0:
+
+            #legacy account conversion
+            try:
+                username = kodi_common.getSetting('username')
+
+                if username != '':
+                    addon.setSetting(PLUGIN_NAME+'1_username', username)
+                    addon.setSetting(PLUGIN_NAME+'1_password', kodi_common,getSetting('password'))
+                    addon.setSetting(PLUGIN_NAME+'1_auth_writely', kodi_common.getSetting('auth_writely'))
+                    addon.setSetting(PLUGIN_NAME+'1_auth_wise', kodi_common.getSetting('auth_wise'))
+                    addon.setSetting('username', '')
+                    addon.setSetting('password', '')
+                    addon.setSetting('auth_writely', '')
+                    addon.setSetting('auth_wise', '')
+                else:
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30015))
+                    xbmcplugin.endOfDirectory(plugin_handle)
+            except :
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30015))
+                xbmcplugin.endOfDirectory(plugin_handle)
+
+            return instanceName
+
+    # show entries of a single account (such as folder)
+    elif instanceName != '':
+
+        return instanceName
+
+
+
+    elif invokedUsername != '':
+
+            options = []
+            accounts = []
+            for count in range (1, numberOfAccounts+1):
+                instanceName = PLUGIN_NAME+str(count)
+                try:
+                    username = kodi_common.getSetting(instanceName+'_username')
+                    if username != '':
+                        options.append(username)
+                        accounts.append(instanceName)
+
+                    if username == invokedUsername:
+                        return instanceName
+
+                except:
+                    return instanceName
+
+
+            #fallback on first defined account
+            return accounts[ret]
+
+    #prompt before playback
+    else:
+
+            options = []
+            accounts = []
+            for count in range (1, numberOfAccounts+1):
+                instanceName = PLUGIN_NAME+str(count)
+                try:
+                    username = kodi_common.getSetting(instanceName+'_username',10)
+                    if username != '':
+                        options.append(username)
+                        accounts.append(instanceName)
+                except:
+                    break
+
+            # url provided; provide public option
+            if mode=='streamurl':
+                options.append('public')
+                accounts.append('public')
+
+            ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), options)
+
+            #fallback on first defined account
+            if accounts[ret] == 'public':
+                return None
+            else:
+                return accounts[ret]
+
+
 #
 #
 #

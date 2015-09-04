@@ -127,7 +127,7 @@ numberOfAccounts = cloudservice.numberOfAccounts(PLUGIN_NAME)
 
 if mode == 'dummy' or mode == 'delete' or mode == 'enroll':
 
-    cloudservice.accountActions(mode, instanceName, numberOfAccounts)
+    cloudservice.accountActions(addon, PLUGIN_NAME, mode, instanceName, numberOfAccounts)
 
 #create strm files
 elif mode == 'buildstrm':
@@ -267,182 +267,17 @@ elif mode == 'buildstrm':
 
 
 invokedUsername = kodi_common.getParameter('username')
+instanceName = cloudservice.getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, numberOfAccounts, contextType)
 
-# show list of services
-if mode == 'delete' or mode == 'dummy':
-            count = 1
-
-elif numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
-
-        kodi_common.addMenu(PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'[enroll account]')
-
-        mode = ''
-        count = 1
-        while True:
-            instanceName = PLUGIN_NAME+str(count)
-            try:
-                username = kodi_common.getSetting(instanceName+'_username')
-                if username != '':
-                    kodi_common.addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
-
-            except:
-                pass
-            if count == numberOfAccounts:
-                break
-            count = count + 1
-
-#        spreadshetModule = kodi_common.getSetting('library', False)
-#        libraryAccount = kodi_common.getSetting('library_account')
-
- #       if spreadshetModule:
- #           addMenu(PLUGIN_URL+'?mode=kiosk&content_type='+str(contextType)+'&instance='+PLUGIN_NAME+str(libraryAccount),'[kiosk mode]')
-
-elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
-
-        count = 1
-        options = []
-        accounts = []
-
-        for count in range (1, numberOfAccounts+1):
-            instanceName = PLUGIN_NAME+str(count)
-            try:
-                username = kodi_common.getSetting(instanceName+'_username')
-                if username != '':
-                    options.append(username)
-                    accounts.append(instanceName)
-
-                if username != '':
-
-                    #let's log in
-                    if ( int(kodi_common.getSetting(instanceName+'_type',0))==0):
-                            service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
-                    else:
-                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
-                    break
-            except:
-                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
-                break
-
-        try:
-                    service
-        except NameError:
-                    ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), options)
-
-                    #fallback on first defined account
-                    if ( int(kodi_common.getSetting(instanceName+'_type',0))==0):
-                            service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent, settings)
-                    else:
-                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent, settings)
-
-
-# no accounts defined and url provided; assume public
-elif numberOfAccounts == 0 and mode=='streamurl':
-    service = gdrive_api2.gdrive(PLUGIN_URL,addon,'', user_agent, authenticate=False)
-
-    # no accounts defined
-elif numberOfAccounts == 0:
-
-        #legacy account conversion
-        try:
-            username = kodi_common.getSetting('username')
-
-            if username != '':
-                addon.setSetting(PLUGIN_NAME+'1_username', username)
-                addon.setSetting(PLUGIN_NAME+'1_password', kodi_common.getSetting('password'))
-                addon.setSetting(PLUGIN_NAME+'1_auth_writely', kodi_common.getSetting('auth_writely'))
-                addon.setSetting(PLUGIN_NAME+'1_auth_wise', kodi_common.getSetting('auth_wise'))
-                addon.setSetting('username', '')
-                addon.setSetting('password', '')
-                addon.setSetting('auth_writely', '')
-                addon.setSetting('auth_wise', '')
-            else:
-                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30015))
-                xbmcplugin.endOfDirectory(plugin_handle)
-        except :
-            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30015))
-            xbmcplugin.endOfDirectory(plugin_handle)
-
-        #let's log in
-        if ( int(getSetting(instanceName+'_type',0))==0):
-                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
-        else:
-            service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
-
-    # show entries of a single account (such as folder)
-elif instanceName != '':
-
-        #let's log in
-        if ( int(kodi_common.getSetting(instanceName+'_type',0))==0):
-                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
-        else:
-            service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
-
-
-elif invokedUsername != '':
-
-        options = []
-        accounts = []
-        for count in range (1, numberOfAccounts+1):
-            instanceName = PLUGIN_NAME+str(count)
-            try:
-                username = kodi_common.getSetting(instanceName+'_username')
-                if username != '':
-                    options.append(username)
-                    accounts.append(instanceName)
-
-                if username == invokedUsername:
-
-
-                    #let's log in
-                    if ( int(kodi_common.getSetting(instanceName+'_type',0))==0):
-                        service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
-                    else:
-                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
-                    break
-            except:
-                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
-
-
-        #fallback on first defined account
-        try:
-                    service
-        except NameError:
-                    ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), options)
-
-                    #fallback on first defined account
-                    if ( int(kodi_common.getSetting(instanceName+'_type',0))==0):
-                        service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent, settings)
-                    else:
-                        service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent, settings)
-#prompt before playback
+service = None
+if instanceName is None and (mode == 'index' or mode == 'main'):
+    service = None
+elif instanceName is None:
+    service = gdrive_api2.gdrive(PLUGIN_URL,addon,'', user_agent, settings, authenticate=False)
+elif int(kodi_common.getSetting(instanceName+'_type',0))==0 :
+    service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
 else:
-
-        options = []
-        accounts = []
-        for count in range (1, numberOfAccounts+1):
-            instanceName = PLUGIN_NAME+str(count)
-            try:
-                username = kodi_common.getSetting(instanceName+'_username',10)
-                if username != '':
-                    options.append(username)
-                    accounts.append(instanceName)
-            except:
-                break
-
-        # url provided; provide public option
-        if mode=='streamurl':
-            options.append('public')
-            accounts.append('public')
-
-        ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), options)
-
-        #fallback on first defined account
-        if accounts[ret] == 'public':
-            service = gdrive_api2.gdrive(PLUGIN_URL,addon,'', user_agent, settings, authenticate=False)
-        elif ( int(kodi_common.getSetting(instanceName+'_type',0))==0):
-            service = gdrive.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent, settings)
-        else:
-            service = gdrive_api2.gdrive(PLUGIN_URL,addon,accounts[ret], user_agent, settings)
+    service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
 # override playback
 try:
@@ -455,9 +290,12 @@ except: pass
 #if mode == 'main':
 #    addMenu(PLUGIN_URL+'?mode=options','<< '+addon.getLocalizedString(30043)+' >>')
 
+if service is None:
+
+    xbmcplugin.endOfDirectory(plugin_handle)
 
 #dump a list of videos available to play
-if mode == 'main' or mode == 'index':
+elif mode == 'main' or mode == 'index':
 
     folderName = kodi_common.getParameter('folder', False)
 
@@ -896,194 +734,6 @@ elif mode == 'slideshow':
                 progress.close()
                 xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
 
-
-###
-# for audio files
-###
-elif mode == 'audio':
-
-    title = kodi_common.getParameter('title')
-    filename = kodi_common.getParameter('filename')
-    folderID = kodi_common.getParameter('folder')
-    if folderID == 'False':
-            folderID = 'SEARCH'
-
-    try:
-        service
-    except NameError:
-        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
-        xbmc.log(addon.getLocalizedString(30050)+ 'gdrive-login', xbmc.LOGERROR)
-        xbmcplugin.endOfDirectory(plugin_handle)
-
-
-
-    encfs = kodi_common.getParameter('encfs', False)
-
-    if encfs:
-
-        encryptedPath = kodi_common.getParameter('epath', '')
-        dencryptedPath = kodi_common.getParameter('dpath', '')
-
-        print "folderPath = " + str(encryptedPath)
-
-        encfs_source = kodi_common.getSetting('encfs_source')
-        encfs_target = kodi_common.getSetting('encfs_target')
-        encfs_inode = int(kodi_common.getSetting('encfs_inode', 0))
-
-        # don't redownload if present already
-        if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
-            url = service.getDownloadURL(filename)
-            service.downloadPicture(url, str(encfs_source) + encryptedPath +str(title))
-
-        #xbmc.executebuiltin("XBMC.ShowPicture("+encfs_target + dencryptedPath+")")
-        item = xbmcgui.ListItem(path=encfs_target + dencryptedPath)
-        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-        playbackMedia = False
-
-    else:
-        playbackMedia = True
-
-    #if we don't have the docid, search for the video for playback
-    if (playbackMedia and filename != ''):
-        mediaFile = file.file(filename, title, '', service.MEDIA_TYPE_MUSIC, '','')
-        mediaFolder = folder.folder(folderID,'')
-        (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
-    elif playbackMedia:
-        if mode == 'search':
-
-            if title == '':
-
-                try:
-                    dialog = xbmcgui.Dialog()
-                    title = dialog.input(addon.getLocalizedString(30110), type=xbmcgui.INPUT_ALPHANUM)
-                except:
-                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30100))
-                    title = 'test'
-
-            mediaItems = service.getMediaList(title=title, contentType=contentType)
-            playbackMedia = False
-
-            options = []
-            urls = []
-
-            if mediaItems:
-                for item in mediaItems:
-                    if item.file is None:
-                        service.addDirectory(item.folder, contextType=contextType)
-                    else:
-                        options.append(item.file.title)
-                        urls.append(service.addMediaFile(item, contextType=contextType))
-
-            #search from STRM
-            if contextType == '':
-
-                ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), options)
-                playbackURL = urls[ret]
-
-                item = xbmcgui.ListItem(path=playbackURL+'|' + service.getHeadersEncoded())
-                # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
-                item.setInfo( type="Video", infoLabels={ "Title": options[ret] } )
-                if settings.integratedPlayer:
-                    player = gPlayer.gPlayer()
-                    player.play(playbackURL+'|' + service.getHeadersEncoded(), item)
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-                else:
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-        else:
-            (mediaURLs,package) = service.getPlaybackCall(None,title=title)
-
-
-
-    if playbackMedia:
-        cache = cache.cache(package)
-        service.cache = cache
-
-        (localResolutions,localFiles) = service.cache.getFiles(service)
-        if len(localFiles) > 0:
-            mediaURL = mediaurl.mediaurl(str(localFiles[0]), 'offline', 0, 0)
-        else:
-            mediaURL = mediaURLs[0]
-            if not settings.download:
-                mediaURL.url =  mediaURL.url +'|' + service.getHeadersEncoded()
-
-        playbackPlayer = settings.integratedPlayer
-
-        #download and play
-        if settings.download and settings.play:
-            service.downloadMediaFile(int(sys.argv[1]), mediaURL, package)
-            playbackMedia = False
-        ###
-        #right-menu context or STRM
-        ##
-        elif contextType == '':
-
-            #download
-            if settings.download and not settings.play:
-                service.downloadMediaFile('',mediaURL, package, force=True)
-                playbackMedia = False
-
-            # for STRM (force resolve) -- resolve-only
-            elif settings.username != '':
-                playbackPlayer = False
-
-            else:
-                playbackPlayer = True
-
-
-        # from within pictures mode, music won't be playable, force
-        #direct playback from within plugin
-        elif contextType == 'image' and settings.cache:
-                item = xbmcgui.ListItem(path=str(playbackPath))
-                # local, not remote. "Music" is ok
-                item.setInfo( type="Music", infoLabels={ "Title": title } )
-                player = gPlayer.gPlayer()
-                player.play(mediaURL.url, item)
-                playbackMedia = False
-
-        # from within pictures mode, music won't be playable, force
-        #direct playback from within plugin
-        elif contextType == 'image':
-            item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
-            # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
-            item.setInfo( type="Video", infoLabels={ "Title": title } )
-
-            player = gPlayer.gPlayer()
-            player.play(mediaURL.url, item)
-            playbackMedia = False
-
-
-        if playbackMedia:
-
-                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
-
-                item.setInfo( type="Video", infoLabels={ "Title": package.file.title} )
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-                if playbackPlayer:
-
-#                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-#                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded())
-                    # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
-#                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-                    #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-                    player = gPlayer.gPlayer()
-                    #player.play(playbackPath, item)
-                    player.PlayStream(mediaURL.url, item, 0)
-
- #               else:
-
-#                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-   #                             thumbnailImage=package.file.thumbnail, path=mediaURL.url)
-                    # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
- #                   item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-  #                  xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-
 ###
 # for video files
 # force stream - play a video given its url
@@ -1141,21 +791,25 @@ elif mode == 'streamurl':
 # legacy (depreicated) - play [given title]
 # legacy (depreicated) - playvideo [given title]
 # legacy (depreicated) - streamvideo [given title]
-elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycachevideo' or mode == 'playvideo' or mode == 'streamvideo':
+elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycachevideo' or mode == 'playvideo' or mode == 'streamvideo':
 
     title = kodi_common.getParameter('title') #file title
     filename = kodi_common.getParameter('filename') #file ID
     folderID = kodi_common.getParameter('folder') #folder ID
 
-    settings.setVideoParameters()
+    if folderID == 'False':
+            folderID = 'SEARCH'
 
-    seek = 0
-    if settings.seek:
-        dialog = xbmcgui.Dialog()
-        seek = dialog.numeric(2, 'Time to seek to', '00:00')
-        for r in re.finditer('(\d+)\:(\d+)' ,seek, re.DOTALL):
-            seekHours, seekMins = r.groups()
-            seek = int(seekMins) + (int(seekHours)*60)
+    if mode != 'audio':
+        settings.setVideoParameters()
+
+        seek = 0
+        if settings.seek:
+            dialog = xbmcgui.Dialog()
+            seek = dialog.numeric(2, 'Time to seek to', '00:00')
+            for r in re.finditer('(\d+)\:(\d+)' ,seek, re.DOTALL):
+                seekHours, seekMins = r.groups()
+                seek = int(seekMins) + (int(seekHours)*60)
 
     try:
         service
@@ -1186,8 +840,6 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         encryptedPath = kodi_common.getParameter('epath', '')
         dencryptedPath = kodi_common.getParameter('dpath', '')
 
-        print "folderPath = " + str(encryptedPath)
-
         encfs_source = kodi_common.getSetting('encfs_source')
         encfs_target = kodi_common.getSetting('encfs_target')
         encfs_inode = int(kodi_common.getSetting('encfs_inode', 0))
@@ -1206,7 +858,12 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
         playbackMedia = True
 
     # file ID provided
-    if (playbackMedia and filename != ''):
+    #if we don't have the docid, search for the video for playback
+    if (playbackMedia and filename != '' and mode == 'audio'):
+        mediaFile = file.file(filename, title, '', service.MEDIA_TYPE_MUSIC, '','')
+        mediaFolder = folder.folder(folderID,'')
+        (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
+    elif (playbackMedia and filename != ''):
         mediaFile = file.file(filename, title, '', 0, '','')
         mediaFolder = folder.folder(folderID,'')
         (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
@@ -1221,6 +878,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                 except:
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30100))
                     title = 'test'
+
             mediaItems = service.getMediaList(title=title, contentType=contentType)
             playbackMedia = False
 
@@ -1235,6 +893,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
                         options.append(item.file.title)
                         urls.append(service.addMediaFile(item, contextType=contextType))
 
+            #search from STRM
             if contextType == '':
 
                 ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), options)
@@ -1263,7 +922,7 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
 
     originalURL = ''
-    if playbackMedia:
+    if playbackMedia and mode != 'audio':
         cache = cache.cache(package)
         service.cache = cache
         package.file.thumbnail = cache.setThumbnail(service)
@@ -1458,6 +1117,93 @@ elif mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycac
 
 #                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+'|' + service.getHeadersEncoded()+")")
 
+
+    elif playbackMedia:
+        cache = cache.cache(package)
+        service.cache = cache
+
+        (localResolutions,localFiles) = service.cache.getFiles(service)
+        if len(localFiles) > 0:
+            mediaURL = mediaurl.mediaurl(str(localFiles[0]), 'offline', 0, 0)
+        else:
+            mediaURL = mediaURLs[0]
+            if not settings.download:
+                mediaURL.url =  mediaURL.url +'|' + service.getHeadersEncoded()
+
+        playbackPlayer = settings.integratedPlayer
+
+        #download and play
+        if settings.download and settings.play:
+            service.downloadMediaFile(int(sys.argv[1]), mediaURL, package)
+            playbackMedia = False
+        ###
+        #right-menu context or STRM
+        ##
+        elif contextType == '':
+
+            #download
+            if settings.download and not settings.play:
+                service.downloadMediaFile('',mediaURL, package, force=True)
+                playbackMedia = False
+
+            # for STRM (force resolve) -- resolve-only
+            elif settings.username != '':
+                playbackPlayer = False
+
+            else:
+                playbackPlayer = True
+
+
+        # from within pictures mode, music won't be playable, force
+        #direct playback from within plugin
+        elif contextType == 'image' and settings.cache:
+                item = xbmcgui.ListItem(path=str(playbackPath))
+                # local, not remote. "Music" is ok
+                item.setInfo( type="Music", infoLabels={ "Title": title } )
+                player = gPlayer.gPlayer()
+                player.play(mediaURL.url, item)
+                playbackMedia = False
+
+        # from within pictures mode, music won't be playable, force
+        #direct playback from within plugin
+        elif contextType == 'image':
+            item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
+            # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
+            item.setInfo( type="Video", infoLabels={ "Title": title } )
+
+            player = gPlayer.gPlayer()
+            player.play(mediaURL.url, item)
+            playbackMedia = False
+
+
+        if playbackMedia:
+
+                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
+
+                item.setInfo( type="Video", infoLabels={ "Title": package.file.title} )
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+                if playbackPlayer:
+
+#                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+#                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded())
+                    # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
+#                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+                    #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+                    player = gPlayer.gPlayer()
+                    #player.play(playbackPath, item)
+                    player.PlayStream(mediaURL.url, item, 0)
+
+ #               else:
+
+#                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+   #                             thumbnailImage=package.file.thumbnail, path=mediaURL.url)
+                    # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
+ #                   item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+  #                  xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 
 xbmcplugin.endOfDirectory(plugin_handle)
