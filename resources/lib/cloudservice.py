@@ -26,6 +26,7 @@ import sys
 
 from resources.lib import mediaurl
 from resources.lib import kodi_common
+from resources.lib import settings
 
 
 #global variables
@@ -60,12 +61,12 @@ def numberOfAccounts(accountType):
 
     return 9
     count = 1
-    max_count = int(kodi_common.getSetting(accountType+'_numaccounts',9))
+    max_count = int(settings.getSetting(accountType+'_numaccounts',9))
 
     actualCount = 0
     while True:
         try:
-            if kodi_common.getSetting(accountType+str(count)+'_username') != '':
+            if settings.getSetting(accountType+str(count)+'_username') != '':
                 actualCount = actualCount + 1
         except:
             break
@@ -114,8 +115,8 @@ def accountActions(addon, PLUGIN_NAME, mode, instanceName, numberOfAccounts):
     elif mode == 'enroll':
 
 
-            invokedUsername = kodi_common.getParameter('username')
-            code = kodi_common.getParameter('code', '')
+            invokedUsername = settings.getParameter('username')
+            code = settings.getParameter('code', '')
 
 
             if code == '':
@@ -138,7 +139,7 @@ def accountActions(addon, PLUGIN_NAME, mode, instanceName, numberOfAccounts):
                 while loop:
                     instanceName = PLUGIN_NAME+str(count)
                     try:
-                        username = kodi_common.getSetting(instanceName+'_username')
+                        username = settings.getSetting(instanceName+'_username')
                         if username == invokedUsername:
                             addon.setSetting(instanceName + '_type', str(4))
                             addon.setSetting(instanceName + '_username', str(invokedUsername))
@@ -170,7 +171,7 @@ def accountActions(addon, PLUGIN_NAME, mode, instanceName, numberOfAccounts):
                 while loop:
                     instanceName = PLUGIN_NAME+str(count)
                     try:
-                        username = kodi_common.getSetting(instanceName+'_username')
+                        username = settings.getSetting(instanceName+'_username')
                         if username == invokedUsername:
                             addon.setSetting(instanceName + '_type', str(1))
                             addon.setSetting(instanceName + '_code', str(code))
@@ -216,7 +217,7 @@ def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, num
             while True:
                 instanceName = PLUGIN_NAME+str(count)
                 try:
-                    username = kodi_common.getSetting(instanceName+'_username')
+                    username = settings.getSetting(instanceName+'_username')
                     if username != '':
                         kodi_common.addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
 
@@ -242,7 +243,7 @@ def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, num
             for count in range (1, numberOfAccounts+1):
                 instanceName = PLUGIN_NAME+str(count)
                 try:
-                    username = kodi_common.getSetting(instanceName+'_username')
+                    username = settings.getSetting(instanceName+'_username')
                     if username != '':
                         options.append(username)
                         accounts.append(instanceName)
@@ -265,13 +266,13 @@ def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, num
 
             #legacy account conversion
             try:
-                username = kodi_common.getSetting('username')
+                username = settings.getSetting('username')
 
                 if username != '':
                     addon.setSetting(PLUGIN_NAME+'1_username', username)
-                    addon.setSetting(PLUGIN_NAME+'1_password', kodi_common,getSetting('password'))
-                    addon.setSetting(PLUGIN_NAME+'1_auth_writely', kodi_common.getSetting('auth_writely'))
-                    addon.setSetting(PLUGIN_NAME+'1_auth_wise', kodi_common.getSetting('auth_wise'))
+                    addon.setSetting(PLUGIN_NAME+'1_password', settings,getSetting('password'))
+                    addon.setSetting(PLUGIN_NAME+'1_auth_writely', settings.getSetting('auth_writely'))
+                    addon.setSetting(PLUGIN_NAME+'1_auth_wise', settings.getSetting('auth_wise'))
                     addon.setSetting('username', '')
                     addon.setSetting('password', '')
                     addon.setSetting('auth_writely', '')
@@ -299,7 +300,7 @@ def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, num
             for count in range (1, numberOfAccounts+1):
                 instanceName = PLUGIN_NAME+str(count)
                 try:
-                    username = kodi_common.getSetting(instanceName+'_username')
+                    username = settings.getSetting(instanceName+'_username')
                     if username != '':
                         options.append(username)
                         accounts.append(instanceName)
@@ -322,7 +323,7 @@ def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, num
             for count in range (1, numberOfAccounts+1):
                 instanceName = PLUGIN_NAME+str(count)
                 try:
-                    username = kodi_common.getSetting(instanceName+'_username',10)
+                    username = settings.getSetting(instanceName+'_username',10)
                     if username != '':
                         options.append(username)
                         accounts.append(instanceName)
@@ -1014,7 +1015,7 @@ class cloudservice(object):
 #                    cm.append(( self.addon.getLocalizedString(30125), 'XBMC.RunPlugin('+url + '&cache=true'+')', ))
 
 
-        elif contextType == 'image':
+        elif package.file.type ==  package.file.PICTURE: #contextType == 'image':
 
                 cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=slideshow&' + urllib.urlencode(values)+')', ))
 
@@ -1027,7 +1028,7 @@ class cloudservice(object):
 
         #    listitem.addContextMenuItems( commands )
         #    if cm:
-        if contextType == 'image':
+        if  package.file.type ==  package.file.PICTURE: #contextType == 'image':
             listitem.addContextMenuItems(cm, True)
         else:
             listitem.addContextMenuItems(cm, False)

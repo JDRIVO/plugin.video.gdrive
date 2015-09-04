@@ -35,23 +35,6 @@ from resources.lib import kodi_common
 
 
 
-# global variables
-PLUGIN_NAME = 'gdrive'
-#addon = xbmcaddon.Addon(id='plugin.video.gdrive')
-addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
-
-#global variables
-PLUGIN_URL = sys.argv[0]
-plugin_handle = int(sys.argv[1])
-plugin_queries = kodi_common.parse_query(sys.argv[2][1:])
-
-
-addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
-
-
-#import os
-#sys.path.append(os.path.join( addon_dir, 'resources', 'lib' ) )
-
 #*** testing - gdrive
 from resources.lib import gdrive
 from resources.lib import gdrive_api2
@@ -72,6 +55,20 @@ from resources.lib import settings
 from resources.lib import cache
 
 
+# global variables
+PLUGIN_NAME = 'gdrive'
+#addon = xbmcaddon.Addon(id='plugin.video.gdrive')
+addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+
+#global variables
+PLUGIN_URL = sys.argv[0]
+plugin_handle = int(sys.argv[1])
+plugin_queries = settings.parse_query(sys.argv[2][1:])
+
+
+addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
+
+
 kodi_common.debugger()
 
 
@@ -79,14 +76,14 @@ kodi_common.debugger()
 settings = settings.settings(addon)
 
 # retrieve settings
-user_agent = kodi_common.getSetting('user_agent')
+user_agent = settings.getSetting('user_agent')
 #obsolete, replace, revents audio from streaming
 #if user_agent == 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)':
 #    addon.setSetting('user_agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0')
 
 
 
-mode = kodi_common.getParameter('mode','main')
+mode = settings.getParameter('mode','main')
 
 # make mode case-insensitive
 mode = mode.lower()
@@ -108,10 +105,10 @@ except:
     pass
 
 # cloudservice - content type
-contextType = kodi_common.getParameter('content_type')
+contextType = settings.getParameter('content_type')
 
 #support encfs?
-encfs = kodi_common.getParameter('encfs', False)
+encfs = settings.getParameter('encfs', False)
 
 contentType = kodi_common.getContentType(contextType,encfs)
 
@@ -132,12 +129,12 @@ if mode == 'dummy' or mode == 'delete' or mode == 'enroll':
 #create strm files
 elif mode == 'buildstrm':
 
-    silent = kodi_common.getParameter('silent', kodi_common.getSetting('strm_silent',0))
+    silent = settings.getParameter('silent', settings.getSetting('strm_silent',0))
     if silent == '':
         silent = 0
 
     try:
-        path = addon.kodi_common.getSetting('strm_path')
+        path = settings.getSetting('strm_path')
     except:
         path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
         addon.setSetting('strm_path', path)
@@ -159,10 +156,10 @@ elif mode == 'buildstrm':
             except:
                 pass
 
-        url = kodi_common.getParameter('streamurl')
+        url = settings.getParameter('streamurl')
         url = re.sub('---', '&', url)
-        title = kodi_common.getParameter('title')
-        type = int(kodi_common.getParameter('type', 0))
+        title = settings.getParameter('title')
+        type = int(settings.getParameter('type', 0))
 
         if url != '':
 
@@ -173,10 +170,10 @@ elif mode == 'buildstrm':
                 strmFile.close()
         else:
 
-            folderID = kodi_common.getParameter('folder')
-            filename = kodi_common.getParameter('filename')
-            title = kodi_common.getParameter('title')
-            invokedUsername = kodi_common.getParameter('username')
+            folderID = settings.getParameter('folder')
+            filename = settings.getParameter('filename')
+            title = settings.getParameter('title')
+            invokedUsername = settings.getParameter('username')
 
             if folderID != '':
 
@@ -185,11 +182,11 @@ elif mode == 'buildstrm':
                 while loop:
                     instanceName = PLUGIN_NAME+str(count)
                     try:
-                        username = kodi_common.getSetting(instanceName+'_username')
+                        username = settings.getSetting(instanceName+'_username')
                         if username == invokedUsername:
 
                             #let's log in
-                            if ( int(kodi_common.getSetting(instanceName+'_type',0))==0):
+                            if ( int(settings.getSetting(instanceName+'_type',0))==0):
                                 service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
                             else:
                                 service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
@@ -204,7 +201,7 @@ elif mode == 'buildstrm':
                             service
                         except NameError:
                             #fallback on first defined account
-                            if ( int(kodi_common.getSetting(instanceName+'_type',0))==0):
+                            if ( int(settings.getSetting(instanceName+'_type',0))==0):
                                 service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
                             else:
                                 service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
@@ -230,10 +227,10 @@ elif mode == 'buildstrm':
                 count = 1
                 while True:
                     instanceName = PLUGIN_NAME+str(count)
-                    username = kodi_common.getSetting(instanceName+'_username')
+                    username = settings.getSetting(instanceName+'_username')
 
                     if username != '' and username == invokedUsername:
-                        if ( int(kodi_common.getSetting(instanceName+'_type',0))==0):
+                        if ( int(settings.getSetting(instanceName+'_type',0))==0):
                                 service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
                         else:
                             service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
@@ -246,7 +243,7 @@ elif mode == 'buildstrm':
                             service
                         except NameError:
                             #fallback on first defined account
-                            if ( int(kodi_common.getSetting(instanceName+'_type',0))==0):
+                            if ( int(settings.getSetting(instanceName+'_type',0))==0):
                                     service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
                             else:
                                 service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
@@ -266,7 +263,7 @@ elif mode == 'buildstrm':
 ###
 
 
-invokedUsername = kodi_common.getParameter('username')
+invokedUsername = settings.getParameter('username')
 instanceName = cloudservice.getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, numberOfAccounts, contextType)
 
 service = None
@@ -274,7 +271,7 @@ if instanceName is None and (mode == 'index' or mode == 'main'):
     service = None
 elif instanceName is None:
     service = gdrive_api2.gdrive(PLUGIN_URL,addon,'', user_agent, settings, authenticate=False)
-elif int(kodi_common.getSetting(instanceName+'_type',0))==0 :
+elif int(settings.getSetting(instanceName+'_type',0))==0 :
     service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
 else:
     service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
@@ -297,7 +294,7 @@ if service is None:
 #dump a list of videos available to play
 elif mode == 'main' or mode == 'index':
 
-    folderName = kodi_common.getParameter('folder', False)
+    folderName = settings.getParameter('folder', False)
 
     #** testing - gdrive specific
     try:
@@ -308,8 +305,8 @@ elif mode == 'main' or mode == 'index':
     ##**
 
     # treat as an encrypted folder?
-#    encfs = kodi_common.getParameter('encfs', False)
-    encfs_target = kodi_common.getSetting('encfs_target')
+#    encfs = settings.getParameter('encfs', False)
+    encfs_target = settings.getSetting('encfs_target')
 
 
     # display option for all Videos/Music/Photos, across gdrive
@@ -354,14 +351,14 @@ elif mode == 'main' or mode == 'index':
     #if encrypted, get everything(as encrypted files will be of type application/ostream)
     if encfs:
 
-        encryptedPath = kodi_common.getParameter('epath', '')
-        dencryptedPath = kodi_common.getParameter('dpath', '')
+        encryptedPath = settings.getParameter('epath', '')
+        dencryptedPath = settings.getParameter('dpath', '')
 
         print "folderPath = " + str(encryptedPath)
 
-        encfs_source = kodi_common.getSetting('encfs_source')
-        encfs_target = kodi_common.getSetting('encfs_target')
-        encfs_inode = int(kodi_common.getSetting('encfs_inode', 0))
+        encfs_source = settings.getSetting('encfs_source')
+        encfs_target = settings.getSetting('encfs_target')
+        encfs_inode = int(settings.getSetting('encfs_inode', 0))
 
         mediaItems = service.getMediaList(folderName,contentType=8)
 
@@ -453,7 +450,7 @@ elif mode == 'main' or mode == 'index':
 #** testing - gdrive
 elif mode == 'kiosk':
 
-    spreadshetModule = kodi_common.getSetting('library', False)
+    spreadshetModule = settings.getSetting('library', False)
 
 
     if spreadshetModule:
@@ -514,24 +511,24 @@ elif mode == 'kiosk':
 
 elif mode == 'photo':
 
-    title = kodi_common.getParameter('title',0)
+    title = settings.getParameter('title',0)
     title = re.sub('/', '_', title) #remap / from titles (google photos)
 
-    docid = kodi_common.getParameter('filename')
-    folder = kodi_common.getParameter('folder',0)
+    docid = settings.getParameter('filename')
+    folder = settings.getParameter('folder',0)
 
-    encfs = kodi_common.getParameter('encfs', False)
+    encfs = settings.getParameter('encfs', False)
 
     if encfs:
 
-        encryptedPath = kodi_common.getParameter('epath', '')
-        dencryptedPath = kodi_common.getParameter('dpath', '')
+        encryptedPath = settings.getParameter('epath', '')
+        dencryptedPath = settings.getParameter('dpath', '')
 
         print "folderPath = " + str(encryptedPath)
 
-        encfs_source = kodi_common.getSetting('encfs_source')
-        encfs_target = kodi_common.getSetting('encfs_target')
-        encfs_inode = int(kodi_common.getSetting('encfs_inode', 0))
+        encfs_source = settings.getSetting('encfs_source')
+        encfs_target = settings.getSetting('encfs_target')
+        encfs_inode = int(settings.getSetting('encfs_inode', 0))
 
 #        if (not xbmcvfs.exists(str(encfs_target) + dencryptedPath)):
 #            xbmcvfs.mkdir(str(encfs_target) + dencryptedPath)
@@ -572,7 +569,7 @@ elif mode == 'photo':
 #                        xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
 #                        print "file ="+encfs_target + dencryptedPath + file
     else:
-        path = kodi_common.getSetting('photo_folder')
+        path = settings.getSetting('photo_folder')
 
         if not xbmcvfs.exists(path):
             path = ''
@@ -603,10 +600,10 @@ elif mode == 'photo':
 #*** needs updating
 elif mode == 'downloadfolder':
 
-    title = kodi_common.getParameter('title')
-    folderID = kodi_common.getParameter('folder')
-    folderName = kodi_common.getParameter('foldername')
-    encfs = kodi_common.getParameter('encfs', False)
+    title = settings.getParameter('title')
+    folderID = settings.getParameter('folder')
+    folderName = settings.getParameter('foldername')
+    encfs = settings.getParameter('encfs', False)
 
     try:
         service
@@ -632,14 +629,14 @@ elif mode == 'downloadfolder':
 #*** needs updating
 elif mode == 'decryptfolder':
 
-    folder = kodi_common.getParameter('folder',0)
-    title = kodi_common.getParameter('title',0)
+    folder = settings.getParameter('folder',0)
+    title = settings.getParameter('title',0)
 
     path = '/tmp/2/'
 
-    enc_password = kodi_common.getSetting('enc_password')
+    enc_password = settings.getSetting('enc_password')
 
-    salt = encryption.read_salt(str(kodi_common.getSetting('salt')))
+    salt = encryption.read_salt(str(settings.getSetting('salt')))
 
     key = encryption.generate_key(enc_password,salt,encryption.NUMBER_OF_ITERATIONS)
 
@@ -649,17 +646,17 @@ elif mode == 'decryptfolder':
 
 elif mode == 'slideshow':
 
-    folder = kodi_common.getParameter('folder',0)
-    title = kodi_common.getParameter('title',0)
+    folder = settings.getParameter('folder',0)
+    title = settings.getParameter('title',0)
 
 
-    encfs = kodi_common.getParameter('encfs', False)
+    encfs = settings.getParameter('encfs', False)
 
     if encfs:
-        encfs_inode = int(kodi_common.getSetting('encfs_inode', 0))
+        encfs_inode = int(settings.getSetting('encfs_inode', 0))
 
-        encfs_source = kodi_common.getSetting('encfs_source')
-        encfs_target = kodi_common.getSetting('encfs_target')
+        encfs_source = settings.getSetting('encfs_source')
+        encfs_target = settings.getSetting('encfs_target')
 
         if (not xbmcvfs.exists(str(encfs_target) + '/'+str(folder) + '/')):
             xbmcvfs.mkdir(str(encfs_target) + '/'+str(folder))
@@ -701,7 +698,7 @@ elif mode == 'slideshow':
                     xbmc.executebuiltin("XBMC.SlideShow("+str(encfs_target) + '/'+str(folder)+"/)")
 
     else:
-        path = kodi_common.getSetting('photo_folder')
+        path = settings.getSetting('photo_folder')
 
         if not xbmcvfs.exists(path):
             path = ''
@@ -740,11 +737,11 @@ elif mode == 'slideshow':
 ###
 elif mode == 'streamurl':
 
-    url = kodi_common.getParameter('url',0)
-    title = kodi_common.getParameter('title')
+    url = settings.getParameter('url',0)
+    title = settings.getParameter('title')
 
 
-    promptQuality = kodi_common.getSetting('prompt_quality', True)
+    promptQuality = settings.getSetting('prompt_quality', True)
 
     mediaURLs = service.getPublicStream(url)
     options = []
@@ -793,9 +790,9 @@ elif mode == 'streamurl':
 # legacy (depreicated) - streamvideo [given title]
 elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycachevideo' or mode == 'playvideo' or mode == 'streamvideo':
 
-    title = kodi_common.getParameter('title') #file title
-    filename = kodi_common.getParameter('filename') #file ID
-    folderID = kodi_common.getParameter('folder') #folder ID
+    title = settings.getParameter('title') #file title
+    filename = settings.getParameter('filename') #file ID
+    folderID = settings.getParameter('folder') #folder ID
 
     if folderID == 'False':
             folderID = 'SEARCH'
@@ -833,16 +830,16 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         settings.play = False
 
 
-    encfs = kodi_common.getParameter('encfs', False)
+    encfs = settings.getParameter('encfs', False)
 
     if encfs:
 
-        encryptedPath = kodi_common.getParameter('epath', '')
-        dencryptedPath = kodi_common.getParameter('dpath', '')
+        encryptedPath = settings.getParameter('epath', '')
+        dencryptedPath = settings.getParameter('dpath', '')
 
-        encfs_source = kodi_common.getSetting('encfs_source')
-        encfs_target = kodi_common.getSetting('encfs_target')
-        encfs_inode = int(kodi_common.getSetting('encfs_inode', 0))
+        encfs_source = settings.getSetting('encfs_source')
+        encfs_target = settings.getSetting('encfs_target')
+        encfs_inode = int(settings.getSetting('encfs_inode', 0))
 
         # don't redownload if present already
         if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
@@ -970,8 +967,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             elif settings.resume:
                 playbackPlayer = False
 
-                spreadshetModule = kodi_common.getSetting('library', False)
-                spreadshetName = kodi_common.getSetting('library_filename', 'TVShows')
+                spreadshetModule = settings.getSetting('library', False)
+                spreadshetName = settings.getSetting('library_filename', 'TVShows')
 
                 media = {}
                 if spreadshetModule:
