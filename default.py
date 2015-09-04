@@ -714,25 +714,25 @@ elif mode == 'slideshow':
             else:
                 addon.setSetting('photo_folder', path)
 
-            # create path if doesn't exist
-            if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
-                xbmcvfs.mkdir(str(path) + '/'+str(folder))
+        # create path if doesn't exist
+        if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
+            xbmcvfs.mkdir(str(path) + '/'+str(folder))
 
-            mediaItems = service.getMediaList(folderName=folder, contentType=5)
+        mediaItems = service.getMediaList(folderName=folder, contentType=5)
 
 
-            if mediaItems:
-                progress = xbmcgui.DialogProgressBG()
-                progress.create(addon.getLocalizedString(30035), 'Preparing list...')
-                count=0
-                for item in mediaItems:
-                    if item.file is not None:
-                        count = count + 1;
-                        progress.update((int)(float(count)/len(mediaItems)*100),addon.getLocalizedString(30035), item.file.title)
-                        service.downloadPicture(item.mediaurl.url,str(path) + '/'+str(folder)+ '/'+item.file.title)
-                        #xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
-                progress.close()
-                xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
+        if mediaItems:
+            progress = xbmcgui.DialogProgressBG()
+            progress.create(addon.getLocalizedString(30035), 'Preparing list...')
+            count=0
+            for item in mediaItems:
+                if item.file is not None:
+                    count = count + 1;
+                    progress.update((int)(float(count)/len(mediaItems)*100),addon.getLocalizedString(30035), item.file.title)
+                    service.downloadPicture(item.mediaurl.url,str(path) + '/'+str(folder)+ '/'+item.file.title)
+                    #xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
+            progress.close()
+            xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
 
 ###
 # for video files
