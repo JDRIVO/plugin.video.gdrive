@@ -23,9 +23,7 @@ from resources.lib import encryption
 # cloudservice - required python modules
 import sys
 import urllib
-import cgi
 import re
-import os
 
 # cloudservice - standard XBMC modules
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
