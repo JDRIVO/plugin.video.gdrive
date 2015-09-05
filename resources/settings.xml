@@ -166,15 +166,23 @@
 
     </category>
 
-    <category label="30060">
-        <setting label="30061" type="lsep"/>
-        <setting id="strm_path" type="folder" label="30026" default="" />
-        <setting id="tvshows_path" type="folder" subsetting="true" label="30089" default="" />
-        <setting id="movies_path" type="folder" subsetting="true" label="30088" default="" />
-        <setting id="library" type="bool" label="30064" default="false" />
-        <setting id="library_account" type="labelenum"  values="1|2|3|4|5|6|7|8|9" default="1" label="30062" />
-        <setting id="library_filename" type="text" label="30063" default="" />
+    <category label="30176">
+        <setting label="30170" type="lsep"/>
+        <setting id="cd_resume" type="bool" label="30171" default="true" />
+        <setting id="cd_watch" type="bool" label="30172" default="true" />
+        <setting id="cd_search" type="bool" label="30173" default="false" />
+         <setting id="cd_search_folder" type="text" label="30175" default="" />
+        <setting id="cd_recent" type="bool" label="30174" default="false" />
+         <setting id="cd_recent_folder" type="text" label="30175" default="" />
     </category>
+
+    <category label="30180">
+        <setting id="db_resume" type="bool" label="30181" default="true" />
+        <setting id="db_watch" type="bool" label="30182" default="true" />
+        <setting id="db_search" type="bool" label="30183" default="true" />
+        <setting id="db_recent" type="bool" label="30184" default="true" />
+    </category>
+
     <category label="30074">
         <setting id="crashreport_enable" type="bool" label="30075" default="false"/>
         <setting id="crashreport_email" type="text" label="30076" default=""/>

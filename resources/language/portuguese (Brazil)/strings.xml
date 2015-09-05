@@ -167,4 +167,18 @@
 	<string id="30166">Photos are only viewable in Pictures area</string>
 	<string id="30167">Avoid Format</string>
 	<string id="30168">flv format does not support resume</string>
+
+	<string id="30176">Cloud DB</string>
+	<string id="30170">Settings saved to your Google Drive account</string>
+	<string id="30171">Resume point</string>
+	<string id="30172">Watch status</string>
+	<string id="30173">Searches</string>
+	<string id="30174">Recently watched</string>
+	<string id="30175">Google Drive folder to store data</string>
+
+	<string id="30180">Local DB</string>
+	<string id="30181">Resume point</string>
+	<string id="30182">Watch status</string>
+	<string id="30183">Last search</string>
+	<string id="30184">Last watched</string>
 </strings>
