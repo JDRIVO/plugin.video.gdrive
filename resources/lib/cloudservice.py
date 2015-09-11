@@ -320,6 +320,12 @@ def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, num
 
             options = []
             accounts = []
+
+            # url provided; provide public option
+            if mode=='streamurl':
+                options.append('*public')
+                accounts.append('public')
+
             for count in range (1, numberOfAccounts+1):
                 instanceName = PLUGIN_NAME+str(count)
                 try:
@@ -330,10 +336,6 @@ def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, num
                 except:
                     break
 
-            # url provided; provide public option
-            if mode=='streamurl':
-                options.append('public')
-                accounts.append('public')
 
             ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), options)
 
