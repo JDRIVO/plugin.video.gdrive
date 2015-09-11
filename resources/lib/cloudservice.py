@@ -255,7 +255,7 @@ def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, num
                     return instanceName
 
             #fallback on first defined account
-            return accounts[ret]
+            return accounts[0]
 
     # no accounts defined and url provided; assume public
     elif numberOfAccounts == 0 and mode=='streamurl':
@@ -313,7 +313,7 @@ def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, num
 
 
             #fallback on first defined account
-            return accounts[ret]
+            return accounts[0]
 
     #prompt before playback
     else:
