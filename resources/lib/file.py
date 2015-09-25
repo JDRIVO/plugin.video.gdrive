@@ -57,6 +57,7 @@ class file:
         self.playcount = playcount
         self.duration = duration
 
+
         # nekwebdev contribution
         self.regtv1 = re.compile('(.+?)'
                                        '[ .]?[ \-]?\s*S(\d\d?)E(\d\d?)'
