@@ -255,7 +255,7 @@ def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, num
                     return instanceName
 
             #fallback on first defined account
-            return accounts[ret]
+            return accounts[0]
 
     # no accounts defined and url provided; assume public
     elif numberOfAccounts == 0 and mode=='streamurl':
@@ -313,13 +313,19 @@ def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, num
 
 
             #fallback on first defined account
-            return accounts[ret]
+            return accounts[0]
 
     #prompt before playback
     else:
 
             options = []
             accounts = []
+
+            # url provided; provide public option
+            if mode=='streamurl':
+                options.append('*public')
+                accounts.append('public')
+
             for count in range (1, numberOfAccounts+1):
                 instanceName = PLUGIN_NAME+str(count)
                 try:

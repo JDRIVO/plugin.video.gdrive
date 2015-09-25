@@ -1,5 +1,3 @@
-
-
 Version 0.7.13
 - fix: TV scraping STRM doesn't write to correct path #56
 Version 0.7.12
