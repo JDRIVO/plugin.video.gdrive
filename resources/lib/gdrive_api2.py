@@ -608,7 +608,7 @@ class gdrive(cloudservice):
                     return media
 
                 # entry is a video
-                elif ((resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType) and contentType in (0,1,2,4,7)):
+                elif (fileExtension.lower() not in ('sub') and (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType) and contentType in (0,1,2,4,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, fanart, thumbnail, size=fileSize, resolution=[height,width], playcount=int(playcount), duration=duration)
 
                     if self.settings.parseTV:
