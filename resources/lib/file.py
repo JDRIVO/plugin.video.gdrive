@@ -75,11 +75,7 @@ class file:
                                        '(.*)'
                                        '(?:[ .](\d{3}\d?p)|\Z)?'
                                        '\..*', re.IGNORECASE)
-#        self.regtv4 = re.compile('(.+?)'
-#                                       '[ .](\d\d?)X(\d\d?)'
-#                                       '(.*)'
-#                                       '(?:[ .](\d{3}\d?p)|\Z)?'
-#                                       '\..*')
+
 
     def setAlbumMeta(self,album,artist,releaseDate,trackNumber,genre, trackTitle):
         self.album = album

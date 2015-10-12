@@ -1,3 +1,5 @@
+Version 0.7.16
+- fix: creating STRM files - prevent dropping .s in Marvel's Agents of S.H.I.E.L.D., etc but still fix titles that use . as a separator  
 Version 0.7.15
 - add support for .ts video files
 Version 0.7.14
