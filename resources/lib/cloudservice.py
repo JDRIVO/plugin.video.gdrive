@@ -443,7 +443,8 @@ class cloudservice(object):
                             tv = item.file.regtv3.match(title)
 
                         if tv and self.addon.getSetting('tvshows_path') != '':
-                            show = tv.group(1).replace("\S{2,}.\S{2,}", " ")
+                            show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
+                            show = show.rstrip("\.")
                             season = tv.group(2)
                             pathLib = self.addon.getSetting('tvshows_path') + '/' + show
                             if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
