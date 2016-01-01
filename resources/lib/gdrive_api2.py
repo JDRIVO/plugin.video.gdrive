@@ -1,6 +1,6 @@
 '''
     gdrive for KODI / XBMC Plugin
-    Copyright (C) 2013-2015 ddurdle
+    Copyright (C) 2013-2016 ddurdle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -506,6 +506,7 @@ class gdrive(cloudservice):
                             #need to cache
                             folderIcon = foldericon + '|' + self.getHeadersEncoded()
 
+                    # file property - gdrive
                     self.setProperty(folderName,'icon', 1)
 
             # look for more pages of videos
@@ -579,11 +580,14 @@ class gdrive(cloudservice):
                   width = r.group(1)
                   break
 
+                # file property - gdrive
                 resume = 0
                 for r in re.finditer('\"key\"\:\s+\"resume\"[^\"]+\"visibility\"\:\s+\"[^\"]+\"[^\"]+\"value\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   resume = r.group(1)
                   break
+
+                # file property - gdrive
                 playcount = 0
                 for r in re.finditer('\"key\"\:\s+\"playcount\"[^\"]+\"visibility\"\:\s+\"[^\"]+\"[^\"]+\"value\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
@@ -1707,6 +1711,7 @@ class gdrive(cloudservice):
     ##
     # Google Drive API2 specific
     # set a file property
+    # file property - gdrive
     # parameters: doc id, key, value
     ##
     def setProperty(self, docid, key, value):
