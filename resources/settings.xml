@@ -179,6 +179,8 @@
 
 	<!-- library integration properties -->
     <category label="30060">
+        <setting id="resumepoint" type="labelenum" subsetting="true" label="30170" values="Local only|Google Drive file property (write access required)" default="1" />
+
         <setting label="30061" type="lsep"/>
         <setting id="strm_path" type="folder" label="30026" default="" />
         <setting id="tvshows_path" type="folder" subsetting="true" label="30089" default="" />

@@ -66,7 +66,7 @@
     <!-- CloudService Generic - Library -->
 
     <string id="30060">Library</string>
-    <string id="30061">Library Integration via Google Drive</string>
+    <string id="30061">STRM Creation</string>
     <string id="30062">GDrive account number to use (registered under accounts)</string>
     <string id="30063">Spredsheet name</string>
     <string id="30064">Use library integration?</string>
@@ -167,4 +167,9 @@
 	<string id="30166">Photos are only viewable in Pictures area</string>
 	<string id="30167">Avoid Format</string>
 	<string id="30168">flv format does not support resume</string>
+
+	<string id="30170">Resume point and playback count</string>
+	<string id="30171">Local only</string>
+	<string id="30172">Google Drive file property (write access required)</string>
+
 </strings>

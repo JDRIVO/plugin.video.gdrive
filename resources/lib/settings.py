@@ -92,6 +92,7 @@ class settings:
         self.parseTV = self.getSetting('parse_tv', True)
         self.parseMusic = self.getSetting('parse_music', True)
         self.skipResume = self.getSetting('video_skip', 0.10)
+        self.cloudResume = self.getSetting('resumepoint', 0)
 
     def setVideoParameters(self):
         self.seek = getParameter('seek', 0)

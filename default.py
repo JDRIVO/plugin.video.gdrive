@@ -1052,7 +1052,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                     #service.setProperty(package.file.id,'playcount', 1)
 
                     # save new resume point
-                    if service.protocol == 2 and player.time > package.file.resume:
+                    # file property - gdrive
+                    if settings.cloudResume == 1 and service.protocol == 2 and player.time > package.file.resume:
                         service.setProperty(package.file.id,'resume', player.time)
 
                 else:
@@ -1092,7 +1093,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                     #service.setProperty(package.file.id,'playcount', 1)
 
                     # save new resume point
-                    if service.protocol == 2 and player.time > package.file.resume:
+                    # file property - gdrive
+                    if  settings.cloudResume == 1 and  service.protocol == 2 and player.time > package.file.resume:
                         service.setProperty(package.file.id,'resume', player.time)
 
 #                player = gPlayer.gPlayer()

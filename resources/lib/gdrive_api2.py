@@ -507,7 +507,8 @@ class gdrive(cloudservice):
                             folderIcon = foldericon + '|' + self.getHeadersEncoded()
 
                     # file property - gdrive
-                    self.setProperty(folderName,'icon', 1)
+                    if self.settings.cloudResume == 1:
+                        self.setProperty(folderName,'icon', 1)
 
             # look for more pages of videos
             nextURL = ''
@@ -582,17 +583,18 @@ class gdrive(cloudservice):
 
                 # file property - gdrive
                 resume = 0
-                for r in re.finditer('\"key\"\:\s+\"resume\"[^\"]+\"visibility\"\:\s+\"[^\"]+\"[^\"]+\"value\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  resume = r.group(1)
-                  break
-
-                # file property - gdrive
                 playcount = 0
-                for r in re.finditer('\"key\"\:\s+\"playcount\"[^\"]+\"visibility\"\:\s+\"[^\"]+\"[^\"]+\"value\"\:\s+\"([^\"]+)\"' ,
+                if  self.settings.cloudResume == 1:
+                    for r in re.finditer('\"key\"\:\s+\"resume\"[^\"]+\"visibility\"\:\s+\"[^\"]+\"[^\"]+\"value\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                  playcount = r.group(1)
-                  break
+                        resume = r.group(1)
+                        break
+
+                    # file property - gdrive
+                    for r in re.finditer('\"key\"\:\s+\"playcount\"[^\"]+\"visibility\"\:\s+\"[^\"]+\"[^\"]+\"value\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                        playcount = r.group(1)
+                        break
 
                 duration = 0
                 for r in re.finditer('\"durationMillis\"\:\s+\"(\d+)\"' ,

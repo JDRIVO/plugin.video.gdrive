@@ -1,4 +1,6 @@
 
+Version 0.7.17
+- allow disable of cloud resume and playback count (new setting added to Library, resume point, can be local or cloud based)
 Version 0.7.16
 - fix: creating STRM files - prevent dropping .s in Marvel's Agents of S.H.I.E.L.D., etc but still fix titles that use . as a separator
 Version 0.7.15
