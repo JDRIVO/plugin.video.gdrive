@@ -24,7 +24,7 @@ import os
 import xbmcgui, xbmcvfs
 
 #
-# This class handles fetching files from local when cached, rather then making calls to the web service
+#
 #
 class cache:
     # CloudService v0.2.3
@@ -36,16 +36,11 @@ class cache:
         self.cachePath = ''
         self.files = []
 
-    ##
-    #  set the media package
-    ##
     def setPackage(self, package):
         self.package = package
 
 
-    ##
-    #  set the SRT
-    ##
+
     def setSRT(self, service):
         if self.cachePath == '':
             cachePath = service.settings.cachePath
@@ -64,12 +59,9 @@ class cache:
             srt = service.getSRT(self.package.file.title)
             if srt:
                 for file in srt:
-                    if not service.settings.cachePath or not xbmcvfs.exists(cachePath + str(file[0])):
+                    if not xbmcvfs.exists(cachePath + str(file[0])):
                         service.downloadPicture(file[1], cachePath + str(file[0]))
 
-    ##
-    #  set the CC
-    ##
     def setCC(self, service):
         if self.cachePath == '':
             cachePath = service.settings.cachePath
@@ -89,12 +81,10 @@ class cache:
             cc = service.getTTS(self.package.file.srtURL)
             if cc:
                 for file in cc:
-                    if not service.settings.cachePath or not xbmcvfs.exists(cachePath + str(file[0])):
+                    if not xbmcvfs.exists(cachePath + str(file[0])):
                         service.downloadTTS(file[1], cachePath + str(file[0]))
 
-    ##
-    #  fetch the SRT
-    ##
+
     def getSRT(self, service):
         cc = []
         dirs, files = xbmcvfs.listdir(service.settings.cachePath + '/'+ str(self.package.file.id) + '/')
@@ -103,9 +93,6 @@ class cache:
                 cc.append(service.settings.cachePath + '/'+ str(self.package.file.id) + '/' + file)
         return cc
 
-    ##
-    #  set the thumbnail
-    ##
     def setThumbnail(self, service, url=''):
         if self.cachePath == '':
             cachePath = service.settings.cachePath
@@ -133,9 +120,6 @@ class cache:
         return cachePath + str(self.package.file.id) + '.jpg'
 
 
-    ##
-    #  get the thumbnail
-    ##
     def getThumbnail(self,service, url='', fileID=''):
         if fileID == '':
             if xbmcvfs.exists(str(self.cachePath) + str(self.package.file.id) + '/' + str(self.package.file.id) + '.jpg'):
@@ -148,9 +132,7 @@ class cache:
             else:
                 return url + '|' + service.getHeadersEncoded()
 
-    ##
-    #  get a list of offline files for this file
-    ##
+
     def getFiles(self,service):
         if self.cachePath == '':
             cachePath = service.settings.cachePath
@@ -176,9 +158,6 @@ class cache:
         return (localResolutions,localFiles)
 
 
-    ##
-    #  get a list of offline files
-    ##
     def getOfflineFileList(self, fileID):
         localFiles = []
         if xbmcvfs.exists(self.cachePath):
@@ -195,4 +174,6 @@ class cache:
 
 
         return localFiles
+
+
 

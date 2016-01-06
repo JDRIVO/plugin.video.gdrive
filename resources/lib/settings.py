@@ -20,9 +20,6 @@
 import sys
 import cgi
 
-# cloudservice - standard XBMC modules
-import xbmcaddon
-
 
 #http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
 def _callback(matches):
@@ -49,7 +46,7 @@ def getParameter(key,default=''):
 
 def getSetting(key,default=''):
     try:
-        value = addon.getSetting(key)
+        value = self.addon.getSetting(key)
         if value == 'true':
             return True
         elif value == 'false':
@@ -69,7 +66,6 @@ def parse_query(query):
 
 plugin_queries = parse_query(sys.argv[2][1:])
 
-addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 
 #
 #
@@ -82,30 +78,26 @@ class settings:
     def __init__(self, addon):
         self.addon = addon
         self.integratedPlayer = self.getSetting('integrated_player', False)
-        self.cc = getParameter('cc', self.getSetting('cc', True))
-        self.srt = getParameter('srt', self.getSetting('srt', True))
-        self.srtforce = getParameter('srtforce', self.getSetting('srtforce', False))
-
-        self.username = getParameter('username', '')
+        self.cc = self.getParameter('cc', self.getSetting('cc', True))
+        self.srt = self.getParameter('srt', self.getSetting('srt', True))
+        self.username = self.getParameter('username', '')
         self.setCacheParameters()
-        self.promptQuality = getParameter('promptquality', self.getSetting('prompt_quality', True))
+        self.promptQuality = self.getParameter('promptquality', self.getSetting('prompt_quality', True))
         self.parseTV = self.getSetting('parse_tv', True)
         self.parseMusic = self.getSetting('parse_music', True)
-        self.skipResume = self.getSetting('video_skip', 0.10)
-        self.cloudResume = self.getSetting('resumepoint', 0)
 
     def setVideoParameters(self):
-        self.seek = getParameter('seek', 0)
-        self.resume = getParameter('resume', False)
+        self.seek = self.getParameter('seek', 0)
+        self.resume = self.getParameter('resume', False)
 
-        self.playOriginal = getParameter('original', self.getSetting('never_stream', False))
+        self.playOriginal = self.getParameter('original', self.getSetting('never_stream', False))
 
 
     def setCacheParameters(self):
-        self.cache = getParameter('cache', False)
+        self.cache = self.getParameter('cache', False)
 #        self.download = self.getSetting('always_cache', getParameter('download', False))
-        self.download = getParameter('download', getSetting('always_cache', False))
-        self.play = getParameter('play', getSetting('always_cache', False))
+        self.download = self.getParameter('download', getSetting('always_cache', False))
+        self.play = self.getParameter('play', getSetting('always_cache', False))
         self.cachePath = self.getSetting('cache_folder')
         self.cacheSingle = self.getSetting('cache_single')
         self.cachePercent = self.getSetting('cache_percent', 10)
