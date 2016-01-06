@@ -1,6 +1,4 @@
-- known issue: Problem activating a second instance with the same account #32
 
-- merge stable with testing
 Version 0.7.17
 - allow disable of cloud resume and playback count (new setting added to Library, resume point, can be local or cloud based)
 Version 0.7.16
