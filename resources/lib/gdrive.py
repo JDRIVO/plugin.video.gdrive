@@ -44,6 +44,8 @@ from resources.lib import cache
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
 # global variables
+#PLUGIN_NAME = 'plugin.video.gdrive-testing'
+#PLUGIN_URL = 'plugin://'+PLUGIN_NAME+'/'
 
 #addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 #addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
