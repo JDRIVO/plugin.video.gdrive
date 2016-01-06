@@ -19,6 +19,7 @@
 import urllib
 import re
 
+
 #
 #
 #
@@ -37,7 +38,7 @@ class file:
 
     ##
     ##
-    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution='', playcount=0):
+    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution='', playcount=0, duration=-1):
         self.id = id
         self.title = title
         self.showtitle = title
@@ -55,28 +56,26 @@ class file:
         self.decryptedTitle = ''
         self.resolution = resolution
         self.playcount = playcount
+        self.duration = duration
+
 
         # nekwebdev contribution
         self.regtv1 = re.compile('(.+?)'
-                                       '[ .]S(\d\d?)E(\d\d?)'
+                                       '[ .]?[ \-]?\s*S(\d\d?)E(\d\d?)'
                                        '(.*)'
                                        '(?:[ .](\d{3}\d?p)|\Z)?'
                                        '\..*', re.IGNORECASE)
         self.regtv2 = re.compile('(.+?)'
-                                       '[ .]season\s?(\d\d?)\s?episode\s?(\d\d?)'
+                                       '[ .]?[ \-]?\s*season\s?(\d\d?)\s?episode\s?(\d\d?)'
                                        '(.*)'
                                        '(?:[ .](\d{3}\d?p)|\Z)?'
                                        '\..*', re.IGNORECASE)
         self.regtv3 = re.compile('(.+?)'
-                                       '[ .](\d\d?)x(\d\d?)'
+                                       '[ .]?[ \-]?\s*(\d\d?)x(\d\d?)'
                                        '(.*)'
                                        '(?:[ .](\d{3}\d?p)|\Z)?'
                                        '\..*', re.IGNORECASE)
-#        self.regtv4 = re.compile('(.+?)'
-#                                       '[ .](\d\d?)X(\d\d?)'
-#                                       '(.*)'
-#                                       '(?:[ .](\d{3}\d?p)|\Z)?'
-#                                       '\..*')
+
 
     def setAlbumMeta(self,album,artist,releaseDate,trackNumber,genre, trackTitle):
         self.album = album
