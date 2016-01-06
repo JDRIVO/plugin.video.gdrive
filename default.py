@@ -163,6 +163,19 @@ from resources.lib import settings
 from resources.lib import cache
 
 
+# global variables
+PLUGIN_NAME = 'gdrive'
+addon = xbmcaddon.Addon(id='plugin.video.gdrive')
+#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+
+#global variables
+PLUGIN_URL = sys.argv[0]
+plugin_handle = int(sys.argv[1])
+plugin_queries = settings.parse_query(sys.argv[2][1:])
+
+
+addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
+
 # cloudservice - standard debugging
 try:
 

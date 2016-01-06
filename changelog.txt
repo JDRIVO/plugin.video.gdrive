@@ -1,5 +1,40 @@
 - known issue: Problem activating a second instance with the same account #32
 
+- merge stable with testing
+Version 0.7.17
+- allow disable of cloud resume and playback count (new setting added to Library, resume point, can be local or cloud based)
+Version 0.7.16
+- fix: creating STRM files - prevent dropping .s in Marvel's Agents of S.H.I.E.L.D., etc but still fix titles that use . as a separator
+Version 0.7.15
+- add support for .ts video files
+Version 0.7.14
+- fix: STRM files being generated for .sub #55
+Version 0.7.13
+- fix: TV scraping STRM doesn't write to correct path #56
+Version 0.7.12
+- fix: Music showing up in Videos #50
+Version 0.7.11
+- fix: Problem activating a second instance with the same account #32
+Version 0.7.10
+- encfs filter fix
+- Resume playback issue in 480p (flv) #45
+- add avoid format logic
+- add Filename Initialization Vector Chaining support
+- improvements to audio/music encfs support
+- improvements to video encfs support
+- improvements to photos encfs support
+- broke off encfs to it's own settings
+- fix: STRM creation should only be for video and music
+- fix: regex for TV STRM scraping
+Version 0.7.9
+- fix: Filenames with invalid characters #49
+Version 0.7.8
+- add an [enroll account] option for an interactive account setup for Google Apps
+Version 0.7.7
+- implement: Purge cache folder #46
+- add force download / ignore cache for SRT and CC
+- reorganize settings, split into videos/pictures/music
+- add setting to skip resume point if duration > 90% complete
 Version 0.7.6
 - add ability to remove account definiton automatically (right-click on account, remove account)
 - music: add sort by track
