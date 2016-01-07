@@ -1,5 +1,7 @@
+Version 0.7.18
 - fix "watch folder" error (now "playback entire folder", to be more neutral with audio)
 - fix "playback entire folder" to exclude video when playback in music plugin
+- correct dialog popup for quality when using "playback entire folder" when there is only 1 quality choice (such as when playing music)
 Version 0.7.17
 - allow disable of cloud resume and playback count (new setting added to Library, resume point, can be local or cloud based)
 Version 0.7.16

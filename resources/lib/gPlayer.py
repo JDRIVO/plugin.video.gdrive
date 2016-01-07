@@ -120,7 +120,10 @@ class gPlayer(xbmc.Player):
             playbackURL = ''
             playbackQuality = ''
             playbackPath = ''
-            ret = xbmcgui.Dialog().select(service.addon.getLocalizedString(30033), options)
+            if len(options) > 1:
+                ret = xbmcgui.Dialog().select(service.addon.getLocalizedString(30033), options)
+            else:
+                ret = 0
             playbackURL = mediaURLs[ret].url
             playbackQuality = mediaURLs[ret].quality
             item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
