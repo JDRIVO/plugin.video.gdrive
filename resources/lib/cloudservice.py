@@ -804,12 +804,18 @@ class cloudservice(object):
                             values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id}
                         cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=slideshow&'+urllib.urlencode(values)+')', ))
 
-                    #download folder
                     if (self.protocol == 2):
                         if contextType != 'image':
+                            #download folder
                             values = {'instance': self.instanceName, 'title': folder.title, 'folder': folder.id}
                             cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&'+urllib.urlencode(values)+')', ))
 
+                        if contextType == 'audio':
+                            #playback entire folder
+                            values = {'instance': self.instanceName, 'folder': folder.id}
+                            cm.append(( self.addon.getLocalizedString(30162), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=audio&'+urllib.urlencode(values)+')', ))
+                        elif contextType == 'video':
+                            #playback entire folder
                             values = {'instance': self.instanceName, 'folder': folder.id}
                             cm.append(( self.addon.getLocalizedString(30162), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)+')', ))
 

@@ -909,7 +909,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             if contextType == '':
                 player = gPlayer.gPlayer()
                 player.setMedia(mediaItems)
-                player.playLgist(service)
+                player.playList(service)
                 playbackMedia = False
     # title provided
     elif playbackMedia:

@@ -124,9 +124,9 @@ class gPlayer(xbmc.Player):
             playbackURL = mediaURLs[ret].url
             playbackQuality = mediaURLs[ret].quality
             item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY))
+                                thumbnailImage=package.file.thumbnail, path=playbackURL+'|' + service.getHeadersEncoded())
             item.setInfo( type="Video", infoLabels={ "Title": package.file.title } )
-            self.PlayStream(playbackURL+'|' + service.getHeadersEncoded(service.useWRITELY),item,0,package)
+            self.PlayStream(playbackURL+'|' + service.getHeadersEncoded(),item,0,package)
 
     def playList(self, service):
         while self.current < len(self.mediaItems) and not self.isExit:
@@ -161,7 +161,9 @@ class gPlayer(xbmc.Player):
             #    self.service.gSpreadsheet.setMediaStatus(self.worksheet,self.package, watched=1)
             #except: pass
         self.current = self.current +1
-        self.isExit = True
+        #self.isExit = True
+
+
     def onPlayBackStopped(self):
         print "PLAYBACK STOPPED"
         if self.package is not None:
