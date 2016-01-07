@@ -813,11 +813,11 @@ class cloudservice(object):
                         if contextType == 'audio':
                             #playback entire folder
                             values = {'instance': self.instanceName, 'folder': folder.id}
-                            cm.append(( self.addon.getLocalizedString(30162), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=audio&'+urllib.urlencode(values)+')', ))
+                            cm.append(( self.addon.getLocalizedString(30162), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=audio&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
                         elif contextType == 'video':
                             #playback entire folder
                             values = {'instance': self.instanceName, 'folder': folder.id}
-                            cm.append(( self.addon.getLocalizedString(30162), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)+')', ))
+                            cm.append(( self.addon.getLocalizedString(30162), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=video&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
 
                         #encfs
                         values = {'instance': self.instanceName, 'foldername': folder.title, 'folder': folder.id}

@@ -902,15 +902,18 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
                 else:
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+    # playback of entire folder?
     # folder only
     elif playbackMedia and folderID != '' and title == '':
         mediaItems = service.getMediaList(folderName=folderID, contentType=contentType)
         if mediaItems:
-            if contextType == '':
+            #if contextType == '':
                 player = gPlayer.gPlayer()
                 player.setMedia(mediaItems)
                 player.playList(service)
                 playbackMedia = False
+
     # title provided
     elif playbackMedia:
             (mediaURLs,package) = service.getPlaybackCall(None,title=title)
