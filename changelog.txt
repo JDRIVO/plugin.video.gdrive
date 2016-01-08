@@ -1,3 +1,5 @@
+Version 0.7.19
+- correct dialog popup for quality when using "playback entire folder" to abide by "force prompt" setting (was defaulting to prompt always)
 Version 0.7.18
 - fix "watch folder" error (now "playback entire folder", to be more neutral with audio)
 - fix "playback entire folder" to exclude video when playback in music plugin
