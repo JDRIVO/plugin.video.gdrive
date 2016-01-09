@@ -1,3 +1,4 @@
+- work towards cloud based (spreadsheet) resume points
 Version 0.7.19
 - correct dialog popup for quality when using "playback entire folder" to abide by "force prompt" setting (was defaulting to prompt always)
 Version 0.7.18

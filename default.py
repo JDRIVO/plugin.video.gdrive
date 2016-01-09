@@ -852,6 +852,42 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
     else:
         playbackMedia = True
 
+
+        # TESTING
+    if settings.cloudResume == 'Google Drive Spreadsheet':
+                    playbackPlayer = False
+
+
+                    try:
+                        gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+                        service.gSpreadsheet = gSpreadsheet
+                        spreadsheets = gSpreadsheet.getSpreadsheetList()
+                    except:
+                        pass
+
+                    for title in spreadsheets.iterkeys():
+                        if title == 'CLOUD_DB':
+                            worksheets = gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+
+                            for worksheet in worksheets.iterkeys():
+                                if worksheet == 'db':
+                                    media = gSpreadsheet.getMedia(worksheets[worksheet], fileID=package.file.id)
+                                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                                            thumbnailImage=package.file.thumbnail)
+
+                                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+                                    player = gPlayer.gPlayer()
+                                    player.setService(service)
+                                    player.setWorksheet(worksheets['db'])
+                                    if len(media) == 0:
+                                        player.PlayStream(mediaURL.url, item, 0, package)
+                                    else:
+                                        player.PlayStream(mediaURL.url, item,media[0][7],package)
+                                    while not player.isExit:
+                                        player.saveTime()
+                                        xbmc.sleep(5000)
+                    playbackMedia = False
+
     # file ID provided
     #if we don't have the docid, search for the video for playback
     if (playbackMedia and filename != '' and mode == 'audio'):
@@ -964,7 +1000,6 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             elif settings.playOriginal or settings.srt or settings.cc or settings.seek:
                 playbackPlayer = True
 
-            # TESTING
             elif settings.resume:
                 playbackPlayer = False
 
@@ -1003,8 +1038,10 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                                         player.saveTime()
                                         xbmc.sleep(5000)
                 playbackMedia = False
+
             elif mediaURL.offline:
                 playbackMedia = True
+
 
 
 
