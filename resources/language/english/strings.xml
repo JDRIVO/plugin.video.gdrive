@@ -164,5 +164,7 @@
 	<string id="30171">Local only</string>
 	<string id="30172">Google Drive file property (write access required)</string>
 
+	<string id="30173">Cloud Media Spreadsheet ID</string>
+
 
 </strings>
