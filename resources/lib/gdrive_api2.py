@@ -614,7 +614,7 @@ class gdrive(cloudservice):
                     return media
 
                 # entry is a video
-                elif (fileExtension.lower() not in ('sub') and (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType or fileExtension.lower() in ('ts')) and contentType in (0,1,2,4,7)):
+                elif ((fileExtension.lower() == '' or fileExtension.lower() not in ('','sub')) and (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType or fileExtension.lower() in ('ts')) and contentType in (0,1,2,4,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, fanart, thumbnail, size=fileSize, resolution=[height,width], playcount=int(playcount), duration=duration)
 
                     if self.settings.parseTV:
@@ -652,7 +652,7 @@ class gdrive(cloudservice):
 
 
                 # entry is a music file
-                elif ((resourceType == 'application/vnd.google-apps.audio' or fileExtension.lower() in ('flac', 'mp3') or 'audio' in resourceType) and contentType in (1,2,3,4,6,7)):
+                elif ((resourceType == 'application/vnd.google-apps.audio' or (fileExtension.lower() == '' or fileExtension.lower() in ('flac', 'mp3')) or 'audio' in resourceType) and contentType in (1,2,3,4,6,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', '', size=fileSize)
 
                     if self.settings.parseMusic:
