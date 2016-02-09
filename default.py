@@ -843,9 +843,17 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
             url = service.getDownloadURL(filename)
             service.downloadPicture(url, str(encfs_source) + encryptedPath +str(title))
+            #service.downloadPicture(url, str(path) + '/'+str(folder) + '/'+str(title))
+            #mediaFile = file.file(filename, title, '', 0, '','')
+            #mediaFolder = folder.folder(folderID,'')
+            #service.downloadMediaFile(1, url, str(path) + '/'+str(folder) + '/'+str(title))
+            #(mediaURLs,package) = service.getPlaybackCall(None,title=title)
 
-        item = xbmcgui.ListItem(path=encfs_target + dencryptedPath)
-        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+ #   def downloadMediaFile(self, playback, mediaURL, package, force=False, encfs=False, folderName=''):
+
+        else:
+            item = xbmcgui.ListItem(path=encfs_target + dencryptedPath)
+            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
         playbackMedia = False
 

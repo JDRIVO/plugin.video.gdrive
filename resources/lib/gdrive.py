@@ -970,6 +970,7 @@ class gdrive(cloudservice):
               req = urllib2.Request(url, None, self.getHeadersList())
               try:
                 open(file,'wb').write(urllib2.urlopen(req).read())
+
 #                f.write(urllib2.urlopen(req).read())
 #                f.close()
               except urllib2.URLError, e:
