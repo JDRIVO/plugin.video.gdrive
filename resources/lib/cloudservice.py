@@ -511,31 +511,30 @@ class cloudservice(object):
 
 
         if encfs:
-            try:
-                path = self.addon.getSetting('encfs_source')
-            except:
-                pass
+            path = re.sub(r'\/[^\/]+$', r'', folderName)
         else:
             try:
                 path = self.addon.getSetting('cache_folder')
             except:
                 pass
 
-        if not xbmcvfs.exists(path):
-            path = ''
-
-        while path == '':
-            path = xbmcgui.Dialog().browse(0,self.addon.getLocalizedString(30090), 'files','',False,False,'')
             if not xbmcvfs.exists(path):
                 path = ''
-            else:
-                self.addon.setSetting('cache_folder', path)
+
+            while path == '':
+                path = xbmcgui.Dialog().browse(0,self.addon.getLocalizedString(30090), 'files','',False,False,'')
+                if not xbmcvfs.exists(path):
+                    path = ''
+                else:
+                    self.addon.setSetting('cache_folder', path)
 
 
         if encfs:
-#            try:
-#                xbmcvfs.mkdir(str(path) + '/'+str(folderName))
-#            except: pass
+
+            #ensure the folder and path exists
+            try:
+                xbmcvfs.mkdirs(path)
+            except: pass
 
             playbackFile = folderName
 
