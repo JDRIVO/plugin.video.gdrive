@@ -483,7 +483,7 @@ class cloudservice(object):
     #   parameters: whether to playback file, media url object, package object, whether to force download (overwrite), whether the file is encfs, folder name (option)
     ##
 #    def downloadMediaFile(self, playback, url, title, folderID, filename, fileSize, force=False, encfs=False, folderName=''):
-    def downloadMediaFile(self, playback, mediaURL, package, force=False, encfs=False, folderName=''):
+    def downloadMediaFile(self, mediaURL, package, playbackURL='', force=False, encfs=False, folderName='', resolvedPlayback=True,item=''):
 
         progress = ''
         cachePercent = int(self.settings.cachePercent)
@@ -569,7 +569,7 @@ class cloudservice(object):
             f = xbmcvfs.File(playbackFile, 'w')
 
 
-#            if playback != '':
+#            if playbackURL != '':
 #                progress = xbmcgui.DialogProgress()
 #                progressBar = sizeDownload
 #                progress.create(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30035), package.file.title)
@@ -601,31 +601,20 @@ class cloudservice(object):
                 f.write(chunk)
                 downloadedBytes = downloadedBytes + CHUNK
 
-        if encfs and playback != '':
-#            try:
-#                progress.close()
-#            except:
-#                pass
+        if encfs and playbackURL != '':
 
-            item = xbmcgui.ListItem(path=playbackFile)
-            item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded())
-
-            item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-            xbmcplugin.setResolvedUrl(0, True, item)
-            xbmc.executebuiltin("XBMC.PlayMedia("+playback+")")
-        elif playback != '':
-#            try:
-#                progress.close()
-#            except:
-#                pass
+            if resolvedPlayback:
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+            xbmc.executebuiltin("XBMC.PlayMedia("+playbackURL+")")
+        elif playbackURL != '':
 
             #item = xbmcgui.ListItem(path=playbackFile)
             item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                                 thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded())
 
             item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-            xbmcplugin.setResolvedUrl(0, True, item)
+            if resolvedPlayback:
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
             xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
         try:
             while True:
