@@ -485,7 +485,7 @@ class cloudservice(object):
 #    def downloadMediaFile(self, playback, url, title, folderID, filename, fileSize, force=False, encfs=False, folderName=''):
     def downloadMediaFile(self, playback, mediaURL, package, force=False, encfs=False, folderName=''):
 
-
+        progress = ''
         cachePercent = int(self.settings.cachePercent)
 
         if cachePercent < 1:
@@ -533,11 +533,11 @@ class cloudservice(object):
 
 
         if encfs:
-            try:
-                xbmcvfs.mkdir(str(path) + '/'+str(folderName))
-            except: pass
+#            try:
+#                xbmcvfs.mkdir(str(path) + '/'+str(folderName))
+#            except: pass
 
-            playbackFile = str(path) + '/' + str(folderName) + '/' + str(mediaURL.order) + '.stream'
+            playbackFile = folderName
 
         elif self.settings.cacheSingle:
             playbackFile = str(path) + '/cache.mp4'
@@ -549,13 +549,13 @@ class cloudservice(object):
 
             playbackFile = str(path) + '/' + str(package.file.id) + '/' + str(mediaURL.order) + '.stream'
 
-        if not xbmcvfs.exists(str(path) + '/' + str(package.file.id) + '/' + str(package.file.id) + '.name') or force:
+        if not encfs and  not xbmcvfs.exists(str(path) + '/' + str(package.file.id) + '/' + str(package.file.id) + '.name') or force:
 
             nameFile = xbmcvfs.File(str(path) + '/' + str(package.file.id) + '/' + str(package.file.id)+'.name' , "w")
             nameFile.write(package.file.title +'\n')
             nameFile.close()
 
-        if not xbmcvfs.exists(playbackFile + '.resolution') or force:
+        if not encfs and not xbmcvfs.exists(playbackFile + '.resolution') or force:
 
             resolutionFile = xbmcvfs.File(playbackFile+'.resolution' , "w")
             resolutionFile.write(mediaURL.qualityDesc +'\n')
@@ -569,14 +569,14 @@ class cloudservice(object):
             f = xbmcvfs.File(playbackFile, 'w')
 
 
-            if playback != '':
-                progress = xbmcgui.DialogProgress()
-                progressBar = sizeDownload
-                progress.create(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30035), package.file.title)
-            else:
-                progress = xbmcgui.DialogProgressBG()
-                progressBar = fileSize
-                progress.create(self.addon.getLocalizedString(30035), package.file.title)
+#            if playback != '':
+#                progress = xbmcgui.DialogProgress()
+#                progressBar = sizeDownload
+#                progress.create(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30035), package.file.title)
+#            else:
+            progress = xbmcgui.DialogProgressBG()
+            progressBar = fileSize
+            progress.create(self.addon.getLocalizedString(30035), package.file.title)
 
             # if action fails, validate login
             try:
@@ -601,20 +601,32 @@ class cloudservice(object):
                 f.write(chunk)
                 downloadedBytes = downloadedBytes + CHUNK
 
-        if playback != '':
-            try:
-                progress.close()
-            except:
-                pass
+        if encfs and playback != '':
+#            try:
+#                progress.close()
+#            except:
+#                pass
+
+            item = xbmcgui.ListItem(path=playbackFile)
+            item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded())
+
+            item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+            xbmcplugin.setResolvedUrl(0, True, item)
+            xbmc.executebuiltin("XBMC.PlayMedia("+playback+")")
+        elif playback != '':
+#            try:
+#                progress.close()
+#            except:
+#                pass
 
             #item = xbmcgui.ListItem(path=playbackFile)
             item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                                 thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded())
 
             item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-            xbmcplugin.setResolvedUrl(playback, True, item)
+            xbmcplugin.setResolvedUrl(0, True, item)
             xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
-
         try:
             while True:
                 downloadedBytes = downloadedBytes + CHUNK

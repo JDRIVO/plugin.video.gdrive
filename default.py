@@ -838,22 +838,149 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         encfs_source = settings.getSetting('encfs_source')
         encfs_target = settings.getSetting('encfs_target')
         encfs_inode = int(settings.getSetting('encfs_inode', 0))
+        playbackPlayer = settings.integratedPlayer
+        (mediaURLs,package) = service.getPlaybackCall(None,title=title)
+        mediaURL = mediaURLs[0]
 
         # don't redownload if present already
         if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
             url = service.getDownloadURL(filename)
-            service.downloadPicture(url, str(encfs_source) + encryptedPath +str(title))
+            #ervice.downloadPicture(url, str(encfs_source) + encryptedPath +str(title))
+
             #service.downloadPicture(url, str(path) + '/'+str(folder) + '/'+str(title))
             #mediaFile = file.file(filename, title, '', 0, '','')
             #mediaFolder = folder.folder(folderID,'')
             #service.downloadMediaFile(1, url, str(path) + '/'+str(folder) + '/'+str(title))
-            #(mediaURLs,package) = service.getPlaybackCall(None,title=title)
-
- #   def downloadMediaFile(self, playback, mediaURL, package, force=False, encfs=False, folderName=''):
+            service.downloadMediaFile(encfs_target + dencryptedPath, mediaURL, package, False, True, str(encfs_source) + encryptedPath +str(title))
 
         else:
-            item = xbmcgui.ListItem(path=encfs_target + dencryptedPath)
-            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+            #item = xbmcgui.ListItem(path=encfs_target + dencryptedPath)
+            #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+            item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded())
+
+            if contextType == '' and playbackPlayer:
+
+
+                    #item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+                    #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+                    player = gPlayer.gPlayer()
+                    #player.play(playbackPath, item)
+                    if seek > 0:
+                        player.PlayStream(encfs_target + dencryptedPath, item, seek, package=package)
+                    elif float(package.file.resume) > 0:
+                        player.PlayStream(encfs_target + dencryptedPath, item, package.file.resume, package=package)
+                    else:
+                        player.PlayStream(encfs_target + dencryptedPath, item, 0, package=package)
+
+
+                    #load any cc or srt
+                    if 0 and (settings.srt or settings.cc) and  service.protocol == 2:
+                        while not (player.isPlaying()):
+                            xbmc.sleep(1000)
+
+                        files = cache.getSRT(service)
+                        for file in files:
+                            if file != '':
+                                try:
+                                    file = file.decode('unicode-escape')
+                                    file = file.encode('utf-8')
+                                except:
+                                    pass
+                                player.setSubtitles(file)
+
+                    while not player.isExit:
+                        player.saveTime()
+                        xbmc.sleep(5000)
+                    #service.setProperty(package.file.id,'playcount', 1)
+
+                    # save new resume point
+                    # file property - gdrive
+                    if 0 and settings.cloudResume == 1 and service.protocol == 2 and player.time > package.file.resume:
+                        service.setProperty(package.file.id,'resume', player.time)
+
+            elif contextType == '':
+
+                    #need a player?
+#                    if seek > 0 or package.file.resume > 0 or settings.srt or settings.cc:
+
+                    player = gPlayer.gPlayer()
+                    player.setService(service)
+                    # need to seek?
+                    if seek > 0:
+                        player.PlayStream(encfs_target + dencryptedPath, item, seek, startPlayback=True, package=package)
+                    elif float(package.file.resume) > 0:
+                        player.PlayStream(encfs_target + dencryptedPath, item, package.file.resume, startPlayback=True, package=package)
+                    else:
+                        player.PlayStream(encfs_target + dencryptedPath, item, 0, startPlayback=True, package=package)
+
+                    # load captions
+                    if 0 and (settings.srt or settings.cc) and service.protocol == 2:
+                        while not (player.isPlaying()):
+                            xbmc.sleep(1000)
+
+                        files = cache.getSRT(service)
+                        for file in files:
+                            if file != '':
+                                try:
+                                    file = file.decode('unicode-escape')
+                                    file = file.encode('utf-8')
+                                except:
+                                    pass
+                                player.setSubtitles(file)
+
+
+                    while not player.isExit:
+                        player.saveTime()
+                        xbmc.sleep(5000)
+                    #service.setProperty(package.file.id,'playcount', 1)
+
+                    # save new resume point
+                    # file property - gdrive
+                    if  0 and settings.cloudResume == 1 and  service.protocol == 2 and player.time > package.file.resume:
+                        service.setProperty(package.file.id,'resume', player.time)
+            else:
+
+                    item = xbmcgui.ListItem(path=encfs_target + dencryptedPath)
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+                    player = gPlayer.gPlayer()
+                    player.setService(service)
+                    # need to seek?
+                    if seek > 0:
+                        player.PlayStream(encfs_target + dencryptedPath, item, seek, startPlayback=False, package=package)
+                    elif float(package.file.resume) > 0:
+                        player.PlayStream(encfs_target + dencryptedPath, item, package.file.resume, startPlayback=False, package=package)
+                    else:
+                        player.PlayStream(encfs_target + dencryptedPath, item, 0, startPlayback=False, package=package)
+
+                    # load captions
+                    if  0 and (settings.srt or settings.cc) and service.protocol == 2:
+                        while not (player.isPlaying()):
+                            xbmc.sleep(1000)
+
+                        files = cache.getSRT(service)
+                        for file in files:
+                            if file != '':
+                                try:
+                                    file = file.decode('unicode-escape')
+                                    file = file.encode('utf-8')
+                                except:
+                                    pass
+                                player.setSubtitles(file)
+
+
+                    while not player.isExit:
+                        player.saveTime()
+                        xbmc.sleep(5000)
+                    #service.setProperty(package.file.id,'playcount', 1)
+
+                    # save new resume point
+                    # file property - gdrive
+                    if  0 and settings.cloudResume == 1 and  service.protocol == 2 and player.time > package.file.resume:
+                        service.setProperty(package.file.id,'resume', player.time)
 
         playbackMedia = False
 
