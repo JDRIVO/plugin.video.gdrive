@@ -1,7 +1,7 @@
 
 '''
     gdrive for KODI / XBMC Plugin
-    Copyright (C) 2013-12015 ddurdle
+    Copyright (C) 2013-12016 ddurdle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

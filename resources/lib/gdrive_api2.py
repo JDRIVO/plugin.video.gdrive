@@ -1,5 +1,5 @@
 '''
-    gdrive for KODI / XBMC Plugin
+    gdrive (Google Drive ) for KODI / XBMC Plugin
     Copyright (C) 2013-2016 ddurdle
 
     This program is free software: you can redistribute it and/or modify
