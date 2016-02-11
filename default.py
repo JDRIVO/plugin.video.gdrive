@@ -380,7 +380,7 @@ elif mode == 'main' or mode == 'index':
 
 
             if contentType == 9:
-                mediaList = ['.mp4', '.flv', '.mov', '.webm', '.avi', '.ogg']
+                mediaList = ['.mp4', '.flv', '.mov', '.webm', '.avi', '.ogg', '.mkv']
             elif contentType == 10:
                 mediaList = ['.mp3', '.flac']
             else:# contentType == 11:

@@ -1,3 +1,7 @@
+v0.7.21 (2016-02-11)
+- improvements with encfs playback(specficially around streaming)
+- added options chunk and percent before playback for encfs
+- fix issue with encrypted MKV playback (encfs)
 Version 0.7.20
 - fix issue where files with extension missing don't show up
 - work towards cloud based (spreadsheet) resume points
