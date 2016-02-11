@@ -157,6 +157,9 @@
         <setting id="encfs_source" type="folder" subsetting="true" label="30128" default="" />
         <setting id="encfs_target" type="folder" subsetting="true" label="30129" default="" />
         <setting id="encfs_inode" type="enum" subsetting="true" label="30155" values="local|samba/nfs/remote/other" default="0" />
+        <setting id="encfs_cache_single" type="bool" subsetting="true" label="30132" default="false" />
+        <setting id="encfs_chunk_size" type="enum" subsetting="true" label="30091" values="32224|32768|262144|1048576" default="2" />
+        <setting id="encfs_cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100" />
         <setting label="30037" type="lsep"/>
         <setting id="context_evideo" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Don't Filter" default="0"/>
         <setting id="context_emusic" type="enum" subsetting="true" label="30023" values="Music only|Don't Filter" default="0"/>

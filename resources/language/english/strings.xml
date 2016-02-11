@@ -40,7 +40,7 @@
     <string id="30091">Chunk size</string>
     <string id="30092">Downloading...</string>
     <string id="30035">Caching...</string>
-    <string id="30093">Percent to download before playback</string>
+    <string id="30093">Percent to buffer before playback</string>
     <string id="30094">Music</string>
 
 
@@ -108,7 +108,7 @@
 	<string id="30129">encfs target</string>
 	<string id="30130">Save to encfs</string>
 	<string id="30131">Decrypted Drive</string>
-	<string id="30132">Force cache into single file</string>
+	<string id="30132">Force into single file</string>
 	<string id="30133">Hide "opening stream..." dialogs</string>
 	<string id="30134">Advance</string>
 	<string id="30135">Subtitle cache folder</string>
