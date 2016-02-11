@@ -302,10 +302,6 @@ elif mode == 'main' or mode == 'index':
       decrypt = False
     ##**
 
-    # treat as an encrypted folder?
-#    encfs = settings.getParameter('encfs', False)
-    encfs_target = settings.getSetting('encfs_target')
-
 
     # display option for all Videos/Music/Photos, across gdrive
     #** gdrive specific
@@ -331,11 +327,6 @@ elif mode == 'main' or mode == 'index':
         kodi_common.addMenu(PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
     ##**
 
-#        if encfs_target != '':
-#                service.addDirectory(None, contextType, localPath=encfs_target)
-
-#    if encfs_target != '' and encfs == False and folderName != False and folderName != '':
-#                    service.addDirectory(folder.folder(folderName,'[decrypted]'), contextType, encfs=True)
 
 
     # cloudservice - validate service
@@ -349,14 +340,16 @@ elif mode == 'main' or mode == 'index':
     #if encrypted, get everything(as encrypted files will be of type application/ostream)
     if encfs:
 
+        settings.setEncfsParameters()
+
         encryptedPath = settings.getParameter('epath', '')
         dencryptedPath = settings.getParameter('dpath', '')
 
         print "folderPath = " + str(encryptedPath)
 
-        encfs_source = settings.getSetting('encfs_source')
-        encfs_target = settings.getSetting('encfs_target')
-        encfs_inode = int(settings.getSetting('encfs_inode', 0))
+        encfs_source = settings.encfsSource
+        encfs_target = settings.encfsTarget
+        encfs_inode = settings.encfsInode
 
         mediaItems = service.getMediaList(folderName,contentType=8)
 
@@ -519,14 +512,16 @@ elif mode == 'photo':
 
     if encfs:
 
+        settings.setEncfsParameters()
+
         encryptedPath = settings.getParameter('epath', '')
         dencryptedPath = settings.getParameter('dpath', '')
 
         print "folderPath = " + str(encryptedPath)
 
-        encfs_source = settings.getSetting('encfs_source')
-        encfs_target = settings.getSetting('encfs_target')
-        encfs_inode = int(settings.getSetting('encfs_inode', 0))
+        encfs_source = settings.encfsSource
+        encfs_target = settings.encfsTarget
+        encfs_inode = settings.encfsInode
 
 #        if (not xbmcvfs.exists(str(encfs_target) + dencryptedPath)):
 #            xbmcvfs.mkdir(str(encfs_target) + dencryptedPath)
@@ -651,10 +646,12 @@ elif mode == 'slideshow':
     encfs = settings.getParameter('encfs', False)
 
     if encfs:
-        encfs_inode = int(settings.getSetting('encfs_inode', 0))
 
-        encfs_source = settings.getSetting('encfs_source')
-        encfs_target = settings.getSetting('encfs_target')
+        settings.setEncfsParameters()
+
+        encfs_source = settings.encfsSource
+        encfs_target = settings.encfsTarget
+        encfs_inode = settings.encfsInode
 
         if (not xbmcvfs.exists(str(encfs_target) + '/'+str(folder) + '/')):
             xbmcvfs.mkdir(str(encfs_target) + '/'+str(folder))
@@ -832,12 +829,14 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
     if encfs:
 
+        settings.setEncfsParameters()
+
         encryptedPath = settings.getParameter('epath', '')
         dencryptedPath = settings.getParameter('dpath', '')
 
-        encfs_source = settings.getSetting('encfs_source')
-        encfs_target = settings.getSetting('encfs_target')
-        encfs_inode = int(settings.getSetting('encfs_inode', 0))
+        encfs_source = settings.encfsSource
+        encfs_target = settings.encfsTarget
+        encfs_inode = settings.encfsInode
         playbackPlayer = settings.integratedPlayer
         (mediaURLs,package) = service.getPlaybackCall(None,title=title)
         mediaURL = mediaURLs[0]
@@ -860,7 +859,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         # download if not already cached
         if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
             url = service.getDownloadURL(filename)
-            service.downloadMediaFile(mediaURL, package, encfs=True, playbackURL=playbackTarget, folderName=str(encfs_source) + encryptedPath +str(title), resolvedPlayback=resolvedPlayback,item=item)
+            service.downloadEncfsFile(mediaURL, package, playbackURL=playbackTarget, folderName=str(encfs_source) + encryptedPath +str(title), resolvedPlayback=resolvedPlayback,item=item)
 
             #should already be playing by this point, so don't restart it
             startPlayback = False

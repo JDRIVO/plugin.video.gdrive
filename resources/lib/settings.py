@@ -115,14 +115,13 @@ class settings:
             self.download = False
             self.play = False
 
-    def setCacheParameters(self):
-        self.encfs = getParameter('cache', False)
-#        self.download = self.getSetting('always_cache', getParameter('download', False))
-        self.download = getParameter('download', getSetting('always_cache', False))
-        self.play = getParameter('play', getSetting('always_cache', False))
+    def setEncfsParameters(self):
         self.encfsCacheSingle = self.getSetting('encfs_cache_single')
         self.encfsCachePercent = self.getSetting('encfs_cache_percent', 10)
         self.encfsCacheChunkSize = self.getSetting('encfs_chunk_size', 32 * 1024)
+        self.encfsSource = self.getSetting('encfs_source')
+        self.encfsTarget = self.getSetting('encfs_target')
+        self.encfsInode = int(self.getSetting('encfs_inode', 0))
 
 
     def getParameter(self, key, default=''):
