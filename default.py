@@ -586,9 +586,11 @@ elif mode == 'photo':
             url = service.getDownloadURL(docid)
             service.downloadPicture(url, str(path) + '/'+str(folder) + '/'+str(title))
 
-        xbmc.executebuiltin("XBMC.ShowPicture("+str(path) + '/'+str(folder) + '/'+str(title)+")")
-        item = xbmcgui.ListItem(path=str(path) + '/'+str(folder) + '/'+str(title))
-        xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
+        #xbmc.executebuiltin("XBMC.ShowPicture("+str(path) + '/'+str(folder) + '/'+str(title)+")")
+        #item = xbmcgui.ListItem(path=str(path) + '/'+str(folder) + '/'+str(title))
+        url = service.getDownloadURL(docid)
+        item = xbmcgui.ListItem(path=url + '|' + service.getHeadersEncoded())
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 #*** needs updating
 elif mode == 'downloadfolder':
@@ -692,7 +694,7 @@ elif mode == 'slideshow':
                     progress.close()
                     xbmc.executebuiltin("XBMC.SlideShow("+str(encfs_target) + '/'+str(folder)+"/)")
 
-    else:
+    elif 0:
         path = settings.getSetting('photo_folder')
 
         if not xbmcvfs.exists(path):
@@ -725,6 +727,10 @@ elif mode == 'slideshow':
                     #xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
             progress.close()
             xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
+
+    #else:
+     #   xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
+
 
 ###
 # for video files

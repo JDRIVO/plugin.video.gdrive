@@ -876,7 +876,7 @@ class cloudservice(object):
                             values = {'encfs': 'true', 'username': self.authorization.username, 'title': folder.title, 'folder': folder.id}
                         else:
                             values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id}
-                        cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=slideshow&'+urllib.urlencode(values)+')', ))
+                        #cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=slideshow&'+urllib.urlencode(values)+')', ))
 
                     if (self.protocol == 2):
                         if contextType != 'image':
@@ -934,7 +934,8 @@ class cloudservice(object):
             infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot })
             listitem.setInfo('Pictures', infolabels)
             playbackURL = '?mode=photo'
-            listitem.setProperty('IsPlayable', 'false')
+            #listitem.setProperty('IsPlayable', 'false')
+            listitem.setProperty('IsPlayable', 'true')
 
         # encrypted file, viewing in "video", assume video
         elif package.file.type == package.file.UNKNOWN and contextType == 'video':
@@ -995,11 +996,17 @@ class cloudservice(object):
 
         # image file
         elif package.file.type == package.file.PICTURE:
-            infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot })
+            infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot, 'size' : package.file.size })
             listitem.setInfo('Pictures', infolabels)
-            playbackURL = '?mode=photo'
-            listitem.setProperty('IsPlayable', 'false')
+            listitem.setProperty('mimetype', 'image/jpeg')
 
+            playbackURL = '?mode=photo'
+#            listitem.setProperty('IsPlayable', 'false')
+            listitem.setProperty('IsPlayable', 'true')
+            url = package.file.download+'|' + self.getHeadersEncoded()
+            xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=False, totalItems=0)
+            return url
         # otherwise, assume video
         else:
             infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot, 'size' : package.file.size })
@@ -1068,7 +1075,7 @@ class cloudservice(object):
 
         elif package.file.type ==  package.file.PICTURE: #contextType == 'image':
 
-                cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=slideshow&' + urllib.urlencode(values)+')', ))
+                cm.append(( self.addon.getLocalizedString(30126), 'XBMC.SlideShow('+self.PLUGIN_URL+ '?mode=index&' + urllib.urlencode(values)+')', ))
 
         #encfs
 #        if (self.protocol == 2):

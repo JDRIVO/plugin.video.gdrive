@@ -38,7 +38,7 @@ class file:
 
     ##
     ##
-    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution='', playcount=0, duration=-1):
+    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution='', playcount=0, duration=-1, download=''):
         self.id = id
         self.title = title
         self.showtitle = title
@@ -47,6 +47,7 @@ class file:
         self.type = type
         self.fanart = fanart
         self.thumbnail = thumbnail
+        self.download = download
         self.hasMeta = False
         self.isEncoded = False
         self.date = date
