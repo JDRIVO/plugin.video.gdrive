@@ -1037,10 +1037,15 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         playbackPlayer = settings.integratedPlayer
         #mediaURL.url = mediaURL.url +'|' + service.getHeadersEncoded()
 
+        item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail)
+
+        item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+
         #download and play
         if not mediaURL.offline and settings.download and settings.play:
 #            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
-            service.downloadMediaFile(mediaURL, package)
+            service.downloadMediaFile(mediaURL, item, package)
             playbackMedia = False
 
         ###
@@ -1051,7 +1056,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             # right-click force download only
             if not mediaURL.offline and settings.download and not settings.play:
 #                service.downloadMediaFile('',playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
-                service.downloadMediaFile(mediaURL, package, force=True)
+                service.downloadMediaFile(mediaURL, item, package, force=True, playback=service.PLAYBACK_PLAYER)
                 playbackMedia = False
 
             # for STRM (force resolve) -- resolve-only
@@ -1231,9 +1236,13 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
         playbackPlayer = settings.integratedPlayer
 
+        item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                            thumbnailImage=package.file.thumbnail, path=mediaURL.url)
+        item.setInfo( type="Video", infoLabels={ "Title": title } )
+
         #download and play
         if settings.download and settings.play:
-            service.downloadMediaFile(mediaURL, package)
+            service.downloadMediaFile(mediaURL, item, package)
             playbackMedia = False
         ###
         #right-menu context or STRM
@@ -1242,7 +1251,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
             #download
             if settings.download and not settings.play:
-                service.downloadMediaFile(mediaURL, package, force=True)
+                service.downloadMediaFile(mediaURL, item, package, force=True, playback=service.PLAYBACK_NONE)
                 playbackMedia = False
 
             # for STRM (force resolve) -- resolve-only

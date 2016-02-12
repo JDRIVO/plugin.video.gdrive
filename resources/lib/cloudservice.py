@@ -356,6 +356,11 @@ def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, num
 class cloudservice(object):
     # CloudService v0.2.3
 
+
+    PLAYBACK_RESOLVED = 1
+    PLAYBACK_PLAYER = 2
+    PLAYBACK_NONE = 3
+
     def __init__(self): pass
 
 
@@ -482,7 +487,7 @@ class cloudservice(object):
     # download/retrieve a media file
     #   parameters: whether to playback file, media url object, package object, whether to force download (overwrite), whether the file is encfs, folder name (option)
     ##
-    def downloadMediaFile(self, mediaURL, package, playbackURL='', force=False, folderName='', resolvedPlayback=True, item=''):
+    def downloadMediaFile(self, mediaURL, item, package, force=False, folderName='', playback=1):
 
         progress = ''
         cachePercent = int(self.settings.cachePercent)
@@ -587,16 +592,13 @@ class cloudservice(object):
                 f.write(chunk)
                 downloadedBytes = downloadedBytes + CHUNK
 
-        if playbackURL != '':
+        if playback != self.PLAYBACK_NONE:
 
-            #item = xbmcgui.ListItem(path=playbackFile)
-            item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded())
-
-            item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-            if resolvedPlayback:
+            item.setPath(playbackFile)
+            if playback == self.PLAYBACK_RESOLVED:
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-            xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
+            else:
+                xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
         try:
             while True:
                 downloadedBytes = downloadedBytes + CHUNK
