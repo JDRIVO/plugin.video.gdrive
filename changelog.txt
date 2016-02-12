@@ -1,3 +1,5 @@
+v0.7.23 (2016-02-12)
+- fix for encfs playback on Windows
 v0.7.22 (2016-02-11)
 - picture/photo playback improvements, link into default KODI slideshow functionality
 - added playback photos without caching (also now the default behaviour)

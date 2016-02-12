@@ -643,6 +643,7 @@ class cloudservice(object):
 
 
         path = re.sub(r'\/[^\/]+$', r'', folderName)
+        path = re.sub(r'\\[^\\]+$', r'', folderName) #needed for windows?
 
         #ensure the folder and path exists
         try:
