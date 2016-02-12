@@ -27,7 +27,7 @@ import xbmcgui, xbmcvfs
 # This class handles fetching files from local when cached, rather then making calls to the web service
 #
 class cache:
-    # CloudService v0.2.3
+    # CloudService v0.2.5
 
     ##
     ##
@@ -52,10 +52,12 @@ class cache:
         else:
             cachePath = self.cachePath
 
+        # there is no cache path setting or the setting is unset -- we should assume user does not want to use caching
         if cachePath == '':
-            cachePath = xbmcgui.Dialog().browse(0,service.addon.getLocalizedString(30136), 'files','',False,False,'')
-            service.addon.setSetting('cache_folder', cachePath)
-            self.cachePath = cachePath
+            #cachePath = xbmcgui.Dialog().browse(0,service.addon.getLocalizedString(30136), 'files','',False,False,'')
+            #service.addon.setSetting('cache_folder', cachePath)
+            #self.cachePath = cachePath
+            return
 
         if cachePath != '':
             cachePath = str(cachePath) + '/' + str(self.package.file.id)+'/'#+ '.'+str(lang)+'.srt'
@@ -76,10 +78,12 @@ class cache:
         else:
             cachePath = self.cachePath
 
+        # there is no cache path setting or the setting is unset -- we should assume user does not want to use caching
         if cachePath == '':
-            cachePath = xbmcgui.Dialog().browse(0,service.addon.getLocalizedString(30136), 'files','',False,False,'')
-            service.addon.setSetting('cache_folder', cachePath)
-            self.cachePath = cachePath
+            #cachePath = xbmcgui.Dialog().browse(0,service.addon.getLocalizedString(30136), 'files','',False,False,'')
+            #service.addon.setSetting('cache_folder', cachePath)
+            #self.cachePath = cachePath
+            return
 
         if cachePath != '':
             cachePath = str(cachePath) + '/' + str(self.package.file.id)+'/'#+ '.'+str(lang)+'.srt'
@@ -97,10 +101,12 @@ class cache:
     ##
     def getSRT(self, service):
         cc = []
-        dirs, files = xbmcvfs.listdir(service.settings.cachePath + '/'+ str(self.package.file.id) + '/')
-        for file in files:
-            if os.path.splitext(file)[1] == '.srt':
-                cc.append(service.settings.cachePath + '/'+ str(self.package.file.id) + '/' + file)
+        if self.cachePath != '':
+
+            dirs, files = xbmcvfs.listdir(service.settings.cachePath + '/'+ str(self.package.file.id) + '/')
+            for file in files:
+                if os.path.splitext(file)[1] == '.srt':
+                    cc.append(service.settings.cachePath + '/'+ str(self.package.file.id) + '/' + file)
         return cc
 
     ##
@@ -112,10 +118,16 @@ class cache:
         else:
             cachePath = self.cachePath
 
+        # there is no cache path setting or the setting is unset -- we should assume user does not want to use caching
         if cachePath == '':
-            cachePath = xbmcgui.Dialog().browse(0,service.addon.getLocalizedString(30136), 'files','',False,False,'')
-            service.addon.setSetting('cache_folder', cachePath)
-            self.cachePath = cachePath
+
+            #cachePath = xbmcgui.Dialog().browse(0,service.addon.getLocalizedString(30136), 'files','',False,False,'')
+            #service.addon.setSetting('cache_folder', cachePath)
+            #self.cachePath = cachePath
+            if url == '':
+                return self.package.file.thumbnail
+            else:
+                return url
 
         if url == '':
             url = self.package.file.thumbnail
@@ -137,6 +149,14 @@ class cache:
     #  get the thumbnail
     ##
     def getThumbnail(self,service, url='', fileID=''):
+        if self.cachePath == '':
+            if url != '':
+                return url + '|' + service.getHeadersEncoded()
+            elif package != '':
+                return self.package.file.thumbnail
+            else:
+                return ''
+
         if fileID == '':
             if xbmcvfs.exists(str(self.cachePath) + str(self.package.file.id) + '/' + str(self.package.file.id) + '.jpg'):
                 return str(self.cachePath) + str(self.package.file.id) + '/' + str(self.package.file.id) + '.jpg'
@@ -157,9 +177,13 @@ class cache:
         else:
             cachePath = self.cachePath
 
-        cachePath = cachePath + '/' + self.package.file.id + '/'
         localResolutions = []
         localFiles = []
+
+        if cachePath == '':
+            return (localResolutions,localFiles)
+
+        cachePath = cachePath + '/' + str(self.package.file.id) + '/'
         if xbmcvfs.exists(cachePath):
             dirs,files = xbmcvfs.listdir(cachePath)
             for file in files:
@@ -181,6 +205,9 @@ class cache:
     ##
     def getOfflineFileList(self, fileID):
         localFiles = []
+        if self.cachePath == '':
+            return localFiles
+
         if xbmcvfs.exists(self.cachePath):
             dirs,files = xbmcvfs.listdir(self.cachePath)
             for file in files:
