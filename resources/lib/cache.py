@@ -60,7 +60,7 @@ class cache:
         if cachePath != '':
             cachePath = str(cachePath) + '/' + str(self.package.file.id)+'/'#+ '.'+str(lang)+'.srt'
             if not xbmcvfs.exists(cachePath):
-                xbmcvfs.mkdir(cachePath)
+                xbmcvfs.mkdirs(cachePath)
             srt = service.getSRT(self.package.file.title)
             if srt:
                 for file in srt:
@@ -84,7 +84,7 @@ class cache:
         if cachePath != '':
             cachePath = str(cachePath) + '/' + str(self.package.file.id)+'/'#+ '.'+str(lang)+'.srt'
             if not xbmcvfs.exists(cachePath):
-                xbmcvfs.mkdir(cachePath)
+                xbmcvfs.mkdirs(cachePath)
             cachePath = str(cachePath) + str(self.package.file.id)
             cc = service.getTTS(self.package.file.srtURL)
             if cc:
@@ -126,7 +126,7 @@ class cache:
 
         cachePath = str(cachePath) + str(self.package.file.id) + '/'
         if not xbmcvfs.exists(cachePath):
-            xbmcvfs.mkdir(cachePath)
+            xbmcvfs.mkdirs(cachePath)
         if not xbmcvfs.exists(cachePath + str(self.package.file.id) + '.jpg'):
             service.downloadPicture(url, cachePath + str(self.package.file.id) + '.jpg')
             print url
