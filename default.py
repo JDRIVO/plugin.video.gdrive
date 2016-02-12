@@ -16,9 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-#*** testing - gdrive
-from resources.lib import encryption
-##**
+
 
 # cloudservice - required python modules
 import sys
@@ -293,14 +291,6 @@ if service is None:
 elif mode == 'main' or mode == 'index':
 
     folderName = settings.getParameter('folder', False)
-
-    #** testing - gdrive specific
-    try:
-      decrypt = plugin_queries['decrypt']
-      service.setDecrypt()
-    except:
-      decrypt = False
-    ##**
 
 
     # display option for all Videos/Music/Photos, across gdrive
@@ -620,22 +610,6 @@ elif mode == 'downloadfolder':
 #                # create path if doesn't exist
 #                if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
 #                    xbmcvfs.mkdir(str(path) + '/'+str(folder))
-
-#*** needs updating
-elif mode == 'decryptfolder':
-
-    folder = settings.getParameter('folder',0)
-    title = settings.getParameter('title',0)
-
-    path = '/tmp/2/'
-
-    enc_password = settings.getSetting('enc_password')
-
-    salt = encryption.read_salt(str(settings.getSetting('salt')))
-
-    key = encryption.generate_key(enc_password,salt,encryption.NUMBER_OF_ITERATIONS)
-
-    service.decryptFolder(key,path,folder)
 
 
 
