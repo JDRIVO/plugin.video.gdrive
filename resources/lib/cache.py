@@ -152,7 +152,7 @@ class cache:
         if self.cachePath == '':
             if url != '':
                 return url + '|' + service.getHeadersEncoded()
-            elif package != '':
+            elif self.package != None and self.package.file != None:
                 return self.package.file.thumbnail
             else:
                 return ''
