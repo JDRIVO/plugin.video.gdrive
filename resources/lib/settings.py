@@ -84,7 +84,7 @@ class settings:
         self.integratedPlayer = self.getSetting('integrated_player', False)
         self.cc = getParameter('cc', self.getSetting('cc', True))
         self.srt = getParameter('srt', self.getSetting('srt', True))
-        self.srtforce = getParameter('srtforce', self.getSetting('srtforce', False))
+        self.srt_folder = getParameter('srt_folder', self.getSetting('srt_folder', False))
 
         self.username = getParameter('username', '')
         self.setCacheParameters()

@@ -63,10 +63,10 @@ class cache:
             cachePath = str(cachePath) + '/' + str(self.package.file.id)+'/'#+ '.'+str(lang)+'.srt'
             if not xbmcvfs.exists(cachePath):
                 xbmcvfs.mkdirs(cachePath)
-            srt = service.getSRT(self.package.file.title)
+            srt = service.getSRT(False, self.package.folder.id)
             if srt:
                 for file in srt:
-                    if not service.settings.cachePath or not xbmcvfs.exists(cachePath + str(file[0])):
+                    if not xbmcvfs.exists(cachePath + str(file[0])):
                         service.downloadPicture(file[1], cachePath + str(file[0]))
 
     ##
@@ -101,7 +101,11 @@ class cache:
     ##
     def getSRT(self, service):
         cc = []
-        if self.cachePath != '':
+        if self.cachePath == '':
+            cachePath = service.settings.cachePath
+        else:
+            cachePath = self.cachePath
+        if cachePath != '':
 
             dirs, files = xbmcvfs.listdir(service.settings.cachePath + '/'+ str(self.package.file.id) + '/')
             for file in files:

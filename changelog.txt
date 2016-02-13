@@ -1,3 +1,5 @@
+v0.7.24 (2016-02-12)
+- implemented: support for srt files in same remote folder on google drive regardless of srt filename #58
 v0.7.23 (2016-02-12)
 - fix for encfs playback on Windows
 v0.7.22 (2016-02-11)

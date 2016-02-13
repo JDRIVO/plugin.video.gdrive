@@ -739,7 +739,7 @@ class gdrive(cloudservice):
     #   parameters: title of the video file
     #   returns: download url for srt
     ##
-    def getSRT(self, title):
+    def getSRT(self, title, folderid):
 
         # retrieve all items
         url = self.API_URL +'files/'
@@ -749,6 +749,10 @@ class gdrive(cloudservice):
             title = os.path.splitext(title)[0]
             encodedTitle = re.sub(' ', '+', title)
             url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
+
+        # search for title
+        if folderid != False:
+            url = url + "?q='"+str(folderid)+"'+in+parents"
 
         srt = []
         while True:
@@ -793,7 +797,7 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                   fileExtension = r.group(1)
                   break
-                if fileExtension == 'srt':
+                if fileExtension == 'srt' or fileExtension == 'sub' :
 
                     for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
@@ -1137,7 +1141,9 @@ class gdrive(cloudservice):
                 response_data = response.read()
                 response.close()
 
-                package = self.getMediaPackage(response_data)
+                if package is not None and package.folder is not None:
+                    package = self.getMediaPackage(response_data, package.folder.id)
+
                     #docid = package.file.id
                     #mediaURLs.append(package.mediaurl)
 
