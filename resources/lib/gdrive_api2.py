@@ -1268,28 +1268,28 @@ class gdrive(cloudservice):
                                 order = order + 1000
                             elif pquality == 1:
                                 order = order + 3000
-                            elif pquality == 3:
+                            elif pquality == 2:
                                 order = order + 9000
                         elif int(itagDB[itag]['resolution']) == 720:
                             if pquality == 0:
                                 order = order + 2000
                             elif pquality == 1:
                                 order = order + 1000
-                            elif pquality == 3:
+                            elif pquality == 2:
                                 order = order + 9000
                         elif int(itagDB[itag]['resolution']) == 480:
                             if pquality == 0:
                                 order = order + 3000
                             elif pquality == 1:
                                 order = order + 2000
-                            elif pquality == 3:
+                            elif pquality == 2:
                                 order = order + 1000
                         elif int(itagDB[itag]['resolution']) < 480:
                             if pquality == 0:
                                 order = order + 4000
                             elif pquality == 1:
                                 order = order + 3000
-                            elif pquality == 3:
+                            elif pquality == 2:
                                 order = order + 2000
                     try:
                         if itagDB[itag]['codec'] == 'VP8/vorbis':
