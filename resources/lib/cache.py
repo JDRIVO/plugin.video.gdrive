@@ -35,6 +35,7 @@ class cache:
         self.package = package
         self.cachePath = ''
         self.files = []
+        self.srt = []
 
     ##
     #  set the media package
@@ -52,15 +53,8 @@ class cache:
         else:
             cachePath = self.cachePath
 
-        # there is no cache path setting or the setting is unset -- we should assume user does not want to use caching
-        if cachePath == '':
-            #cachePath = xbmcgui.Dialog().browse(0,service.addon.getLocalizedString(30136), 'files','',False,False,'')
-            #service.addon.setSetting('cache_folder', cachePath)
-            #self.cachePath = cachePath
-            return
-
         if cachePath != '':
-            cachePath = str(cachePath) + '/' + str(self.package.file.id)+'/'#+ '.'+str(lang)+'.srt'
+            cachePath = str(cachePath) + '/' + str(self.package.file.id)+'/'
             if not xbmcvfs.exists(cachePath):
                 xbmcvfs.mkdirs(cachePath)
             srt = service.getSRT(False, self.package.folder.id)
@@ -68,6 +62,11 @@ class cache:
                 for file in srt:
                     if not xbmcvfs.exists(cachePath + str(file[0])):
                         service.downloadPicture(file[1], cachePath + str(file[0]))
+        else:
+            srt = service.getSRT(False, self.package.folder.id)
+            if srt:
+                for file in srt:
+                    self.srt.append(file[1] + '|' + service.getHeadersEncoded())
 
     ##
     #  set the CC
@@ -86,21 +85,20 @@ class cache:
             return
 
         if cachePath != '':
-            cachePath = str(cachePath) + '/' + str(self.package.file.id)+'/'#+ '.'+str(lang)+'.srt'
+            cachePath = str(cachePath) + '/' + str(self.package.file.id)+'/'
             if not xbmcvfs.exists(cachePath):
                 xbmcvfs.mkdirs(cachePath)
             cachePath = str(cachePath) + str(self.package.file.id)
             cc = service.getTTS(self.package.file.srtURL)
             if cc:
                 for file in cc:
-                    if not service.settings.cachePath or not xbmcvfs.exists(cachePath + str(file[0])):
+                    if not xbmcvfs.exists(cachePath + str(file[0])):
                         service.downloadTTS(file[1], cachePath + str(file[0]))
 
     ##
     #  fetch the SRT
     ##
     def getSRT(self, service):
-        cc = []
         if self.cachePath == '':
             cachePath = service.settings.cachePath
         else:
@@ -109,9 +107,9 @@ class cache:
 
             dirs, files = xbmcvfs.listdir(service.settings.cachePath + '/'+ str(self.package.file.id) + '/')
             for file in files:
-                if os.path.splitext(file)[1] == '.srt':
-                    cc.append(service.settings.cachePath + '/'+ str(self.package.file.id) + '/' + file)
-        return cc
+                if str(os.path.splitext(file)[1]).lower() == '.srt' or str(os.path.splitext(file)[1]).lower() == '.sub':
+                    self.srt.append(service.settings.cachePath + '/'+ str(self.package.file.id) + '/' + file)
+        return self.srt
 
     ##
     #  set the thumbnail
