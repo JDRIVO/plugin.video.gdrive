@@ -1178,27 +1178,23 @@ class cloudservice(object):
 
         # if action fails, validate login
         try:
-            #f.write(urllib2.urlopen(req).read())
-            response = urllib2.urlopen(req)
-            CHUNK = 16 * 1024
-            with open(file, 'wb') as f:
-                    while True:
-                        chunk = response.read(CHUNK)
-                        if not chunk: break
-                        f.write(chunk)
+            f.write(urllib2.urlopen(req).read())
             f.close()
 
         except urllib2.URLError, e:
-              self.refreshToken()
-              req = urllib2.Request(url, None, self.getHeadersList())
-              try:
-                f.write(urllib2.urlopen(req).read())
-                f.close()
-              except urllib2.URLError, e:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('downloadPicture',str(e))
-                return
-
+                self.refreshToken()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  f.write(urllib2.urlopen(req).read())
+                  f.close()
+                except urllib2.URLError, e:
+                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                  self.crashreport.sendError('downloadPicture',str(e))
+                  return None
+        #can't write to cache for some reason
+        except IOError:
+                return None
+        return file
 
 
 

@@ -27,7 +27,7 @@ import xbmcgui, xbmcvfs
 # This class handles fetching files from local when cached, rather then making calls to the web service
 #
 class cache:
-    # CloudService v0.2.5
+    # CloudService v0.2.6
 
     ##
     ##
@@ -60,13 +60,13 @@ class cache:
             srt = service.getSRT(False, self.package.folder.id)
             if srt:
                 for file in srt:
-                    if not xbmcvfs.exists(cachePath + str(file[0])):
-                        service.downloadPicture(file[1], cachePath + str(file[0]))
+                    if not xbmcvfs.exists(str(cachePath) + str(file[0])):
+                        service.downloadPicture(file[1], str(cachePath) + str(file[0]))
         else:
             srt = service.getSRT(False, self.package.folder.id)
             if srt:
                 for file in srt:
-                    self.srt.append(file[1] + '|' + service.getHeadersEncoded())
+                    self.srt.append(str(file[1]) + '|' + service.getHeadersEncoded())
 
     ##
     #  set the CC
@@ -93,7 +93,7 @@ class cache:
             if cc:
                 for file in cc:
                     if not xbmcvfs.exists(cachePath + str(file[0])):
-                        service.downloadTTS(file[1], cachePath + str(file[0]))
+                        service.downloadTTS(file[1], str(cachePath) + str(file[0]))
 
     ##
     #  fetch the SRT
@@ -105,10 +105,10 @@ class cache:
             cachePath = self.cachePath
         if cachePath != '':
 
-            dirs, files = xbmcvfs.listdir(service.settings.cachePath + '/'+ str(self.package.file.id) + '/')
+            dirs, files = xbmcvfs.listdir(str(service.settings.cachePath) + '/'+ str(self.package.file.id) + '/')
             for file in files:
                 if str(os.path.splitext(file)[1]).lower() == '.srt' or str(os.path.splitext(file)[1]).lower() == '.sub':
-                    self.srt.append(service.settings.cachePath + '/'+ str(self.package.file.id) + '/' + file)
+                    self.srt.append(str(service.settings.cachePath) + '/'+ str(self.package.file.id) + '/' + file)
         return self.srt
 
     ##
@@ -139,12 +139,14 @@ class cache:
             return ""
 
         cachePath = str(cachePath) + str(self.package.file.id) + '/'
+        cacheFile = str(cachePath) + str(self.package.file.id) + '.jpg'
         if not xbmcvfs.exists(cachePath):
             xbmcvfs.mkdirs(cachePath)
-        if not xbmcvfs.exists(cachePath + str(self.package.file.id) + '.jpg'):
-            service.downloadPicture(url, cachePath + str(self.package.file.id) + '.jpg')
-            print url
-        return cachePath + str(self.package.file.id) + '.jpg'
+        if not xbmcvfs.exists(cacheFile):
+            cacheFile = service.downloadPicture(url, cacheFile)
+            if cacheFile is None:
+                return url
+        return cacheFile
 
 
     ##
@@ -155,7 +157,7 @@ class cache:
             if url != '':
                 return url + '|' + service.getHeadersEncoded()
             elif self.package != None and self.package.file != None:
-                return self.package.file.thumbnail
+                return self.package.file.thumbnail  + '|' + service.getHeadersEncoded()
             else:
                 return ''
 
@@ -163,7 +165,7 @@ class cache:
             if xbmcvfs.exists(str(self.cachePath) + str(self.package.file.id) + '/' + str(self.package.file.id) + '.jpg'):
                 return str(self.cachePath) + str(self.package.file.id) + '/' + str(self.package.file.id) + '.jpg'
             else:
-                return self.package.file.thumbnail
+                return self.package.file.thumbnail  + '|' + service.getHeadersEncoded()
         else:
             if xbmcvfs.exists(str(self.cachePath) + str(fileID) + '/' + str(fileID) + '.jpg'):
                 return str(self.cachePath) + str(fileID) + '/' + str(fileID) + '.jpg'
@@ -185,7 +187,7 @@ class cache:
         if cachePath == '':
             return (localResolutions,localFiles)
 
-        cachePath = cachePath + '/' + str(self.package.file.id) + '/'
+        cachePath = str(cachePath) + '/' + str(self.package.file.id) + '/'
         if xbmcvfs.exists(cachePath):
             dirs,files = xbmcvfs.listdir(cachePath)
             for file in files:
@@ -197,7 +199,7 @@ class cache:
                     except:
                         resolution = file
                     localResolutions.append('offline - ' + str(resolution))
-                    localFiles.append(cachePath + file)
+                    localFiles.append(str(cachePath) + str(file))
 
         return (localResolutions,localFiles)
 
@@ -215,7 +217,7 @@ class cache:
             for file in files:
                 if os.path.splitext(file)[1] == '.stream':
                     try:
-                        nameFile = xbmcvfs.File(cachePath + '/' + + str(fileID) + '/' + str(fileID) + '.name')
+                        nameFile = xbmcvfs.File(str(cachePath) + '/' + + str(fileID) + '/' + str(fileID) + '.name')
                         filename = nameFile.read()
                         nameFile.close()
                     except:
