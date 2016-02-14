@@ -1190,16 +1190,12 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                             thumbnailImage=package.file.thumbnail, path=mediaURL.url)
         item.setInfo( type="Video", infoLabels={ "Title": title } )
 
-        #download and play
-        if settings.download and settings.play:
-            service.downloadMediaFile(mediaURL, item, package)
-            playbackMedia = False
         ###
         #right-menu context or STRM
         ##
-        elif contextType == '':
+        if contextType == '':
 
-            #download
+            #download - only, no playback
             if settings.download and not settings.play:
                 service.downloadMediaFile(mediaURL, item, package, force=True, playback=service.PLAYBACK_NONE)
                 playbackMedia = False
@@ -1207,6 +1203,11 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             # for STRM (force resolve) -- resolve-only
             elif settings.username != '':
                 playbackPlayer = False
+
+            #download & playback
+            elif settings.download and settings.play:
+                service.downloadMediaFile(mediaURL, item, package,  playback=service.PLAYBACK_PLAYER)
+                playbackMedia = False
 
             else:
                 playbackPlayer = True
@@ -1232,6 +1233,10 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
             player = gPlayer.gPlayer()
             player.play(mediaURL.url, item)
+            playbackMedia = False
+        #download and play
+        elif settings.download and settings.play:
+            service.downloadMediaFile(mediaURL, item, package)
             playbackMedia = False
 
 
