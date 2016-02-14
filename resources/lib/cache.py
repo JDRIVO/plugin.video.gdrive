@@ -19,6 +19,7 @@
 
 # cloudservice - standard modules
 import os
+import re
 
 # cloudservice - standard XBMC modules
 import xbmcgui, xbmcvfs
@@ -55,6 +56,7 @@ class cache:
 
         if cachePath != '':
             cachePath = str(cachePath) + '/' + str(self.package.file.id)+'/'
+
             if not xbmcvfs.exists(cachePath):
                 xbmcvfs.mkdirs(cachePath)
             srt = service.getSRT(False, self.package.folder.id)
@@ -188,7 +190,10 @@ class cache:
             return (localResolutions,localFiles)
 
         cachePath = str(cachePath) + '/' + str(self.package.file.id) + '/'
-        if xbmcvfs.exists(cachePath):
+        #cachePath = re.sub('//', '/', cachePath)
+
+        #workaround for this issue: https://github.com/xbmc/xbmc/pull/8531
+        if xbmcvfs.exists(cachePath) or os.path.exists(cachePath):
             dirs,files = xbmcvfs.listdir(cachePath)
             for file in files:
                 if os.path.splitext(file)[1] == '.stream':
@@ -208,11 +213,17 @@ class cache:
     #  get a list of offline files
     ##
     def getOfflineFileList(self, fileID):
+
         localFiles = []
+
+        if self.cachePath == '':
+            self.cachePath = service.settings.cachePath
+
         if self.cachePath == '':
             return localFiles
 
-        if xbmcvfs.exists(self.cachePath):
+        #workaround for this issue: https://github.com/xbmc/xbmc/pull/8531
+        if xbmcvfs.exists(self.cachePath) or os.path.exists(cachePath):
             dirs,files = xbmcvfs.listdir(self.cachePath)
             for file in files:
                 if os.path.splitext(file)[1] == '.stream':

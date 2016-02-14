@@ -519,12 +519,12 @@ class cloudservice(object):
         except:
             pass
 
-        if not xbmcvfs.exists(path):
+        if not xbmcvfs.exists(path) and not os.path.exists(path):
             path = ''
 
         while path == '':
             path = xbmcgui.Dialog().browse(0,self.addon.getLocalizedString(30090), 'files','',False,False,'')
-            if not xbmcvfs.exists(path):
+            if not xbmcvfs.exists(path) and not os.path.exists(path):
                 path = ''
             else:
                 self.addon.setSetting('cache_folder', path)
@@ -747,12 +747,13 @@ class cloudservice(object):
             except:
                 pass
 
-        if not xbmcvfs.exists(path):
+        #workaround for this issue: https://github.com/xbmc/xbmc/pull/8531
+        if not xbmcvfs.exists(path) and not os.path.exists(path):
             path = ''
 
         while path == '':
             path = xbmcgui.Dialog().browse(0,self.addon.getLocalizedString(30090), 'files','',False,False,'')
-            if not xbmcvfs.exists(path):
+            if not xbmcvfs.exists(path) and not os.path.exists(path):
                 path = ''
             else:
                 self.addon.setSetting('cache_folder', path)

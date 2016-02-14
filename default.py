@@ -513,53 +513,27 @@ elif mode == 'photo':
         encfs_target = settings.encfsTarget
         encfs_inode = settings.encfsInode
 
-#        if (not xbmcvfs.exists(str(encfs_target) + dencryptedPath)):
-#            xbmcvfs.mkdir(str(encfs_target) + dencryptedPath)
-
-#        folderINode = ''
-#        if encfs_inode == 0:
-#            folderINode = str(xbmcvfs.Stat(encfs_target + dencryptedPath + str(folder)).st_ino())
-#        else:
-#            folderINode = str(xbmcvfs.Stat(encfs_target + dencryptedPath + str(folder)).st_ctime())
-
 
         # don't redownload if present already
         if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
             url = service.getDownloadURL(docid)
             service.downloadPicture(url, str(encfs_source) + encryptedPath +str(title))
-#        fileINode = ''
-#        if encfs_inode ==0:
-#            fileINode = str(xbmcvfs.Stat(str(encfs_source) + encryptedPath +str(title)).st_ino())
-#        else:
-#            fileINode = str(xbmcvfs.Stat(str(encfs_source) + encryptedPath +str(title)).st_ctime())
-        print "IN" + encfs_target + dencryptedPath
 
         xbmc.executebuiltin("XBMC.ShowPicture("+encfs_target + dencryptedPath+")")
         item = xbmcgui.ListItem(path=encfs_target + dencryptedPath)
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
-        print "file ="+encfs_target + dencryptedPath
 
-#        dirsx, files = xbmcvfs.listdir(encfs_target + dencryptedPath)
-#        for file in files:
-#                    index = ''
-#                    if encfs_inode ==0:
-#                        index = str(xbmcvfs.Stat(encfs_target + dencryptedPath + file).st_ino())
-#                    else:
-#                        index = str(xbmcvfs.Stat(encfs_target + dencryptedPath + file).st_ctime())
-#                    if index == fileINode:
-#                        xbmc.executebuiltin("XBMC.ShowPicture("+encfs_target + dencryptedPath + file+")")
-#                        item = xbmcgui.ListItem(path=encfs_target + dencryptedPath + file)
-#                        xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
-#                        print "file ="+encfs_target + dencryptedPath + file
     else:
         path = settings.getSetting('photo_folder')
 
-        if not xbmcvfs.exists(path):
+        #workaround for this issue: https://github.com/xbmc/xbmc/pull/8531
+        if not xbmcvfs.exists(path) and not os.path.exists(path):
             path = ''
 
         while path == '':
             path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30038), 'files','',False,False,'')
-            if not xbmcvfs.exists(path):
+            #workaround for this issue: https://github.com/xbmc/xbmc/pull/8531
+            if not xbmcvfs.exists(path) and not os.path.exists(path):
                 path = ''
             else:
                 addon.setSetting('photo_folder', path)
@@ -671,13 +645,15 @@ elif mode == 'slideshow':
     elif 0:
         path = settings.getSetting('photo_folder')
 
-        if not xbmcvfs.exists(path):
+        #workaround for this issue: https://github.com/xbmc/xbmc/pull/8531
+        if not xbmcvfs.exists(path) and not os.path.exists(path):
             path = ''
 
 
         while path == '':
             path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30038), 'files','',False,False,'')
-            if not xbmcvfs.exists(path):
+            #workaround for this issue: https://github.com/xbmc/xbmc/pull/8531
+            if not xbmcvfs.exists(path) and not os.path.exists(path):
                 path = ''
             else:
                 addon.setSetting('photo_folder', path)
@@ -1030,7 +1006,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             # right-click force download only
             if not mediaURL.offline and settings.download and not settings.play:
 #                service.downloadMediaFile('',playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
-                service.downloadMediaFile(mediaURL, item, package, force=True, playback=service.PLAYBACK_PLAYER)
+                service.downloadMediaFile(mediaURL, item, package, force=True, playback=service.PLAYBACK_NONE)
                 playbackMedia = False
 
             # for STRM (force resolve) -- resolve-only
