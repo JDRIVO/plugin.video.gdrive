@@ -22,6 +22,7 @@
 import sys
 import urllib
 import re
+import os
 
 # cloudservice - standard XBMC modules
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
@@ -386,7 +387,7 @@ elif mode == 'main' or mode == 'index':
                     xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
 #                    dirTitle = dir + ' [' +dirListINodes[index].title+ ']'
                     encryptedDir = dirListINodes[index].title
-                    dirListINodes[index].title = dir + ' [' +dirListINodes[index].title+ ']'
+                    dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
                     service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
                 elif index in fileListINodes.keys():
                     xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
@@ -510,7 +511,7 @@ elif mode == 'photo':
         # don't redownload if present already
         if (not xbmcvfs.exists(str(encfs_source) + str(encryptedPath) +str(title))):
             url = service.getDownloadURL(docid)
-            service.downloadPicture(url, str(encfs_source) + str(encryptedPath) +str(title))
+            service.downloadGeneralFile(url, str(encfs_source) + str(encryptedPath) +str(title))
 
         xbmc.executebuiltin("XBMC.ShowPicture(\""+str(encfs_target) + str(dencryptedPath)+"\")")
         #item = xbmcgui.ListItem(path=str(encfs_target) + str(dencryptedPath))
@@ -565,21 +566,46 @@ elif mode == 'downloadfolder':
         xbmcplugin.endOfDirectory(plugin_handle)
 
     if encfs:
+
+        settings.setEncfsParameters()
+
+        encryptedPath = settings.getParameter('epath', '')
+        dencryptedPath = settings.getParameter('dpath', '')
+
+        encfs_source = settings.encfsSource
+        encfs_target = settings.encfsTarget
+        encfs_inode = settings.encfsInode
+
+    if encfs:
         mediaItems = service.getMediaList(folderName=folderID, contentType=8)
+        path = str(encfs_source) + str(encryptedPath)
     else:
         mediaItems = service.getMediaList(folderName=folderID, contentType=contentType)
+        path = str(folderID) + '/'
 
     if mediaItems:
-        for item in mediaItems:
-            if item.file is not None:
-                #service.downloadGeneralFile('',  item.mediaurl, item,  force=True, encfs=encfs, folderName=folderName)
-                service.downloadEncfsFile(mediaURL, package, playbackURL=playbackTarget, folderName=str(encfs_source) + encryptedPath +str(title), resolvedPlayback=resolvedPlayback,item=item)
+        progress = xbmcgui.DialogProgressBG()
+        progressBar = len(mediaItems)
+        progress.create(addon.getLocalizedString(30092), '')
+        count=0
 
+
+        if not xbmcvfs.exists(path) and not os.path.exists(path):
+            xbmcvfs.mkdirs(path)
+
+        for item in mediaItems:
+            count = count + 1
+            if item.file is not None:
+                progress.update((int)(float(count)/len(mediaItems)*100),addon.getLocalizedString(30092),  str(item.file.title))
+                if encfs:
+                    service.downloadGeneralFile(item.getMediaURL(),str(path) + str(item.file.title) )
+                else:
+                    service.downloadGeneralFile(item.getMediaURL(),str(path) +str(title))
 #            elif item.folder is not None:
 #                # create path if doesn't exist
 #                if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
 #                    xbmcvfs.mkdir(str(path) + '/'+str(folder))
-
+        progress.close()
 
 
 elif mode == 'slideshow':
@@ -629,7 +655,7 @@ elif mode == 'slideshow':
                             count = count + 1;
                             progress.update((int)(float(count)/len(mediaItems)*100),addon.getLocalizedString(30035), item.file.title)
                             if (not xbmcvfs.exists(str(encfs_source) + '/'+str(dir)+'/'+str(item.file.title))):
-                                service.downloadPicture(item.mediaurl.url,str(encfs_source) + '/'+str(dir)+ '/'+str(item.file.title))
+                                service.downloadGeneralFile(item.mediaurl.url,str(encfs_source) + '/'+str(dir)+ '/'+str(item.file.title))
                                 if encfs_inode > 0:
                                     xbmc.sleep(100)
 
@@ -668,7 +694,7 @@ elif mode == 'slideshow':
                 if item.file is not None:
                     count = count + 1;
                     progress.update((int)(float(count)/len(mediaItems)*100),addon.getLocalizedString(30035), item.file.title)
-                    service.downloadPicture(item.mediaurl.url,str(path) + '/'+str(folder)+ '/'+item.file.title)
+                    service.downloadGeneralFile(item.mediaurl.url,str(path) + '/'+str(folder)+ '/'+item.file.title)
                     #xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
             progress.close()
             xbmc.executebuiltin("XBMC.SlideShow(\""+str(path) + '/'+str(folder)+"/\")")

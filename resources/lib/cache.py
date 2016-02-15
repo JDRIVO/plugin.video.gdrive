@@ -61,7 +61,7 @@ class cache:
             if srt:
                 for file in srt:
                     if not xbmcvfs.exists(str(cachePath) + str(file[0])):
-                        service.downloadPicture(file[1], str(cachePath) + str(file[0]))
+                        service.downloadGeneralFile(file[1], str(cachePath) + str(file[0]))
         else:
             srt = service.getSRT(False, self.package.folder.id)
             if srt:
@@ -133,7 +133,7 @@ class cache:
         if not xbmcvfs.exists(cachePath):
             xbmcvfs.mkdirs(cachePath)
         if not xbmcvfs.exists(cacheFile):
-            cacheFile = service.downloadPicture(url, cacheFile)
+            cacheFile = service.downloadGeneralFile(url, cacheFile)
             if cacheFile is None:
                 return url
         return cacheFile

@@ -707,10 +707,43 @@ class cloudservice(object):
 
 
     ##
+    # download remote picture
+    # parameters: url of picture, file location with path on disk
+    ##
+    def downloadGeneralFile(self, url, file, force=False):
+
+        req = urllib2.Request(url, None, self.getHeadersList())
+
+        # already downloaded
+        if not force and xbmcvfs.exists(file) and xbmcvfs.File(file).size() > 0:
+            return
+
+        f = xbmcvfs.File(file, 'w')
+
+        # if action fails, validate login
+        try:
+            f.write(urllib2.urlopen(req).read())
+            f.close()
+
+        except urllib2.URLError, e:
+                self.refreshToken()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  f.write(urllib2.urlopen(req).read())
+                  f.close()
+                except urllib2.URLError, e:
+                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                  self.crashreport.sendError('downloadGeneralFle',str(e))
+                  return None
+        #can't write to cache for some reason
+        except IOError:
+                return None
+        return file
+    ##
     # retrieve/download a general file
     #   parameters: title of video, whether to prompt for quality/format (optional), medial url object, package object, whether to force download (overwrite), whether folder is encrypted, folder name
     ##
-    def downloadGeneralFile(self, playback, mediaURL, package, force=False, encfs=False, folderName=''):
+    def downloadGeneralFileOLD(self, playback, mediaURL, package, force=False, encfs=False, folderName=''):
 
 
         cachePercent = int(self.settings.cachePercent)
@@ -899,7 +932,7 @@ class cloudservice(object):
                             cm.append(( self.addon.getLocalizedString(30162), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=video&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
 
                         #encfs
-                        values = {'instance': self.instanceName, 'foldername': folder.title, 'folder': folder.id}
+                        values = {'instance': self.instanceName, 'epath': epath, 'foldername': folder.title, 'folder': folder.id}
 
                         #add encfs option unless viewing as encfs already
                         if not encfs:

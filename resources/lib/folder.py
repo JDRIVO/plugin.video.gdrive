@@ -32,9 +32,10 @@ class folder:
         self.title = title
         self.fanart = fanart
         self.thumb = thumb
+        self.displaytitle = title
 
     def displayTitle(self):
-        return urllib.unquote(self.title)
+        return urllib.unquote(self.displaytitle)
 
 
     def __repr__(self):
