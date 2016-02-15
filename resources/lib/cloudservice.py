@@ -23,6 +23,7 @@ import urllib, urllib2
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 import xbmcvfs
 import sys
+import os
 
 from resources.lib import mediaurl
 from resources.lib import kodi_common
@@ -938,8 +939,8 @@ class cloudservice(object):
             infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot })
             listitem.setInfo('Pictures', infolabels)
             playbackURL = '?mode=photo'
-            #listitem.setProperty('IsPlayable', 'false')
-            listitem.setProperty('IsPlayable', 'true')
+            listitem.setProperty('IsPlayable', 'false')
+
 
         # encrypted file, viewing in "video", assume video
         elif package.file.type == package.file.UNKNOWN and contextType == 'video':

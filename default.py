@@ -335,8 +335,6 @@ elif mode == 'main' or mode == 'index':
         encryptedPath = settings.getParameter('epath', '')
         dencryptedPath = settings.getParameter('dpath', '')
 
-        print "folderPath = " + str(encryptedPath)
-
         encfs_source = settings.encfsSource
         encfs_target = settings.encfsTarget
         encfs_inode = settings.encfsInode
@@ -376,7 +374,6 @@ elif mode == 'main' or mode == 'index':
             else:# contentType == 11:
                 mediaList = ['.jpg', '.png']
             media_re = re.compile("|".join(mediaList))
-            print "contentType =" + str(contentType)
 
             dirs, files = xbmcvfs.listdir(encfs_target + str(dencryptedPath) )
             for dir in dirs:
@@ -387,14 +384,12 @@ elif mode == 'main' or mode == 'index':
                     index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + dir).st_ctime())
                 if index in dirListINodes.keys():
                     xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
-                    print "delete = " + encfs_target + str(dencryptedPath) + dir
 #                    dirTitle = dir + ' [' +dirListINodes[index].title+ ']'
                     encryptedDir = dirListINodes[index].title
                     dirListINodes[index].title = dir + ' [' +dirListINodes[index].title+ ']'
                     service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
                 elif index in fileListINodes.keys():
                     xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
-                    print "delete = " + encfs_target + str(dencryptedPath) + dir
                     fileListINodes[index].file.decryptedTitle = dir
                     if contentType < 9 or media_re.search(str(dir)):
                         service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(dir), epath=str(encryptedPath) )
@@ -507,21 +502,19 @@ elif mode == 'photo':
         encryptedPath = settings.getParameter('epath', '')
         dencryptedPath = settings.getParameter('dpath', '')
 
-        print "folderPath = " + str(encryptedPath)
-
         encfs_source = settings.encfsSource
         encfs_target = settings.encfsTarget
         encfs_inode = settings.encfsInode
 
 
         # don't redownload if present already
-        if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
+        if (not xbmcvfs.exists(str(encfs_source) + str(encryptedPath) +str(title))):
             url = service.getDownloadURL(docid)
-            service.downloadPicture(url, str(encfs_source) + encryptedPath +str(title))
+            service.downloadPicture(url, str(encfs_source) + str(encryptedPath) +str(title))
 
-        xbmc.executebuiltin("XBMC.ShowPicture("+encfs_target + dencryptedPath+")")
-        item = xbmcgui.ListItem(path=encfs_target + dencryptedPath)
-        xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, item)
+        xbmc.executebuiltin("XBMC.ShowPicture(\""+str(encfs_target) + str(dencryptedPath)+"\")")
+        #item = xbmcgui.ListItem(path=str(encfs_target) + str(dencryptedPath))
+        #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
     else:
         path = settings.getSetting('photo_folder')
@@ -640,7 +633,7 @@ elif mode == 'slideshow':
 
 
                     progress.close()
-                    xbmc.executebuiltin("XBMC.SlideShow("+str(encfs_target) + '/'+str(folder)+"/)")
+                    xbmc.executebuiltin("XBMC.SlideShow(\""+str(encfs_target) + '/'+str(folder)+"/\")")
 
     elif 0:
         path = settings.getSetting('photo_folder')
@@ -676,7 +669,7 @@ elif mode == 'slideshow':
                     service.downloadPicture(item.mediaurl.url,str(path) + '/'+str(folder)+ '/'+item.file.title)
                     #xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
             progress.close()
-            xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
+            xbmc.executebuiltin("XBMC.SlideShow(\""+str(path) + '/'+str(folder)+"/\")")
 
     #else:
      #   xbmc.executebuiltin("XBMC.SlideShow("+str(path) + '/'+str(folder)+"/)")
@@ -992,21 +985,22 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
         item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
 
-        #download and play
-        if not mediaURL.offline and settings.download and settings.play:
-#            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
-            service.downloadMediaFile(mediaURL, item, package)
-            playbackMedia = False
 
         ###
         #right-menu context OR STRM
         ##
-        elif contextType == '':
+        if contextType == '':
 
             # right-click force download only
             if not mediaURL.offline and settings.download and not settings.play:
 #                service.downloadMediaFile('',playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
                 service.downloadMediaFile(mediaURL, item, package, force=True, playback=service.PLAYBACK_NONE)
+                playbackMedia = False
+
+            # right-click download and play
+            elif not mediaURL.offline and settings.download and settings.play:
+    #            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
+                service.downloadMediaFile(mediaURL, item, package, playback=service.PLAYBACK_PLAYER)
                 playbackMedia = False
 
             # for STRM (force resolve) -- resolve-only
@@ -1059,6 +1053,11 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             elif mediaURL.offline:
                 playbackMedia = True
 
+        #download and play (direct)
+        elif not mediaURL.offline and settings.download and settings.play:
+#            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
+            service.downloadMediaFile(mediaURL, item, package)
+            playbackMedia = False
 
 
 
