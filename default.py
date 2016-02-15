@@ -373,7 +373,7 @@ elif mode == 'main' or mode == 'index':
                 mediaList = ['.mp3', '.flac']
             else:# contentType == 11:
                 mediaList = ['.jpg', '.png']
-            media_re = re.compile("|".join(mediaList))
+            media_re = re.compile("|".join(mediaList), re.I)
 
             dirs, files = xbmcvfs.listdir(encfs_target + str(dencryptedPath) )
             for dir in dirs:
@@ -572,7 +572,9 @@ elif mode == 'downloadfolder':
     if mediaItems:
         for item in mediaItems:
             if item.file is not None:
-                service.downloadGeneralFile('',  item.mediaurl, item,  force=True, encfs=encfs, folderName=folderName)
+                #service.downloadGeneralFile('',  item.mediaurl, item,  force=True, encfs=encfs, folderName=folderName)
+                service.downloadEncfsFile(mediaURL, package, playbackURL=playbackTarget, folderName=str(encfs_source) + encryptedPath +str(title), resolvedPlayback=resolvedPlayback,item=item)
+
 #            elif item.folder is not None:
 #                # create path if doesn't exist
 #                if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
