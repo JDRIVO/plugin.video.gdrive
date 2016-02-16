@@ -931,14 +931,14 @@ class cloudservice(object):
                             values = {'instance': self.instanceName, 'folder': folder.id}
                             cm.append(( self.addon.getLocalizedString(30162), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=video&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
 
-                        #encfs
-                        values = {'instance': self.instanceName, 'epath': epath, 'foldername': folder.title, 'folder': folder.id}
 
                         #add encfs option unless viewing as encfs already
                         if not encfs:
                             cm.append(( '[treat as encfs]', 'XBMC.Container.Update('+self.PLUGIN_URL+'?mode=index&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
                         #if within encfs and pictures, disable right-click default photo options; add download-folder
                         if encfs and contextType == 'image':
+                            values = {'instance': self.instanceName, 'epath': epath, 'foldername': folder.title, 'folder': folder.id}
+
                             cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
                             listitem.addContextMenuItems(cm, True)
                         elif contextType == 'image':
