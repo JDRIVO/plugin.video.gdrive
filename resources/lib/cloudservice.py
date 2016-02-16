@@ -479,7 +479,7 @@ class cloudservice(object):
         if encfs:
             values = {'instance': self.instanceName, 'encfs': 'true', 'folder': folder.id, 'content_type': contextType, 'dpath': dpath, 'epath':epath}
         else:
-            values = {'instance': self.instanceName, 'folder': folder.id, 'content_type': contextType}
+            values = {'instance': self.instanceName, 'folder': folder.id, 'content_type': contextType, 'epath':epath}
 
         return self.PLUGIN_URL+'?mode=index&' +  urllib.urlencode(values)
 
@@ -941,6 +941,9 @@ class cloudservice(object):
                         if encfs and contextType == 'image':
                             cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
                             listitem.addContextMenuItems(cm, True)
+                        elif contextType == 'image':
+                            cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
+
 
                     cm.append(( self.addon.getLocalizedString(30163), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=scan&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
 

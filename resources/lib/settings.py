@@ -124,6 +124,7 @@ class settings:
         self.encfsInode = int(self.getSetting('encfs_inode', 0))
 
 
+
     def getParameter(self, key, default=''):
         try:
             value = plugin_queries[key]

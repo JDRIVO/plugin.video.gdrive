@@ -412,18 +412,21 @@ elif mode == 'main' or mode == 'index':
 
 
     else:
+        path = settings.getParameter('epath', '')
+
         mediaItems = service.getMediaList(folderName,contentType=contentType)
 
         if mediaItems:
             for item in mediaItems:
 
                     if item.file is None:
-                        service.addDirectory(item.folder, contextType=contextType)
+                        service.addDirectory(item.folder, contextType=contextType, epath=str(path)+ '/' + str(item.folder.title) + '/')
                     else:
                         service.addMediaFile(item, contextType=contextType)
 
     service.updateAuthorization(addon)
 
+# NOT IN USE
 #** testing - gdrive
 elif mode == 'kiosk':
 
@@ -550,7 +553,6 @@ elif mode == 'photo':
         item = xbmcgui.ListItem(path=url + '|' + service.getHeadersEncoded())
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
-#*** needs updating
 elif mode == 'downloadfolder':
 
     title = settings.getParameter('title')
@@ -575,13 +577,15 @@ elif mode == 'downloadfolder':
         encfs_source = settings.encfsSource
         encfs_target = settings.encfsTarget
         encfs_inode = settings.encfsInode
+    else:
+        path = settings.getParameter('epath', '/')
 
     if encfs:
         mediaItems = service.getMediaList(folderName=folderID, contentType=8)
         path = str(encfs_source) + str(encryptedPath)
     else:
         mediaItems = service.getMediaList(folderName=folderID, contentType=contentType)
-        path = str(folderID) + '/'
+        path = str(settings.getSetting('photo_folder')) + str(path)
 
     if mediaItems:
         progress = xbmcgui.DialogProgressBG()
@@ -597,10 +601,7 @@ elif mode == 'downloadfolder':
             count = count + 1
             if item.file is not None:
                 progress.update((int)(float(count)/len(mediaItems)*100),addon.getLocalizedString(30092),  str(item.file.title))
-                if encfs:
-                    service.downloadGeneralFile(item.getMediaURL(),str(path) + str(item.file.title) )
-                else:
-                    service.downloadGeneralFile(item.getMediaURL(),str(path) +str(title))
+                service.downloadGeneralFile(item.getMediaURL(),str(path) + str(item.file.title) )
 #            elif item.folder is not None:
 #                # create path if doesn't exist
 #                if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
