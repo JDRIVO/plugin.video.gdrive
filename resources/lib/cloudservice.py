@@ -213,6 +213,21 @@ def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, num
 
             kodi_common.addMenu(PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'[enroll account]')
 
+            if contextType != 'image':
+                path = settings.getSetting('cache_folder')
+                if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
+                    kodi_common.addMenu(PLUGIN_URL+'?mode=offline&content_type='+str(contextType),'<offline media>')
+
+            if contextType == 'image':
+                path = settings.getSetting('photo_folder')
+                if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
+                    kodi_common.addMenu(path,'<offline photos>')
+
+            path = settings.getSetting('encfs_target')
+            if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
+                kodi_common.addMenu(path,'<offline encfs>')
+
+
             mode = ''
             count = 1
             while True:
@@ -262,6 +277,9 @@ def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, num
     elif numberOfAccounts == 0 and mode=='streamurl':
         return None
 
+    # offline mode
+    elif mode=='offline':
+        return None
         # no accounts defined
     elif numberOfAccounts == 0:
 

@@ -438,6 +438,27 @@ class gdrive(cloudservice):
 
 
 
+    ##
+    # retrieve a list of videos, using playback type stream
+    #   parameters: prompt for video quality (optional), cache type (optional)
+    #   returns: list of videos
+    ##
+    def getOfflineMediaList(self, folderName=False, title=False, contentType=7):
+
+        mediaFiles = []
+        for r1 in re.finditer('\{(.*?)\"spaces\"\:' , entryS, re.DOTALL):
+            entry = r1.group(1)
+            media = self.getMediaPackage(entry, folderName=folderName, contentType=contentType, fanart=folderFanart, icon=folderIcon)
+            if media is not None:
+                mediaFiles.append(media)
+
+
+
+        return mediaFiles
+
+
+
+
 
     ##
     # retrieve a list of videos, using playback type stream

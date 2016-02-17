@@ -264,7 +264,7 @@ invokedUsername = settings.getParameter('username')
 instanceName = cloudservice.getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, numberOfAccounts, contextType)
 
 service = None
-if instanceName is None and (mode == 'index' or mode == 'main'):
+if instanceName is None and (mode == 'index' or mode == 'main' or mode == 'offline'):
     service = None
 elif instanceName is None:
     service = gdrive_api2.gdrive(PLUGIN_URL,addon,'', user_agent, settings, authenticate=False)
@@ -284,7 +284,27 @@ except: pass
 #if mode == 'main':
 #    addMenu(PLUGIN_URL+'?mode=options','<< '+addon.getLocalizedString(30043)+' >>')
 
-if service is None:
+if mode == 'offline':
+
+    title = settings.getParameter('title')
+    folderID = settings.getParameter('folder')
+    folderName = settings.getParameter('foldername')
+
+
+    mediaItems = kodi_common.getOfflineFileList(settings.getSetting('cache_folder'))
+
+
+    if mediaItems:
+        for item in mediaItems:
+
+            if item.file is None:
+                service.addDirectory(item.folder, contextType=contextType, epath=str(path)+ '/' + str(item.folder.title) + '/')
+            else:
+                service.addMediaFile(item, contextType=contextType)
+
+
+
+elif service is None:
 
     xbmcplugin.endOfDirectory(plugin_handle)
 
@@ -607,6 +627,8 @@ elif mode == 'downloadfolder':
 #                if (not xbmcvfs.exists(str(path) + '/'+str(folder) + '/')):
 #                    xbmcvfs.mkdir(str(path) + '/'+str(folder))
         progress.close()
+
+
 
 
 elif mode == 'slideshow':

@@ -20,6 +20,7 @@
 # cloudservice - required python modules
 import sys
 import cgi
+import os
 
 # cloudservice - standard XBMC modules
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
@@ -179,3 +180,30 @@ def getContentType(contextType,encfs):
       return contentType
 
 
+
+##
+#  get a list of offline files
+##
+def getOfflineFileList(cachePath):
+
+    localFiles = []
+
+
+    #workaround for this issue: https://github.com/xbmc/xbmc/pull/8531
+    if xbmcvfs.exists(cachePath) or os.path.exists(cachePath):
+        dirs,files = xbmcvfs.listdir(cachePath)
+        for dir in dirs:
+            subdir,subfiles = xbmcvfs.listdir(dir)
+            for file in subfiles:
+                if os.path.splitext(file)[1] == '.stream':
+                    try:
+                        nameFile = xbmcvfs.File(str(cachePath) + '/' + + str(dir) + '/' + str(dir) + '.name')
+                        filename = nameFile.read()
+                        nameFile.close()
+                    except:
+                        filename = file
+                    localFiles.append(filename)
+
+
+
+    return localFiles

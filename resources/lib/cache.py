@@ -194,29 +194,4 @@ class cache:
         return (localResolutions,localFiles)
 
 
-    ##
-    #  get a list of offline files
-    ##
-    def getOfflineFileList(self, fileID):
-
-        localFiles = []
-
-        if self.cachePath == '':
-            return localFiles
-
-        #workaround for this issue: https://github.com/xbmc/xbmc/pull/8531
-        if xbmcvfs.exists(self.cachePath) or os.path.exists(cachePath):
-            dirs,files = xbmcvfs.listdir(self.cachePath)
-            for file in files:
-                if os.path.splitext(file)[1] == '.stream':
-                    try:
-                        nameFile = xbmcvfs.File(str(cachePath) + '/' + + str(fileID) + '/' + str(fileID) + '.name')
-                        filename = nameFile.read()
-                        nameFile.close()
-                    except:
-                        filename = file
-                    localFiles.append(file)
-
-
-        return localFiles
 
