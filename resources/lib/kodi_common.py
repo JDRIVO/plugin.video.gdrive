@@ -193,11 +193,11 @@ def getOfflineFileList(cachePath):
     if xbmcvfs.exists(cachePath) or os.path.exists(cachePath):
         dirs,files = xbmcvfs.listdir(cachePath)
         for dir in dirs:
-            subdir,subfiles = xbmcvfs.listdir(dir)
+            subdir,subfiles = xbmcvfs.listdir(str(cachePath) + '/' + str(dir))
             for file in subfiles:
                 if os.path.splitext(file)[1] == '.stream':
                     try:
-                        nameFile = xbmcvfs.File(str(cachePath) + '/' + + str(dir) + '/' + str(dir) + '.name')
+                        nameFile = xbmcvfs.File(str(cachePath) + '/' + str(dir) + '/' + str(dir) + '.name')
                         filename = nameFile.read()
                         nameFile.close()
                     except:
