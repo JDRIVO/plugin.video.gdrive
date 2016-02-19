@@ -922,7 +922,12 @@ class cloudservice(object):
 
                 if folder.id != '':
                     cm=[]
-                    if contextType != 'image':
+                    if contextType != 'image' and not encfs:
+                        values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id, 'content_type': contextType }
+
+                        cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
+
+                    elif contextType != 'image':
                         values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id, 'content_type': contextType }
 
                         cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
@@ -1105,8 +1110,12 @@ class cloudservice(object):
         url = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)
 
         if (contextType != 'image' and package.file.type != package.file.PICTURE):
-            valuesBS = {'username': self.authorization.username, 'title': package.file.title, 'filename': package.file.id, 'content_type': 'video'}
-            cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&type='+str(package.file.type)+'&'+urllib.urlencode(valuesBS)+')', ))
+            if encfs:
+                valuesBS = {'username': self.authorization.username, 'dpath': dpath, 'epath': epath, 'encfs': 'true', 'title': package.file.title, 'filename': package.file.id, 'content_type': 'video'}
+                cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&type='+str(package.file.type)+'&'+urllib.urlencode(valuesBS)+')', ))
+            else:
+                valuesBS = {'username': self.authorization.username, 'title': package.file.title, 'filename': package.file.id, 'content_type': 'video'}
+                cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&type='+str(package.file.type)+'&'+urllib.urlencode(valuesBS)+')', ))
 
             if (self.protocol == 2):
                 # play-original for video only

@@ -171,6 +171,14 @@ elif mode == 'buildstrm':
             filename = settings.getParameter('filename')
             title = settings.getParameter('title')
             invokedUsername = settings.getParameter('username')
+            encfs = settings.getParameter('encfs', False)
+
+            if encfs:
+
+                settings.setEncfsParameters()
+
+                encryptedPath = settings.getParameter('epath', '')
+                dencryptedPath = settings.getParameter('dpath', '')
 
             if folderID != '':
 
@@ -208,7 +216,10 @@ elif mode == 'buildstrm':
                 service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog)
 
             elif filename != '':
-                            values = {'title': title, 'filename': filename, 'username': invokedUsername}
+                            if encfs:
+                                values = {'title': title, 'encfs': 'True', 'epath': encryptedPath, 'dpath': dencryptedPath, 'filename': filename, 'username': invokedUsername}
+                            else:
+                                values = {'title': title, 'filename': filename, 'username': invokedUsername}
                             if type == 1:
                                 url = PLUGIN_URL+'?mode=audio&'+urllib.urlencode(values)
                             else:
@@ -850,7 +861,12 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
         #right-click or integrated player (no opening stream dialog...)
         if contextType == '' or playbackPlayer:
-            startPlayback = True
+            # for STRM (force resolve) -- resolve-only
+            if settings.username != '':
+                resolvedPlayback = True
+                startPlayback = False
+            else:
+                startPlayback = True
         #resolve for an opening stream dialog
         else:
             resolvedPlayback=True
