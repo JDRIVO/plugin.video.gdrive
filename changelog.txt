@@ -1,3 +1,5 @@
+v0.7.30 (2016-02-19)
+- add print statement for debug
 v0.7.29 (2016-02-19)
 - add offline media playback option (completely offline)
 v0.7.28 (2016-02-18)

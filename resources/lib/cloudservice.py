@@ -701,6 +701,7 @@ class cloudservice(object):
             f = xbmcvfs.File(playbackFile, 'w')
 
 
+            print "DEBUG url = " + mediaURL.url + ", sizeDownload = " + str(sizeDownload) + ", playback = " + str(playback) + ", playbackFile = " + str(playbackFile)
 #            if playbackURL != '':
 #                progress = xbmcgui.DialogProgress()
 #                progressBar = sizeDownload
@@ -709,7 +710,6 @@ class cloudservice(object):
             progress = xbmcgui.DialogProgressBG()
             progressBar = fileSize
             progress.create(self.addon.getLocalizedString(30035), package.file.title)
-
             # if action fails, validate login
             try:
               response = urllib2.urlopen(req)
