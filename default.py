@@ -44,6 +44,7 @@ from resources.lib import cloudservice
 from resources.lib import authorization
 from resources.lib import folder
 from resources.lib import file
+from resources.lib import offlinefile
 from resources.lib import package
 from resources.lib import mediaurl
 from resources.lib import crashreport
@@ -302,12 +303,9 @@ if mode == 'offline':
 
 
     if mediaItems:
-        for item in mediaItems:
+        for offlinefile in mediaItems:
 
-            if item.file is None:
-                service.addDirectory(item.folder, contextType=contextType, epath=str(path)+ '/' + str(item.folder.title) + '/')
-            else:
-                service.addMediaFile(item, contextType=contextType)
+            kodi_common.addOfflineMediaFile(offlinefile)
 
 
 
