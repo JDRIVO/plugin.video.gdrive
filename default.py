@@ -173,12 +173,8 @@ elif mode == 'buildstrm':
             invokedUsername = settings.getParameter('username')
             encfs = settings.getParameter('encfs', False)
 
-            if encfs:
-
-                settings.setEncfsParameters()
-
-                encryptedPath = settings.getParameter('epath', '')
-                dencryptedPath = settings.getParameter('dpath', '')
+            encryptedPath = settings.getParameter('epath', '')
+            dencryptedPath = settings.getParameter('dpath', '')
 
             if folderID != '':
 
@@ -213,7 +209,7 @@ elif mode == 'buildstrm':
                         break
                     count = count + 1
 
-                service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog)
+                service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
 
             elif filename != '':
                             if encfs:
@@ -243,7 +239,7 @@ elif mode == 'buildstrm':
                         else:
                             service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
-                        service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog)
+                        service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
 
                     if count == numberOfAccounts:
                         #fallback on first defined account

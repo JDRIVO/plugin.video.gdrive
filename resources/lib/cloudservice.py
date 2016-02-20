@@ -415,14 +415,14 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None):
+    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False):
 
         import xbmcvfs
         xbmcvfs.mkdir(path)
 
         mediaItems = self.getMediaList(folderID,contentType=contentType)
 
-        if mediaItems:
+        if mediaItems and not encfs:
             for item in mediaItems:
 
                 url = 0
@@ -487,6 +487,128 @@ class cloudservice(object):
                                 strmFile = xbmcvfs.File(filename, "w")
                                 strmFile.write(url+'\n')
                                 strmFile.close()
+        elif mediaItems and encfs:
+
+            self.settings.setEncfsParameters()
+
+            encryptedPath = self.settings.getParameter('epath', '')
+            dencryptedPath = self.settings.getParameter('dpath', '')
+
+            encfs_source = self.settings.encfsSource
+            encfs_target = self.settings.encfsTarget
+            encfs_inode = self.settings.encfsInode
+
+            dirListINodes = {}
+            fileListINodes = {}
+            for item in mediaItems:
+
+                if item.file is None:
+                    xbmcvfs.mkdir(encfs_source + str(encryptedPath))
+                    xbmcvfs.mkdir(encfs_source + str(encryptedPath) + str(item.folder.title) + '/' )
+
+                    if encfs_inode == 0:
+                        dirListINodes[(str(xbmcvfs.Stat(encfs_source + str(encryptedPath) + str(item.folder.title)).st_ino()))] = item.folder
+                    else:
+                        dirListINodes[(str(xbmcvfs.Stat(encfs_source + str(encryptedPath) + str(item.folder.title)).st_ctime()))] = item.folder
+                    #service.addDirectory(item.folder, contextType=contextType,  encfs=True)
+                else:
+                    xbmcvfs.mkdir(encfs_source +  str(encryptedPath))
+                    xbmcvfs.mkdir(encfs_source +  str(encryptedPath) + str(item.file.title))
+                    if encfs_inode == 0:
+                        fileListINodes[(str(xbmcvfs.Stat(encfs_source +  str(encryptedPath)+ str(item.file.title)).st_ino()))] = item
+                    else:
+                        fileListINodes[(str(xbmcvfs.Stat(encfs_source +  str(encryptedPath) + str(item.file.title)).st_ctime()))] = item
+                    #service.addMediaFile(item, contextType=contextType)
+                if encfs_inode > 0:
+                        xbmc.sleep(1000)
+
+
+            if contentType == 9:
+                mediaList = ['.mp4', '.flv', '.mov', '.webm', '.avi', '.ogg', '.mkv']
+            elif contentType == 10:
+                mediaList = ['.mp3', '.flac']
+            else:# contentType == 11:
+                mediaList = ['.jpg', '.png']
+            media_re = re.compile("|".join(mediaList), re.I)
+
+            dirs, files = xbmcvfs.listdir(encfs_target + str(dencryptedPath) )
+            url = 0
+            for dir in dirs:
+                index = ''
+                if encfs_inode == 0:
+                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + dir).st_ino())
+                else:
+                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + dir).st_ctime())
+                if index in dirListINodes.keys():
+                    xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
+#                    dirTitle = dir + ' [' +dirListINodes[index].title+ ']'
+                    encryptedDir = dirListINodes[index].title
+                    dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
+                    #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
+                    self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
+
+                elif index in fileListINodes.keys():
+                    xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
+                    fileListINodes[index].file.decryptedTitle = dir
+                    if contentType < 9 or media_re.search(str(dir)):
+                        #service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(dir), epath=str(encryptedPath) )
+                        #'content_type': 'video',
+                        values = { 'username': self.authorization.username, 'encfs':'True', 'dpath': str(dencryptedPath) + str(dir), 'epath': str(encryptedPath), 'title': item.file.title, 'filename': item.file.id}
+                        if item.file.type == 1:
+                            url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
+                        else:
+                            url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
+
+                        #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
+
+
+                    if url != 0:
+                        title = str(dir)
+
+                        if pDialog is not None:
+                            pDialog.update(message=title)
+
+                        if not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm'):
+                            filename = str(path) + '/' + str(title)+'.strm'
+                            strmFile = xbmcvfs.File(filename, "w")
+
+                            strmFile.write(url+'\n')
+                            strmFile.close()
+
+            url=0
+            # file is already downloaded
+            for file in files:
+                index = ''
+                if encfs_inode == 0:
+                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + file).st_ino())
+                else:
+                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + file).st_ctime())
+                if index in fileListINodes.keys():
+                    fileListINodes[index].file.decryptedTitle = file
+                    if contentType < 9 or media_re.search(str(file)):
+                        #service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(file), epath=str(encryptedPath) )
+                        #'content_type': 'video',
+                        values = { 'username': self.authorization.username, 'encfs':'True', 'dpath': str(dencryptedPath) + str(dir), 'epath': str(encryptedPath), 'title': item.file.title, 'filename': item.file.id}
+                        if item.file.type == 1:
+                            url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
+                        else:
+                            url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
+
+                        #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
+
+
+                    if url != 0:
+                        title = str(dir)
+
+                        if pDialog is not None:
+                            pDialog.update(message=title)
+
+                        if not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm'):
+                            filename = str(path) + '/' + str(title)+'.strm'
+                            strmFile = xbmcvfs.File(filename, "w")
+
+                            strmFile.write(url+'\n')
+                            strmFile.close()
 
     ##
     # retrieve a directory url
@@ -927,10 +1049,10 @@ class cloudservice(object):
 
                         cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
 
-                    elif contextType != 'image':
-                        values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id, 'content_type': contextType }
+                    #elif contextType != 'image':
+                        #values = {'username': self.authorization.username, 'epath': epath, 'dpath': dpath, 'encfs':'true' ,'title': folder.title, 'folder': folder.id, 'content_type': contextType }
 
-                        cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
+                        #cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
 
                     elif contextType == 'image':
                         # slideshow
@@ -946,11 +1068,11 @@ class cloudservice(object):
                             values = {'instance': self.instanceName, 'title': folder.title, 'folder': folder.id}
                             cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&'+urllib.urlencode(values)+')', ))
 
-                        if contextType == 'audio':
+                        if contextType == 'audio' and not encfs:
                             #playback entire folder
                             values = {'instance': self.instanceName, 'folder': folder.id}
                             cm.append(( self.addon.getLocalizedString(30162), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=audio&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
-                        elif contextType == 'video':
+                        elif contextType == 'video' and not encfs:
                             #playback entire folder
                             values = {'instance': self.instanceName, 'folder': folder.id}
                             cm.append(( self.addon.getLocalizedString(30162), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=video&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
