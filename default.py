@@ -910,7 +910,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
         # save new resume point
         # file property - gdrive
-        if  0 and settings.cloudResume == 1 and  service.protocol == 2 and player.time > package.file.resume:
+        if  0 and settings.cloudResume == '1' and  service.protocol == 2 and player.time > package.file.resume:
             service.setProperty(package.file.id,'resume', player.time)
 
         playbackMedia = False
@@ -920,39 +920,39 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
 
         # TESTING
-    if settings.cloudResume == 'Google Drive Spreadsheet':
-                    playbackPlayer = False
+    if settings.cloudResume == '2':
+        playbackPlayer = False
 
 
-                    try:
-                        gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
-                        service.gSpreadsheet = gSpreadsheet
-                        spreadsheets = gSpreadsheet.getSpreadsheetList()
-                    except:
-                        pass
+        try:
+            gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+            service.gSpreadsheet = gSpreadsheet
+            spreadsheets = gSpreadsheet.getSpreadsheetList()
+        except:
+            pass
 
-                    for title in spreadsheets.iterkeys():
-                        if title == 'CLOUD_DB':
-                            worksheets = gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+        for title in spreadsheets.iterkeys():
+            if title == 'CLOUD_DB':
+                worksheets = gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
 
-                            for worksheet in worksheets.iterkeys():
-                                if worksheet == 'db':
-                                    media = gSpreadsheet.getMedia(worksheets[worksheet], fileID=package.file.id)
-                                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                                            thumbnailImage=package.file.thumbnail)
+                for worksheet in worksheets.iterkeys():
+                    if worksheet == 'db':
+                        media = gSpreadsheet.getMedia(worksheets[worksheet], fileID=package.file.id)
+                        item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                                thumbnailImage=package.file.thumbnail)
 
-                                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-                                    player = gPlayer.gPlayer()
-                                    player.setService(service)
-                                    player.setWorksheet(worksheets['db'])
-                                    if len(media) == 0:
-                                        player.PlayStream(mediaURL.url, item, 0, package)
-                                    else:
-                                        player.PlayStream(mediaURL.url, item,media[0][7],package)
-                                    while not player.isExit:
-                                        player.saveTime()
-                                        xbmc.sleep(5000)
-                    playbackMedia = False
+                        item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+                        player = gPlayer.gPlayer()
+                        player.setService(service)
+                        player.setWorksheet(worksheets['db'])
+                        if len(media) == 0:
+                            player.PlayStream(mediaURL.url, item, 0, package)
+                        else:
+                            player.PlayStream(mediaURL.url, item,media[0][7],package)
+                        while not player.isExit:
+                            player.saveTime()
+                            xbmc.sleep(5000)
+        playbackMedia = False
 
     # file ID provided
     #if we don't have the docid, search for the video for playback
@@ -1170,7 +1170,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
                     # save new resume point
                     # file property - gdrive
-                    if settings.cloudResume == 1 and service.protocol == 2 and player.time > package.file.resume:
+                    if settings.cloudResume == '1' and service.protocol == 2 and player.time > package.file.resume:
                         service.setProperty(package.file.id,'resume', player.time)
 
                 else:
@@ -1211,7 +1211,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
                     # save new resume point
                     # file property - gdrive
-                    if  settings.cloudResume == 1 and  service.protocol == 2 and player.time > package.file.resume:
+                    if  settings.cloudResume == '1' and  service.protocol == 2 and player.time > package.file.resume:
                         service.setProperty(package.file.id,'resume', player.time)
 
 #                player = gPlayer.gPlayer()
