@@ -694,7 +694,7 @@ class cloudservice(object):
             resolutionFile.close()
 
 
-        if not xbmcvfs.exists(playbackFile) or force:
+        if (not xbmcvfs.exists(playbackFile)  or  xbmcvfs.File(playbackFile).size() == 0) or force:
 
             req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
 
@@ -796,7 +796,7 @@ class cloudservice(object):
 
         playbackFile = folderName
 
-        if not xbmcvfs.exists(playbackFile) or force:
+        if (not xbmcvfs.exists(playbackFile) or xbmcvfs.File(playbackFile).size() == 0) or force:
 
             req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
 
@@ -949,7 +949,7 @@ class cloudservice(object):
             playbackFile = str(path) + '/' + str(package.file.id) + '/' + str(mediaURL.order) + '.stream'
 
 
-        if not xbmcvfs.exists(playbackFile) or force:
+        if (not xbmcvfs.exists(playbackFile) or xbmcvfs.File(playbackFile).size() == 0) or force:
 
             req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
 
@@ -1308,7 +1308,10 @@ class cloudservice(object):
                 originalURL = mediaURL.url
 
         mediaURL = ''
-        if self.settings.playOriginal:
+        if self.settings.playOriginal and (self.settings.download or  self.settings.cache):
+            mediaURL = mediaurl.mediaurl(originalURL, 'original', 0, 9999)
+            return mediaURL
+        else:
             mediaURL = mediaurl.mediaurl(originalURL +'|' + self.getHeadersEncoded(), 'original', 0, 9999)
             return mediaURL
 
