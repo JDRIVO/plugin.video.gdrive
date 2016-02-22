@@ -3,6 +3,7 @@ v0.7.32 (2016-02-22)
 - fix: prompt user with cache + original in never transcode mode
 - make offline stream files a video extension for universal playback
 - fix transcode selection screen disappearing after a fix in 0.7.31
+- add option to settings to terminate cache download on playback user-stopped
 v0.7.31 (2016-02-20)
 - fix but for error 400 in cache for never transcode + always cache
 v0.7.30 (2016-02-19)
