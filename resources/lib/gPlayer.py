@@ -42,6 +42,7 @@ class gPlayer(xbmc.Player):
         self.time = 0
         self.service = None
         self.current = 1
+        self.playStatus = False
 
 
     def setService(self,service):
@@ -145,6 +146,7 @@ class gPlayer(xbmc.Player):
 
     def onPlayBackStarted(self):
         print "PLAYBACK STARTED"
+        self.playStatus = True
 #        if self.seek > 0:
 #            self.seekTime(self.seek)
         if self.seek > 0 and self.seek !='':
@@ -180,6 +182,8 @@ class gPlayer(xbmc.Player):
         self.isExit = True
 #        if not self.isExit:
 #            print "don't exit"
+        self.playStatus = False
+
 
     def onPlayBackPaused(self):
         print "PLAYBACK Paused"

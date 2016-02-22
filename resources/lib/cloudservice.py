@@ -20,14 +20,18 @@
 #import os
 import re
 import urllib, urllib2
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin
-import xbmcvfs
 import sys
 import os
+
+# cloudservice - standard XBMC modules
+import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+import xbmcvfs
 
 from resources.lib import mediaurl
 from resources.lib import kodi_common
 from resources.lib import settings
+
+
 
 
 #global variables
@@ -628,7 +632,7 @@ class cloudservice(object):
     # download/retrieve a media file
     #   parameters: whether to playback file, media url object, package object, whether to force download (overwrite), whether the file is encfs, folder name (option)
     ##
-    def downloadMediaFile(self, mediaURL, item, package, force=False, folderName='', playback=1):
+    def downloadMediaFile(self, mediaURL, item, package, force=False, folderName='', playback=1, player=None):
 
         progress = ''
         cachePercent = int(self.settings.cachePercent)
@@ -673,13 +677,14 @@ class cloudservice(object):
 
         if self.settings.cacheSingle:
             playbackFile = str(path) + '/cache.mp4'
+            force= True
 
         else:
             try:
                 xbmcvfs.mkdir(str(path) + '/'+ str(package.file.id))
             except: pass
 
-            playbackFile = str(path) + '/' + str(package.file.id) + '/' + str(mediaURL.order) + '.stream'
+            playbackFile = str(path) + '/' + str(package.file.id) + '/' + str(mediaURL.order) + '.stream.mp4'
 
         if not xbmcvfs.exists(str(path) + '/' + str(package.file.id) + '/' + str(package.file.id) + '.name') or force:
 
@@ -687,9 +692,9 @@ class cloudservice(object):
             nameFile.write(package.file.title +'\n')
             nameFile.close()
 
-        if not xbmcvfs.exists(playbackFile + '.resolution') or force:
+        if not xbmcvfs.exists(str(path) + '/' + str(package.file.id) + '/' + str(mediaURL.order) + '.stream.resolution') or force:
 
-            resolutionFile = xbmcvfs.File(playbackFile+'.resolution' , "w")
+            resolutionFile = xbmcvfs.File(str(path) + '/' + str(package.file.id) + '/' + str(mediaURL.order) + '.stream.resolution' , "w")
             resolutionFile.write(mediaURL.qualityDesc +'\n')
             resolutionFile.close()
 
@@ -701,7 +706,7 @@ class cloudservice(object):
             f = xbmcvfs.File(playbackFile, 'w')
 
 
-            print "DEBUG url = " + mediaURL.url + ", sizeDownload = " + str(sizeDownload) + ", playback = " + str(playback) + ", playbackFile = " + str(playbackFile)
+            #print "DEBUG url = " + mediaURL.url + ", sizeDownload = " + str(sizeDownload) + ", playback = " + str(playback) + ", playbackFile = " + str(playbackFile)
 #            if playbackURL != '':
 #                progress = xbmcgui.DialogProgress()
 #                progressBar = sizeDownload
@@ -740,13 +745,25 @@ class cloudservice(object):
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
             else:
                 xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
+            while not (player.isPlaying()):
+                xbmc.sleep(1000)
+                #print str(player.playStatus)
         try:
+            count =1
             while True:
+                if not self.settings.cacheContinue and player is not None and count % 12 == 0:
+                    if not player.playStatus:
+                        f.close()
+                        progress.close()
+                        return
+                count = count + 1
                 downloadedBytes = downloadedBytes + CHUNK
                 progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30092))
                 chunk = response.read(CHUNK)
                 if not chunk: break
                 f.write(chunk)
+                xbmc.sleep(100)
+
             f.close()
             progress.close()
 
@@ -946,7 +963,7 @@ class cloudservice(object):
                 xbmcvfs.mkdir(str(path) + '/'+ str(package.file.id))
             except: pass
 
-            playbackFile = str(path) + '/' + str(package.file.id) + '/' + str(mediaURL.order) + '.stream'
+            playbackFile = str(path) + '/' + str(package.file.id) + '/' + str(mediaURL.order) + '.stream.mp4'
 
 
         if (not xbmcvfs.exists(playbackFile) or xbmcvfs.File(playbackFile).size() == 0) or force:
@@ -1302,18 +1319,24 @@ class cloudservice(object):
 
         options = []
         mediaURLs = sorted(mediaURLs)
-        for mediaURL in mediaURLs:
-            options.append(mediaURL.qualityDesc)
-            if mediaURL.qualityDesc == 'original':
-                originalURL = mediaURL.url
+        if self.settings.playOriginal:
+            for mediaURL in mediaURLs:
+                if mediaURL.qualityDesc == 'original':
+                    options.append(mediaURL.qualityDesc)
+                    originalURL = mediaURL.url
+        else:
+            for mediaURL in mediaURLs:
+                options.append(mediaURL.qualityDesc)
+                if mediaURL.qualityDesc == 'original':
+                    originalURL = mediaURL.url
 
         mediaURL = ''
-        if self.settings.playOriginal and (self.settings.download or  self.settings.cache):
+        if self.settings.download or  self.settings.cache:
             mediaURL = mediaurl.mediaurl(originalURL, 'original', 0, 9999)
             return mediaURL
-        else:
-            mediaURL = mediaurl.mediaurl(originalURL +'|' + self.getHeadersEncoded(), 'original', 0, 9999)
-            return mediaURL
+        #elif self.settings.playOriginal:
+        #    mediaURL = mediaurl.mediaurl(originalURL +'|' + self.getHeadersEncoded(), 'original', 0, 9999)
+        #    return mediaURL
 
         #playbackPath = str(self.settings.cachePath) + '/' + str(filename) + '/'
         (localResolutions,localFiles) = self.cache.getFiles(self)

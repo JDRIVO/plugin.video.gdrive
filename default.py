@@ -832,6 +832,9 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
     encfs = settings.getParameter('encfs', False)
 
+    #testing
+    player = gPlayer.gPlayer()
+
     if encfs:
 
         settings.setEncfsParameters()
@@ -1007,6 +1010,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                     if worksheet == 'db':
                         media = gSpreadsheet.getMedia(worksheets[worksheet], fileID=package.file.id)
                         media = gSpreadsheet.setMediaStatus(worksheets[worksheet], package, watched=2, resume=2)
+                        break
                         #item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                         #                        thumbnailImage=package.file.thumbnail)
 
@@ -1021,6 +1025,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                         #while not player.isExit:
                         #    player.saveTime()
                         #    xbmc.sleep(5000)
+                break
         #playbackMedia = False
 
     originalURL = ''
@@ -1063,7 +1068,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             # right-click download and play
             elif not mediaURL.offline and settings.download and settings.play:
     #            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
-                service.downloadMediaFile(mediaURL, item, package, playback=service.PLAYBACK_PLAYER)
+                service.downloadMediaFile(mediaURL, item, package, playback=service.PLAYBACK_PLAYER, player=player)
                 playbackMedia = False
 
             # for STRM (force resolve) -- resolve-only
@@ -1119,7 +1124,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         #download and play (direct)
         elif not mediaURL.offline and settings.download and settings.play:
 #            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
-            service.downloadMediaFile(mediaURL, item, package)
+            service.downloadMediaFile(mediaURL, item, package, player=player)
             playbackMedia = False
 
 
@@ -1268,7 +1273,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
             #download & playback
             elif settings.download and settings.play:
-                service.downloadMediaFile(mediaURL, item, package,  playback=service.PLAYBACK_PLAYER)
+                service.downloadMediaFile(mediaURL, item, package,  playback=service.PLAYBACK_PLAYER, player=player)
                 playbackMedia = False
 
             else:
@@ -1298,7 +1303,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             playbackMedia = False
         #download and play
         elif settings.download and settings.play:
-            service.downloadMediaFile(mediaURL, item, package)
+            service.downloadMediaFile(mediaURL, item, package, player=player)
             playbackMedia = False
 
 

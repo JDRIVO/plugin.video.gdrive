@@ -87,7 +87,6 @@ class gdrive(cloudservice):
 
 
         self.crashreport = crashreport.crashreport(self.addon)
-#        self.crashreport.sendError('test','test')
 
         try:
             username = self.addon.getSetting(self.instanceName+'_username')

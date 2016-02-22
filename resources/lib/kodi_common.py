@@ -214,7 +214,7 @@ def getOfflineFileList(cachePath):
         for dir in dirs:
             subdir,subfiles = xbmcvfs.listdir(str(cachePath) + '/' + str(dir))
             for file in subfiles:
-                if os.path.splitext(file)[1] == '.stream':
+                if bool(re.search('\.stream\.mp4', file)):
                     try:
                         nameFile = xbmcvfs.File(str(cachePath) + '/' + str(dir) + '/' + str(dir) + '.name')
                         filename = nameFile.read()
@@ -222,12 +222,12 @@ def getOfflineFileList(cachePath):
                     except:
                         filename = file
                     try:
-                        nameFile = xbmcvfs.File(str(cachePath) + '/' + str(dir) + '/' + str(os.path.splitext(file)[0]) + '.stream.resolution')
+                        nameFile = xbmcvfs.File(str(cachePath) + '/' + str(dir) + '/' + str(os.path.splitext(file)[0]) + '.resolution')
                         resolution = nameFile.read()
                         nameFile.close()
                     except:
                         resolution = file
-                    offlineFile = offlinefile.offlinefile(filename, str(cachePath) + '/' + str(dir) +'.jpg', resolution.rstrip(), str(cachePath) + '/' + str(dir) + '/' + str(os.path.splitext(file)[0]) + '.stream')
+                    offlineFile = offlinefile.offlinefile(filename, str(cachePath) + '/' + str(dir) +'.jpg', resolution.rstrip(), str(cachePath) + '/' + str(dir) + '/' + str(os.path.splitext(file)[0]) + '.mp4')
                     localFiles.append(offlineFile)
 
     return localFiles

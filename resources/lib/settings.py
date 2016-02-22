@@ -110,6 +110,7 @@ class settings:
         self.cacheSingle = self.getSetting('cache_single')
         self.cachePercent = self.getSetting('cache_percent', 10)
         self.cacheChunkSize = self.getSetting('chunk_size', 32 * 1024)
+        self.cacheContinue = self.getSetting('cache_continue', False)
 
         if self.cache:
             self.download = False
