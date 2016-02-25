@@ -25,9 +25,7 @@ import urllib, urllib2
 import cookielib
 import unicodedata
 
-#*** testing - gdrive
-from resources.lib import encryption
-##**
+
 
 # cloudservice - standard modules
 from cloudservice import cloudservice

@@ -28,7 +28,6 @@ import unicodedata
 
 # cloudservice - standard modules
 from cloudservice import cloudservice
-from resources.lib import encryption
 from resources.lib import authorization
 from resources.lib import folder
 from resources.lib import file

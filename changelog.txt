@@ -1,3 +1,5 @@
+v0.7.33 (2016-02-24)
+- modules inclusion list fix
 v0.7.32 (2016-02-22)
 - fix for single-file cache not clearing between plays
 - fix: prompt user with cache + original in never transcode mode
