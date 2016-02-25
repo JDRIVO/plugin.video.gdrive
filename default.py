@@ -991,26 +991,38 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
 
 
+
         # TESTING
     if settings.cloudResume == '2':
-        playbackPlayer = False
+        if service.worksheetID == '':
 
-        try:
-            gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
-            service.gSpreadsheet = gSpreadsheet
-            spreadsheets = gSpreadsheet.getSpreadsheetList()
-        except:
-            pass
+            try:
+                service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
 
-        for title in spreadsheets.iterkeys():
-            if title == 'CLOUD_DB':
-                worksheets = gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+                spreadsheets = service.gSpreadsheet.getSpreadsheetList()
+            except:
+                pass
 
-                for worksheet in worksheets.iterkeys():
-                    if worksheet == 'db':
-                        media = gSpreadsheet.getMedia(worksheets[worksheet], fileID=package.file.id)
-                        media = gSpreadsheet.setMediaStatus(worksheets[worksheet], package, watched=2, resume=2)
+            for title in spreadsheets.iterkeys():
+                if title == 'CLOUD_DB':
+                    worksheets = service.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+
+                    for worksheet in worksheets.iterkeys():
+                        if worksheet == 'db':
+                            service.worksheetID = worksheets[worksheet]
+                            addon.setSetting(instanceName + '_spreadsheet', service.worksheetID)
                         break
+                break
+
+        # TESTING
+    if settings.cloudResume == '2':
+ #       playbackPlayer = False
+
+        service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+
+        media = service.gSpreadsheet.updateMediaPackage(service.worksheetID, package)
+
+        #media = gSpreadsheet.setMediaStatus(worksheets[worksheet], package, watched=2, resume=2)
                         #item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                         #                        thumbnailImage=package.file.thumbnail)
 
@@ -1025,7 +1037,6 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                         #while not player.isExit:
                         #    player.saveTime()
                         #    xbmc.sleep(5000)
-                break
         #playbackMedia = False
 
     originalURL = ''

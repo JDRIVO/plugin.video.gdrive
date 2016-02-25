@@ -279,8 +279,6 @@ class gSpreadsheets:
 
     def getMedia(self,url, folderID=None, fileID=None):
 
-
-
         if fileID is None:
             params = urllib.urlencode({'folderid': folderID})
         else:
@@ -305,6 +303,51 @@ class gSpreadsheets:
                              response_data, re.DOTALL):
                 media[count] = r.groups()
                 count = count + 1
+
+            nextURL = ''
+            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                nextURL = r.groups()
+
+            response.close()
+
+            if nextURL == '':
+                break
+            else:
+                url = nextURL[0]
+
+
+        return media
+
+
+    def updateMediaPackage(self,url, package):
+
+        if package is not None and (package.file is None or package.file.id is None) and package.folder is not None and package.folder.id is not None:
+            params = urllib.urlencode({'folderid':  package.folder.id})
+        elif package is not None and package.file is not None and package.file.id is not None:
+            params = urllib.urlencode({'fileid':  package.file.id})
+        else:
+            return
+        url = url + '?sq=' + params
+
+
+        media = {}
+        while True:
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+
+            response_data = response.read()
+
+#            for r in re.finditer('<gsx:folderid>([^<]*)</gsx:folderid><gsx:foldername>([^<]*)</gsx:foldername><gsx:fileid>([^<]*)</gsx:fileid><gsx:filename>([^<]*)</gsx:filename><gsx:nfo>([^<]*)</gsx:nfo><gsx:order>([^<]*)</gsx:order><gsx:watched>([^<]*)</gsx:watched><gsx:resume>([^<]*)</gsx:resume>' ,
+            for r in re.finditer('<gsx:fileid>([^<]*)</gsx:fileid><gsx:filename>([^<]*)</gsx:filename><gsx:watched>([^<]*)</gsx:watched><gsx:resume>([^<]*)</gsx:resume>' ,
+                             response_data, re.DOTALL):
+                media = r.groups()
+                package.file.playcount = media[2]
+                package.file.resume = media[3]
 
             nextURL = ''
             for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,

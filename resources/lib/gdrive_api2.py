@@ -81,6 +81,7 @@ class gdrive(cloudservice):
         self.protocol = 2
         self.settings = settings
         self.gSpreadsheet = gSpreadsheet
+        self.worksheetID = self.addon.getSetting(self.instanceName+'_spreadsheet')
 
         if authenticate == True:
             self.type = int(addon.getSetting(instanceName+'_type'))
