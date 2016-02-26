@@ -162,7 +162,11 @@ class gPlayer(xbmc.Player):
         print "PLAYBACK ENDED"
 #        self.next()
         if self.package is not None:
-            self.service.setProperty(self.package.file.id,'playcount', int(self.package.file.playcount)+1)
+            try:
+                self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, watched= int(self.package.file.playcount)+1, resume=self.time)
+            except: pass
+
+            #self.service.setProperty(self.package.file.id,'playcount', int(self.package.file.playcount)+1)
 
             #try:
 
@@ -176,7 +180,7 @@ class gPlayer(xbmc.Player):
         print "PLAYBACK STOPPED"
         if self.package is not None:
             try:
-                self.service.gSpreadsheet.setMediaStatus(self.worksheet,self.package, resume=self.time)
+                self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, resume=self.time)
             except: pass
         #self.current = self.current +1
         self.isExit = True

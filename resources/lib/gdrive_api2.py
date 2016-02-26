@@ -301,6 +301,7 @@ class gdrive(cloudservice):
         elif self.authorization.isToken(self.instanceName,self.addon, 'auth_access_token'):
 #            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
             return { "If-Match" : '*', 'Content-Type': 'application/atom+xml', 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+            #return {  'Content-Type': 'application/atom+xml', 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
         else:
             return { 'User-Agent' : self.user_agent}
 

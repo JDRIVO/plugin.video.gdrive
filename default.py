@@ -491,8 +491,8 @@ elif mode == 'kiosk':
                     for worksheet in worksheets.iterkeys():
                         if worksheet == 'data':
                             episodes = gSpreadsheet.getVideo(worksheets[worksheet] ,showList[ret])
-                            player = gPlayer.gPlayer()
-                            player.setService(service)
+                            #player = gPlayer.gPlayer()
+                            #player.setService(service)
                             player.setContent(episodes)
                             player.setWorksheet(worksheets['data'])
                             player.next()
@@ -502,8 +502,8 @@ elif mode == 'kiosk':
                     for worksheet in worksheets.iterkeys():
                         if worksheet == 'db':
                             episodes = gSpreadsheet.getMedia(worksheets[worksheet], service.getRootID())
-                            player = gPlayer.gPlayer()
-                            player.setService(service)
+                            #player = gPlayer.gPlayer()
+                            #player.setService(service)
 #                            player.setContent(episodes)
                             player.setWorksheet(worksheets['db'])
                             player.PlayStream('plugin://plugin.video.gdrive-testing/?mode=video&instance='+str(service.instanceName)+'&title='+episodes[0][3], None,episodes[0][7],episodes[0][2])
@@ -834,6 +834,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
     #testing
     player = gPlayer.gPlayer()
+    player.setService(service)
 
     if encfs:
 
@@ -880,8 +881,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         elif resolvedPlayback:
             xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
-        player = gPlayer.gPlayer()
-        player.setService(service)
+        #player = gPlayer.gPlayer()
+        #player.setService(service)
         # need to seek?
         if seek > 0:
             player.PlayStream(playbackTarget, item, seek, startPlayback=startPlayback, package=package)
@@ -968,7 +969,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 item = xbmcgui.ListItem(path=playbackPath+'|' + service.getHeadersEncoded())
                 item.setInfo( type="Video", infoLabels={ "Title": options[ret] , "Plot" : options[ret] } )
                 if settings.integratedPlayer:
-                    player = gPlayer.gPlayer()
+                    #player = gPlayer.gPlayer()
                     player.play(playbackPath+'|' + service.getHeadersEncoded(), item)
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
                 else:
@@ -980,7 +981,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         mediaItems = service.getMediaList(folderName=folderID, contentType=contentType)
         if mediaItems:
             #if contextType == '':
-                player = gPlayer.gPlayer()
+                #player = gPlayer.gPlayer()
                 player.setMedia(mediaItems)
                 player.playList(service)
                 playbackMedia = False
@@ -1018,7 +1019,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
     if settings.cloudResume == '2':
  #       playbackPlayer = False
 
-        service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+        if service.gSpreadsheet is None:
+            service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
 
         media = service.gSpreadsheet.updateMediaPackage(service.worksheetID, package)
 
@@ -1117,8 +1119,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                                                             thumbnailImage=package.file.thumbnail)
 
                                     item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-                                    player = gPlayer.gPlayer()
-                                    player.setService(service)
+                                    #player = gPlayer.gPlayer()
+                                    #player.setService(service)
                                     player.setWorksheet(worksheets['db'])
                                     if len(media) == 0:
                                         player.PlayStream(mediaURL.url, item, 0, package)
@@ -1156,7 +1158,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                     item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
                     #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
-                    player = gPlayer.gPlayer()
+                    #player = gPlayer.gPlayer()
                     #player.play(playbackPath, item)
                     if seek > 0:
                         player.PlayStream(mediaURL.url, item, seek, package=package)
@@ -1196,8 +1198,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                     #need a player?
 #                    if seek > 0 or package.file.resume > 0 or settings.srt or settings.cc:
 
-                    player = gPlayer.gPlayer()
-                    player.setService(service)
+                    #player = gPlayer.gPlayer()
+                    #player.setService(service)
                     # need to seek?
                     if seek > 0:
                         player.PlayStream(mediaURL.url, item, seek, startPlayback=False, package=package)
@@ -1297,7 +1299,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 item = xbmcgui.ListItem(path=str(playbackPath))
                 # local, not remote. "Music" is ok
                 item.setInfo( type="Music", infoLabels={ "Title": title } )
-                player = gPlayer.gPlayer()
+                #player = gPlayer.gPlayer()
                 player.play(mediaURL.url, item)
                 playbackMedia = False
 
@@ -1309,7 +1311,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
             item.setInfo( type="Video", infoLabels={ "Title": title } )
 
-            player = gPlayer.gPlayer()
+            #player = gPlayer.gPlayer()
             player.play(mediaURL.url, item)
             playbackMedia = False
         #download and play
@@ -1334,7 +1336,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 #                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
                     #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
-                    player = gPlayer.gPlayer()
+                    #player = gPlayer.gPlayer()
                     #player.play(playbackPath, item)
                     player.PlayStream(mediaURL.url, item, 0)
 
