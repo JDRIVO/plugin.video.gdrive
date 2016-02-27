@@ -744,7 +744,8 @@ class cloudservice(object):
             if playback == self.PLAYBACK_RESOLVED:
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
             else:
-                xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
+                #xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
+                player.PlayStream(playbackFile, item, package.file.resume, startPlayback=True, package=package)
             while not (player.isPlaying()):
                 xbmc.sleep(1000)
                 #print str(player.playStatus)
@@ -753,8 +754,8 @@ class cloudservice(object):
             while True:
                 if not self.settings.cacheContinue and player is not None and count % 12 == 0:
                     if not player.playStatus:
-                        f.close()
                         progress.close()
+                        f.close()
                         return
                 count = count + 1
                 downloadedBytes = downloadedBytes + CHUNK
@@ -1318,15 +1319,18 @@ class cloudservice(object):
     def getMediaSelection(self, mediaURLs, folderID, filename):
 
         options = []
+        newMediaURLs = []
         mediaURLs = sorted(mediaURLs)
         if self.settings.playOriginal:
             for mediaURL in mediaURLs:
                 if mediaURL.qualityDesc == 'original':
                     options.append(mediaURL.qualityDesc)
+                    newMediaURLs.append(mediaURL)
                     originalURL = mediaURL.url
         else:
             for mediaURL in mediaURLs:
                 options.append(mediaURL.qualityDesc)
+                newMediaURLs.append(mediaURL)
                 if mediaURL.qualityDesc == 'original':
                     originalURL = mediaURL.url
 
@@ -1340,7 +1344,7 @@ class cloudservice(object):
 
         #playbackPath = str(self.settings.cachePath) + '/' + str(filename) + '/'
         (localResolutions,localFiles) = self.cache.getFiles(self)
-        totalList = localFiles + mediaURLs
+        totalList = localFiles + newMediaURLs
         mediaCount = len(localFiles)
 
         if self.settings.promptQuality:

@@ -1,3 +1,4 @@
+- fix: transcodes even if "never transcode" is selected
 v0.7.35 (2016-02-26)
 - cleanup of video playback
 v0.7.34 (2016-02-25)

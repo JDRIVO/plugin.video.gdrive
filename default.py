@@ -986,35 +986,37 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
         item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
 
-            # TESTING
-        if settings.cloudResume == '2':
-            if service.worksheetID == '':
+        # right-click - download (download only + force)
+        if not (settings.download and not settings.play):
+                # TESTING
+            if settings.cloudResume == '2':
+                if service.worksheetID == '':
 
-                try:
+                    try:
+                        service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+
+                        spreadsheets = service.gSpreadsheet.getSpreadsheetList()
+                    except:
+                        pass
+
+                    for title in spreadsheets.iterkeys():
+                        if title == 'CLOUD_DB':
+                            worksheets = service.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+
+                            for worksheet in worksheets.iterkeys():
+                                if worksheet == 'db':
+                                    service.worksheetID = worksheets[worksheet]
+                                    addon.setSetting(instanceName + '_spreadsheet', service.worksheetID)
+                                break
+                        break
+
+                # TESTING
+            if settings.cloudResume == '2':
+
+                if service.gSpreadsheet is None:
                     service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
 
-                    spreadsheets = service.gSpreadsheet.getSpreadsheetList()
-                except:
-                    pass
-
-                for title in spreadsheets.iterkeys():
-                    if title == 'CLOUD_DB':
-                        worksheets = service.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
-
-                        for worksheet in worksheets.iterkeys():
-                            if worksheet == 'db':
-                                service.worksheetID = worksheets[worksheet]
-                                addon.setSetting(instanceName + '_spreadsheet', service.worksheetID)
-                            break
-                    break
-
-            # TESTING
-        if settings.cloudResume == '2':
-
-            if service.gSpreadsheet is None:
-                service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
-
-            media = service.gSpreadsheet.updateMediaPackage(service.worksheetID, package)
+                media = service.gSpreadsheet.updateMediaPackage(service.worksheetID, package)
 
 
 
