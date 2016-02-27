@@ -157,6 +157,7 @@ class gPlayer(xbmc.Player):
             print "SEEK "+str(self.seek)
             self.time = float(self.seek)
             self.seekTime(float(self.seek))
+            self.seek = 0
 
     def onPlayBackEnded(self):
         print "PLAYBACK ENDED"

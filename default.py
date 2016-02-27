@@ -835,6 +835,9 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
     #testing
     player = gPlayer.gPlayer()
     player.setService(service)
+    resolvedPlayback = False
+    startPlayback = False
+    playbackPlayer = settings.integratedPlayer
 
     if encfs:
 
@@ -846,18 +849,17 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         encfs_source = settings.encfsSource
         encfs_target = settings.encfsTarget
         encfs_inode = settings.encfsInode
-        playbackPlayer = settings.integratedPlayer
         (mediaURLs,package) = service.getPlaybackCall(None,title=title)
         mediaURL = mediaURLs[0]
 
-        startPlayback = False
-        resolvedPlayback = False
         playbackTarget = encfs_target + dencryptedPath
+
+
         item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                             thumbnailImage=package.file.thumbnail, path=playbackTarget)
         #item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
 
-        #right-click or integrated player (no opening stream dialog...)
+        # right-click or integrated player (no opening stream dialog...)
         if contextType == '' or playbackPlayer:
             # for STRM (force resolve) -- resolve-only
             if settings.username != '':
@@ -865,7 +867,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 startPlayback = False
             else:
                 startPlayback = True
-        #resolve for an opening stream dialog
+        # resolve for an opening stream dialog
         else:
             resolvedPlayback=True
 
@@ -881,8 +883,6 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         elif resolvedPlayback:
             xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
-        #player = gPlayer.gPlayer()
-        #player.setService(service)
         # need to seek?
         if seek > 0:
             player.PlayStream(playbackTarget, item, seek, startPlayback=startPlayback, package=package)
@@ -912,317 +912,308 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             player.saveTime()
             xbmc.sleep(5000)
 
-        playbackMedia = False
-
+    # non-encfs
     else:
-        playbackMedia = True
 
 
 
-    # file ID provided
-    #if we don't have the docid, search for the video for playback
-    if (playbackMedia and filename != '' and mode == 'audio'):
-        mediaFile = file.file(filename, title, '', service.MEDIA_TYPE_MUSIC, '','')
-        mediaFolder = folder.folder(folderID,'')
-        (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
-    elif (playbackMedia and filename != ''):
-        mediaFile = file.file(filename, title, '', 0, '','')
-        mediaFolder = folder.folder(folderID,'')
-        (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
-    # search
-    elif playbackMedia and mode == 'search':
+        # file ID provided
+        #if we don't have the docid, search for the video for playback
+        if (filename != '' and mode == 'audio'):
+            mediaFile = file.file(filename, title, '', service.MEDIA_TYPE_MUSIC, '','')
+            mediaFolder = folder.folder(folderID,'')
+            (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
+        elif filename != '':
+            mediaFile = file.file(filename, title, '', 0, '','')
+            mediaFolder = folder.folder(folderID,'')
+            (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
+        # search
+        elif mode == 'search':
 
-            if title == '':
+                if title == '':
 
-                try:
-                    dialog = xbmcgui.Dialog()
-                    title = dialog.input(addon.getLocalizedString(30110), type=xbmcgui.INPUT_ALPHANUM)
-                except:
-                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30100))
-                    title = 'test'
+                    try:
+                        dialog = xbmcgui.Dialog()
+                        title = dialog.input(addon.getLocalizedString(30110), type=xbmcgui.INPUT_ALPHANUM)
+                    except:
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30100))
+                        title = 'test'
 
-            mediaItems = service.getMediaList(title=title, contentType=contentType)
-            playbackMedia = False
+                mediaItems = service.getMediaList(title=title, contentType=contentType)
+                resolvedPlayback = False
+                startPlayback = False
 
-            options = []
-            urls = []
+                options = []
+                urls = []
 
-            if mediaItems:
-                for item in mediaItems:
-                    if item.file is None:
-                        service.addDirectory( item.folder, contextType=contextType)
+                if mediaItems:
+                    for item in mediaItems:
+                        if item.file is None:
+                            service.addDirectory( item.folder, contextType=contextType)
+                        else:
+                            options.append(item.file.title)
+                            urls.append(service.addMediaFile(item, contextType=contextType))
+
+                #search from STRM
+                if contextType == '':
+
+                    ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), options)
+                    playbackPath = urls[ret]
+
+                    item = xbmcgui.ListItem(path=playbackPath+'|' + service.getHeadersEncoded())
+                    item.setInfo( type="Video", infoLabels={ "Title": options[ret] , "Plot" : options[ret] } )
+                    if settings.integratedPlayer:
+                        player.play(playbackPath+'|' + service.getHeadersEncoded(), item)
+                        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
                     else:
-                        options.append(item.file.title)
-                        urls.append(service.addMediaFile(item, contextType=contextType))
+                        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
-            #search from STRM
-            if contextType == '':
+        # playback of entire folder?
+        # folder only
+        elif folderID != '' and title == '':
+            mediaItems = service.getMediaList(folderName=folderID, contentType=contentType)
+            if mediaItems:
+                    player.setMedia(mediaItems)
+                    player.playList(service)
+                    resolvedPlayback = False
 
-                ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), options)
-                playbackPath = urls[ret]
-
-                item = xbmcgui.ListItem(path=playbackPath+'|' + service.getHeadersEncoded())
-                item.setInfo( type="Video", infoLabels={ "Title": options[ret] , "Plot" : options[ret] } )
-                if settings.integratedPlayer:
-                    #player = gPlayer.gPlayer()
-                    player.play(playbackPath+'|' + service.getHeadersEncoded(), item)
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-                else:
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-    # playback of entire folder?
-    # folder only
-    elif playbackMedia and folderID != '' and title == '':
-        mediaItems = service.getMediaList(folderName=folderID, contentType=contentType)
-        if mediaItems:
-            #if contextType == '':
-                #player = gPlayer.gPlayer()
-                player.setMedia(mediaItems)
-                player.playList(service)
-                playbackMedia = False
-
-    # title provided
-    elif playbackMedia:
+        # title provided
+        else:
             (mediaURLs,package) = service.getPlaybackCall(None,title=title)
 
-
-
-
-        # TESTING
-    if settings.cloudResume == '2':
-        if service.worksheetID == '':
-
-            try:
-                service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
-
-                spreadsheets = service.gSpreadsheet.getSpreadsheetList()
-            except:
-                pass
-
-            for title in spreadsheets.iterkeys():
-                if title == 'CLOUD_DB':
-                    worksheets = service.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
-
-                    for worksheet in worksheets.iterkeys():
-                        if worksheet == 'db':
-                            service.worksheetID = worksheets[worksheet]
-                            addon.setSetting(instanceName + '_spreadsheet', service.worksheetID)
-                        break
-                break
-
-        # TESTING
-    if settings.cloudResume == '2':
- #       playbackPlayer = False
-
-        if service.gSpreadsheet is None:
-            service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
-
-        media = service.gSpreadsheet.updateMediaPackage(service.worksheetID, package)
-
-        #media = gSpreadsheet.setMediaStatus(worksheets[worksheet], package, watched=2, resume=2)
-                        #item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                        #                        thumbnailImage=package.file.thumbnail)
-
-                        #item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-                        #player = gPlayer.gPlayer()
-                        #player.setService(service)
-                        #player.setWorksheet(worksheets['db'])
-                        #if len(media) == 0:
-                        #    player.PlayStream(mediaURL.url, item, 0, package)
-                        #else:
-                        #    player.PlayStream(mediaURL.url, item,media[0][7],package)
-                        #while not player.isExit:
-                        #    player.saveTime()
-                        #    xbmc.sleep(5000)
-        #playbackMedia = False
-
-
-
-    originalURL = ''
-    if playbackMedia and mode != 'audio':
-        cache = cache.cache(package)
-        service.cache = cache
-        package.file.thumbnail = cache.setThumbnail(service)
-
-       # SRTURL = ''
-        srtpath = ''
-        if settings.srt and service.protocol == 2:
-            cache.setSRT(service)
-
-        # download closed-captions
-        if settings.cc and service.protocol == 2:
-            cache.setCC(service)
-
-
-        mediaURL = service.getMediaSelection(mediaURLs, folderID, filename)
-        playbackPlayer = settings.integratedPlayer
-        #mediaURL.url = mediaURL.url +'|' + service.getHeadersEncoded()
-
         item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail)
+                    thumbnailImage=package.file.thumbnail)
 
         item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-        if package.file.resume > 0 and not settings.cloudResumePrompt:
-            returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30176))
-            if not returnPrompt:
-                package.file.resume = 0
+
+            # TESTING
+        if settings.cloudResume == '2':
+            if service.worksheetID == '':
+
+                try:
+                    service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+
+                    spreadsheets = service.gSpreadsheet.getSpreadsheetList()
+                except:
+                    pass
+
+                for title in spreadsheets.iterkeys():
+                    if title == 'CLOUD_DB':
+                        worksheets = service.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+
+                        for worksheet in worksheets.iterkeys():
+                            if worksheet == 'db':
+                                service.worksheetID = worksheets[worksheet]
+                                addon.setSetting(instanceName + '_spreadsheet', service.worksheetID)
+                            break
+                    break
+
+            # TESTING
+        if settings.cloudResume == '2':
+
+            if service.gSpreadsheet is None:
+                service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+
+            media = service.gSpreadsheet.updateMediaPackage(service.worksheetID, package)
 
 
-        ###
-        #right-menu context OR STRM
-        ##
-        if contextType == '':
 
-            # right-click force download only
-            if not mediaURL.offline and settings.download and not settings.play:
-#                service.downloadMediaFile('',playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
-                service.downloadMediaFile(mediaURL, item, package, force=True, playback=service.PLAYBACK_NONE)
-                playbackMedia = False
+        originalURL = ''
+        if mode != 'audio':
+            cache = cache.cache(package)
+            service.cache = cache
+            package.file.thumbnail = cache.setThumbnail(service)
 
-            # right-click download and play
-            elif not mediaURL.offline and settings.download and settings.play:
-    #            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
-                service.downloadMediaFile(mediaURL, item, package, playback=service.PLAYBACK_PLAYER, player=player)
-                playbackMedia = False
+           # SRTURL = ''
+            srtpath = ''
+            if settings.srt and service.protocol == 2:
+                cache.setSRT(service)
 
-            # for STRM (force resolve) -- resolve-only
-            elif settings.username != '':
-                playbackPlayer = False
+            # download closed-captions
+            if settings.cc and service.protocol == 2:
+                cache.setCC(service)
 
-            # right-click play original, srt, caption, seek
-            elif settings.playOriginal or settings.srt or settings.cc or settings.seek:
-                playbackPlayer = True
 
-            elif settings.resume:
-                playbackPlayer = False
+            mediaURL = service.getMediaSelection(mediaURLs, folderID, filename)
+            #mediaURL.url = mediaURL.url +'|' + service.getHeadersEncoded()
 
-                spreadshetModule = settings.getSetting('library', False)
-                spreadshetName = settings.getSetting('library_filename', 'TVShows')
+            if package.file.resume > 0 and not settings.cloudResumePrompt:
+                returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30176))
+                if not returnPrompt:
+                    package.file.resume = 0
 
-                media = {}
-                if spreadshetModule:
-                    try:
-                        gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
-                        service.gSpreadsheet = gSpreadsheet
-                        spreadsheets = gSpreadsheet.getSpreadsheetList()
-                    except:
-                        spreadshetModule = False
 
+            ###
+            #right-menu context OR STRM
+            ##
+            if contextType == '':
+
+                # right-click - download (download only + force)
+                if not mediaURL.offline and settings.download and not settings.play:
+    #                service.downloadMediaFile('',playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
+                    service.downloadMediaFile(mediaURL, item, package, force=True, playback=service.PLAYBACK_NONE)
+                    resolvedPlayback = False
+                    startPlayback = False
+
+                # right-click - play + cache (download and play)
+                elif not mediaURL.offline and settings.download and settings.play:
+        #            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
+                    service.downloadMediaFile(mediaURL, item, package, playback=service.PLAYBACK_PLAYER, player=player)
+                    resolvedPlayback = False
+                # STRM (force resolve) -- resolve-only
+                elif settings.username != '':
+                    startPlayback = False
+                    resolvedPlayback = True
+                    startPlayback = False
+
+                # right-click - play original / SRT / CC / Start At
+                elif settings.playOriginal or settings.srt or settings.cc or settings.seek:
+                    startPlayback = True
+
+                #### not in use
+                elif 0 and settings.resume:
+                    playbackPlayer = False
+
+                    spreadshetModule = settings.getSetting('library', False)
+                    spreadshetName = settings.getSetting('library_filename', 'TVShows')
+
+                    media = {}
                     if spreadshetModule:
-                      for title in spreadsheets.iterkeys():
-                        if title == spreadshetName:
-                            worksheets = gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+                        try:
+                            gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+                            service.gSpreadsheet = gSpreadsheet
+                            spreadsheets = gSpreadsheet.getSpreadsheetList()
+                        except:
+                            spreadshetModule = False
 
-                            for worksheet in worksheets.iterkeys():
-                                if worksheet == 'db':
-                                    media = gSpreadsheet.getMedia(worksheets[worksheet], fileID=package.file.id)
-                                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                                            thumbnailImage=package.file.thumbnail)
+                        if spreadshetModule:
+                          for title in spreadsheets.iterkeys():
+                            if title == spreadshetName:
+                                worksheets = gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
 
-                                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-                                    #player = gPlayer.gPlayer()
-                                    #player.setService(service)
-                                    player.setWorksheet(worksheets['db'])
-                                    if len(media) == 0:
-                                        player.PlayStream(mediaURL.url, item, 0, package)
-                                    else:
-                                        player.PlayStream(mediaURL.url, item,media[0][7],package)
-                                    while not player.isExit:
-                                        player.saveTime()
-                                        xbmc.sleep(5000)
-                playbackMedia = False
+                                for worksheet in worksheets.iterkeys():
+                                    if worksheet == 'db':
+                                        media = gSpreadsheet.getMedia(worksheets[worksheet], fileID=package.file.id)
+                                        item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                                                thumbnailImage=package.file.thumbnail)
 
-            elif mediaURL.offline:
-                playbackMedia = True
+                                        item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+                                        player.setWorksheet(worksheets['db'])
+                                        if len(media) == 0:
+                                            player.PlayStream(mediaURL.url, item, 0, package)
+                                        else:
+                                            player.PlayStream(mediaURL.url, item,media[0][7],package)
+                                        while not player.isExit:
+                                            player.saveTime()
+                                            xbmc.sleep(5000)
 
-        #download and play (direct)
-        elif not mediaURL.offline and settings.download and settings.play:
-#            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
-            service.downloadMediaFile(mediaURL, item, package, player=player)
-            playbackMedia = False
+                #offline
+                elif mediaURL.offline:
+                    resolvedPlayback = True
 
+            # left-click - always cache (download and play)
+            elif not mediaURL.offline and settings.download and settings.play:
+                service.downloadMediaFile(mediaURL, item, package, player=player)
+                resolvedPlayback = False
+            else:
+                resolvedPlayback = True
 
+        else:
+            cache = cache.cache(package)
+            service.cache = cache
 
-        if playbackMedia:
-
-                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
-
-                item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-                if playbackPlayer:
-
-                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded())
-
-                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-                    #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-                    #player = gPlayer.gPlayer()
-                    #player.play(playbackPath, item)
-                    if seek > 0:
-                        player.PlayStream(mediaURL.url, item, seek, package=package)
-                    elif float(package.file.resume) > 0:
-                        player.PlayStream(mediaURL.url, item, package.file.resume, package=package)
-                    else:
-                        player.PlayStream(mediaURL.url, item, 0, package=package)
+            (localResolutions,localFiles) = service.cache.getFiles(service)
+            if len(localFiles) > 0:
+                mediaURL = mediaurl.mediaurl(str(localFiles[0]), 'offline', 0, 0)
+            else:
+                mediaURL = mediaURLs[0]
+                if not settings.download:
+                    mediaURL.url =  mediaURL.url +'|' + service.getHeadersEncoded()
 
 
-                    #load any cc or srt
-                    if (settings.srt or settings.cc) and  service.protocol == 2:
-                        while not (player.isPlaying()):
-                            xbmc.sleep(1000)
+            ###
+            #right-menu context or STRM
+            ##
+            if contextType == '':
 
-                        files = cache.getSRT(service)
-                        for file in files:
-                            if file != '':
-                                try:
-                                    file = file.decode('unicode-escape')
-                                    file = file.encode('utf-8')
-                                except:
-                                    pass
-                                player.setSubtitles(file)
+                #download - only, no playback
+                if settings.download and not settings.play:
+                    service.downloadMediaFile(mediaURL, item, package, force=True, playback=service.PLAYBACK_NONE)
+                    resolvedPlayback = False
 
-                    while not player.isExit:
-                        player.saveTime()
-                        xbmc.sleep(5000)
+                # for STRM (force resolve) -- resolve-only
+                elif settings.username != '':
+                    startPlayback = False
 
+                #download & playback
+                elif settings.download and settings.play:
+                    service.downloadMediaFile(mediaURL, item, package,  playback=service.PLAYBACK_PLAYER, player=player)
+                    resolvedPlayback = False
 
                 else:
-
-                    #need a player?
-#                    if seek > 0 or package.file.resume > 0 or settings.srt or settings.cc:
-
-                    #player = gPlayer.gPlayer()
-                    #player.setService(service)
-                    # need to seek?
-                    if seek > 0:
-                        player.PlayStream(mediaURL.url, item, seek, startPlayback=False, package=package)
-                    elif float(package.file.resume) > 0:
-                        player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=False, package=package)
-                    else:
-                        player.PlayStream(mediaURL.url, item, 0, startPlayback=False, package=package)
-
-                    # load captions
-                    if  (settings.srt or settings.cc) and service.protocol == 2:
-                        while not (player.isPlaying()):
-                            xbmc.sleep(1000)
-
-                        files = cache.getSRT(service)
-                        for file in files:
-                            if file != '':
-                                try:
-                                    file = file.decode('unicode-escape')
-                                    file = file.encode('utf-8')
-                                except:
-                                    pass
-                                player.setSubtitles(file)
+                    startPlayback = True
 
 
-                    while not player.isExit:
-                        player.saveTime()
-                        xbmc.sleep(5000)
+            # from within pictures mode, music won't be playable, force
+            #direct playback from within plugin
+            elif contextType == 'image' and settings.cache:
+                    item = xbmcgui.ListItem(path=str(playbackPath))
+                    # local, not remote. "Music" is ok
+                    item.setInfo( type="Music", infoLabels={ "Title": title } )
+                    player.play(mediaURL.url, item)
+                    resolvedPlayback = False
+
+            # from within pictures mode, music won't be playable, force
+            #direct playback from within plugin
+            elif contextType == 'image':
+                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                    thumbnailImage=package.file.thumbnail, path=mediaURL.url)
+                # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
+                item.setInfo( type="Video", infoLabels={ "Title": title } )
+
+                player.play(mediaURL.url, item)
+                resolvedPlayback = False
+            #download and play
+            elif settings.download and settings.play:
+                service.downloadMediaFile(mediaURL, item, package, player=player)
+                resolvedPlayback = False
+
+
+        if resolvedPlayback:
+
+                item.setPath(mediaURL.url)
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+
+        # need to seek?
+        if seek > 0:
+            player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
+        elif float(package.file.resume) > 0:
+            player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
+        else:
+            player.PlayStream(mediaURL.url, item, 0, startPlayback=startPlayback, package=package)
+
+        # load captions
+        if  (settings.srt or settings.cc) and service.protocol == 2:
+            while not (player.isPlaying()):
+                xbmc.sleep(1000)
+
+            files = cache.getSRT(service)
+            for file in files:
+                if file != '':
+                    try:
+                        file = file.decode('unicode-escape')
+                        file = file.encode('utf-8')
+                    except:
+                        pass
+                    player.setSubtitles(file)
+
+
+        while not player.isExit:
+            player.saveTime()
+            xbmc.sleep(5000)
+
+xbmcplugin.endOfDirectory(plugin_handle)
 
 
 #                player = gPlayer.gPlayer()
@@ -1242,103 +1233,18 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
 #                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+'|' + service.getHeadersEncoded()+")")
 
+            #media = gSpreadsheet.setMediaStatus(worksheets[worksheet], package, watched=2, resume=2)
+                            #item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                            #                        thumbnailImage=package.file.thumbnail)
 
-    elif playbackMedia:
-        cache = cache.cache(package)
-        service.cache = cache
-
-        (localResolutions,localFiles) = service.cache.getFiles(service)
-        if len(localFiles) > 0:
-            mediaURL = mediaurl.mediaurl(str(localFiles[0]), 'offline', 0, 0)
-        else:
-            mediaURL = mediaURLs[0]
-            if not settings.download:
-                mediaURL.url =  mediaURL.url +'|' + service.getHeadersEncoded()
-
-        playbackPlayer = settings.integratedPlayer
-
-        item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                            thumbnailImage=package.file.thumbnail, path=mediaURL.url)
-        item.setInfo( type="Video", infoLabels={ "Title": title } )
-
-        ###
-        #right-menu context or STRM
-        ##
-        if contextType == '':
-
-            #download - only, no playback
-            if settings.download and not settings.play:
-                service.downloadMediaFile(mediaURL, item, package, force=True, playback=service.PLAYBACK_NONE)
-                playbackMedia = False
-
-            # for STRM (force resolve) -- resolve-only
-            elif settings.username != '':
-                playbackPlayer = False
-
-            #download & playback
-            elif settings.download and settings.play:
-                service.downloadMediaFile(mediaURL, item, package,  playback=service.PLAYBACK_PLAYER, player=player)
-                playbackMedia = False
-
-            else:
-                playbackPlayer = True
-
-
-        # from within pictures mode, music won't be playable, force
-        #direct playback from within plugin
-        elif contextType == 'image' and settings.cache:
-                item = xbmcgui.ListItem(path=str(playbackPath))
-                # local, not remote. "Music" is ok
-                item.setInfo( type="Music", infoLabels={ "Title": title } )
-                #player = gPlayer.gPlayer()
-                player.play(mediaURL.url, item)
-                playbackMedia = False
-
-        # from within pictures mode, music won't be playable, force
-        #direct playback from within plugin
-        elif contextType == 'image':
-            item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
-            # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
-            item.setInfo( type="Video", infoLabels={ "Title": title } )
-
-            #player = gPlayer.gPlayer()
-            player.play(mediaURL.url, item)
-            playbackMedia = False
-        #download and play
-        elif settings.download and settings.play:
-            service.downloadMediaFile(mediaURL, item, package, player=player)
-            playbackMedia = False
-
-
-        if playbackMedia:
-
-                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path=mediaURL.url)
-
-                item.setInfo( type="Video", infoLabels={ "Title": package.file.title} )
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-                if playbackPlayer:
-
-#                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-#                                thumbnailImage=package.file.thumbnail)#, path=playbackPath+'|' + service.getHeadersEncoded())
-                    # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
-#                    item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-                    #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-                    #player = gPlayer.gPlayer()
-                    #player.play(playbackPath, item)
-                    player.PlayStream(mediaURL.url, item, 0)
-
- #               else:
-
-#                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-   #                             thumbnailImage=package.file.thumbnail, path=mediaURL.url)
-                    # for unknown reasons, for remote music, if Music is tagged as Music, it errors-out when playing back from "Music", doesn't happen when labeled "Video"
- #                   item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-  #                  xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-
-
-xbmcplugin.endOfDirectory(plugin_handle)
-
+                            #item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+                            #player = gPlayer.gPlayer()
+                            #player.setService(service)
+                            #player.setWorksheet(worksheets['db'])
+                            #if len(media) == 0:
+                            #    player.PlayStream(mediaURL.url, item, 0, package)
+                            #else:
+                            #    player.PlayStream(mediaURL.url, item,media[0][7],package)
+                            #while not player.isExit:
+                            #    player.saveTime()
+                            #    xbmc.sleep(5000)

@@ -1,3 +1,5 @@
+v0.7.35 (2016-02-26)
+- cleanup of video playback
 v0.7.34 (2016-02-25)
 - implemented STRM resume point
 v0.7.33 (2016-02-24)
