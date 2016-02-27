@@ -877,7 +877,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
             #should already be playing by this point, so don't restart it
             startPlayback = False
-        #resolve for an opening stream dialog
+        #exists; resolve for an opening stream dialog
         elif resolvedPlayback:
             xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
@@ -907,15 +907,10 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                     player.setSubtitles(file)
 
 
+        #loop until finished
         while not player.isExit:
             player.saveTime()
             xbmc.sleep(5000)
-        #service.setProperty(package.file.id,'playcount', 1)
-
-        # save new resume point
-        # file property - gdrive
-        if  0 and settings.cloudResume == '1' and  service.protocol == 2 and player.time > package.file.resume:
-            service.setProperty(package.file.id,'resume', player.time)
 
         playbackMedia = False
 
@@ -1041,6 +1036,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                         #    xbmc.sleep(5000)
         #playbackMedia = False
 
+
+
     originalURL = ''
     if playbackMedia and mode != 'audio':
         cache = cache.cache(package)
@@ -1065,6 +1062,10 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                                 thumbnailImage=package.file.thumbnail)
 
         item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
+        if package.file.resume > 0 and not settings.cloudResumePrompt:
+            returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30176))
+            if not returnPrompt:
+                package.file.resume = 0
 
 
         ###
@@ -1186,12 +1187,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                     while not player.isExit:
                         player.saveTime()
                         xbmc.sleep(5000)
-                    #service.setProperty(package.file.id,'playcount', 1)
 
-                    # save new resume point
-                    # file property - gdrive
-                    if settings.cloudResume == '1' and service.protocol == 2 and player.time > package.file.resume:
-                        service.setProperty(package.file.id,'resume', player.time)
 
                 else:
 
@@ -1227,12 +1223,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                     while not player.isExit:
                         player.saveTime()
                         xbmc.sleep(5000)
-                    #service.setProperty(package.file.id,'playcount', 1)
 
-                    # save new resume point
-                    # file property - gdrive
-                    if  settings.cloudResume == '1' and  service.protocol == 2 and player.time > package.file.resume:
-                        service.setProperty(package.file.id,'resume', player.time)
 
 #                player = gPlayer.gPlayer()
 #                player.play(playbackURL+'|' + service.getHeadersEncoded(), item)

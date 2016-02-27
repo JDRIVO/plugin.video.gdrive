@@ -163,10 +163,14 @@ class gPlayer(xbmc.Player):
 #        self.next()
         if self.package is not None:
             try:
-                self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, watched= int(self.package.file.playcount)+1, resume=self.time)
+                if self.service.settings.cloudResume == '1' and  self.service.protocol == 2 and self.time > self.package.file.resume:
+                    self.service.setProperty(self.package.file.id,'resume', self.time)
+                    self.service.setProperty(self.package.file.id,'playcount', int(self.package.file.playcount)+1)
+                elif self.service.settings.cloudResume == '2' and  self.service.protocol == 2 and self.time > self.package.file.resume:
+                    self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, watched= int(self.package.file.playcount)+1, resume=self.time)
+
             except: pass
 
-            #self.service.setProperty(self.package.file.id,'playcount', int(self.package.file.playcount)+1)
 
             #try:
 
@@ -180,8 +184,12 @@ class gPlayer(xbmc.Player):
         print "PLAYBACK STOPPED"
         if self.package is not None:
             try:
-                self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, resume=self.time)
+                if self.service.settings.cloudResume == '1' and  self.service.protocol == 2 and float(self.time) > float(self.package.file.resume):
+                    self.service.setProperty(self.package.file.id,'resume', self.time)
+                elif self.service.settings.cloudResume == '2' and  self.service.protocol == 2 and float(self.time) > float(self.package.file.resume):
+                    self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, resume=self.time)
             except: pass
+
         #self.current = self.current +1
         self.isExit = True
 #        if not self.isExit:

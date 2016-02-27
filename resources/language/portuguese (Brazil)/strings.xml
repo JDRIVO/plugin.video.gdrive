@@ -174,5 +174,7 @@
 
 	<string id="30173">Cloud Media Spreadsheet ID</string>
 	<string id="30174">Continue downloading after player is user-stopped</string>
+	<string id="30175">Always resume</string>
+	<string id="30176">Resume playback?</string>
 
 </strings>
