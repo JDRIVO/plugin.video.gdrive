@@ -81,7 +81,7 @@ class settings:
     ##
     def __init__(self, addon):
         self.addon = addon
-        self.integratedPlayer = self.getSetting('integrated_player', False)
+        #self.integratedPlayer = self.getSetting('integrated_player', False)
         self.cc = getParameter('cc', self.getSetting('cc', True))
         self.srt = getParameter('srt', self.getSetting('srt', True))
         self.srt_folder = getParameter('srt_folder', self.getSetting('srt_folder', False))

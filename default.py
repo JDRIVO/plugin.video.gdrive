@@ -281,11 +281,6 @@ elif int(settings.getSetting(instanceName+'_type',0))==0 :
 else:
     service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
-# override playback
-try:
-    if settings.integratedPlayer:
-        service.integratedPlayer = True
-except: pass
 
 
 # options menu
@@ -767,11 +762,6 @@ elif mode == 'streamurl':
             item.setInfo( type="Video", infoLabels={ "Title": mediaURLs[ret].title , "Plot" : mediaURLs[ret].title } )
             xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
-            if settings.integratedPlayer:
-                player = gPlayer.gPlayer()
-                player.play(playbackURL+'|' + service.getHeadersEncoded(), item)
-#            else:
-#                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
     else:
             xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30020),addon.getLocalizedString(30021))
@@ -837,7 +827,6 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
     player.setService(service)
     resolvedPlayback = False
     startPlayback = False
-    playbackPlayer = settings.integratedPlayer
 
     if encfs:
 
@@ -860,7 +849,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         #item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
 
         # right-click or integrated player (no opening stream dialog...)
-        if contextType == '' or playbackPlayer:
+        if contextType == '':
             # for STRM (force resolve) -- resolve-only
             if settings.username != '':
                 resolvedPlayback = True
@@ -962,11 +951,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
                     item = xbmcgui.ListItem(path=playbackPath+'|' + service.getHeadersEncoded())
                     item.setInfo( type="Video", infoLabels={ "Title": options[ret] , "Plot" : options[ret] } )
-                    if settings.integratedPlayer:
-                        player.play(playbackPath+'|' + service.getHeadersEncoded(), item)
-                        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-                    else:
-                        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
         # playback of entire folder?
         # folder only
@@ -987,7 +972,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
 
         # right-click - download (download only + force)
-        if not (settings.download and not settings.play):
+        if not seek > 0 and not (settings.download and not settings.play):
                 # TESTING
             if settings.cloudResume == '2':
                 if service.worksheetID == '':
@@ -1074,7 +1059,6 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
                 #### not in use
                 elif 0 and settings.resume:
-                    playbackPlayer = False
 
                     spreadshetModule = settings.getSetting('library', False)
                     spreadshetName = settings.getSetting('library_filename', 'TVShows')
