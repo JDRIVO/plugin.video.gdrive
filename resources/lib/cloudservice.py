@@ -1250,6 +1250,8 @@ class cloudservice(object):
         url = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)
 
         if (contextType != 'image' and package.file.type != package.file.PICTURE):
+
+            #STRM
             if encfs:
                 valuesBS = {'username': self.authorization.username, 'dpath': dpath, 'epath': epath, 'encfs': 'true', 'title': package.file.title, 'filename': package.file.id, 'content_type': 'video'}
                 cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&type='+str(package.file.type)+'&'+urllib.urlencode(valuesBS)+')', ))
@@ -1260,7 +1262,7 @@ class cloudservice(object):
             if (self.protocol == 2):
                 # play-original for video only
                 if (contextType == 'video'):
-                    if package.file.type != package.file.AUDIO and self.settings.promptQuality:
+                    if (package.file.type != package.file.AUDIO and self.settings.promptQuality) and not encfs:
                         cm.append(( self.addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&original=true'+')', ))
                     else:
                         cm.append(( self.addon.getLocalizedString(30151), 'XBMC.RunPlugin('+url + '&promptquality=true'+')', ))
@@ -1282,10 +1284,9 @@ class cloudservice(object):
                     cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+url + '&download=true'+')', ))
 
                     # download + watch
-                    cm.append(( self.addon.getLocalizedString(30124), 'XBMC.RunPlugin('+url + '&play=true&download=true'+')', ))
+                    if not encfs:
+                        cm.append(( self.addon.getLocalizedString(30124), 'XBMC.RunPlugin('+url + '&play=true&download=true'+')', ))
 
-#                    # watch downloaded copy
-#                    cm.append(( self.addon.getLocalizedString(30125), 'XBMC.RunPlugin('+url + '&cache=true'+')', ))
 
 
         elif package.file.type ==  package.file.PICTURE: #contextType == 'image':

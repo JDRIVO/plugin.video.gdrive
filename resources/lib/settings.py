@@ -94,9 +94,9 @@ class settings:
         self.skipResume = self.getSetting('video_skip', 0.10)
         self.cloudResume = self.getSetting('resumepoint', 0)
         self.cloudResumePrompt = self.getSetting('resumeprompt', False)
+        self.seek = getParameter('seek', 0)
 
     def setVideoParameters(self):
-        self.seek = getParameter('seek', 0)
         self.resume = getParameter('resume', False)
 
         self.playOriginal = getParameter('original', self.getSetting('never_stream', False))
