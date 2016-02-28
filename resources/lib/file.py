@@ -58,6 +58,7 @@ class file:
         self.resolution = resolution
         self.playcount = playcount
         self.duration = duration
+        self.commands = ''
 
 
         # nekwebdev contribution

@@ -971,10 +971,6 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
         #ensure there is something play
         if package is not None:
-            item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                        thumbnailImage=package.file.thumbnail)
-
-            item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
 
             # right-click - download (download only + force)
             if not seek > 0 and not (settings.download and not settings.play):
@@ -1007,6 +1003,32 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                         service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
 
                     media = service.gSpreadsheet.updateMediaPackage(service.worksheetID, package)
+
+
+            if package.file.commands != '':
+                exp = re.compile('([^\|]+):([^\|]+)\|?', re.IGNORECASE)
+                for cmd in exp.finditer(package.file.commands):
+                    if cmd.group(1) == 'seek':
+                        seek =  cmd.group(2)
+                    elif cmd.group(1) == 'title':
+                        package.file.title =  cmd.group(2)
+                    elif cmd.group(1) == 'resume':
+                        package.file.resume =  cmd.group(2)
+                    elif cmd.group(1) == 'original':
+                        if  cmd.group(2).lower() == 'true':
+                            settings.playOriginal =  True
+                        else:
+                            settings.playOriginal =  False
+                    elif cmd.group(1) == 'promptquality':
+                        if  cmd.group(2).lower() == 'true':
+                            settings.promptQuality =  True
+                        else:
+                            settings.promptQuality =  False
+
+            item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                        thumbnailImage=package.file.thumbnail)
+
+            item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
 
 
 

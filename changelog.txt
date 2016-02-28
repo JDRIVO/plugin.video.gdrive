@@ -1,4 +1,5 @@
 - add logic to accomodate flexible CLOUD_DB columns
+- CLOUD_DB addition: commands
 v0.7.38 (2016-02-28)
 - music "start at" fix
 v0.7.37 (2016-02-27)

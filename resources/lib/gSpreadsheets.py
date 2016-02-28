@@ -358,7 +358,8 @@ class gSpreadsheets:
                         package.file.playcount =  media.group(2)
                     elif media.group(1) == 'resume':
                         package.file.resume = media.group(2)
-
+                    elif media.group(1) == 'commands':
+                        package.file.commands = media.group(2)
 
             nextURL = ''
             for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
