@@ -1260,7 +1260,7 @@ class cloudservice(object):
             if (self.protocol == 2):
                 # play-original for video only
                 if (contextType == 'video'):
-                    if self.settings.promptQuality:
+                    if package.file.type != package.file.AUDIO and self.settings.promptQuality:
                         cm.append(( self.addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&original=true'+')', ))
                     else:
                         cm.append(( self.addon.getLocalizedString(30151), 'XBMC.RunPlugin('+url + '&promptquality=true'+')', ))
@@ -1335,15 +1335,18 @@ class cloudservice(object):
                     originalURL = mediaURL.url
 
         mediaURL = ''
-        if self.settings.download or  self.settings.cache:
-            mediaURL = mediaurl.mediaurl(originalURL, 'original', 0, 9999)
-            return mediaURL
+#        if self.settings.download or  self.settings.cache:
+#            mediaURL = mediaurl.mediaurl(originalURL, 'original', 0, 9999)
+#            return mediaURL
         #elif self.settings.playOriginal:
         #    mediaURL = mediaurl.mediaurl(originalURL +'|' + self.getHeadersEncoded(), 'original', 0, 9999)
         #    return mediaURL
 
         #playbackPath = str(self.settings.cachePath) + '/' + str(filename) + '/'
-        (localResolutions,localFiles) = self.cache.getFiles(self)
+        localResolutions = []
+        localFiles = []
+        if not self.settings.download and not self.settings.cache:
+            (localResolutions,localFiles) = self.cache.getFiles(self)
         totalList = localFiles + newMediaURLs
         mediaCount = len(localFiles)
 

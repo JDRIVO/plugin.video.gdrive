@@ -783,6 +783,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
     title = settings.getParameter('title') #file title
     filename = settings.getParameter('filename') #file ID
     folderID = settings.getParameter('folder') #folder ID
+    seek = 0
 
     if folderID == 'False':
             folderID = 'SEARCH'
@@ -825,7 +826,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
     #testing
     player = gPlayer.gPlayer()
     player.setService(service)
-    resolvedPlayback = False
+    resolvedPlayback = True
     startPlayback = False
 
     if encfs:
@@ -1056,6 +1057,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 # right-click - play original / SRT / CC / Start At
                 elif settings.playOriginal or settings.srt or settings.cc or settings.seek:
                     startPlayback = True
+                    resolvedPlayback = False
+
 
                 #### not in use
                 elif 0 and settings.resume:
@@ -1116,6 +1119,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 if not settings.download:
                     mediaURL.url =  mediaURL.url +'|' + service.getHeadersEncoded()
 
+            resolvedPlayback = True
 
             ###
             #right-menu context or STRM

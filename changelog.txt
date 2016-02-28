@@ -1,5 +1,7 @@
+v0.7.37 (2016-02-27)
 - fix: transcodes even if "never transcode" is selected
 - drop integrated player mode (hide opening stream)
+v0.7.36 (2016-02-27)
 - further playback fixes
 v0.7.35 (2016-02-26)
 - cleanup of video playback
