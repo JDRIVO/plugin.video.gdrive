@@ -828,7 +828,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
     resolvedPlayback = True
     startPlayback = False
     toExit = False
-    package = None
+    #package = None
 
     if encfs:
 

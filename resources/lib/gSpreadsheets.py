@@ -347,11 +347,18 @@ class gSpreadsheets:
             response_data = response.read()
 
 #            for r in re.finditer('<gsx:folderid>([^<]*)</gsx:folderid><gsx:foldername>([^<]*)</gsx:foldername><gsx:fileid>([^<]*)</gsx:fileid><gsx:filename>([^<]*)</gsx:filename><gsx:nfo>([^<]*)</gsx:nfo><gsx:order>([^<]*)</gsx:order><gsx:watched>([^<]*)</gsx:watched><gsx:resume>([^<]*)</gsx:resume>' ,
-            for r in re.finditer('<gsx:fileid>([^<]*)</gsx:fileid><gsx:filename>([^<]*)</gsx:filename><gsx:watched>([^<]*)</gsx:watched><gsx:resume>([^<]*)</gsx:resume>' ,
+            for r in re.finditer('<entry>(.*?)</entry>' ,
                              response_data, re.DOTALL):
-                media = r.groups()
-                package.file.playcount = media[2]
-                package.file.resume = media[3]
+
+                #media = r.groups()
+                entry = r.group()
+                exp = re.compile('<gsx:([^\>]+)>([^\<]*)</')
+                for media in exp.finditer(entry):
+                    if media.group(1) == 'watched':
+                        package.file.playcount =  media.group(2)
+                    elif media.group(1) == 'resume':
+                        package.file.resume = media.group(2)
+
 
             nextURL = ''
             for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
