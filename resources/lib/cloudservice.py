@@ -763,7 +763,7 @@ class cloudservice(object):
                 chunk = response.read(CHUNK)
                 if not chunk: break
                 f.write(chunk)
-                xbmc.sleep(100)
+                xbmc.sleep(1)
 
             f.close()
             progress.close()

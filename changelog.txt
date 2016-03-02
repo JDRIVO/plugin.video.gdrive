@@ -1,3 +1,5 @@
+v0.7.39 (2016-03-02)
+- resolved speed issue with cache video files
 - add logic to accomodate flexible CLOUD_DB columns
 - CLOUD_DB addition: commands
 v0.7.38 (2016-02-28)
