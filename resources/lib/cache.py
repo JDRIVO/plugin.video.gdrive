@@ -181,9 +181,9 @@ class cache:
         if xbmcvfs.exists(cachePath) or os.path.exists(cachePath):
             dirs,files = xbmcvfs.listdir(cachePath)
             for file in files:
-                if os.path.splitext(file)[1] == '.stream':
+                if '.stream.mp4' in file:
                     try:
-                        resolutionFile = xbmcvfs.File(cachePath  + str(file) + '.resolution')
+                        resolutionFile = xbmcvfs.File(cachePath   + str(os.path.splitext(file)[0]) + '.resolution')
                         resolution = resolutionFile.read()
                         resolutionFile.close()
                     except:

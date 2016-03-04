@@ -1,4 +1,6 @@
+v0.7.40 (2016-03-03)
 - CLOUD_DB addition: md5/checksum
+- fix: display offline in media list
 v0.7.39 (2016-03-02)
 - resolved speed issue with cache video files
 - add logic to accomodate flexible CLOUD_DB columns
