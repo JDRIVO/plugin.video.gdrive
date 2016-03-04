@@ -1,3 +1,5 @@
+v0.7.41 (2016-03-04)
+- add support for resume-download of files
 v0.7.40 (2016-03-03)
 - CLOUD_DB addition: md5/checksum
 - fix: display offline in media list

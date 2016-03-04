@@ -699,11 +699,20 @@ class cloudservice(object):
             resolutionFile.close()
 
 
-        if (not xbmcvfs.exists(playbackFile)  or  xbmcvfs.File(playbackFile).size() == 0) or force:
+        if (not xbmcvfs.exists(playbackFile)  or  xbmcvfs.File(playbackFile).size() == 0 or xbmcvfs.File(playbackFile).size() < package.file.size) or force:
 
-            req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
+            #seek to end of file for append
+            # - must use python for append (xbmcvfs not supported)
+            # - if path is not local or KODI-specific user must restart complete download
+            if  os.path.exists(playbackFile) and xbmcvfs.File(playbackFile).size() < package.file.size and  xbmcvfs.File(playbackFile).size() != 0 and not force:
+                req = urllib2.Request(mediaURL.url, None, self.getHeadersList(additionalHeader='Range', additionalValue='bytes='+str(xbmcvfs.File(playbackFile).size())+'-'+str(package.file.size)))
 
-            f = xbmcvfs.File(playbackFile, 'w')
+                f = open(playbackFile, 'a')
+
+            else:
+                req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
+
+                f = xbmcvfs.File(playbackFile, 'w')
 
 
             #print "DEBUG url = " + mediaURL.url + ", sizeDownload = " + str(sizeDownload) + ", playback = " + str(playback) + ", playbackFile = " + str(playbackFile)
@@ -746,7 +755,7 @@ class cloudservice(object):
             else:
                 #xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
                 player.PlayStream(playbackFile, item, package.file.resume, startPlayback=True, package=package)
-            while not (player.isPlaying()):
+            while not (player.isPlaying()) and not player.isExit:
                 xbmc.sleep(1000)
                 #print str(player.playStatus)
         try:
