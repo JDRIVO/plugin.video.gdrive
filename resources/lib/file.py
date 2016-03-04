@@ -24,10 +24,12 @@ import re
 #
 #
 class file:
-    # CloudService v0.2.4
+    # CloudService v0.2.5
     #
-    # - add resolution (video) [2016/06/20]
-    # - add playcount (video/music) [2016/06/20]
+    # - add resolution (video) [2015/06/20]
+    # - add playcount (video/music) [2015/06/20]
+    # - add checksum [2016/03/03]
+    # - add commands [2016/03/03]
 
 
     AUDIO = 1
@@ -38,7 +40,7 @@ class file:
 
     ##
     ##
-    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution='', playcount=0, duration=-1, download=''):
+    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution='', playcount=0, duration=-1, download='', checksum=''):
         self.id = id
         self.title = title
         self.showtitle = title
@@ -59,6 +61,7 @@ class file:
         self.playcount = playcount
         self.duration = duration
         self.commands = ''
+        self.checksum = checksum
 
 
         # nekwebdev contribution
