@@ -169,4 +169,7 @@
 	<string id="30174">Continue downloading after player is user-stopped</string>
 	<string id="30175">Always resume</string>
 	<string id="30176">Resume playback?</string>
+	<string id="30177">cloud:</string>
+	<string id="30178">Mark as Watched</string>
+
 </strings>

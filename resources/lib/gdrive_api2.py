@@ -35,6 +35,7 @@ from resources.lib import package
 from resources.lib import mediaurl
 from resources.lib import crashreport
 from resources.lib import cache
+from resources.lib import gSpreadsheets
 
 
 
@@ -81,6 +82,31 @@ class gdrive(cloudservice):
         self.settings = settings
         self.gSpreadsheet = gSpreadsheet
         self.worksheetID = self.addon.getSetting(self.instanceName+'_spreadsheet')
+
+        if settings.cloudResume == '2':
+            if self.worksheetID == '':
+
+                try:
+                    self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
+
+                    spreadsheets = self.gSpreadsheet.getSpreadsheetList()
+                except:
+                    pass
+
+                for title in spreadsheets.iterkeys():
+                    if title == 'CLOUD_DB':
+                        worksheets = self.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+
+                        for worksheet in worksheets.iterkeys():
+                            if worksheet == 'db':
+                                self.worksheetID = worksheets[worksheet]
+                                addon.setSetting(instanceName + '_spreadsheet', self.worksheetID)
+                            break
+                    break
+            if self.gSpreadsheet is None:
+                self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
+
+
 
         if authenticate == True:
             self.type = int(addon.getSetting(instanceName+'_type'))

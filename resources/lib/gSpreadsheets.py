@@ -156,6 +156,9 @@ class gSpreadsheets:
     #
     def createMediaStatus(self, url, package, resume='', watched='', updated=''):
 
+        import time
+        updated = time.strftime("%Y%m%d%H%M")
+
 
 #        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0',  'Content-Type': 'application/atom+xml'}
         header = { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.service.authorization.getToken('auth_access_token'),  'Content-Type': 'application/atom+xml'}
@@ -164,7 +167,7 @@ class gSpreadsheets:
 ##        entry = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended"><gsx:fileid>'+str(package.file.id)+'</gsx:fileid><gsx:filename>'+str(package.file.title)+'</gsx:filename><gsx:watched>'+str(watched)+'</gsx:watched><gsx:resume>'+str(resume)+'</gsx:resume>'
 #        entry = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:gs="http://schemas.google.com/spreadsheets/2006" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended"><entry>' + '<gsx:fileid>'+str(package.file.id)+'</gsx:fileid><gsx:filename>'+str(package.file.title)+'</gsx:filename><gsx:watched>'+str(watched)+'</gsx:watched><gsx:resume>'+str(resume)+'</gsx:resume></entry>'
 #        entry = '<entry xmlns="http://www.w3.org/2005/Atom"    xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended"><entry>' + '<gsx:fileid>'+str(package.file.id)+'</gsx:fileid><gsx:filename>'+str(package.file.title)+'</gsx:filename><gsx:watched>'+str(watched)+'</gsx:watched><gsx:resume>'+str(resume)+'</gsx:resume></entry>'
-        entry = '<entry xmlns="http://www.w3.org/2005/Atom"    xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended">' + '<gsx:fileid>'+str(package.file.id)+'</gsx:fileid><gsx:filename>'+str(package.file.title)+'</gsx:filename><gsx:watched>'+str(watched)+'</gsx:watched><gsx:md5>'+str(package.file.checksum)+'</gsx:md5><gsx:resume>'+str(resume)+'</gsx:resume></entry>'
+        entry = '<entry xmlns="http://www.w3.org/2005/Atom"    xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended">' + '<gsx:foldername>'+str(package.folder.title)+'</gsx:foldername><gsx:folderid>'+str(package.folder.id)+'</gsx:folderid><gsx:fileid>'+str(package.file.id)+'</gsx:fileid><gsx:filename>'+str(package.file.title)+'</gsx:filename><gsx:watched>'+str(watched)+'</gsx:watched><gsx:md5>'+str(package.file.checksum)+'</gsx:md5><gsx:resume>'+str(resume)+'</gsx:resume><gsx:updated>'+str(updated)+'</gsx:updated></entry>'
         req = urllib2.Request(url, entry, header)
 #        req = urllib2.Request(url, entry, self.service.getHeadersList(isPOST=True))
 
@@ -328,6 +331,8 @@ class gSpreadsheets:
 
         if package is not None and (package.file is None or package.file.id is None) and package.folder is not None and package.folder.id is not None:
             params = urllib.urlencode({'folderid':  package.folder.id})
+        elif package is not None and (package.file is None or package.file.id is not None) and package.folder is not None and package.folder.id is not None:
+            params = str(urllib.urlencode({'folderid':  package.folder.id})) +'%20or%20'+ str(urllib.urlencode({'fileid':  package.file.id}))
         elif package is not None and package.file is not None and package.file.id is not None:
             params = urllib.urlencode({'fileid':  package.file.id})
         else:
@@ -354,10 +359,21 @@ class gSpreadsheets:
                 entry = r.group()
                 exp = re.compile('<gsx:([^\>]+)>([^\<]*)</')
                 for media in exp.finditer(entry):
-                    if media.group(1) == 'watched':
-                        package.file.playcount =  media.group(2)
+                    # not a general folder ID but another file ID
+                    if media.group(1) == 'fileid' and package.file.id != media.group(2) and media.group(2) != '':
+                        break
+
+                    elif media.group(1) == 'watched':
+                        if  media.group(2) == '':
+                            package.file.playcount = 0
+                        else:
+                            package.file.playcount =  media.group(2)
+
                     elif media.group(1) == 'resume':
-                        package.file.resume = media.group(2)
+                        if  media.group(2) == '':
+                            package.file.resume = 0
+                        else:
+                            package.file.resume = media.group(2)
                     elif media.group(1) == 'commands':
                         package.file.commands = media.group(2)
 

@@ -112,7 +112,7 @@
 
 	<!-- video properties -->
     <category label="30025">
-        <setting id="video_skip" type="slider" label="30161" default="10" option="percent" range="0,1,100" />
+        <setting id="video_skip" type="slider" label="30161" default="98" option="percent" range="0,1,100" />
         <setting label="30037" type="lsep"/>
         <setting id="context_video" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Everything" default="0"/>
         <setting label="30006" type="lsep"/>

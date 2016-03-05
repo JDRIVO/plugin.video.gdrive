@@ -308,6 +308,53 @@ elif service is None:
 
     xbmcplugin.endOfDirectory(plugin_handle)
 
+
+#dump a list of videos available to play
+elif mode == 'cloud_db':
+
+    title = settings.getParameter('title')
+    folderID = settings.getParameter('folder')
+    folderName = settings.getParameter('foldername')
+    filename = settings.getParameter('filename')
+
+    action = settings.getParameter('action')
+
+    mediaFile = file.file(filename, title, '', 0, '','')
+    mediaFolder = folder.folder(folderID,folderName)
+    package=package.package(mediaFile,mediaFolder)
+
+        # TESTING
+    if settings.cloudResume == '2':
+        if service.worksheetID == '':
+
+            try:
+                service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+
+                spreadsheets = service.gSpreadsheet.getSpreadsheetList()
+            except:
+                pass
+
+            for title in spreadsheets.iterkeys():
+                if title == 'CLOUD_DB':
+                    worksheets = service.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+
+                    for worksheet in worksheets.iterkeys():
+                        if worksheet == 'db':
+                            service.worksheetID = worksheets[worksheet]
+                            addon.setSetting(instanceName + '_spreadsheet', service.worksheetID)
+                        break
+                break
+
+        # TESTING
+    if settings.cloudResume == '2':
+
+        if service.gSpreadsheet is None:
+            service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+        if action == 'watch':
+            service.gSpreadsheet.setMediaStatus(service.worksheetID,package, watched=1)
+
+
+
 #dump a list of videos available to play
 elif mode == 'main' or mode == 'index':
 
@@ -1051,8 +1098,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 mediaURL = service.getMediaSelection(mediaURLs, folderID, filename)
                 #mediaURL.url = mediaURL.url +'|' + service.getHeadersEncoded()
 
-                if package.file.resume > 0 and not settings.cloudResumePrompt:
-                    returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30176))
+                if not seek > 0  and package.file.resume > 0 and not settings.cloudResumePrompt:
+                    returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30176), str(int(package.file.resume)/360) + ':'+ str(int(package.file.resume)/60) + ':' + str(int(package.file.resume)%60))
                     if not returnPrompt:
                         package.file.resume = 0
 

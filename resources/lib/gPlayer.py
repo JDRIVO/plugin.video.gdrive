@@ -167,8 +167,8 @@ class gPlayer(xbmc.Player):
                 if self.service.settings.cloudResume == '1' and  self.service.protocol == 2 and self.time > self.package.file.resume:
                     self.service.setProperty(self.package.file.id,'resume', self.time)
                     self.service.setProperty(self.package.file.id,'playcount', int(self.package.file.playcount)+1)
-                elif self.service.settings.cloudResume == '2' and  self.service.protocol == 2 and self.time > self.package.file.resume:
-                    self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, watched= int(self.package.file.playcount)+1, resume=self.time)
+                elif self.service.settings.cloudResume == '2' and  self.service.protocol == 2 and (self.time/self.package.file.duration) >= int(self.service.settings.skipResume)*0.01:#and self.time > self.package.file.resume:
+                    self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, watched= int(self.package.file.playcount)+1, resume=0)
 
             except: pass
 
@@ -178,7 +178,7 @@ class gPlayer(xbmc.Player):
             #    self.service.gSpreadsheet.setMediaStatus(self.worksheet,self.package, watched=1)
             #except: pass
         self.current = self.current +1
-        #self.isExit = True
+        self.isExit = True
 
 
     def onPlayBackStopped(self):

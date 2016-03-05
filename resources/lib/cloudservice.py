@@ -1306,6 +1306,9 @@ class cloudservice(object):
 #        if (self.protocol == 2):
 #            cm.append(( self.addon.getLocalizedString(30130), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=downloadfolder&encfs=true&' + urllib.urlencode(values)+'&content_type='+contextType+')', ))
 
+        #CLOUD_DB
+        if self.gSpreadsheet is not None:
+                cm.append(( self.addon.getLocalizedString(30177) + self.addon.getLocalizedString(30178),  'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=cloud_db&' + urllib.urlencode(values) + '&action=watch'+')', ))
 
         url = url + '&content_type='+contextType
 

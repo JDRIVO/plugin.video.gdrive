@@ -91,7 +91,7 @@ class settings:
         self.promptQuality = getParameter('promptquality', self.getSetting('prompt_quality', True))
         self.parseTV = self.getSetting('parse_tv', True)
         self.parseMusic = self.getSetting('parse_music', True)
-        self.skipResume = self.getSetting('video_skip', 0.10)
+        self.skipResume = self.getSetting('video_skip', 0.98)
         self.cloudResume = self.getSetting('resumepoint', 0)
         self.cloudResumePrompt = self.getSetting('resumeprompt', False)
         self.seek = getParameter('seek', 0)
