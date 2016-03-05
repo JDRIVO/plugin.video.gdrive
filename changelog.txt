@@ -2,6 +2,8 @@
 - CLOUD_DB: update resume prompt with resume point time
 - CLOUD_DB: add folder support
 - CLOUD_DB: add "mark as watched"
+- CLOUD_DB: add "recently watched"
+- CLOUD_DB: add "recently started"
 v0.7.41 (2016-03-04)
 - add support for resume-download of files
 v0.7.40 (2016-03-03)

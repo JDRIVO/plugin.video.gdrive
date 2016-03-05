@@ -40,7 +40,7 @@ class file:
 
     ##
     ##
-    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution='', playcount=0, duration=-1, download='', checksum=''):
+    def __init__(self, id, title, plot, type, fanart,thumbnail, date='', size=0, resolution=None, playcount=0, duration=-1, download='', checksum=''):
         self.id = id
         self.title = title
         self.showtitle = title

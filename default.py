@@ -309,7 +309,7 @@ elif service is None:
     xbmcplugin.endOfDirectory(plugin_handle)
 
 
-#dump a list of videos available to play
+#cloud_db actions
 elif mode == 'cloud_db':
 
     title = settings.getParameter('title')
@@ -353,7 +353,19 @@ elif mode == 'cloud_db':
         if action == 'watch':
             service.gSpreadsheet.setMediaStatus(service.worksheetID,package, watched=1)
 
+        elif action == 'recentwatched' or action == 'recentstarted' :
 
+            mediaItems = service.gSpreadsheet.updateMediaPackage(service.worksheetID, criteria=action)
+
+            if mediaItems:
+                for item in mediaItems:
+
+                        if item.file is None:
+                            service.addDirectory(item.folder, contextType=contextType, epath=str(path)+ '/' + str(item.folder.title) + '/')
+                        else:
+                            service.addMediaFile(item, contextType=contextType)
+
+    service.updateAuthorization(addon)
 
 #dump a list of videos available to play
 elif mode == 'main' or mode == 'index':
@@ -383,6 +395,11 @@ elif mode == 'main' or mode == 'index':
         kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=SHARED&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30098)+']')
         kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
         kodi_common.addMenu(PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
+
+        #CLOUD_DB
+        if service.gSpreadsheet is not None:
+                kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_db&action=recentstarted&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' recently started]')
+                kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_db&action=recentwatched&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' recently watched]')
     ##**
 
 

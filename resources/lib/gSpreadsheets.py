@@ -27,6 +27,9 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
 import authorization
 import crashreport
+from resources.lib import package
+from resources.lib import file
+from resources.lib import folder
 
 
 class gSpreadsheets:
@@ -327,20 +330,28 @@ class gSpreadsheets:
         return media
 
 
-    def updateMediaPackage(self,url, package):
+    def updateMediaPackage(self,url, package1=None, criteria=''):
 
-        if package is not None and (package.file is None or package.file.id is None) and package.folder is not None and package.folder.id is not None:
-            params = urllib.urlencode({'folderid':  package.folder.id})
-        elif package is not None and (package.file is None or package.file.id is not None) and package.folder is not None and package.folder.id is not None:
-            params = str(urllib.urlencode({'folderid':  package.folder.id})) +'%20or%20'+ str(urllib.urlencode({'fileid':  package.file.id}))
-        elif package is not None and package.file is not None and package.file.id is not None:
-            params = urllib.urlencode({'fileid':  package.file.id})
+        if package1 is not None and (package1.file is None or package1.file.id is None) and package1.folder is not None and package1.folder.id is not None:
+            params = urllib.urlencode({'folderid':  package1.folder.id})
+        elif package1 is not None and (package1.file is None or package1.file.id is not None) and package1.folder is not None and package1.folder.id is not None:
+            params = str(urllib.urlencode({'folderid':  package1.folder.id})) +'%20or%20'+ str(urllib.urlencode({'fileid':  package1.file.id}))
+        elif package1 is not None and package1.file is not None and package1.file.id is not None:
+            params = urllib.urlencode({'fileid':  package1.file.id})
+        elif package1 is None and criteria == 'recentwatched':
+            from datetime import date, timedelta
+            updated = str((date.today() - timedelta(1)).strftime("%Y%m%d%H%M"))
+            params = 'watched>0%20and%20updated>='+updated
+        elif package1 is None and criteria == 'recentstarted':
+            from datetime import date, timedelta
+            updated = str((date.today() - timedelta(1)).strftime("%Y%m%d%H%M"))
+            params = 'resume>0%20and%20updated>='+updated
         else:
             return
         url = url + '?sq=' + params
 
 
-        media = {}
+        mediaList = []
         while True:
             req = urllib2.Request(url, None, self.service.getHeadersList())
 
@@ -348,6 +359,7 @@ class gSpreadsheets:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return
 
             response_data = response.read()
 
@@ -358,25 +370,38 @@ class gSpreadsheets:
                 #media = r.groups()
                 entry = r.group()
                 exp = re.compile('<gsx:([^\>]+)>([^\<]*)</')
+                if package1 is None:
+                    newPackage = package.package( file.file('', '', '', self.service.MEDIA_TYPE_VIDEO, '',''),folder.folder('',''))
+                    mediaList.append(newPackage)
+                else:
+                    newPackage = package1
+
                 for media in exp.finditer(entry):
                     # not a general folder ID but another file ID
-                    if media.group(1) == 'fileid' and package.file.id != media.group(2) and media.group(2) != '':
+                    if media.group(1) == 'fileid' and newPackage.file.id != '' and newPackage.file.id != media.group(2) and media.group(2) != '':
                         break
 
                     elif media.group(1) == 'watched':
                         if  media.group(2) == '':
-                            package.file.playcount = 0
+                            newPackage.file.playcount = 0
                         else:
-                            package.file.playcount =  media.group(2)
+                            newPackage.file.playcount =  media.group(2)
 
                     elif media.group(1) == 'resume':
                         if  media.group(2) == '':
-                            package.file.resume = 0
+                            newPackage.file.resume = 0
                         else:
-                            package.file.resume = media.group(2)
+                            newPackage.file.resume = media.group(2)
                     elif media.group(1) == 'commands':
-                        package.file.commands = media.group(2)
-
+                        newPackage.file.commands = media.group(2)
+                    elif media.group(1) == 'fileid':
+                        newPackage.file.id = media.group(2)
+                    elif media.group(1) == 'filename':
+                        newPackage.file.title = media.group(2)
+                    elif media.group(1) == 'folderid':
+                        newPackage.folder.id = media.group(2)
+                    elif media.group(1) == 'foldername':
+                        newPackage.folder.name = media.group(2)
             nextURL = ''
             for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
@@ -390,7 +415,7 @@ class gSpreadsheets:
                 url = nextURL[0]
 
 
-        return media
+        return mediaList
 
     def getMediaInformation(self,url,folderID):
 

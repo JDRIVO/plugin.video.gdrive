@@ -1211,7 +1211,7 @@ class cloudservice(object):
             if int(package.file.playcount) > 0: #or (float(package.file.resume) > 0 and package.file.duration > 0 and package.file.resume/package.file.duration > (1-self.settskipResume)):
                 listitem.setInfo('video', {'playcount':int(package.file.playcount)})
 
-            if int(package.file.resolution[0]) > 0:
+            if package.file.resolution is not None and int(package.file.resolution[0]) > 0:
                 listitem.addStreamInfo('video', {'width': package.file.resolution[1], 'height': package.file.resolution[0], 'duration':package.file.duration})
 
         # image file
