@@ -369,7 +369,9 @@ class gSpreadsheets:
 
                 #media = r.groups()
                 entry = r.group()
-                exp = re.compile('<gsx:([^\>]+)>([^\<]*)</')
+                #exp = re.compile('<gsx:([^\>]+)>(.*)</gsx')
+                #exp = re.compile('<gsx:([^\>]+)>([^<]+)</')
+                exp = re.compile('<gsx:([^\>]+)>([^<]+)</gsx')
                 if package1 is None:
                     newPackage = package.package( file.file('', '', '', self.service.MEDIA_TYPE_VIDEO, '',''),folder.folder('',''))
                     mediaList.append(newPackage)
@@ -394,6 +396,20 @@ class gSpreadsheets:
                             newPackage.file.resume = media.group(2)
                     elif media.group(1) == 'commands':
                         newPackage.file.commands = media.group(2)
+                    elif media.group(1) == 'nfo':
+                        nfoInfo = media.group(2)
+                        nfoInfo = re.sub('&lt;', '<', nfoInfo)
+                        nfoInfo = re.sub('/\s?&gt;', '> </>', nfoInfo)
+                        nfoInfo = re.sub('&gt;', '>', nfoInfo)
+                        nfo = re.compile('<([^\>]+)>([^\<]*)</')
+                        for info in nfo.finditer(nfoInfo):
+                            #if info.group(1) == 'title':
+                            #    newPackage.file.title = info.group(2)
+                            if info.group(1) == 'premiered':
+                                newPackage.file.date = info.group(2)
+                            elif info.group(1) == 'plot':
+                                newPackage.file.plot = info.group(2)
+
                     elif media.group(1) == 'fileid':
                         newPackage.file.id = media.group(2)
                     elif media.group(1) == 'filename':

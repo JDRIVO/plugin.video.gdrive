@@ -455,43 +455,47 @@ class cloudservice(object):
 
                         strmFile.write(url+'\n')
                         strmFile.close()
-                        spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
 
-                    # nekwebdev contribution
-                    if self.addon.getSetting('tvshows_path') != '' or self.addon.getSetting('movies_path') != '':
-                        pathLib = ''
+                        episode = ''
+                        # nekwebdev contribution
+                        if self.addon.getSetting('tvshows_path') != '' or self.addon.getSetting('movies_path') != '':
+                            pathLib = ''
 
-                        regmovie = re.compile('(.*?\(\d{4}\))'
-                                          '.*?'
-                                          '(?:(\d{3}\d?p)|\Z)?')
+                            regmovie = re.compile('(.*?\(\d{4}\))'
+                                              '.*?'
+                                              '(?:(\d{3}\d?p)|\Z)?')
 
-                        tv = item.file.regtv1.match(title)
-                        if not tv:
-                            tv = item.file.regtv2.match(title)
-                        if not tv:
-                            tv = item.file.regtv3.match(title)
+                            tv = item.file.regtv1.match(title)
+                            if not tv:
+                                tv = item.file.regtv2.match(title)
+                            if not tv:
+                                tv = item.file.regtv3.match(title)
 
-                        if tv and self.addon.getSetting('tvshows_path') != '':
-                            show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
-                            show = show.rstrip("\.")
-                            season = tv.group(2)
-                            pathLib = self.addon.getSetting('tvshows_path') + '/' + show
-                            if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                            pathLib = pathLib + '/Season ' + season
-                            if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                        elif self.addon.getSetting('movies_path') != '':
-                            movie = regmovie.match(title)
-                            if movie:
-                                pathLib = self.addon.getSetting('movies_path')
+                            if tv and self.addon.getSetting('tvshows_path') != '':
+                                show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
+                                show = show.rstrip("\.")
+                                season = tv.group(2)
+                                episode = tv.group(1)
+                                pathLib = self.addon.getSetting('tvshows_path') + '/' + show
+                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                pathLib = pathLib + '/Season ' + season
+                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                            elif self.addon.getSetting('movies_path') != '':
+                                movie = regmovie.match(title)
+                                if movie:
+                                    pathLib = self.addon.getSetting('movies_path')
 
-                        if pathLib != '':
-                            if not xbmcvfs.exists(pathLib + '/' + str(title)+'.strm'):
-                                filename = str(pathLib) + '/' + str(title)+'.strm'
-                                strmFile = xbmcvfs.File(filename, "w")
-                                strmFile.write(url+'\n')
-                                strmFile.close()
+                            if pathLib != '':
+                                if not xbmcvfs.exists(pathLib + '/' + str(title)+'.strm'):
+                                    filename = str(pathLib) + '/' + str(title)+'.strm'
+                                    strmFile = xbmcvfs.File(filename, "w")
+                                    strmFile.write(url+'\n')
+                                    strmFile.close()
+
+                        spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
+
         elif mediaItems and encfs:
 
             self.settings.setEncfsParameters()

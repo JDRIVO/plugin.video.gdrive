@@ -62,6 +62,7 @@ class file:
         self.duration = duration
         self.commands = ''
         self.checksum = checksum
+        self.rating = ''
 
 
         # nekwebdev contribution
