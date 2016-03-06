@@ -210,7 +210,14 @@ elif mode == 'buildstrm':
                         break
                     count = count + 1
 
-                service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
+
+
+                if settings.cloudResume == '2':
+                    spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
+                    service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile)
+                    spreadsheetFile.close()
+                else:
+                    service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
 
             elif filename != '':
                             if encfs:

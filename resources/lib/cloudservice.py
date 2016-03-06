@@ -419,7 +419,7 @@ class cloudservice(object):
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
     ##
-    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False):
+    def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None):
 
         import xbmcvfs
         xbmcvfs.mkdir(path)
@@ -431,7 +431,7 @@ class cloudservice(object):
 
                 url = 0
                 if item.file is None:
-                    self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog)
+                    self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile)
                 else:
                     #'content_type': 'video',
                     values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
@@ -455,6 +455,7 @@ class cloudservice(object):
 
                         strmFile.write(url+'\n')
                         strmFile.close()
+                        spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
 
                     # nekwebdev contribution
                     if self.addon.getSetting('tvshows_path') != '' or self.addon.getSetting('movies_path') != '':
@@ -549,7 +550,7 @@ class cloudservice(object):
                     encryptedDir = dirListINodes[index].title
                     dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
                     #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
-                    self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
+                    self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile)
 
                 elif index in fileListINodes.keys():
                     xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
