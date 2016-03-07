@@ -1,3 +1,4 @@
+v0.7.42 (2016-03-06)
 - CLOUD_DB: do not prompt for resume if seeking
 - CLOUD_DB: update resume prompt with resume point time
 - CLOUD_DB: add folder support
@@ -6,6 +7,9 @@
 - CLOUD_DB: add "recently started"
 - CLOUD_DB: add spreadsheet creation from "Save STRM"
 - CLOUD_DB: add nfo support
+- CLOUD_DB: add fanart support
+- CLOUD_DB: add browse "library"
+- CLOUD_DB: add browse "queued"
 v0.7.41 (2016-03-04)
 - add support for resume-download of files
 v0.7.40 (2016-03-03)

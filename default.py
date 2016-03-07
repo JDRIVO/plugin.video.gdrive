@@ -360,7 +360,7 @@ elif mode == 'cloud_db':
         if action == 'watch':
             service.gSpreadsheet.setMediaStatus(service.worksheetID,package, watched=1)
 
-        elif action == 'recentwatched' or action == 'recentstarted' :
+        elif action == 'recentwatched' or action == 'recentstarted' or action == 'library' or action == 'queued':
 
             mediaItems = service.gSpreadsheet.updateMediaPackage(service.worksheetID, criteria=action)
 
@@ -368,7 +368,7 @@ elif mode == 'cloud_db':
                 for item in mediaItems:
 
                         if item.file is None:
-                            service.addDirectory(item.folder, contextType=contextType, epath=str(path)+ '/' + str(item.folder.title) + '/')
+                            service.addDirectory(item.folder, contextType=contextType)
                         else:
                             service.addMediaFile(item, contextType=contextType)
 
@@ -407,6 +407,8 @@ elif mode == 'main' or mode == 'index':
         if service.gSpreadsheet is not None:
                 kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_db&action=recentstarted&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' recently started]')
                 kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_db&action=recentwatched&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' recently watched]')
+                kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_db&action=library&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' library]')
+                kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_db&action=queued&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' queued]')
     ##**
 
 

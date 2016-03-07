@@ -338,17 +338,22 @@ class gSpreadsheets:
             params = str(urllib.urlencode({'folderid':  package1.folder.id})) +'%20or%20'+ str(urllib.urlencode({'fileid':  package1.file.id}))
         elif package1 is not None and package1.file is not None and package1.file.id is not None:
             params = urllib.urlencode({'fileid':  package1.file.id})
+        elif package1 is None and criteria == 'library':
+            params = 'foldername!=""&orderby=column:folderid'
+        elif package1 is None and criteria == 'queued':
+            params = 'folderid=QUEUED&orderby=column:order'
         elif package1 is None and criteria == 'recentwatched':
             from datetime import date, timedelta
             updated = str((date.today() - timedelta(1)).strftime("%Y%m%d%H%M"))
-            params = 'watched>0%20and%20updated>='+updated
+            params = 'watched!=""%20and%20watched>0%20and%20updated>='+updated
         elif package1 is None and criteria == 'recentstarted':
             from datetime import date, timedelta
             updated = str((date.today() - timedelta(1)).strftime("%Y%m%d%H%M"))
-            params = 'resume>0%20and%20updated>='+updated
+            params = 'watched=""%20and%20resume>0%20and%20updated>='+updated
         else:
             return
         url = url + '?sq=' + params
+       #url = url + '?tq=' + params
 
 
         mediaList = []
@@ -363,6 +368,8 @@ class gSpreadsheets:
 
             response_data = response.read()
 
+            previous = ''
+            append = True
 #            for r in re.finditer('<gsx:folderid>([^<]*)</gsx:folderid><gsx:foldername>([^<]*)</gsx:foldername><gsx:fileid>([^<]*)</gsx:fileid><gsx:filename>([^<]*)</gsx:filename><gsx:nfo>([^<]*)</gsx:nfo><gsx:order>([^<]*)</gsx:order><gsx:watched>([^<]*)</gsx:watched><gsx:resume>([^<]*)</gsx:resume>' ,
             for r in re.finditer('<entry>(.*?)</entry>' ,
                              response_data, re.DOTALL):
@@ -374,7 +381,6 @@ class gSpreadsheets:
                 exp = re.compile('<gsx:([^\>]+)>([^<]+)</gsx')
                 if package1 is None:
                     newPackage = package.package( file.file('', '', '', self.service.MEDIA_TYPE_VIDEO, '',''),folder.folder('',''))
-                    mediaList.append(newPackage)
                 else:
                     newPackage = package1
 
@@ -382,6 +388,20 @@ class gSpreadsheets:
                     # not a general folder ID but another file ID
                     if media.group(1) == 'fileid' and newPackage.file.id != '' and newPackage.file.id != media.group(2) and media.group(2) != '':
                         break
+                    elif media.group(1) == 'folderid':
+                        newPackage.folder.id = media.group(2)
+                    elif media.group(1) == 'foldername':
+                        newPackage.folder.title = media.group(2)
+                        newPackage.folder.displaytitle = media.group(2)
+
+                        if  criteria == 'library':
+                            newPackage.file = None
+                            if previous == newPackage.folder.id:
+                                append = False
+                            else:
+                                append = True
+                                previous = newPackage.folder.id
+                            break
 
                     elif media.group(1) == 'watched':
                         if  media.group(2) == '':
@@ -405,19 +425,22 @@ class gSpreadsheets:
                         for info in nfo.finditer(nfoInfo):
                             #if info.group(1) == 'title':
                             #    newPackage.file.title = info.group(2)
-                            if info.group(1) == 'premiered':
+                            if info.group(1) == 'premiered' or info.group(1) == 'year':
                                 newPackage.file.date = info.group(2)
-                            elif info.group(1) == 'plot':
+                            elif info.group(1) == 'plot' or info.group(1) == 'description':
                                 newPackage.file.plot = info.group(2)
+                            elif info.group(1) == 'actors':
+                                newPackage.file.cast = info.group(2)
+                    elif media.group(1) == 'fanart':
+                        newPackage.file.fanart = self.service.API_URL +'files/' + str(media.group(2)) + '?alt=media' + '|' + self.service.getHeadersEncoded()
 
                     elif media.group(1) == 'fileid':
                         newPackage.file.id = media.group(2)
                     elif media.group(1) == 'filename':
                         newPackage.file.title = media.group(2)
-                    elif media.group(1) == 'folderid':
-                        newPackage.folder.id = media.group(2)
-                    elif media.group(1) == 'foldername':
-                        newPackage.folder.name = media.group(2)
+
+                if append:
+                    mediaList.append(newPackage)
             nextURL = ''
             for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):

@@ -63,6 +63,7 @@ class file:
         self.commands = ''
         self.checksum = checksum
         self.rating = ''
+        self.cast = ''
 
 
         # nekwebdev contribution

@@ -475,7 +475,7 @@ class cloudservice(object):
                                 show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
                                 show = show.rstrip("\.")
                                 season = tv.group(2)
-                                episode = tv.group(1)
+                                episode = tv.group(3)
                                 pathLib = self.addon.getSetting('tvshows_path') + '/' + show
                                 if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
                                     xbmcvfs.mkdir(xbmc.translatePath(pathLib))
@@ -1204,7 +1204,7 @@ class cloudservice(object):
             if package.file.hasMeta:
                 infolabels = decode_dict({ 'title' : package.file.displayShowTitle() ,  'plot' : package.file.plot, 'TVShowTitle': package.file.show, 'EpisodeName': package.file.showtitle, 'season': package.file.season, 'episode': package.file.episode,'size' : package.file.size })
             else:
-                infolabels = decode_dict({ 'title' : package.file.displayTitle() ,  'plot' : package.file.plot, 'size' : package.file.size })
+                infolabels = decode_dict({ 'title' : package.file.displayTitle() ,  'plot' : package.file.plot, 'size' : package.file.size})
             listitem.setInfo('Video', infolabels)
             playbackURL = '?mode=video'
             if self.integratedPlayer:
