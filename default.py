@@ -508,6 +508,12 @@ elif mode == 'main' or mode == 'index':
         path = settings.getParameter('epath', '')
 
         mediaItems = service.getMediaList(folderName,contentType=contentType)
+        if settings.cloudResume == '2':
+
+            if service.gSpreadsheet is None:
+                service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+
+            service.gSpreadsheet.updateMediaPackageList(service.worksheetID, folderName, mediaItems)
 
         if mediaItems:
             for item in mediaItems:
@@ -1124,10 +1130,10 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 mediaURL = service.getMediaSelection(mediaURLs, folderID, filename)
                 #mediaURL.url = mediaURL.url +'|' + service.getHeadersEncoded()
 
-                if not seek > 0  and package.file.resume > 0 and not settings.cloudResumePrompt:
-                    returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30176), str(int(package.file.resume)/360) + ':'+ str(int(package.file.resume)/60) + ':' + str(int(package.file.resume)%60))
-                    if not returnPrompt:
-                        package.file.resume = 0
+#                if not seek > 0  and package.file.resume > 0 and not settings.cloudResumePrompt:
+#                    returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30176), str(int(float(package.file.resume)/360)) + ':'+ str(int(float(package.file.resume)/60)) + ':' + str(int(float(package.file.resume)%60)))
+#                    if not returnPrompt:
+#                        package.file.resume = 0
 
 
                 ###

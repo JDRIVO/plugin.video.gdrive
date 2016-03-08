@@ -1211,6 +1211,7 @@ class cloudservice(object):
                 listitem.setProperty('IsPlayable', 'false')
             else:
                 listitem.setProperty('IsPlayable', 'true')
+
             if float(package.file.resume) > 0:
                 listitem.setProperty('isResumable', "1")
             if int(package.file.playcount) > 0: #or (float(package.file.resume) > 0 and package.file.duration > 0 and package.file.resume/package.file.duration > (1-self.settskipResume)):
@@ -1245,6 +1246,12 @@ class cloudservice(object):
                 listitem.setProperty('isResumable', 1)
 
         listitem.setProperty('fanart_image', package.file.fanart)
+        if package.file.resume > 0:
+            listitem.setProperty('ResumeTime', str(package.file.resume))
+        if package.file.duration > 0:
+            listitem.setProperty('TotalTime', str(package.file.duration))
+
+#        listitem.setProperty('TotalTime', '20')
 
 
         cm=[]

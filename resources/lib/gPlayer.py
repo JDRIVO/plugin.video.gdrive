@@ -43,6 +43,7 @@ class gPlayer(xbmc.Player):
         self.service = None
         self.current = 1
         self.playStatus = False
+        self.currentURL = ''
 
 
     def setService(self,service):
@@ -90,6 +91,7 @@ class gPlayer(xbmc.Player):
 
     def PlayStream(self, url, item, seek, startPlayback=True, package=None):
 
+        self.currentURL = url
         if startPlayback:
             self.play(url, item)
 
@@ -169,6 +171,14 @@ class gPlayer(xbmc.Player):
                     self.service.setProperty(self.package.file.id,'playcount', int(self.package.file.playcount)+1)
                 elif self.service.settings.cloudResume == '2' and  self.service.protocol == 2 and (self.time/self.package.file.duration) >= int(self.service.settings.skipResume)*0.01:#and self.time > self.package.file.resume:
                     self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, watched= int(self.package.file.playcount)+1, resume=0)
+                    item = xbmcgui.ListItem(self.package.file.displayTitle(), iconImage=self.package.file.thumbnail,
+                                thumbnailImage=self.package.file.thumbnail)
+                    item.setInfo( type="Video", infoLabels={ "Title": self.package.file.title , "Plot" : self.package.file.title } )
+                    #item.setPath('/u01/STRM/The Simpsons/Season 20/The Simpsons - S20E01 - Sex, Pies and Idiot Scrapes (HDTV-720p).mkv.strm')
+                    item.setPath()
+                    item.setProperty('ResumeTime', str(self.time))
+                    item.setProperty('TotalTime', '200')
+                    item.setProperty('PlayCount', '1')
 
             except: pass
 
@@ -189,7 +199,15 @@ class gPlayer(xbmc.Player):
                     self.service.setProperty(self.package.file.id,'resume', self.time)
                 elif self.service.settings.cloudResume == '2' and  self.service.protocol == 2 and float(self.time) > float(self.package.file.resume):
                     self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, resume=self.time)
+                    item = xbmcgui.ListItem(self.package.file.displayTitle(), iconImage=self.package.file.thumbnail,
+                                thumbnailImage=self.package.file.thumbnail)
+                    item.setInfo( type="Video", infoLabels={ "Title": self.package.file.title , "Plot" : self.package.file.title } )
+                    #item.setPath('/u01/STRM/The Simpsons/Season 20/The Simpsons - S20E01 - Sex, Pies and Idiot Scrapes (HDTV-720p).mkv.strm')
+                    item.setProperty('ResumeTime', str(self.time))
+                    item.setProperty('TotalTime', '200')
+
             except: pass
+
 
         #self.current = self.current +1
         self.isExit = True

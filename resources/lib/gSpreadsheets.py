@@ -456,6 +456,99 @@ class gSpreadsheets:
 
         return mediaList
 
+
+    def updateMediaPackageList(self,url, folderID, mediaList):
+
+        if folderID is not None and folderID != '':
+            params = urllib.urlencode({'folderid':  folderID})
+        else:
+            return
+        url = url + '?sq=' + params
+       #url = url + '?tq=' + params
+
+        mediaHash = {}
+        if mediaList:
+            count=0
+            for item in mediaList:
+                if item.file is not None:
+                    mediaHash[item.file.id] = count
+                count = count + 1
+
+
+        while True:
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return
+
+            response_data = response.read()
+
+            previous = ''
+            append = True
+            for r in re.finditer('<entry>(.*?)</entry>' ,
+                             response_data, re.DOTALL):
+
+                entry = r.group()
+                exp = re.compile('<gsx:([^\>]+)>([^<]+)</gsx')
+
+
+                for media in exp.finditer(entry):
+                    # not a general folder ID but another file ID
+                    if media.group(1) == 'fileid' and media.group(2) not in mediaHash.keys():
+                        break
+                    elif media.group(1) == 'fileid':
+                        newPackage = mediaList[mediaHash[media.group(2)]]
+
+                    elif media.group(1) == 'watched':
+                        if  media.group(2) == '':
+                            newPackage.file.playcount = 0
+                        else:
+                            newPackage.file.playcount =  media.group(2)
+                    elif media.group(1) == 'resume':
+                        if  media.group(2) == '':
+                            newPackage.file.resume = 0
+                        else:
+                            newPackage.file.resume = media.group(2)
+                    elif media.group(1) == 'commands':
+                        newPackage.file.commands = media.group(2)
+                    elif media.group(1) == 'nfo':
+                        nfoInfo = media.group(2)
+                        nfoInfo = re.sub('&lt;', '<', nfoInfo)
+                        nfoInfo = re.sub('/\s?&gt;', '> </>', nfoInfo)
+                        nfoInfo = re.sub('&gt;', '>', nfoInfo)
+                        nfo = re.compile('<([^\>]+)>([^\<]*)</')
+                        for info in nfo.finditer(nfoInfo):
+                            #if info.group(1) == 'title':
+                            #    newPackage.file.title = info.group(2)
+                            if info.group(1) == 'premiered' or info.group(1) == 'year':
+                                newPackage.file.date = info.group(2)
+                            elif info.group(1) == 'plot' or info.group(1) == 'description':
+                                newPackage.file.plot = info.group(2)
+                            elif info.group(1) == 'actors':
+                                newPackage.file.cast = info.group(2)
+                    elif media.group(1) == 'fanart':
+                        newPackage.file.fanart = self.service.API_URL +'files/' + str(media.group(2)) + '?alt=media' + '|' + self.service.getHeadersEncoded()
+                    elif media.group(1) == 'filename':
+                        newPackage.file.title = media.group(2)
+
+            nextURL = ''
+            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                nextURL = r.groups()
+
+            response.close()
+
+            if nextURL == '':
+                break
+            else:
+                url = nextURL[0]
+
+
+        return mediaList
+
     def getMediaInformation(self,url,folderID):
 
         params = urllib.urlencode({'folderuid': folderID})
