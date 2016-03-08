@@ -18,6 +18,7 @@
 '''
 
 import os
+import sys
 import re
 import urllib, urllib2
 
@@ -149,6 +150,7 @@ class gPlayer(xbmc.Player):
     def onPlayBackStarted(self):
         print "PLAYBACK STARTED"
         self.playStatus = True
+        self.tag = xbmc.Player().getVideoInfoTag()
 #        if self.seek > 0:
 #            self.seekTime(self.seek)
         if self.seek > 0 and self.seek !='':
@@ -171,15 +173,14 @@ class gPlayer(xbmc.Player):
                     self.service.setProperty(self.package.file.id,'playcount', int(self.package.file.playcount)+1)
                 elif self.service.settings.cloudResume == '2' and  self.service.protocol == 2 and (self.time/self.package.file.duration) >= int(self.service.settings.skipResume)*0.01:#and self.time > self.package.file.resume:
                     self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, watched= int(self.package.file.playcount)+1, resume=0)
-                    item = xbmcgui.ListItem(self.package.file.displayTitle(), iconImage=self.package.file.thumbnail,
-                                thumbnailImage=self.package.file.thumbnail)
-                    item.setInfo( type="Video", infoLabels={ "Title": self.package.file.title , "Plot" : self.package.file.title } )
-                    #item.setPath('/u01/STRM/The Simpsons/Season 20/The Simpsons - S20E01 - Sex, Pies and Idiot Scrapes (HDTV-720p).mkv.strm')
-                    item.setPath()
-                    item.setProperty('ResumeTime', str(self.time))
-                    item.setProperty('TotalTime', '200')
-                    item.setProperty('PlayCount', '1')
-
+                    exp = re.search('0?(\d+)',  self.package.file.season)
+                    season = exp.group(1)
+                    exp = re.search('0?(\d+)',  self.package.file.episode)
+                    episode = exp.group(1)
+                    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {"filter":{"and": [{"field": "season", "operator": "is", "value": "'+str(season)+'"}, {"field": "episode", "operator": "is", "value": "'+str(episode)+'"}]}}, "id": 1}')
+                    exp = re.search('"episodeid":(\d+)', result)
+                    episodeID = exp.group(1)
+                    xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "resume": {"position": '+str(self.time)+', "total":  '+str(self.package.file.duration)+'}}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
             except: pass
 
 
@@ -197,14 +198,16 @@ class gPlayer(xbmc.Player):
             try:
                 if self.service.settings.cloudResume == '1' and  self.service.protocol == 2 and float(self.time) > float(self.package.file.resume):
                     self.service.setProperty(self.package.file.id,'resume', self.time)
-                elif self.service.settings.cloudResume == '2' and  self.service.protocol == 2 and float(self.time) > float(self.package.file.resume):
+                elif self.service.settings.cloudResume == '2' and  self.service.protocol == 2:# and float(self.time) > float(self.package.file.resume):
                     self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, resume=self.time)
-                    item = xbmcgui.ListItem(self.package.file.displayTitle(), iconImage=self.package.file.thumbnail,
-                                thumbnailImage=self.package.file.thumbnail)
-                    item.setInfo( type="Video", infoLabels={ "Title": self.package.file.title , "Plot" : self.package.file.title } )
-                    #item.setPath('/u01/STRM/The Simpsons/Season 20/The Simpsons - S20E01 - Sex, Pies and Idiot Scrapes (HDTV-720p).mkv.strm')
-                    item.setProperty('ResumeTime', str(self.time))
-                    item.setProperty('TotalTime', '200')
+                    exp = re.search('0?(\d+)',  self.package.file.season)
+                    season = exp.group(1)
+                    exp = re.search('0?(\d+)',  self.package.file.episode)
+                    episode = exp.group(1)
+                    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {"filter":{"and": [{"field": "season", "operator": "is", "value": "'+str(season)+'"}, {"field": "episode", "operator": "is", "value": "'+str(episode)+'"}]}}, "id": 1}')
+                    exp = re.search('"episodeid":(\d+)', result)
+                    episodeID = exp.group(1)
+                    xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "resume": {"position": '+str(self.time)+', "total":  '+str(self.package.file.duration)+'}}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
 
             except: pass
 

@@ -1246,8 +1246,8 @@ class cloudservice(object):
                 listitem.setProperty('isResumable', 1)
 
         listitem.setProperty('fanart_image', package.file.fanart)
-        if package.file.resume > 0:
-            listitem.setProperty('ResumeTime', str(package.file.resume))
+#        if package.file.resume > 0:
+#            listitem.setProperty('ResumeTime', str(package.file.resume))
         if package.file.duration > 0:
             listitem.setProperty('TotalTime', str(package.file.duration))
 
