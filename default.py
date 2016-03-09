@@ -359,7 +359,9 @@ elif mode == 'cloud_db':
             service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
         if action == 'watch':
             service.gSpreadsheet.setMediaStatus(service.worksheetID,package, watched=1)
-
+        elif action == 'queue':
+            package.folder.id = 'QUEUED'
+            service.gSpreadsheet.setMediaStatus(service.worksheetID,package)
         elif action == 'recentwatched' or action == 'recentstarted' or action == 'library' or action == 'queued':
 
             mediaItems = service.gSpreadsheet.updateMediaPackage(service.worksheetID, criteria=action)

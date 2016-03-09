@@ -1,6 +1,8 @@
+v0.7.43 (2016-03-08)
 - CLOUD_DB: load data during listings (resume + play count)
 - CLOUD_DB: fix resume points
 - CLOUD_DB: STRM resume points
+- CLOUD_DB: updated add to queue
 - drop Brazil language file
 v0.7.42 (2016-03-06)
 - CLOUD_DB: do not prompt for resume if seeking

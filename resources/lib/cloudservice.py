@@ -1319,6 +1319,7 @@ class cloudservice(object):
         #CLOUD_DB
         if self.gSpreadsheet is not None:
                 cm.append(( self.addon.getLocalizedString(30177) + self.addon.getLocalizedString(30178),  'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=cloud_db&' + urllib.urlencode(values) + '&action=watch'+')', ))
+                cm.append(( self.addon.getLocalizedString(30177) + self.addon.getLocalizedString(30179),  'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=cloud_db&' + urllib.urlencode(values) + '&action=queue'+')', ))
 
         url = url + '&content_type='+contextType
 
