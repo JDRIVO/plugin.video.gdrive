@@ -64,6 +64,9 @@ class file:
         self.checksum = checksum
         self.rating = ''
         self.cast = ''
+        self.isTV = False
+        self.isMovie = False
+        self.cloudResume = 0
 
 
         # nekwebdev contribution
@@ -99,6 +102,7 @@ class file:
         self.episode = episode
         self.showtitle = showtitle
         self.hasMeta = True
+        self.isTV = True
 
     def displayTitle(self):
         if self.decryptedTitle != '':

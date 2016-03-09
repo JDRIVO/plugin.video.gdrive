@@ -1153,11 +1153,22 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             #            service.downloadMediaFile(int(sys.argv[1]), playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
                         service.downloadMediaFile(mediaURL, item, package, playback=service.PLAYBACK_PLAYER, player=player)
                         resolvedPlayback = False
+
                     # STRM (force resolve) -- resolve-only
                     elif settings.username != '':
                         startPlayback = False
                         resolvedPlayback = True
                         startPlayback = False
+                        if not seek > 0  and package.file.cloudResume > 0 and not settings.cloudResumePrompt:
+                            returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30176), str(int(float(package.file.cloudResume)/360)) + ':'+ str(int(float(package.file.cloudResume)/60)) + ':' + str(int(float(package.file.cloudResume)%60)))
+                            if not returnPrompt:
+                                package.file.resume = 0
+                            else:
+                                package.file.resume = package.file.cloudResume
+                                item.setProperty('isResumable', '1')
+                                item.setProperty('ResumeTime', str(package.file.resume))
+                                item.setProperty('TotalTime', str(package.file.duration))
+
 
                     # right-click - play original / SRT / CC / Start At
                     elif settings.playOriginal or settings.srt or settings.cc or settings.seek:

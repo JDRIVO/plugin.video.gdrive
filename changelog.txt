@@ -1,5 +1,6 @@
 - CLOUD_DB: load data during listings (resume + play count)
 - CLOUD_DB: fix resume points
+- CLOUD_DB: STRM resume points
 v0.7.42 (2016-03-06)
 - CLOUD_DB: do not prompt for resume if seeking
 - CLOUD_DB: update resume prompt with resume point time

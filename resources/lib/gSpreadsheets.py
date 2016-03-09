@@ -334,7 +334,7 @@ class gSpreadsheets:
 
         if package1 is not None and (package1.file is None or package1.file.id is None) and package1.folder is not None and package1.folder.id is not None:
             params = urllib.urlencode({'folderid':  package1.folder.id})
-        elif package1 is not None and (package1.file is None or package1.file.id is not None) and package1.folder is not None and package1.folder.id is not None:
+        elif package1 is not None and (package1.file is None or package1.file.id is not None) and package1.folder is not None and package1.folder.id is not None and  package1.folder.id != '' :
             params = str(urllib.urlencode({'folderid':  package1.folder.id})) +'%20or%20'+ str(urllib.urlencode({'fileid':  package1.file.id}))
         elif package1 is not None and package1.file is not None and package1.file.id is not None:
             params = urllib.urlencode({'fileid':  package1.file.id})
@@ -411,9 +411,9 @@ class gSpreadsheets:
 
                     elif media.group(1) == 'resume':
                         if  media.group(2) == '':
-                            newPackage.file.resume = 0
+                            newPackage.file.cloudResume = 0
                         else:
-                            newPackage.file.resume = media.group(2)
+                            newPackage.file.cloudResume = media.group(2)
                     elif media.group(1) == 'commands':
                         newPackage.file.commands = media.group(2)
                     elif media.group(1) == 'nfo':
@@ -509,9 +509,9 @@ class gSpreadsheets:
                             newPackage.file.playcount =  media.group(2)
                     elif media.group(1) == 'resume':
                         if  media.group(2) == '':
-                            newPackage.file.resume = 0
+                            newPackage.file.cloudResume = 0
                         else:
-                            newPackage.file.resume = media.group(2)
+                            newPackage.file.cloudResume = media.group(2)
                     elif media.group(1) == 'commands':
                         newPackage.file.commands = media.group(2)
                     elif media.group(1) == 'nfo':
