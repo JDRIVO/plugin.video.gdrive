@@ -345,11 +345,11 @@ class gSpreadsheets:
         elif package1 is None and criteria == 'recentwatched':
             from datetime import date, timedelta
             updated = str((date.today() - timedelta(1)).strftime("%Y%m%d%H%M"))
-            params = 'watched!=""%20and%20watched>0%20and%20updated>='+updated
+            params = 'folderid!=QUEUED%20and%20watched!=""%20and%20watched>0%20and%20updated>='+updated
         elif package1 is None and criteria == 'recentstarted':
             from datetime import date, timedelta
             updated = str((date.today() - timedelta(1)).strftime("%Y%m%d%H%M"))
-            params = 'watched=""%20and%20resume>0%20and%20updated>='+updated
+            params = 'folderid!=QUEUED%20and%20watched=""%20and%20resume>0%20and%20updated>='+updated
         else:
             return
         url = url + '?sq=' + params
