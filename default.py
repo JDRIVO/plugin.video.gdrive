@@ -984,6 +984,31 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             player.saveTime()
             xbmc.sleep(5000)
 
+    elif mode == 'search' and contextType != '':
+
+            if title == '':
+
+                try:
+                    dialog = xbmcgui.Dialog()
+                    title = dialog.input(addon.getLocalizedString(30110), type=xbmcgui.INPUT_ALPHANUM)
+                except:
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30100))
+                    title = 'test'
+
+            mediaItems = service.getMediaList(title=title, contentType=contentType)
+            resolvedPlayback = False
+            startPlayback = False
+
+            options = []
+            urls = []
+
+            if mediaItems:
+                for item in mediaItems:
+                    if item.file is None:
+                        service.addDirectory( item.folder, contextType=contextType)
+                    else:
+                        service.addMediaFile(item, contextType=contextType)
+
     # non-encfs
     else:
 
@@ -1000,7 +1025,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             mediaFolder = folder.folder(folderID,'')
             (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder))
         # search
-        elif mode == 'search':
+        elif mode == 'search' and contextType == '':
 
                 if title == '':
 
