@@ -1,3 +1,5 @@
+v0.7.44 (2016-03-09)
+- fix for playback of offline file
 v0.7.43 (2016-03-08)
 - CLOUD_DB: load data during listings (resume + play count)
 - CLOUD_DB: fix resume points

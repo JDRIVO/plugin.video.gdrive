@@ -384,6 +384,7 @@ class gSpreadsheets:
                 else:
                     newPackage = package1
 
+
                 for media in exp.finditer(entry):
                     # not a general folder ID but another file ID
                     if media.group(1) == 'fileid' and newPackage.file.id != '' and newPackage.file.id != media.group(2) and media.group(2) != '':

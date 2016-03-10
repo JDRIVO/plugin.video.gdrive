@@ -1369,7 +1369,8 @@ class cloudservice(object):
         #playbackPath = str(self.settings.cachePath) + '/' + str(filename) + '/'
         localResolutions = []
         localFiles = []
-        if not self.settings.download and not self.settings.cache:
+        # if we are not downloading-only
+        if self.settings.play:
             (localResolutions,localFiles) = self.cache.getFiles(self)
         totalList = localFiles + newMediaURLs
         mediaCount = len(localFiles)
