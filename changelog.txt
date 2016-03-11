@@ -1,4 +1,5 @@
 - fix search error when CLOUD_DB is enabled
+- add support for subtitles .ass and .ssa
 v0.7.44 (2016-03-09)
 - fix for playback of offline file
 v0.7.43 (2016-03-08)

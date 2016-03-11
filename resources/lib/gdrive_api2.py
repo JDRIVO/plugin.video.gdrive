@@ -852,7 +852,7 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                   fileExtension = r.group(1)
                   break
-                if fileExtension == 'srt' or fileExtension == 'sub' :
+                if fileExtension.lower() in ('srt','sub','ass','ssa'):
 
                     for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):

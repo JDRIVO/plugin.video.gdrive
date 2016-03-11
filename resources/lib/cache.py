@@ -101,7 +101,7 @@ class cache:
 
             dirs, files = xbmcvfs.listdir(str(self.cachePath) + '/'+ str(self.package.file.id) + '/')
             for file in files:
-                if str(os.path.splitext(file)[1]).lower() == '.srt' or str(os.path.splitext(file)[1]).lower() == '.sub':
+                if str(os.path.splitext(file)[1]).lower() in ('.srt', '.sub', '.ass', '.ssa') or str(os.path.splitext(file)[1]).lower() in ('srt', 'sub', 'ass', 'ssa'):
                     self.srt.append(str(self.cachePath) + '/'+ str(self.package.file.id) + '/' + file)
         return self.srt
 
