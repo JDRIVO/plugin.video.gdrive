@@ -57,13 +57,13 @@ class cache:
 
             if not xbmcvfs.exists(cachePath):
                 xbmcvfs.mkdirs(cachePath)
-            srt = service.getSRT(False, self.package.folder.id)
+            srt = service.getSRT(self.package)
             if srt:
                 for file in srt:
                     if not xbmcvfs.exists(str(cachePath) + str(file[0])):
                         service.downloadGeneralFile(file[1], str(cachePath) + str(file[0]))
         else:
-            srt = service.getSRT(False, self.package.folder.id)
+            srt = service.getSRT(self.package)
             if srt:
                 for file in srt:
                     self.srt.append(str(file[1]) + '|' + service.getHeadersEncoded())

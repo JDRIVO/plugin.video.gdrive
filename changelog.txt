@@ -1,3 +1,4 @@
+- SRT - merge contribution by dabinn (dealing with TV series in a single directory)
 v0.7.45 (2016-03-10)
 - fix search error when CLOUD_DB is enabled
 - add support for subtitles .ass and .ssa

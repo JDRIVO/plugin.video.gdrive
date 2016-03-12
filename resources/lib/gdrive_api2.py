@@ -794,20 +794,28 @@ class gdrive(cloudservice):
     #   parameters: title of the video file
     #   returns: download url for srt
     ##
-    def getSRT(self, title, folderid):
+    def getSRT(self, package):
 
+        if package is None or (package.file is None and package.folder is None):
+            return
         # retrieve all items
-        url = self.API_URL +'files/'
+        url = self.API_URL +'files'
+
+        # merge contribution by dabinn
+        q = ''
+        # search in current directory
+        if package.folder is not None and (package.folder.id != False or package.folder.id != ''):
+
+            q = "'"+str(package.folder.id)+"' in parents"
 
         # search for title
-        if title != False:
-            title = os.path.splitext(title)[0]
-            encodedTitle = re.sub(' ', '+', title)
-            url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
+        if package.file is not None and (package.file.title != False or package.file.title != ''):
+            title = os.path.splitext(package.file.title)[0]
+            if q != '':
+                q = q + ' and '
+            q = q + "title contains '" + str(title) + "'"
 
-        # search for title
-        if folderid != False:
-            url = url + "?q='"+str(folderid)+"'+in+parents"
+        url = url + "?" + urllib.urlencode({'q':q})
 
         srt = []
         while True:
