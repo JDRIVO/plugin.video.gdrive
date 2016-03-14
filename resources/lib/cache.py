@@ -51,11 +51,11 @@ class cache:
     def setSRT(self, service):
 
         #load cachePath if not already loaded
-        if not self.cacheSRT and self.cachePath == '':
+        if not service.settings.cacheSRT and self.cachePath == '':
             self.cachePath = service.settings.cachePath
 
         #only makes sense to cache SRT if the cachePath exists
-        if not self.cacheSRT and self.cachePath != '':
+        if service.settings.cacheSRT and self.cachePath != '':
             cachePath = str(self.cachePath) + '/' + str(self.package.file.id)+'/'
 
             if not xbmcvfs.exists(cachePath):
@@ -65,7 +65,7 @@ class cache:
                 for file in srt:
                     if not xbmcvfs.exists(str(cachePath) + str(file[0])):
                         service.downloadGeneralFile(file[1], str(cachePath) + str(file[0]))
-                        self.srt.append(str(self.cachePath) + '/'+ str(self.package.file.id) + '/' + file)
+                    self.srt.append(str(cachePath) + str(file[0]))
 
         #fetch SRT URLs but we won't cache the files
         else:
@@ -127,7 +127,7 @@ class cache:
 
 
         # there is no cache path setting or the setting is unset -- we should assume user does not want to use caching
-        if not self.cacheThumbnails or self.cachePath == '':
+        if not service.settings.cacheThumbnails or self.cachePath == '':
 
             if url == '':
                 return self.package.file.thumbnail
@@ -142,7 +142,7 @@ class cache:
             return ""
 
         #user doesn't want to cache thumbnails
-        if not self.cacheThumbnails:
+        if not service.settings.cacheThumbnails:
             return url
 
         cachePath = str(self.cachePath) + str(self.package.file.id) + '/'
@@ -162,7 +162,7 @@ class cache:
     def getThumbnail(self,service, url='', fileID=''):
 
         # user isn't caching thumbnails
-        if not self.cacheThumbnails or self.cachePath == '':
+        if not service.settings.cacheThumbnails or self.cachePath == '':
             if url != '':
                 return url + '|' + service.getHeadersEncoded()
             elif self.package != None and self.package.file != None:

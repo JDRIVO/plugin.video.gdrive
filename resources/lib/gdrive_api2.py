@@ -803,21 +803,23 @@ class gdrive(cloudservice):
 
         # merge contribution by dabinn
         q = ''
-        # search in current directory
+        # search in current folder for SRT files
         if package.folder is not None and (package.folder.id != False or package.folder.id != ''):
 
             q = "'"+str(package.folder.id)+"' in parents"
 
-        # search for title
-        if package.file is not None and (package.file.title != False or package.file.title != ''):
-            title = os.path.splitext(package.file.title)[0]
-            if q != '':
-                q = q + ' and '
-            q = q + "title contains '" + str(title) + "'"
+        # search for title in SRT file
+#        if package.file is not None and (package.file.title != False or package.file.title != ''):
+#            title = os.path.splitext(package.file.title)[0]
+#            if q != '':
+#                q = q + ' and '
+#            q = q + "title contains '" + str(title) + "'"
 
         url = url + "?" + urllib.urlencode({'q':q})
 
         srt = []
+        srtCandidates = []
+
         while True:
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -846,6 +848,7 @@ class gdrive(cloudservice):
 
             # parsing page for videos
             # video-entry
+            isExactMatch = False
             for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\}\s+\]\s+\}' ,response_data, re.DOTALL):
              entryS = r2.group(1)
              for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,entryS, re.DOTALL):
@@ -869,11 +872,16 @@ class gdrive(cloudservice):
                     for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                         title = r.group(1)
+                        if os.path.splitext(package.file.title)[0] in title:
+                            isExactMatch = True
                         break
                     for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                         url = r.group(1)
-                        srt.append([title,url])
+                        if isExactMatch:
+                            srt.append([title,url])
+                        else:
+                            srtCandidates.append([title,url])
                         break
 
 
@@ -891,7 +899,10 @@ class gdrive(cloudservice):
             else:
                 url = nextURL
 
-        return srt
+        if len(srt) > 0:
+            return srt
+        elif len(srtCandidates) > 0:
+            return srtCandidates
 
 
 
