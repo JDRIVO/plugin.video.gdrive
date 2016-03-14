@@ -386,6 +386,7 @@ elif mode == 'cloud_db':
             service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
         if action == 'watch':
             service.gSpreadsheet.setMediaStatus(service.worksheetID,package, watched=1)
+            xbmc.executebuiltin("XBMC.Container.Refresh")
         elif action == 'queue':
             package.folder.id = 'QUEUED'
             service.gSpreadsheet.setMediaStatus(service.worksheetID,package)
