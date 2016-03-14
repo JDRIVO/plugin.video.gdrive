@@ -817,9 +817,12 @@ class gdrive(cloudservice):
 
         url = url + "?" + urllib.urlencode({'q':q})
 
+        #generate two lists of SRT files
+        #1) list of files (multiple languages) from the same folder that exactly match the title of the video
+        #2) list of candidate files that are from the same folder but don't match the title of the video (if exceeds 4, ask user to select -- likely TV series or folder containing multiple movies)
         srt = []
         srtCandidates = []
-
+        srtCandidatesTitles = []
         while True:
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -882,6 +885,7 @@ class gdrive(cloudservice):
                             srt.append([title,url])
                         else:
                             srtCandidates.append([title,url])
+                            srtCandidatesTitles.append(title)
                         break
 
 
@@ -901,6 +905,9 @@ class gdrive(cloudservice):
 
         if len(srt) > 0:
             return srt
+        elif len(srtCandidates) > 4:
+            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30183), srtCandidatesTitles)
+            return [srtCandidates[ret]]
         elif len(srtCandidates) > 0:
             return srtCandidates
 
