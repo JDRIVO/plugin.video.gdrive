@@ -84,7 +84,7 @@ class settings:
         #self.integratedPlayer = self.getSetting('integrated_player', False)
         self.cc = getParameter('cc', self.getSetting('cc', True))
         self.srt = getParameter('srt', self.getSetting('srt', True))
-        self.srt_folder = getParameter('srt_folder', self.getSetting('srt_folder', False))
+        #self.srt_folder = getParameter('srt_folder', self.getSetting('srt_folder', False))
 
         self.username = getParameter('username', '')
         self.setCacheParameters()
@@ -112,6 +112,8 @@ class settings:
         self.cachePercent = self.getSetting('cache_percent', 10)
         self.cacheChunkSize = self.getSetting('chunk_size', 32 * 1024)
         self.cacheContinue = self.getSetting('cache_continue', False)
+        self.cacheSRT = self.getSetting('cache_srt', False)
+        self.cacheThumbnails = self.getSetting('cache_thumbnails', False)
 
         if self.cache:
             self.download = False

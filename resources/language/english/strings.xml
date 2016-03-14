@@ -173,5 +173,7 @@
 	<string id="30178">Mark as Watched</string>
 	<string id="30179">Queue</string>
 	<string id="30180">Sort by</string>
+	<string id="30181">Cache SRT</string>
+	<string id="30182">Cache Thumbnails</string>
 
 </strings>

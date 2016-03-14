@@ -46,13 +46,16 @@ class cache:
 
 
     ##
-    #  set the SRT
+    #  set the SRT for the video file
     ##
     def setSRT(self, service):
-        if self.cachePath == '':
+
+        #load cachePath if not already loaded
+        if not self.cacheSRT and self.cachePath == '':
             self.cachePath = service.settings.cachePath
 
-        if self.cachePath != '':
+        #only makes sense to cache SRT if the cachePath exists
+        if not self.cacheSRT and self.cachePath != '':
             cachePath = str(self.cachePath) + '/' + str(self.package.file.id)+'/'
 
             if not xbmcvfs.exists(cachePath):
@@ -62,6 +65,9 @@ class cache:
                 for file in srt:
                     if not xbmcvfs.exists(str(cachePath) + str(file[0])):
                         service.downloadGeneralFile(file[1], str(cachePath) + str(file[0]))
+                        self.srt.append(str(self.cachePath) + '/'+ str(self.package.file.id) + '/' + file)
+
+        #fetch SRT URLs but we won't cache the files
         else:
             srt = service.getSRT(self.package)
             if srt:
@@ -69,13 +75,16 @@ class cache:
                     self.srt.append(str(file[1]) + '|' + service.getHeadersEncoded())
 
     ##
-    #  set the CC
+    #  set the CC for the video file
     ##
     def setCC(self, service):
+
+        #load cachePath if not already loaded
         if self.cachePath == '':
             self.cachePath = service.settings.cachePath
 
         # there is no cache path setting or the setting is unset -- we should assume user does not want to use caching
+        # CC files need to be cached (so they can be converted to SRT) -- don't do anything if we don't have the cachePath
         if self.cachePath == '':
             return
 
@@ -94,27 +103,31 @@ class cache:
     #  fetch the SRT
     ##
     def getSRT(self, service):
-        if self.cachePath == '':
-            self.cachePath = service.settings.cachePath
 
-        if self.cachePath != '':
-
-            dirs, files = xbmcvfs.listdir(str(self.cachePath) + '/'+ str(self.package.file.id) + '/')
-            for file in files:
-                if str(os.path.splitext(file)[1]).lower() in ('.srt', '.sub', '.ass', '.ssa') or str(os.path.splitext(file)[1]).lower() in ('srt', 'sub', 'ass', 'ssa'):
-                    self.srt.append(str(self.cachePath) + '/'+ str(self.package.file.id) + '/' + file)
+        #load cachePath if not already loaded
+#        if self.cachePath == '':
+#            self.cachePath = service.settings.cachePath
+#
+#        if self.cachePath != '':
+#
+#            dirs, files = xbmcvfs.listdir(str(self.cachePath) + '/'+ str(self.package.file.id) + '/')
+#            for file in files:
+#                if str(os.path.splitext(file)[1]).lower() in ('.srt', '.sub', '.ass', '.ssa') or str(os.path.splitext(file)[1]).lower() in ('srt', 'sub', 'ass', 'ssa'):
+#                    self.srt.append(str(self.cachePath) + '/'+ str(self.package.file.id) + '/' + file)
         return self.srt
 
     ##
     #  set the thumbnail
     ##
     def setThumbnail(self, service, url=''):
+
+        #load cachePath if not already loaded
         if self.cachePath == '':
             self.cachePath = service.settings.cachePath
 
 
         # there is no cache path setting or the setting is unset -- we should assume user does not want to use caching
-        if self.cachePath == '':
+        if not self.cacheThumbnails or self.cachePath == '':
 
             if url == '':
                 return self.package.file.thumbnail
@@ -127,6 +140,10 @@ class cache:
         #simply no thumbnail
         if url == '':
             return ""
+
+        #user doesn't want to cache thumbnails
+        if not self.cacheThumbnails:
+            return url
 
         cachePath = str(self.cachePath) + str(self.package.file.id) + '/'
         cacheFile = str(self.cachePath) + str(self.package.file.id) + '.jpg'
@@ -143,7 +160,9 @@ class cache:
     #  get the thumbnail
     ##
     def getThumbnail(self,service, url='', fileID=''):
-        if self.cachePath == '':
+
+        # user isn't caching thumbnails
+        if not self.cacheThumbnails or self.cachePath == '':
             if url != '':
                 return url + '|' + service.getHeadersEncoded()
             elif self.package != None and self.package.file != None:
@@ -166,12 +185,15 @@ class cache:
     #  get a list of offline files for this file
     ##
     def getFiles(self,service):
+
+        #load cachePath if not already loaded
         if self.cachePath == '':
             self.cachePath = service.settings.cachePath
 
         localResolutions = []
         localFiles = []
 
+        # no local cache, no local files to look for
         if self.cachePath == '':
             return (localResolutions,localFiles)
 
