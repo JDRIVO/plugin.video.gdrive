@@ -26,6 +26,7 @@ class package:
     ##
     ##
     def __init__(self, file, folder):
+        self.sortTitle = ''
         try:
             if file.title != '':
                 self.sortTitle = file.title
@@ -49,7 +50,7 @@ class package:
 
     def __cmp__(self, other):
         if hasattr(other, 'sortTitle'):
-            return self.sortTitle.__cmp__(other.sortTitle)
+            return (cmp(self.sortTitle, other.sortTitle))
 
     def getKey(self):
         return self.sortTitle

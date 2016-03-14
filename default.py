@@ -111,36 +111,9 @@ encfs = settings.getParameter('encfs', False)
 contentType = kodi_common.getContentType(contextType,encfs)
 
 
-if contextType == 'image' and settings.getSetting('sort_photo') == '1':
-    # cloudservice - sorting options
-    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
-    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
-elif contextType == 'image' and settings.getSetting('sort_photo') == '2':
-    # cloudservice - sorting options
-    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
-    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
-elif contextType == 'audio' and settings.getSetting('sort_photo') == '1':
-    # cloudservice - sorting options
-    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
-    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
-elif contextType == 'audio' and settings.getSetting('sort_photo') == '2':
-    # cloudservice - sorting options
-    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
-    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
-elif contextType == 'video' and settings.getSetting('sort_photo') == '1':
-    # cloudservice - sorting options
-    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
-    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
-elif contextType == 'video' and settings.getSetting('sort_photo') == '2':
-    # cloudservice - sorting options
-    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
-    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
-#elif contextType == 'audio':
-#    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
-else:
-    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
+xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
 #    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TRACKNUM)
-    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
+xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 
 numberOfAccounts = cloudservice.numberOfAccounts(PLUGIN_NAME)
 
@@ -546,7 +519,7 @@ elif mode == 'main' or mode == 'index':
             service.gSpreadsheet.updateMediaPackageList(service.worksheetID, folderName, mediaItems)
 
         if mediaItems:
-            for item in mediaItems:
+            for item in sorted(mediaItems):
 
                     if item.file is None:
                         service.addDirectory(item.folder, contextType=contextType, epath=str(path)+ '/' + str(item.folder.title) + '/')

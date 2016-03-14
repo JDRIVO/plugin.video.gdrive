@@ -115,7 +115,6 @@
         <setting id="video_skip" type="slider" label="30161" default="98" option="percent" range="0,1,100" />
         <setting label="30037" type="lsep"/>
         <setting id="context_video" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Everything" default="0"/>
-        <setting id="sort_video" type="enum" subsetting="true" label="30180" values="None|Title|Size" default="0"/>
         <setting label="30006" type="lsep"/>
     	<setting id="prompt_quality" type="bool" subsetting="true" label="30019" default="true" />
     	<setting id="never_stream" type="bool" subsetting="true" label="30122" default="false" />
@@ -131,14 +130,12 @@
     <category label="30094">
         <setting label="30037" type="lsep"/>
         <setting id="context_music" type="enum" subsetting="true" label="30023" values="Music only|Everything" default="0"/>
-        <setting id="sort_music" type="enum" subsetting="true" label="30180" values="None|Title|Size" default="0"/>
     </category>
 
    	<!-- photo properties -->
     <category label="30160">
         <setting label="30037" type="lsep"/>
         <setting id="context_photo" type="enum" subsetting="true" label="30024" values="Photos only|Music and Photos|Everything" default="0"/>
-        <setting id="sort_photo" type="enum" subsetting="true" label="30180" values="None|Title|Size" default="0"/>
 
         <setting id="photo_folder" type="folder" label="30038" default="" />
     </category>
