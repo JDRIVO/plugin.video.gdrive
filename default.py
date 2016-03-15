@@ -1258,6 +1258,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 (localResolutions,localFiles) = service.cache.getFiles(service)
                 if len(localFiles) > 0:
                     mediaURL = mediaurl.mediaurl(str(localFiles[0]), 'offline', 0, 0)
+                    mediaURL.offline = True
                 else:
                     mediaURL = mediaURLs[0]
                     if not settings.download:
@@ -1271,7 +1272,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 if contextType == '':
 
                     #download - only, no playback
-                    if settings.download and not settings.play:
+                    if  not mediaURL.offline and settings.download and not settings.play:
                         service.downloadMediaFile(mediaURL, item, package, force=True, playback=service.PLAYBACK_NONE)
                         resolvedPlayback = False
 
@@ -1280,7 +1281,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                         startPlayback = False
 
                     #download & playback
-                    elif settings.download and settings.play:
+                    elif not mediaURL.offline and settings.download and settings.play:
                         service.downloadMediaFile(mediaURL, item, package,  playback=service.PLAYBACK_PLAYER, player=player)
                         resolvedPlayback = False
 

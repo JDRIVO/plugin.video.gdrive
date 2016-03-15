@@ -150,7 +150,7 @@ class gPlayer(xbmc.Player):
     def onPlayBackStarted(self):
         print "PLAYBACK STARTED"
         self.playStatus = True
-        self.tag = xbmc.Player().getVideoInfoTag()
+        #self.tag = xbmc.Player().getVideoInfoTag()
 #        if self.seek > 0:
 #            self.seekTime(self.seek)
         if self.seek > 0 and self.seek !='':
