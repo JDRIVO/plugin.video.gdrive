@@ -1,3 +1,11 @@
+v0.7.47 (2016-03-17)
+- Contributions by dabinn
+  - Use title.startswith() to match title name : more accurate.
+  - Move 'isExactMatch = False' into loop : fix 'too many subtitle loaded' issue
+  - Add idx extension support: idx and sub files are a pair, idx is index file, sub contains bitmap subtitle. They need to work together.
+  - fix double-byte character filenames (cache SRT)
+  - playback next fix for srt
+- fix: cancel on srt selection
 v0.7.46 (2016-03-14)
 - SRT - merge contribution by dabinn (dealing with TV series in a single directory)
 - add ability to toggle caching of thumbnails and SRT on/off

@@ -851,7 +851,7 @@ class gdrive(cloudservice):
 
             # parsing page for videos
             # video-entry
-            isExactMatch = False
+
             for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\}\s+\]\s+\}' ,response_data, re.DOTALL):
              entryS = r2.group(1)
              for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,entryS, re.DOTALL):
@@ -862,11 +862,12 @@ class gdrive(cloudservice):
                 title = ''
                 url = ''
                 fileExtension = ''
+                isExactMatch = False
                 for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   fileExtension = r.group(1)
                   break
-                if fileExtension.lower() in ('srt','sub','ass','ssa'):
+                if fileExtension.lower() in ('srt','idx','sub','ass','ssa'):
 
                     for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
@@ -875,7 +876,9 @@ class gdrive(cloudservice):
                     for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                         title = r.group(1)
-                        if os.path.splitext(package.file.title)[0] in title:
+                        #if os.path.splitext(package.file.title)[0] in title:
+                        ## contribution by dabinn
+                        if title.startswith(os.path.splitext(package.file.title)[0]):
                             isExactMatch = True
                         break
                     for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
@@ -907,7 +910,10 @@ class gdrive(cloudservice):
             return srt
         elif len(srtCandidates) > 4:
             ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30183), srtCandidatesTitles)
-            return [srtCandidates[ret]]
+            if ret >= 0:
+                return [srtCandidates[ret]]
+            else:
+                return
         elif len(srtCandidates) > 0:
             return srtCandidates
 

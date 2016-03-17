@@ -1320,6 +1320,11 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 
+            ## contribution by dabinn
+            # handle situation where playback is skipped to next file, wait for new source to load
+            if player.isPlaying():
+                xbmc.sleep(1000)
+
             # need to seek?
             if seek > 0:
                 player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
@@ -1337,13 +1342,13 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 for file in files:
                     if file != '':
                         try:
-                            file = file.decode('unicode-escape')
+                            #file = file.decode('unicode-escape')
                             file = file.encode('utf-8')
                         except:
                             pass
                         player.setSubtitles(file)
 
-
+            # we need to keep the plugin alive for as long as there is playback from the plugin, or the player object closes
             while not player.isExit:
                 player.saveTime()
                 xbmc.sleep(5000)
