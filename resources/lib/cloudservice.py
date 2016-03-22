@@ -533,7 +533,7 @@ class cloudservice(object):
 
 
             if contentType == 9:
-                mediaList = ['.mp4', '.flv', '.mov', '.webm', '.avi', '.ogg', '.mkv']
+                mediaList = ['.mp4', '.flv', '.mov', '.webm', '.avi', '.ogg', '.mkv', '.iso', '.rmvb']
             elif contentType == 10:
                 mediaList = ['.mp3', '.flac']
             else:# contentType == 11:

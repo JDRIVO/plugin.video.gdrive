@@ -1,3 +1,5 @@
+v0.7.48 (2016-03-22)
+- add .iso (video) support
 v0.7.47 (2016-03-17)
 - Contributions by dabinn
   - Use title.startswith() to match title name : more accurate.
