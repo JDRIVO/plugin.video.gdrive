@@ -395,6 +395,9 @@ class gdrive(cloudservice):
         else:
             url = url + "?q='"+str(folderName)+"'+in+parents"
 
+        # contribution by dabinn 
+        # filter out trashed items
+        url = url + "+and+trashed%3dfalse" 
 
         mediaFiles = []
         while True:
@@ -657,7 +660,7 @@ class gdrive(cloudservice):
                         newtitle = r.group(1)
                         title = '*' + newtitle
                         resourceID = 'SAVED SEARCH'
-                    media = package.package(None,folder.folder(resourceID,title, thumb=icon))
+                    media = package.package(None,folder.folder(resourceID,title, fanart, thumb=icon))
                     return media
 
                 # entry is a video
@@ -700,7 +703,7 @@ class gdrive(cloudservice):
 
                 # entry is a music file
                 elif ((resourceType == 'application/vnd.google-apps.audio' or (fileExtension.lower() == '' or fileExtension.lower() in ('flac', 'mp3')) or 'audio' in resourceType) and contentType in (1,2,3,4,6,7)):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', '', size=fileSize, checksum=md5)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, fanart, '', size=fileSize, checksum=md5)
 
                     if self.settings.parseMusic:
 
@@ -716,7 +719,7 @@ class gdrive(cloudservice):
 
                 # entry is a photo
                 elif ((resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType) and contentType in (2,4,5,6,7)):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, '', thumbnail, size=fileSize, download=url, checksum=md5)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, fanart, thumbnail, size=fileSize, download=url, checksum=md5)
 
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
@@ -728,14 +731,14 @@ class gdrive(cloudservice):
 
                 # entry is unknown
                 elif (resourceType == 'application/vnd.google-apps.unknown'):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, '', thumbnail, size=fileSize, checksum=md5)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, fanart, thumbnail, size=fileSize, checksum=md5)
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
                     return media
 
                 # all files (for saving to encfs)
                 elif (contentType >= 8):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, '', '', size=fileSize, checksum=md5)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, fanart, '', size=fileSize, checksum=md5)
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     return media
