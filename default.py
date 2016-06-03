@@ -367,6 +367,10 @@ elif mode == 'cloud_db':
 
             mediaItems = service.gSpreadsheet.updateMediaPackage(service.worksheetID, criteria=action)
 
+            #ensure that folder view playback
+            if contextType == '':
+                contextType = 'video'
+
             if mediaItems:
                 for item in mediaItems:
 
@@ -382,6 +386,9 @@ elif mode == 'main' or mode == 'index':
 
     folderName = settings.getParameter('folder', False)
 
+    #ensure that folder view playback
+    if contextType == '':
+        contextType = 'video'
 
     # display option for all Videos/Music/Photos, across gdrive
     #** gdrive specific
