@@ -96,7 +96,7 @@ class gPlayer(xbmc.Player):
         if startPlayback:
             self.play(url, item)
             if self.service.settings:
-                xbmc.log(self.addon.getAddonInfo('name') + ': Playback url ' + str(url), xbmc.LOGNOTICE)
+                xbmc.log(self.service.addon.getAddonInfo('name') + ': Playback url ' + str(url), xbmc.LOGNOTICE)
 
         if package is not None:
             self.package = package
@@ -104,7 +104,7 @@ class gPlayer(xbmc.Player):
         if seek != '':
             self.seek = float(seek)
             if self.service.settings:
-                xbmc.log(self.addon.getAddonInfo('name') + ': Seek ' + str(seek), xbmc.LOGNOTICE)
+                xbmc.log(self.service.addon.getAddonInfo('name') + ': Seek ' + str(seek), xbmc.LOGNOTICE)
 
 #        self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
 #        if seek > 0 and seek !='':
@@ -139,7 +139,7 @@ class gPlayer(xbmc.Player):
 
             playbackURL = mediaURLs[ret].url
             if self.service.settings:
-                xbmc.log(self.addon.getAddonInfo('name') + ': Play next ' + str(playbackURL), xbmc.LOGNOTICE)
+                xbmc.log(self.service.addon.getAddonInfo('name') + ': Play next ' + str(playbackURL), xbmc.LOGNOTICE)
 
             playbackQuality = mediaURLs[ret].quality
             item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
@@ -155,7 +155,7 @@ class gPlayer(xbmc.Player):
                 xbmc.sleep(3000)
 
         if self.service.settings:
-            xbmc.log(self.addon.getAddonInfo('name') + ': Exit play list', xbmc.LOGNOTICE)
+            xbmc.log(self.service.addon.getAddonInfo('name') + ': Exit play list', xbmc.LOGNOTICE)
 
 
     def onPlayBackStarted(self):
@@ -166,7 +166,7 @@ class gPlayer(xbmc.Player):
 #            self.seekTime(self.seek)
 
         if self.service.settings:
-            xbmc.log(self.addon.getAddonInfo('name') + ': Play started', xbmc.LOGNOTICE)
+            xbmc.log(self.service.addon.getAddonInfo('name') + ': Play started', xbmc.LOGNOTICE)
 
         if self.seek > 0 and self.seek !='':
 #            while not self.isPlaying(): #<== The should be    while self.isPlaying():
@@ -178,7 +178,7 @@ class gPlayer(xbmc.Player):
             self.seekTime(float(self.seek))
             self.seek = 0
         if self.service.settings:
-            xbmc.log(self.addon.getAddonInfo('name') + ': Seek time ' + str(seekTime), xbmc.LOGNOTICE)
+            xbmc.log(self.service.addon.getAddonInfo('name') + ': Seek time ' + str(self.seek), xbmc.LOGNOTICE)
 
 
     def onPlayBackEnded(self):
@@ -191,7 +191,7 @@ class gPlayer(xbmc.Player):
                     self.service.setProperty(self.package.file.id,'playcount', int(self.package.file.playcount)+1)
 
                     if self.service.settings:
-                        xbmc.log(self.addon.getAddonInfo('name') + ': Updated remote db ', xbmc.LOGNOTICE)
+                        xbmc.log(self.service.addon.getAddonInfo('name') + ': Updated remote db ', xbmc.LOGNOTICE)
 
                 elif self.service.settings.cloudResume == '2' and  self.service.protocol == 2 and (self.time/self.package.file.duration) >= int(self.service.settings.skipResume)*0.01:#and self.time > self.package.file.resume:
                     self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, watched= int(self.package.file.playcount)+1, resume=0)
@@ -206,7 +206,7 @@ class gPlayer(xbmc.Player):
                     xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
 
                     if self.service.settings:
-                        xbmc.log(self.addon.getAddonInfo('name') + ': Updated local db ', xbmc.LOGNOTICE)
+                        xbmc.log(self.service.addon.getAddonInfo('name') + ': Updated local db ', xbmc.LOGNOTICE)
 
 
             except: pass
@@ -228,7 +228,7 @@ class gPlayer(xbmc.Player):
                     self.service.setProperty(self.package.file.id,'resume', self.time)
 
                     if self.service.settings:
-                        xbmc.log(self.addon.getAddonInfo('name') + ': Updated remote db ', xbmc.LOGNOTICE)
+                        xbmc.log(self.service.addon.getAddonInfo('name') + ': Updated remote db ', xbmc.LOGNOTICE)
 
                 elif self.service.settings.cloudResume == '2' and  self.service.protocol == 2:# and float(self.time) > float(self.package.file.resume):
                     self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, resume=self.time)
@@ -243,7 +243,7 @@ class gPlayer(xbmc.Player):
                     #xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
 
                     if self.service.settings:
-                        xbmc.log(self.addon.getAddonInfo('name') + ': Updated local db ', xbmc.LOGNOTICE)
+                        xbmc.log(self.service.addon.getAddonInfo('name') + ': Updated local db ', xbmc.LOGNOTICE)
 
             except: pass
 
@@ -272,4 +272,4 @@ class gPlayer(xbmc.Player):
             self.time = float(seek)
             self.seekTime(float(seek))
             if self.service.settings:
-                xbmc.log(self.addon.getAddonInfo('name') + ': Seek ' + str(self.time), xbmc.LOGNOTICE)
+                xbmc.log(self.service.addon.getAddonInfo('name') + ': Seek ' + str(self.time), xbmc.LOGNOTICE)

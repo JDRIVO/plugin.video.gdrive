@@ -1,3 +1,5 @@
+v0.7.52 (2016-06-09)
+- add some debug to player
 v0.7.51 (2016-06-02)
 - fix: prevent loading screen that won't disappear -- force context type video if accessing a directory listing without context properly set (accessing from favourites for instance)
 v0.7.50 (2016-06-01)
