@@ -95,6 +95,8 @@ class settings:
         self.cloudResume = self.getSetting('resumepoint', 0)
         self.cloudResumePrompt = self.getSetting('resumeprompt', False)
         self.seek = getParameter('seek', 0)
+        self.trace = getSetting('trace', False)
+
 
     def setVideoParameters(self):
         self.resume = getParameter('resume', False)

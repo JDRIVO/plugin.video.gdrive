@@ -198,6 +198,7 @@
 
  	<!-- troubleshooting properties -->
     <category label="30074">
+        <setting id="trace"  type="bool" label="30184" default="false" />
         <setting id="crashreport_enable" type="bool" label="30075" default="false"/>
         <setting id="crashreport_email" type="text" label="30076" default=""/>
         <setting id="crashreport_os" type="enum" label="30078" values="Other|Windows|Linux|Raspberry PI|Android|iOS|Mac OS|Apple TV"/>
