@@ -1,3 +1,4 @@
+- disable modifying user accounts in settings
 v0.7.52 (2016-06-09)
 - add some debug to player
 v0.7.51 (2016-06-02)
