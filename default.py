@@ -955,7 +955,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         # download if not already cached
         if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
             url = service.getDownloadURL(filename)
-            service.downloadEncfsFile(mediaURL, package, playbackURL=playbackTarget, folderName=str(encfs_source) + encryptedPath +str(title), resolvedPlayback=resolvedPlayback,item=item)
+            service.downloadEncfsFile(mediaURL, package, playbackURL=playbackTarget, folderName=str(encfs_source) + encryptedPath +str(title), resolvedPlayback=resolvedPlayback,item=item, player=player)
 
             #should already be playing by this point, so don't restart it
             startPlayback = False

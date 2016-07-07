@@ -790,7 +790,7 @@ class cloudservice(object):
     # download/retrieve a media file
     #   parameters: whether to playback file, media url object, package object, whether to force download (overwrite), whether the file is encfs, folder name (option)
     ##
-    def downloadEncfsFile(self, mediaURL, package, playbackURL='', force=False, folderName='', resolvedPlayback=True,item=''):
+    def downloadEncfsFile(self, mediaURL, package, playbackURL='', force=False, folderName='', resolvedPlayback=True,item='', player=None):
 
         progress = ''
         cachePercent = int(self.settings.encfsCachePercent)
@@ -866,17 +866,30 @@ class cloudservice(object):
             if resolvedPlayback:
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
             xbmc.executebuiltin("XBMC.PlayMedia("+playbackURL+")")
+            while not (player.isPlaying()) and not player.isExit:
+                xbmc.sleep(1000)
+                #print str(player.playStatus)
         try:
+            count =1
             while True:
+                if not self.settings.cacheContinue and player is not None and count % 12 == 0:
+                    if not player.playStatus:
+                        progress.close()
+                        f.close()
+                        return
+                count = count + 1
                 downloadedBytes = downloadedBytes + CHUNK
                 progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30092))
                 chunk = response.read(CHUNK)
                 if not chunk: break
                 f.write(chunk)
+                xbmc.sleep(1)
+
             f.close()
             progress.close()
 
         except: pass
+
 
 
     ##
