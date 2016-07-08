@@ -806,8 +806,8 @@ class cloudservice(object):
 
         sizeDownload = fileSize * (cachePercent*0.01)
 
-        if sizeDownload < 1000000:
-            sizeDownload = 1000000
+        if sizeDownload < 3000000:
+            sizeDownload = 3000000
 
         CHUNK = int(self.settings.encfsCacheChunkSize)
 
@@ -828,11 +828,25 @@ class cloudservice(object):
 
         playbackFile = folderName
 
-        if (not xbmcvfs.exists(playbackFile) or xbmcvfs.File(playbackFile).size() == 0) or force:
+        if (not xbmcvfs.exists(playbackFile) or xbmcvfs.File(playbackFile).size() == 0 or xbmcvfs.File(playbackFile).size() < package.file.size) or force:
 
-            req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
 
-            f = xbmcvfs.File(playbackFile, 'w')
+            #seek to end of file for append
+            # - must use python for append (xbmcvfs not supported)
+            # - if path is not local or KODI-specific user must restart complete download
+            if  os.path.exists(playbackFile) and xbmcvfs.File(playbackFile).size() < package.file.size and  xbmcvfs.File(playbackFile).size() != 0 and not force:
+                req = urllib2.Request(mediaURL.url, None, self.getHeadersList(additionalHeader='Range', additionalValue='bytes='+str(xbmcvfs.File(playbackFile).size())+'-'+str(package.file.size)))
+
+                f = open(playbackFile, 'a')
+
+            else:
+                req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
+
+                f = xbmcvfs.File(playbackFile, 'w')
+
+            #req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
+
+            #f = xbmcvfs.File(playbackFile, 'w')
 
             progress = xbmcgui.DialogProgressBG()
             progressBar = fileSize

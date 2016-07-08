@@ -1,3 +1,4 @@
+- fix for resuming download in encfs
 - fix for stopping download in encfs when playback stopped
 - disable modifying user accounts in settings
 v0.7.52 (2016-06-09)

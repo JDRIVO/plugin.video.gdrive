@@ -953,15 +953,15 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
 
         # download if not already cached
-        if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
-            url = service.getDownloadURL(filename)
-            service.downloadEncfsFile(mediaURL, package, playbackURL=playbackTarget, folderName=str(encfs_source) + encryptedPath +str(title), resolvedPlayback=resolvedPlayback,item=item, player=player)
+#        if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
+        url = service.getDownloadURL(filename)
+        service.downloadEncfsFile(mediaURL, package, playbackURL=playbackTarget, folderName=str(encfs_source) + encryptedPath +str(title), resolvedPlayback=resolvedPlayback,item=item, player=player)
 
             #should already be playing by this point, so don't restart it
-            startPlayback = False
+        startPlayback = False
         #exists; resolve for an opening stream dialog
-        elif resolvedPlayback:
-            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+#        elif resolvedPlayback:
+#            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
         # need to seek?
         if seek > 0:
