@@ -127,6 +127,8 @@ class settings:
         self.encfsCacheChunkSize = self.getSetting('encfs_chunk_size', 32 * 1024)
         self.encfsSource = self.getSetting('encfs_source')
         self.encfsTarget = self.getSetting('encfs_target')
+        self.encfsContinue = self.getSetting('encfs_continue', False)
+
         self.encfsInode = int(self.getSetting('encfs_inode', 0))
 
 

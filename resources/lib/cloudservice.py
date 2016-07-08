@@ -828,13 +828,13 @@ class cloudservice(object):
 
         playbackFile = folderName
 
-        if (not xbmcvfs.exists(playbackFile) or xbmcvfs.File(playbackFile).size() == 0 or xbmcvfs.File(playbackFile).size() < package.file.size) or force:
+        if (not xbmcvfs.exists(playbackFile) or long(xbmcvfs.File(playbackFile).size()) == 0 or long(xbmcvfs.File(playbackFile).size()) < long(package.file.size)) or force:
 
 
             #seek to end of file for append
             # - must use python for append (xbmcvfs not supported)
             # - if path is not local or KODI-specific user must restart complete download
-            if  os.path.exists(playbackFile) and xbmcvfs.File(playbackFile).size() < package.file.size and  xbmcvfs.File(playbackFile).size() != 0 and not force:
+            if  os.path.exists(playbackFile) and long(xbmcvfs.File(playbackFile).size()) < long(package.file.size) and  long(xbmcvfs.File(playbackFile).size()) != 0 and not force:
                 req = urllib2.Request(mediaURL.url, None, self.getHeadersList(additionalHeader='Range', additionalValue='bytes='+str(xbmcvfs.File(playbackFile).size())+'-'+str(package.file.size)))
 
                 f = open(playbackFile, 'a')
@@ -886,7 +886,7 @@ class cloudservice(object):
         try:
             count =1
             while True:
-                if not self.settings.cacheContinue and player is not None and count % 12 == 0:
+                if not self.settings.encfsContinue and player is not None and count % 12 == 0:
                     if not player.playStatus:
                         progress.close()
                         f.close()
