@@ -830,6 +830,10 @@ class cloudservice(object):
 
         if (not xbmcvfs.exists(playbackFile) or long(xbmcvfs.File(playbackFile).size()) == 0 or long(xbmcvfs.File(playbackFile).size()) < long(package.file.size)) or force:
 
+            progress = xbmcgui.DialogProgressBG()
+            progressBar = fileSize
+            progress.create(self.addon.getLocalizedString(30035), playbackURL)
+
 
             #seek to end of file for append
             # - must use python for append (xbmcvfs not supported)
@@ -839,33 +843,42 @@ class cloudservice(object):
 
                 f = open(playbackFile, 'a')
 
+
+                # if action fails, validate login
+                try:
+                  response = urllib2.urlopen(req)
+
+                except urllib2.URLError, e:
+                  self.refreshToken()
+                  req = urllib2.Request(mediaURL.url, None, self.getHeadersList(additionalHeader='Range', additionalValue='bytes='+str(xbmcvfs.File(playbackFile).size())+'-'+str(package.file.size)))
+                  try:
+                      response = urllib2.urlopen(req)
+
+                  except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('downloadMediaFile',str(e))
+                    return
+
             else:
                 req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
 
                 f = xbmcvfs.File(playbackFile, 'w')
 
-            #req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
 
-            #f = xbmcvfs.File(playbackFile, 'w')
-
-            progress = xbmcgui.DialogProgressBG()
-            progressBar = fileSize
-            progress.create(self.addon.getLocalizedString(30035), package.file.title)
-
-            # if action fails, validate login
-            try:
-              response = urllib2.urlopen(req)
-
-            except urllib2.URLError, e:
-              self.refreshToken()
-              req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
-              try:
+                # if action fails, validate login
+                try:
                   response = urllib2.urlopen(req)
 
-              except urllib2.URLError, e:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('downloadMediaFile',str(e))
-                return
+                except urllib2.URLError, e:
+                  self.refreshToken()
+                  req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
+                  try:
+                      response = urllib2.urlopen(req)
+
+                  except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    self.crashreport.sendError('downloadMediaFile',str(e))
+                    return
 
             downloadedBytes = 0
             while sizeDownload > downloadedBytes:

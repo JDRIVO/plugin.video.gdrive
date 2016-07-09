@@ -1,3 +1,4 @@
+- implement: encfs - fix downloading display name #80
 v0.7.53 (2016-07-07)
 - fix for resuming download in encfs
 - fix for stopping download in encfs when playback stopped
