@@ -1,3 +1,5 @@
+- encfs: better tracking for disrupted playback 
+- fix playback continuation issue if ran out of buffer
 - implement: encfs - fix downloading display name #80
 v0.7.53 (2016-07-07)
 - fix for resuming download in encfs

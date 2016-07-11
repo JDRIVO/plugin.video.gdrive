@@ -130,6 +130,7 @@ class settings:
         self.encfsContinue = self.getSetting('encfs_continue', False)
 
         self.encfsInode = int(self.getSetting('encfs_inode', 0))
+        self.encfsLast = self.getSetting('encfs_last', '')
 
 
 

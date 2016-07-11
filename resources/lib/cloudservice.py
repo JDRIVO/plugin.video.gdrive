@@ -830,9 +830,10 @@ class cloudservice(object):
 
         if (not xbmcvfs.exists(playbackFile) or long(xbmcvfs.File(playbackFile).size()) == 0 or long(xbmcvfs.File(playbackFile).size()) < long(package.file.size)) or force:
 
-            progress = xbmcgui.DialogProgressBG()
-            progressBar = fileSize
-            progress.create(self.addon.getLocalizedString(30035), playbackURL)
+            if not self.settings.encfsCacheSingle:
+                progress = xbmcgui.DialogProgressBG()
+                progressBar = fileSize
+                progress.create(self.addon.getLocalizedString(30035), playbackURL)
 
 
             #seek to end of file for append
@@ -882,7 +883,8 @@ class cloudservice(object):
 
             downloadedBytes = 0
             while sizeDownload > downloadedBytes:
-                progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30035))
+                if not self.settings.encfsCacheSingle:
+                    progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30035))
                 chunk = response.read(CHUNK)
                 if not chunk: break
                 f.write(chunk)
@@ -901,19 +903,22 @@ class cloudservice(object):
             while True:
                 if not self.settings.encfsContinue and player is not None and count % 12 == 0:
                     if not player.playStatus:
-                        progress.close()
+                        if not self.settings.encfsCacheSingle:
+                            progress.close()
                         f.close()
                         return
                 count = count + 1
                 downloadedBytes = downloadedBytes + CHUNK
-                progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30092))
+                if not self.settings.encfsCacheSingle:
+                    progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30092))
                 chunk = response.read(CHUNK)
                 if not chunk: break
                 f.write(chunk)
                 xbmc.sleep(1)
 
             f.close()
-            progress.close()
+            if not self.settings.encfsCacheSingle:
+                progress.close()
 
         except: pass
 
