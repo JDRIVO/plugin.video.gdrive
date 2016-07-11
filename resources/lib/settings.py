@@ -128,6 +128,7 @@ class settings:
         self.encfsSource = self.getSetting('encfs_source')
         self.encfsTarget = self.getSetting('encfs_target')
         self.encfsContinue = self.getSetting('encfs_continue', False)
+        self.encfsStream = self.getSetting('encfs_stream', False)
 
         self.encfsInode = int(self.getSetting('encfs_inode', 0))
         self.encfsLast = self.getSetting('encfs_last', '')

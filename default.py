@@ -963,17 +963,17 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 #        if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
         url = service.getDownloadURL(filename)
 
-        if settings.encfsCacheSingle:
+        if  settings.encfsStream or settings.encfsCacheSingle:
             ## calculate the decrypted name of the file cache.mp4
             #creating a cache.mp4 file
             fileListINodes = {}
             #workaround for this issue: https://github.com/xbmc/xbmc/pull/8531
-            if not xbmcvfs.exists(encfs_target + 'cache.mp4') and not os.path.exists(encfs_target + 'cache.mp4'):
-                xbmcvfs.mkdir(encfs_target + 'cache.mp4')
+            if not xbmcvfs.exists(encfs_target + 'encfs.mp4') and not os.path.exists(encfs_target + 'encfs.mp4'):
+                xbmcvfs.mkdir(encfs_target + 'encfs.mp4')
             if encfs_inode == 0:
-                fileListINodes[(str(xbmcvfs.Stat(encfs_target +  'cache.mp4').st_ino()))] = item
+                fileListINodes[(str(xbmcvfs.Stat(encfs_target +  'encfs.mp4').st_ino()))] = item
             else:
-                fileListINodes[(str(xbmcvfs.Stat(encfs_target +  'cache.mp4').st_ctime()))] = item
+                fileListINodes[(str(xbmcvfs.Stat(encfs_target +  'encfs.mp4').st_ctime()))] = item
             if encfs_inode > 0:
                 xbmc.sleep(1000)
 
@@ -988,7 +988,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 if index in fileListINodes.keys():
                     xbmcvfs.rmdir(encfs_source + str(dir))
 
-                    service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'cache.mp4', folderName=str(encfs_source) + str(dir), resolvedPlayback=resolvedPlayback,item=item, player=player)
+                    service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', folderName=str(encfs_source) + str(dir), resolvedPlayback=resolvedPlayback,item=item, player=player)
 
             #already downloaded (partial or full)
             for file in files:
@@ -1001,13 +1001,13 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 if index in fileListINodes.keys():
                     #resume
                     if settings.encfsLast == str(encryptedPath) +str(title):
-                        service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'cache.mp4', force=False,folderName=str(encfs_source) + str(dir), resolvedPlayback=resolvedPlayback,item=item, player=player)
+                        service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=False,folderName=str(encfs_source) + str(dir), resolvedPlayback=resolvedPlayback,item=item, player=player)
 
                     #new file
                     else:
                         addon.setSetting('encfs_last', str(encryptedPath) +str(title))
 
-                        service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'cache.mp4', force=True, folderName=str(encfs_source) + str(file), resolvedPlayback=resolvedPlayback,item=item, player=player)
+                        service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=True, folderName=str(encfs_source) + str(file), resolvedPlayback=resolvedPlayback,item=item, player=player)
 
         else:
             service.downloadEncfsFile(mediaURL, package, playbackURL=playbackTarget, folderName=str(encfs_source) + encryptedPath +str(title), resolvedPlayback=resolvedPlayback,item=item, player=player)

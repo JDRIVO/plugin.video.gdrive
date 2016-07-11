@@ -128,6 +128,7 @@
 	<string id="30149">Enable closed-captions tracks</string>
 	<string id="30150">Enable SRT tracks</string>
 	<string id="30151">Play ...</string>
+	<string id="30152">Prefer to stream</string>
 
     <string id="30118">The following account was enrolled:</string>
     <string id="30119">The following login error was encountered:</string>
