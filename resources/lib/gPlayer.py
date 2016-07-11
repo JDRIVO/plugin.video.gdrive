@@ -218,6 +218,7 @@ class gPlayer(xbmc.Player):
             #except: pass
         self.current = self.current +1
         self.isExit = True
+        self.playStatus = False
 
 
     def onPlayBackStopped(self):
