@@ -1,3 +1,5 @@
+v0.7.55 (2016-07-15)
+- stability improvements for encfs
 v0.7.54 (2016-07-11)
 - add encfs 'prefer to stream" option (contiue = false, single file = true)
 - encfs: better tracking for disrupted playback
