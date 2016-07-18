@@ -83,30 +83,6 @@ class gdrive(cloudservice):
         self.gSpreadsheet = gSpreadsheet
         self.worksheetID = self.addon.getSetting(self.instanceName+'_spreadsheet')
 
-        if settings.cloudResume == '2':
-            if self.worksheetID == '':
-
-                try:
-                    self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
-
-                    spreadsheets = self.gSpreadsheet.getSpreadsheetList()
-                except:
-                    pass
-
-                for title in spreadsheets.iterkeys():
-                    if title == 'CLOUD_DB':
-                        worksheets = self.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
-
-                        for worksheet in worksheets.iterkeys():
-                            if worksheet == 'db':
-                                self.worksheetID = worksheets[worksheet]
-                                addon.setSetting(instanceName + '_spreadsheet', self.worksheetID)
-                            break
-                    break
-            if self.gSpreadsheet is None:
-                self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
-
-
 
         if authenticate == True:
             self.type = int(addon.getSetting(instanceName+'_type'))
@@ -134,6 +110,31 @@ class gdrive(cloudservice):
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
         #***
         self.cache = cache.cache()
+
+
+        if settings.cloudResume == '2':
+            if self.worksheetID == '':
+
+                try:
+                    self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
+
+                    spreadsheets = self.gSpreadsheet.getSpreadsheetList()
+                except:
+                    pass
+
+                for title in spreadsheets.iterkeys():
+                    if title == 'CLOUD_DB':
+                        worksheets = self.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+
+                        for worksheet in worksheets.iterkeys():
+                            if worksheet == 'db':
+                                self.worksheetID = worksheets[worksheet]
+                                addon.setSetting(instanceName + '_spreadsheet', self.worksheetID)
+                            break
+                    break
+            if self.gSpreadsheet is None:
+                self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
+
 
 
 
@@ -395,9 +396,9 @@ class gdrive(cloudservice):
         else:
             url = url + "?q='"+str(folderName)+"'+in+parents"
 
-        # contribution by dabinn 
+        # contribution by dabinn
         # filter out trashed items
-        url = url + "+and+trashed%3dfalse" 
+        url = url + "+and+trashed%3dfalse"
 
         mediaFiles = []
         while True:

@@ -1,3 +1,5 @@
+v0.7.55 (2016-07-17)
+- fix for CLOUD_DB activation
 v0.7.55 (2016-07-15)
 - stability improvements for encfs
 v0.7.54 (2016-07-11)
