@@ -123,15 +123,15 @@ class gdrive(cloudservice):
                     pass
 
                 for title in spreadsheets.iterkeys():
-                    if title == 'CLOUD_DB':
+                    if title == settings.cloudSpreadsheet:#'CLOUD_DB':
                         worksheets = self.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
 
                         for worksheet in worksheets.iterkeys():
                             if worksheet == 'db':
                                 self.worksheetID = worksheets[worksheet]
                                 addon.setSetting(instanceName + '_spreadsheet', self.worksheetID)
-                            break
-                    break
+                                break
+                        break
             if self.gSpreadsheet is None:
                 self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
 

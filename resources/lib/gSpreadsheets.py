@@ -103,7 +103,11 @@ class gSpreadsheets:
             for r in re.finditer('<title [^\>]+\>([^<]+)</title><content [^\>]+\>[^<]+</content><link rel=\'[^\#]+\#worksheetsfeed\' type=\'application/atom\+xml\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
                 title,url = r.groups()
-                spreadsheets[title] = url
+
+                # must be read/write spreadsheet, skip read-only
+                regexp = re.compile(r'/private/values')
+                if regexp.search(url) is None:
+                    spreadsheets[title] = url
 
             nextURL = ''
             for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
@@ -209,7 +213,9 @@ class gSpreadsheets:
         except urllib2.URLError, e:
           if e.code == 403 or e.code == 401:
             self.service.refreshToken()
-            req = urllib2.Request(url, None, self.service.getHeadersList())
+            header = { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.service.authorization.getToken('auth_access_token'),  'Content-Type': 'application/atom+xml'}
+
+            req = urllib2.Request(url, entry, header)
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
@@ -241,7 +247,8 @@ class gSpreadsheets:
         except urllib2.URLError, e:
           if e.code == 403 or e.code == 401:
             self.service.refreshToken()
-            req = urllib2.Request(url, entry, self.service.getHeadersList())
+            header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0',  "If-Match" : '*', 'Content-Type': 'application/atom+xml'}
+            req = urllib2.Request(url, entry, header)
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:

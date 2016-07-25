@@ -1,3 +1,6 @@
+- spreadsheets - fix for registering with different names (non-default)
+- spreadsheets - fix for registering with duplicate names
+- spreadsheets - skip read-only spreadsheets
 v0.7.57 (2016-07-23)
 - add gplayer debug statements
 v0.7.56 (2016-07-17)
