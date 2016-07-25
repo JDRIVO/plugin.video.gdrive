@@ -1391,6 +1391,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             # need to seek?
             if seek > 0:
                 player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
+            elif float(package.file.cloudResume) > 0:
+                player.PlayStream(mediaURL.url, item, package.file.cloudResume, startPlayback=startPlayback, package=package)
             elif float(package.file.resume) > 0:
                 player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
             else:

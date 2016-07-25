@@ -1,3 +1,5 @@
+v0.7.58 (2016-07-24)
+- spreadsheets - fix resume automatically
 - spreadsheets - fix for registering with different names (non-default)
 - spreadsheets - fix for registering with duplicate names
 - spreadsheets - skip read-only spreadsheets

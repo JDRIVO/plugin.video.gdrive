@@ -500,9 +500,9 @@ class gSpreadsheets:
 
                     elif media.group(1) == 'resume':
                         if  media.group(2) == '':
-                            newPackage.file.cloudResume = 0
+                            newPackage.file.resume = 0
                         else:
-                            newPackage.file.cloudResume = media.group(2)
+                            newPackage.file.resume = media.group(2)
                     elif media.group(1) == 'commands':
                         newPackage.file.commands = media.group(2)
                     elif media.group(1) == 'nfo':
