@@ -1125,6 +1125,7 @@ class cloudservice(object):
             else:
                 listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
 
+                # is a real folder
                 if folder.id != '':
                     cm=[]
                     if contextType != 'image' and not encfs:
@@ -1176,7 +1177,7 @@ class cloudservice(object):
 
                     cm.append(( self.addon.getLocalizedString(30163), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=scan&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
 
-                listitem.addContextMenuItems(cm, False)
+                    listitem.addContextMenuItems(cm, False)
                 listitem.setProperty('fanart_image',  folder.fanart)
 
                 xbmcplugin.addDirectoryItem(plugin_handle, self.getDirectoryCall(folder, contextType, encfs=encfs, dpath=dpath, epath=epath), listitem,
