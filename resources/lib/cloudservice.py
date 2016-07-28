@@ -627,8 +627,11 @@ class cloudservice(object):
     def getDirectoryCall(self, folder, contextType='video', encfs=False, dpath='', epath=''):
         if encfs:
             values = {'instance': self.instanceName, 'encfs': 'true', 'folder': folder.id, 'content_type': contextType, 'dpath': dpath, 'epath':epath}
-        else:
+        elif folder.id != '':
             values = {'instance': self.instanceName, 'folder': folder.id, 'content_type': contextType, 'epath':epath}
+        elif folder.title != '':
+            values = {'instance': self.instanceName, 'foldername': folder.title, 'content_type': contextType, 'epath':epath}
+
 
         return self.PLUGIN_URL+'?mode=index&' +  urllib.urlencode(values)
 
@@ -1125,9 +1128,11 @@ class cloudservice(object):
             else:
                 listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
 
+                cm=[]
+
                 # is a real folder
                 if folder.id != '':
-                    cm=[]
+
                     if contextType != 'image' and not encfs:
                         values = {'username': self.authorization.username, 'title': folder.title, 'folder': folder.id, 'content_type': contextType }
 
@@ -1177,7 +1182,15 @@ class cloudservice(object):
 
                     cm.append(( self.addon.getLocalizedString(30163), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=scan&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
 
-                    listitem.addContextMenuItems(cm, False)
+                else:
+
+                    if contextType != 'image' and not encfs:
+                        values = {'username': self.authorization.username, 'title': folder.title,  'content_type': contextType }
+
+                        cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
+
+
+                listitem.addContextMenuItems(cm, False)
                 listitem.setProperty('fanart_image',  folder.fanart)
 
                 xbmcplugin.addDirectoryItem(plugin_handle, self.getDirectoryCall(folder, contextType, encfs=encfs, dpath=dpath, epath=epath), listitem,

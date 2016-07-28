@@ -384,7 +384,8 @@ elif mode == 'cloud_db':
 #dump a list of videos available to play
 elif mode == 'main' or mode == 'index':
 
-    folderName = settings.getParameter('folder', False)
+    folderID = settings.getParameter('folder', False)
+    folderName = settings.getParameter('foldername', False)
 
     #ensure that folder view playback
     if contextType == '':
@@ -405,7 +406,7 @@ elif mode == 'main' or mode == 'index':
             kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=PHOTO&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30034)+']')
         elif contentType == 6:
             kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=PHOTOMUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30032)+']')
-        folderName = 'root'
+        folderID = 'root'
         if (service.protocol != 2):
             kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILES&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' '+addon.getLocalizedString(30095)+']')
             kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30096)+']')
@@ -443,7 +444,7 @@ elif mode == 'main' or mode == 'index':
         encfs_target = settings.encfsTarget
         encfs_inode = settings.encfsInode
 
-        mediaItems = service.getMediaList(folderName,contentType=8)
+        mediaItems = service.getMediaList(folderID,contentType=8)
 
         if mediaItems:
             dirListINodes = {}
@@ -524,21 +525,28 @@ elif mode == 'main' or mode == 'index':
     else:
         path = settings.getParameter('epath', '')
 
-        mediaItems = service.getMediaList(folderName,contentType=contentType)
-        if settings.cloudResume == '2':
+        # real folder
+        if folderID != '':
+            mediaItems = service.getMediaList(folderID,contentType=contentType)
+            if settings.cloudResume == '2':
 
-            if service.gSpreadsheet is None:
-                service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+                if service.gSpreadsheet is None:
+                    service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
 
-            service.gSpreadsheet.updateMediaPackageList(service.worksheetID, folderName, mediaItems)
+                service.gSpreadsheet.updateMediaPackageList(service.worksheetID, folderID, mediaItems)
 
-        if mediaItems:
-            for item in sorted(mediaItems):
+            if mediaItems:
+                for item in sorted(mediaItems):
 
-                    if item.file is None:
-                        service.addDirectory(item.folder, contextType=contextType, epath=str(path)+ '/' + str(item.folder.title) + '/')
-                    else:
-                        service.addMediaFile(item, contextType=contextType)
+                        if item.file is None:
+                            service.addDirectory(item.folder, contextType=contextType, epath=str(path)+ '/' + str(item.folder.title) + '/')
+                        else:
+                            service.addMediaFile(item, contextType=contextType)
+
+        # virtual folder; exists in spreadsheet only
+        # not in use
+        #elif folderName != '':
+
 
     service.updateAuthorization(addon)
 
