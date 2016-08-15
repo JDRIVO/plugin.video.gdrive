@@ -971,6 +971,77 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 #        if (not xbmcvfs.exists(str(encfs_source) + encryptedPath +str(title))):
         url = service.getDownloadURL(filename)
 
+        ## check for SRT
+        # use folderID, look for files with srt/sub
+        if 0:
+            mediaItems = service.getMediaList(folderID,contentType=8)
+
+            if mediaItems:
+                dirListINodes = {}
+                fileListINodes = {}
+
+                #create the files and folders for decrypting file/folder names
+                for item in mediaItems:
+
+                        if item.file is None:
+                            xbmcvfs.mkdir(encfs_source + str(encryptedPath))
+                            xbmcvfs.mkdir(encfs_source + str(encryptedPath) + str(item.folder.title) + '/' )
+
+                            if encfs_inode == 0:
+                                dirListINodes[(str(xbmcvfs.Stat(encfs_source + str(encryptedPath) + str(item.folder.title)).st_ino()))] = item.folder
+                            else:
+                                dirListINodes[(str(xbmcvfs.Stat(encfs_source + str(encryptedPath) + str(item.folder.title)).st_ctime()))] = item.folder
+                            #service.addDirectory(item.folder, contextType=contextType,  encfs=True)
+                        else:
+                            xbmcvfs.mkdir(encfs_source +  str(encryptedPath))
+                            xbmcvfs.mkdir(encfs_source +  str(encryptedPath) + str(item.file.title))
+                            if encfs_inode == 0:
+                                fileListINodes[(str(xbmcvfs.Stat(encfs_source +  str(encryptedPath)+ str(item.file.title)).st_ino()))] = item
+                            else:
+                                fileListINodes[(str(xbmcvfs.Stat(encfs_source +  str(encryptedPath) + str(item.file.title)).st_ctime()))] = item
+                            #service.addMediaFile(item, contextType=contextType)
+                        if encfs_inode > 0:
+                                xbmc.sleep(1000)
+
+
+
+                mediaList = ['.sub', '.srt']
+                media_re = re.compile("|".join(mediaList), re.I)
+
+
+                #examine the decrypted file/folder names for files for playback and dirs for navigation
+                dirs, files = xbmcvfs.listdir(encfs_target + str(dencryptedPath) )
+                for dir in dirs:
+                    index = ''
+                    if encfs_inode == 0:
+                        index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + dir).st_ino())
+                    else:
+                        index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + dir).st_ctime())
+
+                    #we found a file
+                    if index in fileListINodes.keys():
+                        xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
+                        fileListINodes[index].file.decryptedTitle = dir
+                        if media_re.search(str(dir)):
+                            #we found a subtitle
+                            service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(dir), epath=str(encryptedPath) )
+
+
+                # file is already downloaded
+                for file in files:
+                    index = ''
+                    if encfs_inode == 0:
+                        index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + file).st_ino())
+                    else:
+                        index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + file).st_ctime())
+                    if index in fileListINodes.keys():
+                        fileListINodes[index].file.decryptedTitle = file
+                        if media_re.search(str(file)):
+                            #we found a subtitle
+                            service.addMediaFile(fileListINodes[index], contextType=contextType, encfs=True,  dpath=str(dencryptedPath) + str(file), epath=str(encryptedPath) )
+
+
+
         if  settings.encfsStream or settings.encfsCacheSingle:
             ## calculate the decrypted name of the file cache.mp4
             #creating a cache.mp4 file
