@@ -512,9 +512,9 @@ class gSpreadsheets:
                         nfoInfo = re.sub('&gt;', '>', nfoInfo)
                         nfo = re.compile('<([^\>]+)>([^\<]*)</')
                         for info in nfo.finditer(nfoInfo):
-                            #if info.group(1) == 'title':
-                            #    newPackage.file.title = info.group(2)
-                            if info.group(1) == 'premiered' or info.group(1) == 'year':
+                            if info.group(1) == 'title':
+                                newPackage.file.title = info.group(2)
+                            elif info.group(1) == 'premiered' or info.group(1) == 'year':
                                 newPackage.file.date = info.group(2)
                             elif info.group(1) == 'plot' or info.group(1) == 'description':
                                 newPackage.file.plot = info.group(2)
@@ -721,9 +721,9 @@ class gSpreadsheets:
                         nfoInfo = re.sub('&gt;', '>', nfoInfo)
                         nfo = re.compile('<([^\>]+)>([^\<]*)</')
                         for info in nfo.finditer(nfoInfo):
-                            #if info.group(1) == 'title':
-                            #    newPackage.file.title = info.group(2)
-                            if info.group(1) == 'premiered' or info.group(1) == 'year':
+                            if info.group(1) == 'title':
+                                newPackage.file.title = info.group(2)
+                            elif info.group(1) == 'premiered' or info.group(1) == 'year':
                                 newPackage.file.date = info.group(2)
                             elif info.group(1) == 'plot' or info.group(1) == 'description':
                                 newPackage.file.plot = info.group(2)
