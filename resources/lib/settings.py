@@ -88,7 +88,7 @@ class settings:
 
         self.username = getParameter('username', '')
         self.setCacheParameters()
-        self.promptQuality = False # temporary fix, transcode issue getParameter('promptquality', self.getSetting('prompt_quality', True))
+        self.promptQuality = getParameter('promptquality', self.getSetting('prompt_quality', True))
         self.parseTV = self.getSetting('parse_tv', True)
         self.parseMusic = self.getSetting('parse_music', True)
         self.skipResume = self.getSetting('video_skip', 0.98)
@@ -103,7 +103,7 @@ class settings:
     def setVideoParameters(self):
         self.resume = getParameter('resume', False)
 
-        self.playOriginal = True # temporary fix, transcode issue getParameter('original', self.getSetting('never_stream', False))
+        self.playOriginal = getParameter('original', self.getSetting('never_stream', False))
 
 
     def setCacheParameters(self):

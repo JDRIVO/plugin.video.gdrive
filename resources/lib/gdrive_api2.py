@@ -325,12 +325,12 @@ class gdrive(cloudservice):
         if self.authorization.isToken(self.instanceName,self.addon, 'auth_access_token') and not isPOST:
 #            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
             if additionalHeader is not None:
-                return { 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token'), additionalHeader : additionalValue }
+                return { 'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token'), additionalHeader : additionalValue }
             else:
-                return { 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+                return {  'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
         elif self.authorization.isToken(self.instanceName,self.addon, 'auth_access_token'):
 #            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
-            return { "If-Match" : '*', 'Content-Type': 'application/atom+xml', 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+            return { "If-Match" : '*', 'Content-Type': 'application/atom+xml', 'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
             #return {  'Content-Type': 'application/atom+xml', 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
         else:
             return { 'User-Agent' : self.user_agent}
@@ -1251,7 +1251,10 @@ class gdrive(cloudservice):
             # player using docid
             params = urllib.urlencode({'docid': docid})
             url = self.PROTOCOL+ 'drive.google.com/get_video_info?docid=' + str(docid)
+
+
             req = urllib2.Request(url, None, self.getHeadersList())
+
             # if action fails, validate login
             try:
                  response = urllib2.urlopen(req)
@@ -1272,6 +1275,13 @@ class gdrive(cloudservice):
 
             response_data = response.read()
             response.close()
+
+
+            for r in re.finditer('([^\=]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
+                cookieType,cookieValue = r.groups()
+                if cookieType == 'DRIVE_STREAM':
+                    print cookieValue
+                    self.authorization.setToken(cookieType,cookieValue)
 
             # decode resulting player URL (URL is composed of many sub-URLs)
             urls = response_data

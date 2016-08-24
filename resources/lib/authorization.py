@@ -49,7 +49,10 @@ class authorization:
     # returns: str
     ##
     def getToken(self,name):
-        return self.auth[name]
+        if name in self.auth:
+            return self.auth[name]
+        else:
+            return ''
 
     ##
     # Get the count of authorization tokens
