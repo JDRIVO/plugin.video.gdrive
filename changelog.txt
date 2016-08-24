@@ -1,3 +1,6 @@
+v0.7.63 (2016-08-24)
+- encfs fix
+- fix Google transcode stream support #83
 v0.7.62 (2016-08-24)
 - fix transcode and re-enable
 v0.7.60 (2016-08-19)

@@ -1008,7 +1008,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             mediaList = ['.sub', '.srt']
             media_re = re.compile("|".join(mediaList), re.I)
 
-            extrapulatedPath = re.compile('(.*?)/[^/]+')
+            extrapulatedPath = re.compile('(.*?)/[^/]+$')
 
             dencryptedPathWithoutFilename = extrapulatedPath.match(dencryptedPath)
 
