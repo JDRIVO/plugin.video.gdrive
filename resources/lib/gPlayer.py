@@ -71,7 +71,8 @@ class gPlayer(xbmc.Player):
 #                             img='None')
         # play video
 #            if self.isExit == 0:
-                self.play('plugin://plugin.video.gdrive-testing/?mode=video&instance='+str(self.service.instanceName)+'&title='+self.content[self.current][0])
+                #self.play('plugin://plugin.video.gdrive-testing/?mode=video&instance='+str(self.service.instanceName)+'&title='+self.content[self.current][0])
+                self.play('plugin://plugin.video.gdrive/?mode=video&instance='+str(self.service.instanceName)+'&title='+self.content[self.current][0])
 #                self.play(self.content[self.current][0])
 
 #                self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
