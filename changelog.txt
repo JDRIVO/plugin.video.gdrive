@@ -1,3 +1,5 @@
+v0.8.0 (2016-08-25)
+- sync new release, promote testing release
 v0.7.63 (2016-08-24)
 - encfs fix
 - fix: Google transcode stream support #83
