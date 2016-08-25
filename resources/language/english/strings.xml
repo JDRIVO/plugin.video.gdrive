@@ -40,7 +40,7 @@
     <string id="30091">Chunk size</string>
     <string id="30092">Downloading...</string>
     <string id="30035">Caching...</string>
-    <string id="30093">Percent to download before playback</string>
+    <string id="30093">Percent to buffer before playback</string>
     <string id="30094">Music</string>
 
 
@@ -108,7 +108,7 @@
 	<string id="30129">encfs target</string>
 	<string id="30130">Save to encfs</string>
 	<string id="30131">Decrypted Drive</string>
-	<string id="30132">Force cache into single file</string>
+	<string id="30132">Force into single file</string>
 	<string id="30133">Hide "opening stream..." dialogs</string>
 	<string id="30134">Advance</string>
 	<string id="30135">Subtitle cache folder</string>
@@ -128,6 +128,7 @@
 	<string id="30149">Enable closed-captions tracks</string>
 	<string id="30150">Enable SRT tracks</string>
 	<string id="30151">Play ...</string>
+	<string id="30152">Prefer to stream</string>
 
     <string id="30118">The following account was enrolled:</string>
     <string id="30119">The following login error was encountered:</string>
@@ -151,10 +152,10 @@
 	<string id="30159">Remove account from plugin</string>
     <string id="30160">Pictures</string>
     <string id="30161">% complete to mark watched</string>
-    <string id="30162">Watch Folder</string>
+    <string id="30162">Playback Entire Folder</string>
 	<string id="30163">Scan Media Info</string>
 
-	<string id="30164">Ignore case / force download</string>
+	<string id="30164">Load only SRT / SUB from same folder as video</string>
 	<string id="30165">Encryption</string>
 	<string id="30166">Photos are only viewable in Pictures area</string>
 	<string id="30167">Avoid Format</string>
@@ -164,5 +165,19 @@
 	<string id="30171">Local only</string>
 	<string id="30172">Google Drive file property (write access required)</string>
 
+	<string id="30173">Cloud Media Spreadsheet ID</string>
+
+	<string id="30174">Continue downloading after player is user-stopped</string>
+	<string id="30175">Always resume</string>
+	<string id="30176">Resume playback?</string>
+	<string id="30177">cloud:</string>
+	<string id="30178">Mark as Watched</string>
+	<string id="30179">Queue</string>
+	<string id="30180">Sort by</string>
+	<string id="30181">Cache SRT</string>
+	<string id="30182">Cache Thumbnails</string>
+	<string id="30183">Choose SRT file to load</string>
+
+	<string id="30184">Enable trace logging</string>
 
 </strings>

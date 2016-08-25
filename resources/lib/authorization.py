@@ -1,5 +1,5 @@
 '''
-    Copyright (C) 2014-2015 ddurdle
+    Copyright (C) 2014-2016 ddurdle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -49,7 +49,10 @@ class authorization:
     # returns: str
     ##
     def getToken(self,name):
-        return self.auth[name]
+        if name in self.auth:
+            return self.auth[name]
+        else:
+            return ''
 
     ##
     # Get the count of authorization tokens

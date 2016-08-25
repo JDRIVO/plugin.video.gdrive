@@ -1,6 +1,6 @@
 '''
-    gdrive XBMC Plugin
-    Copyright (C) 2013-2015 ddurdle
+    gdrive (Google Drive ) for KODI / XBMC Plugin
+    Copyright (C) 2013-2016 ddurdle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,6 +27,9 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
 import authorization
 import crashreport
+from resources.lib import package
+from resources.lib import file
+from resources.lib import folder
 
 
 class gSpreadsheets:
@@ -77,6 +80,17 @@ class gSpreadsheets:
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    if e.msg != '':
+                        xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), e.msg)
+                        xbmc.log(self.addon.getAddonInfo('getSpreadsheetList') + ': ' + str(e), xbmc.LOGERROR)
+                        self.crashreport.sendError('getSpreadsheetList',str(e))
+              else:
                 if e.msg != '':
                     xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), e.msg)
                     xbmc.log(self.addon.getAddonInfo('getSpreadsheetList') + ': ' + str(e), xbmc.LOGERROR)
@@ -89,7 +103,11 @@ class gSpreadsheets:
             for r in re.finditer('<title [^\>]+\>([^<]+)</title><content [^\>]+\>[^<]+</content><link rel=\'[^\#]+\#worksheetsfeed\' type=\'application/atom\+xml\' href=\'([^\']+)\'' ,
                              response_data, re.DOTALL):
                 title,url = r.groups()
-                spreadsheets[title] = url
+
+                # must be read/write spreadsheet, skip read-only
+                regexp = re.compile(r'/private/values')
+                if regexp.search(url) is None:
+                    spreadsheets[title] = url
 
             nextURL = ''
             for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
@@ -119,8 +137,18 @@ class gSpreadsheets:
         try:
             response = urllib2.urlopen(req)
         except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return False
+          else:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
+
 
         response_data = response.read()
         response.close()
@@ -143,6 +171,15 @@ class gSpreadsheets:
         try:
             response = urllib2.urlopen(req)
         except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return False
+          else:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
@@ -156,17 +193,35 @@ class gSpreadsheets:
     #
     def createMediaStatus(self, url, package, resume='', watched='', updated=''):
 
+        import time
+        updated = time.strftime("%Y%m%d%H%M")
+
 
 #        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0',  'Content-Type': 'application/atom+xml'}
-        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.service.authorization.getToken('auth_access_token'), 'GData-Version' : '3.0',  'Content-Type': 'application/atom+xml'}
+        header = { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.service.authorization.getToken('auth_access_token'),  'Content-Type': 'application/atom+xml'}
 
-        entry = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended"> <gsx:folderid>'+str(package.folder.id)+'</gsx:folderid><gsx:foldername>'+str(package.folder.title)+'</gsx:foldername><gsx:fileid>'+str(package.file.id)+'</gsx:fileid><gsx:filename>'+str(package.file.title)+'</gsx:filename><gsx:nfo></gsx:nfo><gsx:order></gsx:order><gsx:watched>'+str(watched)+'</gsx:watched><gsx:resume>'+str(resume)+'</gsx:resume><gsx:updated>'+str(updated)+'</gsx:updated></entry>'
-
+        #entry = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended"> <gsx:folderid>'+str(package.folder.id)+'</gsx:folderid><gsx:foldername>'+str(package.folder.title)+'</gsx:foldername><gsx:fileid>'+str(package.file.id)+'</gsx:fileid><gsx:filename>'+str(package.file.title)+'</gsx:filename><gsx:nfo></gsx:nfo><gsx:order></gsx:order><gsx:watched>'+str(watched)+'</gsx:watched><gsx:resume>'+str(resume)+'</gsx:resume><gsx:updated>'+str(updated)+'</gsx:updated></entry>'
+##        entry = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended"><gsx:fileid>'+str(package.file.id)+'</gsx:fileid><gsx:filename>'+str(package.file.title)+'</gsx:filename><gsx:watched>'+str(watched)+'</gsx:watched><gsx:resume>'+str(resume)+'</gsx:resume>'
+#        entry = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:gs="http://schemas.google.com/spreadsheets/2006" xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended"><entry>' + '<gsx:fileid>'+str(package.file.id)+'</gsx:fileid><gsx:filename>'+str(package.file.title)+'</gsx:filename><gsx:watched>'+str(watched)+'</gsx:watched><gsx:resume>'+str(resume)+'</gsx:resume></entry>'
+#        entry = '<entry xmlns="http://www.w3.org/2005/Atom"    xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended"><entry>' + '<gsx:fileid>'+str(package.file.id)+'</gsx:fileid><gsx:filename>'+str(package.file.title)+'</gsx:filename><gsx:watched>'+str(watched)+'</gsx:watched><gsx:resume>'+str(resume)+'</gsx:resume></entry>'
+        entry = '<entry xmlns="http://www.w3.org/2005/Atom"    xmlns:gsx="http://schemas.google.com/spreadsheets/2006/extended">' + '<gsx:foldername>'+str(package.folder.title)+'</gsx:foldername><gsx:folderid>'+str(package.folder.id)+'</gsx:folderid><gsx:fileid>'+str(package.file.id)+'</gsx:fileid><gsx:filename>'+str(package.file.title)+'</gsx:filename><gsx:watched>'+str(watched)+'</gsx:watched><gsx:md5>'+str(package.file.checksum)+'</gsx:md5><gsx:resume>'+str(resume)+'</gsx:resume><gsx:updated>'+str(updated)+'</gsx:updated></entry>'
         req = urllib2.Request(url, entry, header)
+#        req = urllib2.Request(url, entry, self.service.getHeadersList(isPOST=True))
 
         try:
             response = urllib2.urlopen(req)
         except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
+            header = { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.service.authorization.getToken('auth_access_token'),  'Content-Type': 'application/atom+xml'}
+
+            req = urllib2.Request(url, entry, header)
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return False
+          else:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
@@ -190,6 +245,16 @@ class gSpreadsheets:
         try:
             response = urllib2.urlopen(req)
         except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
+            header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0',  "If-Match" : '*', 'Content-Type': 'application/atom+xml'}
+            req = urllib2.Request(url, entry, header)
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return False
+          else:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
@@ -210,6 +275,14 @@ class gSpreadsheets:
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('getSpreadsheetWorksheets') + ': ' + str(e), xbmc.LOGERROR)
+              else:
                 xbmc.log(self.addon.getAddonInfo('getSpreadsheetWorksheets') + ': ' + str(e), xbmc.LOGERROR)
 
             response_data = response.read()
@@ -249,6 +322,14 @@ class gSpreadsheets:
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+              else:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
 
             response_data = response.read()
@@ -279,8 +360,6 @@ class gSpreadsheets:
 
     def getMedia(self,url, folderID=None, fileID=None):
 
-
-
         if fileID is None:
             params = urllib.urlencode({'folderid': folderID})
         else:
@@ -295,12 +374,21 @@ class gSpreadsheets:
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+              else:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
 
             response_data = response.read()
 
             count=0;
-            for r in re.finditer('<gsx:folderid>([^<]*)</gsx:folderid><gsx:foldername>([^<]*)</gsx:foldername><gsx:fileid>([^<]*)</gsx:fileid><gsx:filename>([^<]*)</gsx:filename><gsx:nfo>([^<]*)</gsx:nfo><gsx:order>([^<]*)</gsx:order><gsx:watched>([^<]*)</gsx:watched><gsx:resume>([^<]*)</gsx:resume>' ,
+#            for r in re.finditer('<gsx:folderid>([^<]*)</gsx:folderid><gsx:foldername>([^<]*)</gsx:foldername><gsx:fileid>([^<]*)</gsx:fileid><gsx:filename>([^<]*)</gsx:filename><gsx:nfo>([^<]*)</gsx:nfo><gsx:order>([^<]*)</gsx:order><gsx:watched>([^<]*)</gsx:watched><gsx:resume>([^<]*)</gsx:resume>' ,
+            for r in re.finditer('<gsx:fileid>([^<]*)</gsx:fileid><gsx:filename>([^<]*)</gsx:filename><gsx:watched>([^<]*)</gsx:watched><gsx:resume>([^<]*)</gsx:resume>' ,
                              response_data, re.DOTALL):
                 media[count] = r.groups()
                 count = count + 1
@@ -320,6 +408,348 @@ class gSpreadsheets:
 
         return media
 
+
+    def updateMediaPackage(self,url, package1=None, criteria=''):
+
+        if package1 is not None and (package1.file is None or package1.file.id is None) and package1.folder is not None and package1.folder.id is not None:
+            params = urllib.urlencode({'folderid':  package1.folder.id})
+        elif package1 is not None and (package1.file is None or package1.file.id is not None) and package1.folder is not None and package1.folder.id is not None and  package1.folder.id != '' :
+            params = str(urllib.urlencode({'folderid':  package1.folder.id})) +'%20or%20'+ str(urllib.urlencode({'fileid':  package1.file.id}))
+        elif package1 is not None and package1.file is not None and package1.file.id is not None:
+            params = urllib.urlencode({'fileid':  package1.file.id})
+        elif package1 is None and criteria == 'library':
+            params = 'foldername!=""&orderby=column:folderid'
+        elif package1 is None and criteria == 'queued':
+            params = 'folderid=QUEUED&orderby=column:order'
+        elif package1 is None and criteria == 'recentwatched':
+            from datetime import date, timedelta
+            updated = str((date.today() - timedelta(1)).strftime("%Y%m%d%H%M"))
+            params = 'folderid!=QUEUED%20and%20watched!=""%20and%20watched>0%20and%20updated>='+updated
+        elif package1 is None and criteria == 'recentstarted':
+            from datetime import date, timedelta
+            updated = str((date.today() - timedelta(1)).strftime("%Y%m%d%H%M"))
+            params = 'folderid!=QUEUED%20and%20watched=""%20and%20resume>0%20and%20updated>='+updated
+        else:
+            return
+        url = url + '?sq=' + params
+       #url = url + '?tq=' + params
+
+
+        mediaList = []
+        while True:
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    return
+              else:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return
+
+            response_data = response.read()
+
+            previous = ''
+            append = True
+#            for r in re.finditer('<gsx:folderid>([^<]*)</gsx:folderid><gsx:foldername>([^<]*)</gsx:foldername><gsx:fileid>([^<]*)</gsx:fileid><gsx:filename>([^<]*)</gsx:filename><gsx:nfo>([^<]*)</gsx:nfo><gsx:order>([^<]*)</gsx:order><gsx:watched>([^<]*)</gsx:watched><gsx:resume>([^<]*)</gsx:resume>' ,
+            for r in re.finditer('<entry>(.*?)</entry>' ,
+                             response_data, re.DOTALL):
+
+                #media = r.groups()
+                entry = r.group()
+                #exp = re.compile('<gsx:([^\>]+)>(.*)</gsx')
+                #exp = re.compile('<gsx:([^\>]+)>([^<]+)</')
+                exp = re.compile('<gsx:([^\>]+)>([^<]+)</gsx')
+                if package1 is None:
+                    newPackage = package.package( file.file('', '', '', self.service.MEDIA_TYPE_VIDEO, '',''),folder.folder('',''))
+                else:
+                    newPackage = package1
+
+
+                for media in exp.finditer(entry):
+                    # not a general folder ID but another file ID
+                    if media.group(1) == 'fileid' and newPackage.file.id != '' and newPackage.file.id != media.group(2) and media.group(2) != '':
+                        break
+                    elif media.group(1) == 'folderid':
+                        newPackage.folder.id = media.group(2)
+                    elif media.group(1) == 'foldername':
+                        newPackage.folder.title = media.group(2)
+                        newPackage.folder.displaytitle = media.group(2)
+
+                        if  criteria == 'library':
+                            newPackage.file = None
+                            if previous == newPackage.folder.id:
+                                append = False
+                            else:
+                                append = True
+                                previous = newPackage.folder.id
+                            break
+
+                    elif media.group(1) == 'watched':
+                        if  media.group(2) == '':
+                            newPackage.file.playcount = 0
+                        else:
+                            newPackage.file.playcount =  media.group(2)
+
+                    elif media.group(1) == 'resume':
+                        if  media.group(2) == '':
+                            newPackage.file.resume = 0
+                        else:
+                            newPackage.file.resume = media.group(2)
+                    elif media.group(1) == 'commands':
+                        newPackage.file.commands = media.group(2)
+                    elif media.group(1) == 'nfo':
+                        nfoInfo = media.group(2)
+                        nfoInfo = re.sub('&lt;', '<', nfoInfo)
+                        nfoInfo = re.sub('/\s?&gt;', '> </>', nfoInfo)
+                        nfoInfo = re.sub('&gt;', '>', nfoInfo)
+                        nfo = re.compile('<([^\>]+)>([^\<]*)</')
+                        for info in nfo.finditer(nfoInfo):
+                            if info.group(1) == 'title':
+                                newPackage.file.title = info.group(2)
+                            elif info.group(1) == 'premiered' or info.group(1) == 'year':
+                                newPackage.file.date = info.group(2)
+                            elif info.group(1) == 'plot' or info.group(1) == 'description':
+                                newPackage.file.plot = info.group(2)
+                            elif info.group(1) == 'actors':
+                                newPackage.file.cast = info.group(2)
+                    elif media.group(1) == 'fanart':
+                        newPackage.file.fanart = self.service.API_URL +'files/' + str(media.group(2)) + '?alt=media' + '|' + self.service.getHeadersEncoded()
+
+                    elif media.group(1) == 'fileid':
+                        newPackage.file.id = media.group(2)
+                    elif media.group(1) == 'filename':
+                        newPackage.file.title = media.group(2)
+
+                if append:
+                    mediaList.append(newPackage)
+            nextURL = ''
+            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                nextURL = r.groups()
+
+            response.close()
+
+            if nextURL == '':
+                break
+            else:
+                url = nextURL[0]
+
+
+        return mediaList
+
+
+    def updateMediaPackageList(self,url, folderID, mediaList):
+
+        if folderID is not None and folderID != '':
+            params = urllib.urlencode({'folderid':  folderID})
+        else:
+            return
+        url = url + '?sq=' + params
+       #url = url + '?tq=' + params
+
+        mediaHash = {}
+        if mediaList:
+            count=0
+            for item in mediaList:
+                if item.file is not None:
+                    mediaHash[item.file.id] = count
+                count = count + 1
+
+
+        while True:
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    return
+              else:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return
+
+            response_data = response.read()
+
+            previous = ''
+            append = True
+            for r in re.finditer('<entry>(.*?)</entry>' ,
+                             response_data, re.DOTALL):
+
+                entry = r.group()
+                exp = re.compile('<gsx:([^\>]+)>([^<]+)</gsx')
+
+
+                for media in exp.finditer(entry):
+                    # not a general folder ID but another file ID
+                    if media.group(1) == 'fileid' and media.group(2) not in mediaHash.keys():
+                        break
+                    elif media.group(1) == 'fileid':
+                        newPackage = mediaList[mediaHash[media.group(2)]]
+
+                    elif media.group(1) == 'watched':
+                        if  media.group(2) == '':
+                            newPackage.file.playcount = 0
+                        else:
+                            newPackage.file.playcount =  media.group(2)
+                    elif media.group(1) == 'resume':
+                        if  media.group(2) == '':
+                            newPackage.file.cloudResume = 0
+                        else:
+                            newPackage.file.cloudResume = media.group(2)
+                    elif media.group(1) == 'commands':
+                        newPackage.file.commands = media.group(2)
+                    elif media.group(1) == 'nfo':
+                        nfoInfo = media.group(2)
+                        nfoInfo = re.sub('&lt;', '<', nfoInfo)
+                        nfoInfo = re.sub('/\s?&gt;', '> </>', nfoInfo)
+                        nfoInfo = re.sub('&gt;', '>', nfoInfo)
+                        nfo = re.compile('<([^\>]+)>([^\<]*)</')
+                        for info in nfo.finditer(nfoInfo):
+                            #if info.group(1) == 'title':
+                            #    newPackage.file.title = info.group(2)
+                            if info.group(1) == 'premiered' or info.group(1) == 'year':
+                                newPackage.file.date = info.group(2)
+                            elif info.group(1) == 'plot' or info.group(1) == 'description':
+                                newPackage.file.plot = info.group(2)
+                            elif info.group(1) == 'actors':
+                                newPackage.file.cast = info.group(2)
+                    elif media.group(1) == 'fanart':
+                        newPackage.file.fanart = self.service.API_URL +'files/' + str(media.group(2)) + '?alt=media' + '|' + self.service.getHeadersEncoded()
+                    elif media.group(1) == 'filename':
+                        newPackage.file.title = media.group(2)
+
+            nextURL = ''
+            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                nextURL = r.groups()
+
+            response.close()
+
+            if nextURL == '':
+                break
+            else:
+                url = nextURL[0]
+
+
+        return mediaList
+
+    ## not in use
+    def getMediaPackageList(self,url, folderName, mediaList):
+
+        if folderName is not None and folderName != '':
+            params = urllib.urlencode({'foldername':  folderName, 'folderid': ''})
+        else:
+            return
+        url = url + '?sq=' + params
+       #url = url + '?tq=' + params
+
+        mediaHash = {}
+        if mediaList:
+            count=0
+            for item in mediaList:
+                if item.file is not None:
+                    mediaHash[item.file.id] = count
+                count = count + 1
+
+
+        while True:
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    return
+              else:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return
+
+            response_data = response.read()
+
+            previous = ''
+            append = True
+            for r in re.finditer('<entry>(.*?)</entry>' ,
+                             response_data, re.DOTALL):
+
+                entry = r.group()
+                exp = re.compile('<gsx:([^\>]+)>([^<]+)</gsx')
+
+
+                for media in exp.finditer(entry):
+                    # not a general folder ID but another file ID
+                    if media.group(1) == 'fileid' and media.group(2) not in mediaHash.keys():
+                        break
+                    elif media.group(1) == 'fileid':
+                        newPackage = mediaList[mediaHash[media.group(2)]]
+
+                    elif media.group(1) == 'watched':
+                        if  media.group(2) == '':
+                            newPackage.file.playcount = 0
+                        else:
+                            newPackage.file.playcount =  media.group(2)
+                    elif media.group(1) == 'resume':
+                        if  media.group(2) == '':
+                            newPackage.file.cloudResume = 0
+                        else:
+                            newPackage.file.cloudResume = media.group(2)
+                    elif media.group(1) == 'commands':
+                        newPackage.file.commands = media.group(2)
+                    elif media.group(1) == 'nfo':
+                        nfoInfo = media.group(2)
+                        nfoInfo = re.sub('&lt;', '<', nfoInfo)
+                        nfoInfo = re.sub('/\s?&gt;', '> </>', nfoInfo)
+                        nfoInfo = re.sub('&gt;', '>', nfoInfo)
+                        nfo = re.compile('<([^\>]+)>([^\<]*)</')
+                        for info in nfo.finditer(nfoInfo):
+                            if info.group(1) == 'title':
+                                newPackage.file.title = info.group(2)
+                            elif info.group(1) == 'premiered' or info.group(1) == 'year':
+                                newPackage.file.date = info.group(2)
+                            elif info.group(1) == 'plot' or info.group(1) == 'description':
+                                newPackage.file.plot = info.group(2)
+                            elif info.group(1) == 'actors':
+                                newPackage.file.cast = info.group(2)
+                    elif media.group(1) == 'fanart':
+                        newPackage.file.fanart = self.service.API_URL +'files/' + str(media.group(2)) + '?alt=media' + '|' + self.service.getHeadersEncoded()
+                    elif media.group(1) == 'filename':
+                        newPackage.file.title = media.group(2)
+
+            nextURL = ''
+            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                nextURL = r.groups()
+
+            response.close()
+
+            if nextURL == '':
+                break
+            else:
+                url = nextURL[0]
+
+
+        return mediaList
+
+
     def getMediaInformation(self,url,folderID):
 
         params = urllib.urlencode({'folderuid': folderID})
@@ -333,6 +763,15 @@ class gSpreadsheets:
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    return
+              else:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                 return
 
@@ -371,6 +810,14 @@ class gSpreadsheets:
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+              else:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
 
             response_data = response.read()
@@ -418,6 +865,14 @@ class gSpreadsheets:
             response = urllib2.urlopen(req)
 #            response = opener.open(url, None,urllib.urlencode(header))
         except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+              else:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
 
         response_data = response.read()
@@ -458,7 +913,16 @@ class gSpreadsheets:
         try:
             response = urllib2.urlopen(req)
         except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e.read()), xbmc.LOGERROR)
+          else:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e.read()), xbmc.LOGERROR)
+
 
         response_data = response.read()
 
@@ -481,7 +945,16 @@ class gSpreadsheets:
             response = urllib2.urlopen(req)
 #            response = opener.open(url, None,urllib.urlencode(header))
         except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+          else:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+
 
         response_data = response.read()
         response.close()
@@ -515,7 +988,16 @@ class gSpreadsheets:
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e.read()), xbmc.LOGERROR)
+              else:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e.read()), xbmc.LOGERROR)
+
 
             response_data = response.read()
             response.close()
@@ -544,7 +1026,16 @@ class gSpreadsheets:
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+              else:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+
 
             response_data = response.read()
 

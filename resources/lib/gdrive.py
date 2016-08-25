@@ -1,6 +1,6 @@
 '''
-    gdrive XBMC Plugin
-    Copyright (C) 2013-2014 ddurdle
+    gdrive (Google Drive ) for KODI / XBMC Plugin
+    Copyright (C) 2013-2016 ddurdle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,9 +25,7 @@ import urllib, urllib2
 import cookielib
 import unicodedata
 
-#*** testing - gdrive
-from resources.lib import encryption
-##**
+
 
 # cloudservice - standard modules
 from cloudservice import cloudservice
@@ -970,6 +968,7 @@ class gdrive(cloudservice):
               req = urllib2.Request(url, None, self.getHeadersList())
               try:
                 open(file,'wb').write(urllib2.urlopen(req).read())
+
 #                f.write(urllib2.urlopen(req).read())
 #                f.close()
               except urllib2.URLError, e:

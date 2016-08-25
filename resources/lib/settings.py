@@ -1,5 +1,5 @@
 '''
-    Copyright (C) 2014 ddurdle
+    Copyright (C) 2014-2016 ddurdle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -69,6 +69,7 @@ def parse_query(query):
 
 plugin_queries = parse_query(sys.argv[2][1:])
 
+#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 addon = xbmcaddon.Addon(id='plugin.video.gdrive')
 
 #
@@ -81,21 +82,26 @@ class settings:
     ##
     def __init__(self, addon):
         self.addon = addon
-        self.integratedPlayer = self.getSetting('integrated_player', False)
+        #self.integratedPlayer = self.getSetting('integrated_player', False)
         self.cc = getParameter('cc', self.getSetting('cc', True))
         self.srt = getParameter('srt', self.getSetting('srt', True))
-        self.srtforce = getParameter('srtforce', self.getSetting('srtforce', False))
+        #self.srt_folder = getParameter('srt_folder', self.getSetting('srt_folder', False))
 
         self.username = getParameter('username', '')
         self.setCacheParameters()
         self.promptQuality = getParameter('promptquality', self.getSetting('prompt_quality', True))
         self.parseTV = self.getSetting('parse_tv', True)
         self.parseMusic = self.getSetting('parse_music', True)
-        self.skipResume = self.getSetting('video_skip', 0.10)
+        self.skipResume = self.getSetting('video_skip', 0.98)
         self.cloudResume = self.getSetting('resumepoint', 0)
+        self.cloudResumePrompt = self.getSetting('resumeprompt', False)
+        self.cloudSpreadsheet = self.getSetting('library_filename', 'CLOUD_DB')
+
+        self.seek = getParameter('seek', 0)
+        self.trace = getSetting('trace', False)
+
 
     def setVideoParameters(self):
-        self.seek = getParameter('seek', 0)
         self.resume = getParameter('resume', False)
 
         self.playOriginal = getParameter('original', self.getSetting('never_stream', False))
@@ -110,10 +116,27 @@ class settings:
         self.cacheSingle = self.getSetting('cache_single')
         self.cachePercent = self.getSetting('cache_percent', 10)
         self.cacheChunkSize = self.getSetting('chunk_size', 32 * 1024)
+        self.cacheContinue = self.getSetting('cache_continue', False)
+        self.cacheSRT = self.getSetting('cache_srt', False)
+        self.cacheThumbnails = self.getSetting('cache_thumbnails', False)
 
         if self.cache:
             self.download = False
             self.play = False
+
+    def setEncfsParameters(self):
+        self.encfsCacheSingle = self.getSetting('encfs_cache_single')
+        self.encfsCachePercent = self.getSetting('encfs_cache_percent', 10)
+        self.encfsCacheChunkSize = self.getSetting('encfs_chunk_size', 32 * 1024)
+        self.encfsSource = self.getSetting('encfs_source')
+        self.encfsTarget = self.getSetting('encfs_target')
+        self.encfsContinue = self.getSetting('encfs_continue', False)
+        self.encfsStream = self.getSetting('encfs_stream', False)
+
+        self.encfsInode = int(self.getSetting('encfs_inode', 0))
+        self.encfsLast = self.getSetting('encfs_last', '')
+
+
 
     def getParameter(self, key, default=''):
         try:

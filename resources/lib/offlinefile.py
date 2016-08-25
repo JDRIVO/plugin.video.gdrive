@@ -17,26 +17,48 @@
 
 '''
 import urllib
+import re
+
 
 #
 #
 #
-class folder:
+class offlinefile:
     # CloudService v0.2.4
-    # - add fanart [2016/06/19]h
+    #
+
 
     ##
     ##
-    def __init__(self, id, title, fanart='', thumb=''):
-        self.id = id
+    def __init__(self, title, thumbnail, resolution, stream):
         self.title = title
-        self.fanart = fanart
-        self.thumb = thumb
-        self.displaytitle = title
+        self.thumbnail = thumbnail
+
+        self.resolution = resolution
+        self.playbackpath = stream
+
 
     def displayTitle(self):
-        return urllib.unquote(self.displaytitle)
+        if self.decryptedTitle != '':
+            return urllib.unquote(str(self.decryptedTitle) + ' [' + str(self.title) + ']')
+        else:
+            return urllib.unquote(self.title)
 
+    def displayShowTitle(self):
+        if self.decryptedTitle != '':
+            return urllib.unquote(str(self.decryptedTitle) + ' [' + str(self.title) + ']')
+        elif self.showtitle is not None and self.showtitle != '':
+            return urllib.unquote(self.showtitle)
+        else:
+            return urllib.unquote(self.title)
+
+    def displayTrackTitle(self):
+        if self.decryptedTitle != '':
+            return urllib.unquote(str(self.decryptedTitle) + ' [' + str(self.title) + ']')
+        elif self.showtitle is not None and self.trackTitle != '':
+            return urllib.unquote(self.trackTitle)
+        else:
+            return urllib.unquote(self.title)
 
     def __repr__(self):
         return '{}: {} {}'.format(self.__class__.__name__,

@@ -1,5 +1,5 @@
 '''
-    Copyright (C) 2014-2015 ddurdle
+    Copyright (C) 2014-2016 ddurdle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 # cloudservice - standard modules
 import os
+import re
 
 # cloudservice - standard XBMC modules
 import xbmcgui, xbmcvfs
@@ -27,7 +28,7 @@ import xbmcgui, xbmcvfs
 # This class handles fetching files from local when cached, rather then making calls to the web service
 #
 class cache:
-    # CloudService v0.2.3
+    # CloudService v0.2.6
 
     ##
     ##
@@ -35,6 +36,7 @@ class cache:
         self.package = package
         self.cachePath = ''
         self.files = []
+        self.srt = []
 
     ##
     #  set the media package
@@ -44,78 +46,93 @@ class cache:
 
 
     ##
-    #  set the SRT
+    #  set the SRT for the video file
     ##
     def setSRT(self, service):
-        if self.cachePath == '':
-            cachePath = service.settings.cachePath
-        else:
-            cachePath = self.cachePath
 
-        if cachePath == '':
-            cachePath = xbmcgui.Dialog().browse(0,service.addon.getLocalizedString(30136), 'files','',False,False,'')
-            service.addon.setSetting('cache_folder', cachePath)
-            self.cachePath = cachePath
+        #load cachePath if not already loaded
+        if not service.settings.cacheSRT and self.cachePath == '':
+            self.cachePath = service.settings.cachePath
 
-        if cachePath != '':
-            cachePath = str(cachePath) + '/' + str(self.package.file.id)+'/'#+ '.'+str(lang)+'.srt'
+        #only makes sense to cache SRT if the cachePath exists
+        if service.settings.cacheSRT and self.cachePath != '':
+            cachePath = str(self.cachePath) + '/' + str(self.package.file.id)+'/'
+
             if not xbmcvfs.exists(cachePath):
-                xbmcvfs.mkdir(cachePath)
-            srt = service.getSRT(self.package.file.title)
+                xbmcvfs.mkdirs(cachePath)
+            srt = service.getSRT(self.package)
             if srt:
                 for file in srt:
-                    if not service.settings.cachePath or not xbmcvfs.exists(cachePath + str(file[0])):
-                        service.downloadPicture(file[1], cachePath + str(file[0]))
+                    if not xbmcvfs.exists(str(cachePath) + str(file[0])):
+                        service.downloadGeneralFile(file[1], str(cachePath) + str(file[0]))
+                    self.srt.append(str(cachePath) + str(file[0]))
+
+        #fetch SRT URLs but we won't cache the files
+        else:
+            srt = service.getSRT(self.package)
+            if srt:
+                for file in srt:
+                    self.srt.append(str(file[1]) + '|' + service.getHeadersEncoded())
 
     ##
-    #  set the CC
+    #  set the CC for the video file
     ##
     def setCC(self, service):
+
+        #load cachePath if not already loaded
         if self.cachePath == '':
-            cachePath = service.settings.cachePath
+            self.cachePath = service.settings.cachePath
+
+        # there is no cache path setting or the setting is unset -- we should assume user does not want to use caching
+        # CC files need to be cached (so they can be converted to SRT) -- don't do anything if we don't have the cachePath
+        if self.cachePath == '':
+            return
+
         else:
-            cachePath = self.cachePath
-
-        if cachePath == '':
-            cachePath = xbmcgui.Dialog().browse(0,service.addon.getLocalizedString(30136), 'files','',False,False,'')
-            service.addon.setSetting('cache_folder', cachePath)
-            self.cachePath = cachePath
-
-        if cachePath != '':
-            cachePath = str(cachePath) + '/' + str(self.package.file.id)+'/'#+ '.'+str(lang)+'.srt'
+            cachePath = str(self.cachePath) + '/' + str(self.package.file.id)+'/'
             if not xbmcvfs.exists(cachePath):
-                xbmcvfs.mkdir(cachePath)
+                xbmcvfs.mkdirs(cachePath)
             cachePath = str(cachePath) + str(self.package.file.id)
             cc = service.getTTS(self.package.file.srtURL)
             if cc:
                 for file in cc:
-                    if not service.settings.cachePath or not xbmcvfs.exists(cachePath + str(file[0])):
-                        service.downloadTTS(file[1], cachePath + str(file[0]))
+                    if not xbmcvfs.exists(cachePath + str(file[0])):
+                        service.downloadTTS(file[1], str(cachePath) + str(file[0]))
 
     ##
     #  fetch the SRT
     ##
     def getSRT(self, service):
-        cc = []
-        dirs, files = xbmcvfs.listdir(service.settings.cachePath + '/'+ str(self.package.file.id) + '/')
-        for file in files:
-            if os.path.splitext(file)[1] == '.srt':
-                cc.append(service.settings.cachePath + '/'+ str(self.package.file.id) + '/' + file)
-        return cc
+
+        #load cachePath if not already loaded
+#        if self.cachePath == '':
+#            self.cachePath = service.settings.cachePath
+#
+#        if self.cachePath != '':
+#
+#            dirs, files = xbmcvfs.listdir(str(self.cachePath) + '/'+ str(self.package.file.id) + '/')
+#            for file in files:
+#                if str(os.path.splitext(file)[1]).lower() in ('.srt', '.sub', '.ass', '.ssa') or str(os.path.splitext(file)[1]).lower() in ('srt', 'sub', 'ass', 'ssa'):
+#                    self.srt.append(str(self.cachePath) + '/'+ str(self.package.file.id) + '/' + file)
+        return self.srt
 
     ##
     #  set the thumbnail
     ##
     def setThumbnail(self, service, url=''):
-        if self.cachePath == '':
-            cachePath = service.settings.cachePath
-        else:
-            cachePath = self.cachePath
 
-        if cachePath == '':
-            cachePath = xbmcgui.Dialog().browse(0,service.addon.getLocalizedString(30136), 'files','',False,False,'')
-            service.addon.setSetting('cache_folder', cachePath)
-            self.cachePath = cachePath
+        #load cachePath if not already loaded
+        if self.cachePath == '':
+            self.cachePath = service.settings.cachePath
+
+
+        # there is no cache path setting or the setting is unset -- we should assume user does not want to use caching
+        if not service.settings.cacheThumbnails or self.cachePath == '':
+
+            if url == '':
+                return self.package.file.thumbnail
+            else:
+                return url
 
         if url == '':
             url = self.package.file.thumbnail
@@ -124,24 +141,40 @@ class cache:
         if url == '':
             return ""
 
-        cachePath = str(cachePath) + str(self.package.file.id) + '/'
+        #user doesn't want to cache thumbnails
+        if not service.settings.cacheThumbnails:
+            return url
+
+        cachePath = str(self.cachePath) + str(self.package.file.id) + '/'
+        cacheFile = str(self.cachePath) + str(self.package.file.id) + '.jpg'
         if not xbmcvfs.exists(cachePath):
-            xbmcvfs.mkdir(cachePath)
-        if not xbmcvfs.exists(cachePath + str(self.package.file.id) + '.jpg'):
-            service.downloadPicture(url, cachePath + str(self.package.file.id) + '.jpg')
-            print url
-        return cachePath + str(self.package.file.id) + '.jpg'
+            xbmcvfs.mkdirs(cachePath)
+        if not xbmcvfs.exists(cacheFile):
+            cacheFile = service.downloadGeneralFile(url, cacheFile)
+            if cacheFile is None:
+                return url
+        return cacheFile
 
 
     ##
     #  get the thumbnail
     ##
     def getThumbnail(self,service, url='', fileID=''):
+
+        # user isn't caching thumbnails
+        if not service.settings.cacheThumbnails or self.cachePath == '':
+            if url != '':
+                return url + '|' + service.getHeadersEncoded()
+            elif self.package != None and self.package.file != None:
+                return self.package.file.thumbnail  + '|' + service.getHeadersEncoded()
+            else:
+                return ''
+
         if fileID == '':
             if xbmcvfs.exists(str(self.cachePath) + str(self.package.file.id) + '/' + str(self.package.file.id) + '.jpg'):
                 return str(self.cachePath) + str(self.package.file.id) + '/' + str(self.package.file.id) + '.jpg'
             else:
-                return self.package.file.thumbnail
+                return self.package.file.thumbnail  + '|' + service.getHeadersEncoded()
         else:
             if xbmcvfs.exists(str(self.cachePath) + str(fileID) + '/' + str(fileID) + '.jpg'):
                 return str(self.cachePath) + str(fileID) + '/' + str(fileID) + '.jpg'
@@ -152,47 +185,35 @@ class cache:
     #  get a list of offline files for this file
     ##
     def getFiles(self,service):
-        if self.cachePath == '':
-            cachePath = service.settings.cachePath
-        else:
-            cachePath = self.cachePath
 
-        cachePath = cachePath + '/' + self.package.file.id + '/'
+        #load cachePath if not already loaded
+        if self.cachePath == '':
+            self.cachePath = service.settings.cachePath
+
         localResolutions = []
         localFiles = []
-        if xbmcvfs.exists(cachePath):
+
+        # no local cache, no local files to look for
+        if self.cachePath == '':
+            return (localResolutions,localFiles)
+
+        cachePath = str(self.cachePath) + '/' + str(self.package.file.id) + '/'
+
+        #workaround for this issue: https://github.com/xbmc/xbmc/pull/8531
+        if xbmcvfs.exists(cachePath) or os.path.exists(cachePath):
             dirs,files = xbmcvfs.listdir(cachePath)
             for file in files:
-                if os.path.splitext(file)[1] == '.stream':
+                if '.stream.mp4' in file:
                     try:
-                        resolutionFile = xbmcvfs.File(cachePath  + str(file) + '.resolution')
+                        resolutionFile = xbmcvfs.File(cachePath   + str(os.path.splitext(file)[0]) + '.resolution')
                         resolution = resolutionFile.read()
                         resolutionFile.close()
                     except:
                         resolution = file
                     localResolutions.append('offline - ' + str(resolution))
-                    localFiles.append(cachePath + file)
+                    localFiles.append(str(cachePath) + str(file))
 
         return (localResolutions,localFiles)
 
 
-    ##
-    #  get a list of offline files
-    ##
-    def getOfflineFileList(self, fileID):
-        localFiles = []
-        if xbmcvfs.exists(self.cachePath):
-            dirs,files = xbmcvfs.listdir(self.cachePath)
-            for file in files:
-                if os.path.splitext(file)[1] == '.stream':
-                    try:
-                        nameFile = xbmcvfs.File(cachePath + '/' + + str(fileID) + '/' + str(fileID) + '.name')
-                        filename = nameFile.read()
-                        nameFile.close()
-                    except:
-                        filename = file
-                    localFiles.append(file)
-
-
-        return localFiles
 

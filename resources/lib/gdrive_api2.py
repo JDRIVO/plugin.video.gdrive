@@ -1,5 +1,5 @@
 '''
-    gdrive for KODI / XBMC Plugin
+    gdrive (Google Drive ) for KODI / XBMC Plugin
     Copyright (C) 2013-2016 ddurdle
 
     This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,6 @@ import unicodedata
 
 # cloudservice - standard modules
 from cloudservice import cloudservice
-from resources.lib import encryption
 from resources.lib import authorization
 from resources.lib import folder
 from resources.lib import file
@@ -36,6 +35,7 @@ from resources.lib import package
 from resources.lib import mediaurl
 from resources.lib import crashreport
 from resources.lib import cache
+from resources.lib import gSpreadsheets
 
 
 
@@ -81,17 +81,14 @@ class gdrive(cloudservice):
         self.protocol = 2
         self.settings = settings
         self.gSpreadsheet = gSpreadsheet
+        self.worksheetID = self.addon.getSetting(self.instanceName+'_spreadsheet')
+
 
         if authenticate == True:
             self.type = int(addon.getSetting(instanceName+'_type'))
 
 
-        # gdrive specific ***
-        self.decrypt = False
-
-
         self.crashreport = crashreport.crashreport(self.addon)
-#        self.crashreport.sendError('test','test')
 
         try:
             username = self.addon.getSetting(self.instanceName+'_username')
@@ -113,6 +110,31 @@ class gdrive(cloudservice):
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
         #***
         self.cache = cache.cache()
+
+
+        if settings.cloudResume == '2':
+            if self.worksheetID == '':
+
+                try:
+                    self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
+
+                    spreadsheets = self.gSpreadsheet.getSpreadsheetList()
+                except:
+                    pass
+
+                for title in spreadsheets.iterkeys():
+                    if title == settings.cloudSpreadsheet:#'CLOUD_DB':
+                        worksheets = self.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+
+                        for worksheet in worksheets.iterkeys():
+                            if worksheet == 'db':
+                                self.worksheetID = worksheets[worksheet]
+                                addon.setSetting(instanceName + '_spreadsheet', self.worksheetID)
+                                break
+                        break
+            if self.gSpreadsheet is None:
+                self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
+
 
 
 
@@ -299,20 +321,20 @@ class gdrive(cloudservice):
     # return the appropriate "headers" for Google Drive requests that include 1) user agent, 2) authorization token
     #   returns: list containing the header
     ##
-    def getHeadersList(self, isPOST=False):
+    def getHeadersList(self, isPOST=False, additionalHeader=None, additionalValue=None):
         if self.authorization.isToken(self.instanceName,self.addon, 'auth_access_token') and not isPOST:
 #            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
-            return { 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+            if additionalHeader is not None:
+                return { 'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token'), additionalHeader : additionalValue }
+            else:
+                return {  'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
         elif self.authorization.isToken(self.instanceName,self.addon, 'auth_access_token'):
 #            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
-            return { "If-Match" : '*', 'Content-Type': 'application/atom+xml', 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+            return { "If-Match" : '*', 'Content-Type': 'application/atom+xml', 'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+            #return {  'Content-Type': 'application/atom+xml', 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
         else:
             return { 'User-Agent' : self.user_agent}
 
-
-    #*** not used
-    def setDecrypt(self):
-        self.decrypt = True
 
 
     ##
@@ -374,6 +396,9 @@ class gdrive(cloudservice):
         else:
             url = url + "?q='"+str(folderName)+"'+in+parents"
 
+        # contribution by dabinn
+        # filter out trashed items
+        url = url + "+and+trashed%3dfalse"
 
         mediaFiles = []
         while True:
@@ -443,6 +468,27 @@ class gdrive(cloudservice):
                 url = nextURL
 
         return mediaFiles
+
+
+
+    ##
+    # retrieve a list of videos, using playback type stream
+    #   parameters: prompt for video quality (optional), cache type (optional)
+    #   returns: list of videos
+    ##
+    def getOfflineMediaList(self, folderName=False, title=False, contentType=7):
+
+        mediaFiles = []
+        for r1 in re.finditer('\{(.*?)\"spaces\"\:' , entryS, re.DOTALL):
+            entry = r1.group(1)
+            media = self.getMediaPackage(entry, folderName=folderName, contentType=contentType, fanart=folderFanart, icon=folderIcon)
+            if media is not None:
+                mediaFiles.append(media)
+
+
+
+        return mediaFiles
+
 
 
 
@@ -540,6 +586,7 @@ class gdrive(cloudservice):
                 fileSize = 0
                 thumbnail = ''
                 fileExtension = ''
+                md5 = ''
 
                 url = ''
                 for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
@@ -569,6 +616,10 @@ class gdrive(cloudservice):
                 for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   fileExtension = r.group(1)
+                  break
+                for r in re.finditer('\"md5Checksum\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  md5 = r.group(1)
                   break
                 height =0
                 width = 0
@@ -610,12 +661,12 @@ class gdrive(cloudservice):
                         newtitle = r.group(1)
                         title = '*' + newtitle
                         resourceID = 'SAVED SEARCH'
-                    media = package.package(None,folder.folder(resourceID,title, thumb=icon))
+                    media = package.package(None,folder.folder(resourceID,title, fanart, thumb=icon))
                     return media
 
                 # entry is a video
-                elif (fileExtension.lower() not in ('sub') and (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType or fileExtension.lower() in ('ts')) and contentType in (0,1,2,4,7)):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, fanart, thumbnail, size=fileSize, resolution=[height,width], playcount=int(playcount), duration=duration)
+                elif ((fileExtension.lower() == '' or fileExtension.lower() not in ('','sub')) and (resourceType == 'application/vnd.google-apps.video' or 'video' in resourceType or fileExtension.lower() in ('iso','ts', 'mkv', 'rmvb')) and contentType in (0,1,2,4,7)):
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_VIDEO, fanart, thumbnail, size=fileSize, resolution=[height,width], playcount=int(playcount), duration=duration, checksum=md5)
 
                     if self.settings.parseTV:
                         tv = mediaFile.regtv1.match(title)
@@ -652,8 +703,8 @@ class gdrive(cloudservice):
 
 
                 # entry is a music file
-                elif ((resourceType == 'application/vnd.google-apps.audio' or fileExtension.lower() in ('flac', 'mp3') or 'audio' in resourceType) and contentType in (1,2,3,4,6,7)):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, '', '', size=fileSize)
+                elif ((resourceType == 'application/vnd.google-apps.audio' or (fileExtension.lower() == '' or fileExtension.lower() in ('flac', 'mp3')) or 'audio' in resourceType) and contentType in (1,2,3,4,6,7)):
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_MUSIC, fanart, '', size=fileSize, checksum=md5)
 
                     if self.settings.parseMusic:
 
@@ -669,7 +720,7 @@ class gdrive(cloudservice):
 
                 # entry is a photo
                 elif ((resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType) and contentType in (2,4,5,6,7)):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, '', thumbnail, size=fileSize)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, fanart, thumbnail, size=fileSize, download=url, checksum=md5)
 
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
@@ -681,14 +732,14 @@ class gdrive(cloudservice):
 
                 # entry is unknown
                 elif (resourceType == 'application/vnd.google-apps.unknown'):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, '', thumbnail, size=fileSize)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, fanart, thumbnail, size=fileSize, checksum=md5)
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
                     return media
 
                 # all files (for saving to encfs)
                 elif (contentType >= 8):
-                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, '', '', size=fileSize)
+                    mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_UNKNOWN, fanart, '', size=fileSize, checksum=md5)
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, '','',''))
                     return media
@@ -747,18 +798,35 @@ class gdrive(cloudservice):
     #   parameters: title of the video file
     #   returns: download url for srt
     ##
-    def getSRT(self, title):
+    def getSRT(self, package):
 
+        if package is None or (package.file is None and package.folder is None):
+            return
         # retrieve all items
-        url = self.API_URL +'files/'
+        url = self.API_URL +'files'
 
-        # search for title
-        if title != False:
-            title = os.path.splitext(title)[0]
-            encodedTitle = re.sub(' ', '+', title)
-            url = url + "?q=title+contains+'" + str(encodedTitle) + "'"
+        # merge contribution by dabinn
+        q = ''
+        # search in current folder for SRT files
+        if package.folder is not None and (package.folder.id != False or package.folder.id != ''):
 
+            q = "'"+str(package.folder.id)+"' in parents"
+
+        # search for title in SRT file
+#        if package.file is not None and (package.file.title != False or package.file.title != ''):
+#            title = os.path.splitext(package.file.title)[0]
+#            if q != '':
+#                q = q + ' and '
+#            q = q + "title contains '" + str(title) + "'"
+
+        url = url + "?" + urllib.urlencode({'q':q})
+
+        #generate two lists of SRT files
+        #1) list of files (multiple languages) from the same folder that exactly match the title of the video
+        #2) list of candidate files that are from the same folder but don't match the title of the video (if exceeds 4, ask user to select -- likely TV series or folder containing multiple movies)
         srt = []
+        srtCandidates = []
+        srtCandidatesTitles = []
         while True:
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -787,6 +855,7 @@ class gdrive(cloudservice):
 
             # parsing page for videos
             # video-entry
+
             for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\}\s+\]\s+\}' ,response_data, re.DOTALL):
              entryS = r2.group(1)
              for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,entryS, re.DOTALL):
@@ -797,11 +866,12 @@ class gdrive(cloudservice):
                 title = ''
                 url = ''
                 fileExtension = ''
+                isExactMatch = False
                 for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   fileExtension = r.group(1)
                   break
-                if fileExtension == 'srt':
+                if fileExtension.lower() in ('srt','idx','sub','ass','ssa'):
 
                     for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
@@ -810,11 +880,19 @@ class gdrive(cloudservice):
                     for r in re.finditer('\"title\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                         title = r.group(1)
+                        #if os.path.splitext(package.file.title)[0] in title:
+                        ## contribution by dabinn
+                        if title.startswith(os.path.splitext(package.file.title)[0]):
+                            isExactMatch = True
                         break
                     for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                         url = r.group(1)
-                        srt.append([title,url])
+                        if isExactMatch:
+                            srt.append([title,url])
+                        else:
+                            srtCandidates.append([title,url])
+                            srtCandidatesTitles.append(title)
                         break
 
 
@@ -832,7 +910,16 @@ class gdrive(cloudservice):
             else:
                 url = nextURL
 
-        return srt
+        if len(srt) > 0:
+            return srt
+        elif len(srtCandidates) > 4:
+            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30183), srtCandidatesTitles)
+            if ret >= 0:
+                return [srtCandidates[ret]]
+            else:
+                return
+        elif len(srtCandidates) > 0:
+            return srtCandidates
 
 
 
@@ -1041,121 +1128,6 @@ class gdrive(cloudservice):
 
 
 
-    #*** not used
-    ##
-    # retrieve a list of videos, using playback type stream
-    #   parameters: cache type (optional)
-    #   returns: list of videos
-    ##
-    def decryptFolder(self,key,path,folder):
-
-        # retrieve all items
-        url = PROTOCOL+'docs.google.com/feeds/default/private/full'
-
-        # retrieve root items
-        if folder == '':
-            url = url + '/folder%3Aroot/contents'
-        # retrieve folder items
-        else:
-            url = url + '/folder%3A'+folder+'/contents'
-
-        import xbmcvfs
-        xbmcvfs.mkdir(path + '/'+folder)
-
-        while True:
-            req = urllib2.Request(url, None, self.getHeadersList())
-
-            # if action fails, validate login
-            try:
-              response = urllib2.urlopen(req)
-            except urllib2.URLError, e:
-              if e.code == 403 or e.code == 401:
-                self.refreshToken()
-                req = urllib2.Request(url, None, self.getHeadersList())
-                try:
-                  response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    self.crashreport.sendError('decryptFolder',str(e))
-                    return
-              else:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('decryptFolder',str(e))
-                return
-
-            response_data = response.read()
-            response.close()
-
-            downloadList = []
-            # video-entry
-            for r in re.finditer('\<entry[^\>]+\>(.*?)\<\/entry\>' ,response_data, re.DOTALL):
-                entry = r.group(1)
-
-                # fetch folder
-                for r in re.finditer('\<gd\:resourceId\>([^\:]*)\:?([^\<]*)\</gd:resourceId\>' ,
-                             entry, re.DOTALL):
-                  resourceType,resourceID = r.groups()
-
-                  # entry is NOT a folder
-                  if not (resourceType == 'folder'):
-                      # fetch video title, download URL and docid for stream link
-                      # Google Drive API format
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'(video)\/[^\']+\' src=\'([^\']+)\'.+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                          title,mediaType,url,thumbnail = r.groups()
-
-                      #for playing video.google.com videos linked to your google drive account
-                      # Google Docs & Google Video API format
-                      for r in re.finditer('<title>([^<]+)</title><link rel=\'alternate\' type=\'text/html\' href=\'([^\']+).+?rel=\'http://schemas.google.com/docs/2007/thumbnail\' type=\'image/[^\']+\' href=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                          title,url,thumbnail = r.groups()
-
-                      # audio
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'audio\/[^\']+\' src=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                          title,url = r.groups()
-
-                      # pictures
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'image\/[^\']+\' src=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                          title,url = r.groups()
-
-                          url = re.sub('&amp;', '&', url)
-                          filename = path + '/'+folder+'/'+ encryption.decrypt(title)
-                          if not os.path.exists(filename) or os.path.getsize(filename) == 0:
-                              open(filename, 'a').close()
-                              downloadList.append(downloadfile.downloadfile(url,filename))
-                              #self.downloadDecryptPicture(key, url,filename)
-
-
-                      # pictures
-                      for r in re.finditer('<title>([^<]+)</title><content type=\'application\/[^\']+\' src=\'([^\']+)\'' ,
-                             entry, re.DOTALL):
-                          title,url = r.groups()
-
-                          url = re.sub('&amp;', '&', url)
-                          filename = path + '/'+folder+'/'+ encryption.decrypt(title)
-                          if not os.path.exists(filename) or os.path.getsize(filename) == 0:
-                              open(filename, 'a').close()
-                              downloadList.append(downloadfile.downloadfile(url,filename))
-                              #self.downloadDecryptPicture(key, url,filename)
-
-            if downloadList:
-                for file in sorted(downloadList, key=lambda item: item.name):
-                    self.downloadDecryptPicture(key, file.url,file.name)
-
-            # look for more pages of videos
-            nextURL = ''
-            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
-                             response_data, re.DOTALL):
-                nextURL = r.groups()
-
-
-            # are there more pages to process?
-            if nextURL == '':
-                break
-            else:
-                url = nextURL[0]
 
 
     ##
@@ -1260,7 +1232,9 @@ class gdrive(cloudservice):
                 response_data = response.read()
                 response.close()
 
-                package = self.getMediaPackage(response_data)
+                if package is not None and package.folder is not None:
+                    package = self.getMediaPackage(response_data, package.folder.id)
+
                     #docid = package.file.id
                     #mediaURLs.append(package.mediaurl)
 
@@ -1277,7 +1251,10 @@ class gdrive(cloudservice):
             # player using docid
             params = urllib.urlencode({'docid': docid})
             url = self.PROTOCOL+ 'drive.google.com/get_video_info?docid=' + str(docid)
+
+
             req = urllib2.Request(url, None, self.getHeadersList())
+
             # if action fails, validate login
             try:
                  response = urllib2.urlopen(req)
@@ -1298,6 +1275,13 @@ class gdrive(cloudservice):
 
             response_data = response.read()
             response.close()
+
+
+            for r in re.finditer('([^\=]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
+                cookieType,cookieValue = r.groups()
+                if cookieType == 'DRIVE_STREAM':
+                    print cookieValue
+                    self.authorization.setToken(cookieType,cookieValue)
 
             # decode resulting player URL (URL is composed of many sub-URLs)
             urls = response_data
@@ -1385,28 +1369,28 @@ class gdrive(cloudservice):
                                 order = order + 1000
                             elif pquality == 1:
                                 order = order + 3000
-                            elif pquality == 3:
+                            elif pquality == 2:
                                 order = order + 9000
                         elif int(itagDB[itag]['resolution']) == 720:
                             if pquality == 0:
                                 order = order + 2000
                             elif pquality == 1:
                                 order = order + 1000
-                            elif pquality == 3:
+                            elif pquality == 2:
                                 order = order + 9000
                         elif int(itagDB[itag]['resolution']) == 480:
                             if pquality == 0:
                                 order = order + 3000
                             elif pquality == 1:
                                 order = order + 2000
-                            elif pquality == 3:
+                            elif pquality == 2:
                                 order = order + 1000
                         elif int(itagDB[itag]['resolution']) < 480:
                             if pquality == 0:
                                 order = order + 4000
                             elif pquality == 1:
                                 order = order + 3000
-                            elif pquality == 3:
+                            elif pquality == 2:
                                 order = order + 2000
                     try:
                         if itagDB[itag]['codec'] == 'VP8/vorbis':
@@ -1512,35 +1496,6 @@ class gdrive(cloudservice):
             f.write("%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n%s\n\n" % (count, startTimeHour, startTimeMin, startTimeSec, startTimeMSec, endTimeHour, endTimeMin, endTimeSec, endTimeMSec, text))
         f.close()
 
-
-    #*** needs update
-    def downloadDecryptPicture(self,key,url, file):
-
-        req = urllib2.Request(url, None, self.getHeadersList())
-
-
-        # if action fails, validate login
-        try:
-#          open('/tmp/tmp','wb').write(urllib2.urlopen(req).read())
-#          encryption.decrypt_file(key,'/tmp/tmp',file)
-          encryption.decrypt_stream(key,urllib2.urlopen(req),file)
-        except urllib2.URLError, e:
-            if e.code == 403 or e.code == 401:
-              self.refreshToken()
-              req = urllib2.Request(url, None, self.getHeadersList())
-              try:
-                encryption.decrypt_stream(key,urllib2.urlopen(req),file)
-#                open('/tmp/tmp','wb').write(urllib2.urlopen(req).read())
-#                encryption.decrypt_file(key,'/tmp/tmp',file)
-
-              except urllib2.URLError, e:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('downloadDecryptPicture',str(e))
-                return
-            else:
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                self.crashreport.sendError('downloadDecryptPicture',str(e))
-                return
 
 
 

@@ -1,4 +1,153 @@
-
+v0.8.0 (2016-08-25)
+- sync new release, promote testing release
+v0.7.63 (2016-08-24)
+- encfs fix
+- fix: Google transcode stream support #83
+v0.7.62 (2016-08-24)
+- fix transcode and re-enable
+v0.7.60 (2016-08-19)
+- disable transcode to prevent playback errors (google issue, temporary?)
+v0.7.60 (2016-08-19)
+- support for encfs subtitles
+v0.7.59 (2016-07-27)
+- minor updates to spreadsheets
+v0.7.58 (2016-07-24)
+- spreadsheets - fix resume automatically
+- spreadsheets - fix for registering with different names (non-default)
+- spreadsheets - fix for registering with duplicate names
+- spreadsheets - skip read-only spreadsheets
+v0.7.57 (2016-07-23)
+- add gplayer debug statements
+v0.7.56 (2016-07-17)
+- fix for CLOUD_DB activation
+v0.7.55 (2016-07-15)
+- stability improvements for encfs
+v0.7.54 (2016-07-11)
+- add encfs 'prefer to stream" option (contiue = false, single file = true)
+- encfs: better tracking for disrupted playback
+- fix playback continuation issue if ran out of buffer
+- implement: encfs - fix downloading display name #80
+v0.7.53 (2016-07-07)
+- fix for resuming download in encfs
+- fix for stopping download in encfs when playback stopped
+- disable modifying user accounts in settings
+v0.7.52 (2016-06-09)
+- add some debug to player
+v0.7.51 (2016-06-02)
+- fix: prevent loading screen that won't disappear -- force context type video if accessing a directory listing without context properly set (accessing from favourites for instance)
+v0.7.50 (2016-06-01)
+- fix: refresh token on spreadsheet db access (when user favourites cloud items)
+v0.7.49 (2016-04-07)
+- fix fanart.jpg
+- contribution by dabinn - filter out trashed items
+v0.7.48 (2016-03-22)
+- add .iso (video) support
+v0.7.47 (2016-03-17)
+- Contributions by dabinn
+  - Use title.startswith() to match title name : more accurate.
+  - Move 'isExactMatch = False' into loop : fix 'too many subtitle loaded' issue
+  - Add idx extension support: idx and sub files are a pair, idx is index file, sub contains bitmap subtitle. They need to work together.
+  - fix double-byte character filenames (cache SRT)
+  - playback next fix for srt
+- fix: cancel on srt selection
+v0.7.46 (2016-03-14)
+- SRT - merge contribution by dabinn (dealing with TV series in a single directory)
+- add ability to toggle caching of thumbnails and SRT on/off
+- fix cache of SRT
+- rework SRT logic
+        1) list of files (multiple languages) from the same folder that exactly match the title of the video
+        2) list of candidate files that are from the same folder but don't match the title of the video (if exceeds 4, ask user to select -- likely TV series or folder containing multiple movies)
+v0.7.45 (2016-03-10)
+- fix search error when CLOUD_DB is enabled
+- add support for subtitles .ass and .ssa
+- add mkv and rmvb extension mapping in unknown file situation
+v0.7.44 (2016-03-09)
+- fix for playback of offline file
+v0.7.43 (2016-03-08)
+- CLOUD_DB: load data during listings (resume + play count)
+- CLOUD_DB: fix resume points
+- CLOUD_DB: STRM resume points
+- CLOUD_DB: updated add to queue
+- drop Brazil language file
+v0.7.42 (2016-03-06)
+- CLOUD_DB: do not prompt for resume if seeking
+- CLOUD_DB: update resume prompt with resume point time
+- CLOUD_DB: add folder support
+- CLOUD_DB: add "mark as watched"
+- CLOUD_DB: add "recently watched"
+- CLOUD_DB: add "recently started"
+- CLOUD_DB: add spreadsheet creation from "Save STRM"
+- CLOUD_DB: add nfo support
+- CLOUD_DB: add fanart support
+- CLOUD_DB: add browse "library"
+- CLOUD_DB: add browse "queued"
+v0.7.41 (2016-03-04)
+- add support for resume-download of files
+v0.7.40 (2016-03-03)
+- CLOUD_DB addition: md5/checksum
+- fix: display offline in media list
+v0.7.39 (2016-03-02)
+- resolved speed issue with cache video files
+- add logic to accomodate flexible CLOUD_DB columns
+- CLOUD_DB addition: commands
+v0.7.38 (2016-02-28)
+- music "start at" fix
+v0.7.37 (2016-02-27)
+- fix: transcodes even if "never transcode" is selected
+- drop integrated player mode (hide opening stream)
+v0.7.36 (2016-02-27)
+- further playback fixes
+v0.7.35 (2016-02-26)
+- cleanup of video playback
+v0.7.34 (2016-02-25)
+- implemented STRM resume point
+v0.7.33 (2016-02-24)
+- modules inclusion list fix
+v0.7.32 (2016-02-22)
+- fix for single-file cache not clearing between plays
+- fix: prompt user with cache + original in never transcode mode
+- make offline stream files a video extension for universal playback
+- fix transcode selection screen disappearing after a fix in 0.7.31
+- add option to settings to terminate cache download on playback user-stopped
+v0.7.31 (2016-02-20)
+- fix but for error 400 in cache for never transcode + always cache
+v0.7.30 (2016-02-19)
+- add print statement for debug
+v0.7.29 (2016-02-19)
+- add offline media playback option (completely offline)
+v0.7.28 (2016-02-18)
+- fix strm encfs playback
+v0.7.27 (2016-02-17)
+- stability testing fixes
+v0.7.26 (2016-02-17)
+- stability testing fixes
+v0.7.25 (2016-02-13)
+- cache fixes for permissions denied on windows
+- cache playback fixes
+v0.7.24 (2016-02-12)
+- implemented: support for srt files in same remote folder on google drive regardless of srt filename #58
+- implemented: Allow disable to thumnail cache #51
+- fix: STREAM PREFERENCES #59
+- no longer need to cache SRT or SUB files locally before playback; only CC/TTS require caching (they need to be converted to SRT format)
+v0.7.23 (2016-02-12)
+- fix for encfs playback on Windows
+v0.7.22 (2016-02-11)
+- picture/photo playback improvements, link into default KODI slideshow functionality
+- added playback photos without caching (also now the default behaviour)
+- fix: https://github.com/ddurdle/GDrive-for-KODI/issues/57
+v0.7.21 (2016-02-11)
+- improvements with encfs playback(specficially around streaming)
+- added options chunk and percent before playback for encfs
+- fix issue with encrypted MKV playback (encfs)
+Version 0.7.20
+- fix issue where files with extension missing don't show up
+- work towards cloud based (spreadsheet) resume points
+Version 0.7.19
+- correct dialog popup for quality when using "playback entire folder" to abide by "force prompt" setting (was defaulting to prompt always)
+Version 0.7.18
+- fix "watch folder" error (now "playback entire folder", to be more neutral with audio)
+- fix "playback entire folder" to exclude video when playback in music plugin
+- correct dialog popup for quality when using "playback entire folder" when there is only 1 quality choice (such as when playing music)
 Version 0.7.17
 - allow disable of cloud resume and playback count (new setting added to Library, resume point, can be local or cloud based)
 Version 0.7.16
