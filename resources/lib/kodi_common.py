@@ -33,8 +33,8 @@ from resources.lib import offlinefile
 
 
 # global variables
-addon = xbmcaddon.Addon(id='plugin.video.gdrive')
-#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+#addon = xbmcaddon.Addon(id='plugin.video.gdrive')
+addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 PLUGIN_URL = sys.argv[0]
 plugin_handle = int(sys.argv[1])
 
