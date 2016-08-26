@@ -1,3 +1,6 @@
+v0.8.1 (2016-08-26)
+- added better support for photos
+- added resolution option in addon settings->Pictures
 v0.8.0 (2016-08-25)
 - sync new release, promote testing release
 v0.7.63 (2016-08-24)

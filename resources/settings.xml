@@ -136,8 +136,8 @@
     <category label="30160">
         <setting label="30037" type="lsep"/>
         <setting id="context_photo" type="enum" subsetting="true" label="30024" values="Photos only|Music and Photos|Everything" default="0"/>
-
         <setting id="photo_folder" type="folder" label="30038" default="" />
+        <setting id="photo_resolution" type="enum" label="30185" values="720p|1080p|4k|8k|16k|480p|original" default="0" />
     </category>
 
 	<!-- cache properties -->

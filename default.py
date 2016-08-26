@@ -611,8 +611,7 @@ elif mode == 'kiosk':
                                 player.saveTime()
                                 xbmc.sleep(5000)
 
-##**
-
+##** not in use
 elif mode == 'photo':
 
     title = settings.getParameter('title',0)

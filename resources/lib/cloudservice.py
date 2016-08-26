@@ -1295,7 +1295,10 @@ class cloudservice(object):
             playbackURL = '?mode=photo'
 #            listitem.setProperty('IsPlayable', 'false')
             listitem.setProperty('IsPlayable', 'true')
-            url = package.file.download+'|' + self.getHeadersEncoded()
+            if package.mediaurl.url != '':
+                url = package.mediaurl.url +'|' + self.getHeadersEncoded()
+            else:
+                url = package.file.download+'|' + self.getHeadersEncoded()
             xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=False, totalItems=0)
             return url
