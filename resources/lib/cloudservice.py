@@ -793,7 +793,7 @@ class cloudservice(object):
     # download/retrieve a media file
     #   parameters: whether to playback file, media url object, package object, whether to force download (overwrite), whether the file is encfs, folder name (option)
     ##
-    def downloadEncfsFile(self, mediaURL, package, playbackURL='', force=False, folderName='', playback=1,item='', player=None):
+    def downloadEncfsFile(self, mediaURL, package, playbackURL='', force=False, folderName='', playback=1,item='', player=None, srt=None):
 
         progress = ''
         cachePercent = int(self.settings.encfsCachePercent)
@@ -905,9 +905,23 @@ class cloudservice(object):
                 #else:
                     #xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
                 #player.PlayStream(playbackURL, item, package.file.resume, startPlayback=True, package=package)
-                while not (player.isPlaying()) and not player.isExit:
-                    xbmc.sleep(1000)
+#                while not (player.isPlaying()) and not player.isExit:
+#                    xbmc.sleep(1000)
                     #print str(player.playStatus)
+
+                    # load captions
+            if (self.settings.srt or self.settings.cc):
+                while not (player.isPlaying()):
+                    xbmc.sleep(1000)
+
+                for file in srt:
+                    if file != '':
+                        try:
+                            file = file.decode('unicode-escape')
+                            file = file.encode('utf-8')
+                        except:
+                            pass
+                        player.setSubtitles(file)
         try:
             count =1
             while True:

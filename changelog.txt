@@ -1,5 +1,7 @@
+v0.8.2 (2016-08-27)
 - fix: encfs resume in prefer to stream
 - encfs playback improvement
+- fix: encfs srt support
 v0.8.1 (2016-08-26)
 - added better support for photos
 - added resolution option in addon settings->Pictures
