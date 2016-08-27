@@ -1,3 +1,4 @@
+- fix: encfs resume in prefer to stream
 v0.8.1 (2016-08-26)
 - added better support for photos
 - added resolution option in addon settings->Pictures

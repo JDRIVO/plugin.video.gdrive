@@ -1077,6 +1077,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 #we found a file
                 if index in fileListINodes.keys():
                     xbmcvfs.rmdir(encfs_source + str(dir))
+                    addon.setSetting('encfs_last', str(encryptedPath) +str(title))
 
                     service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', folderName=str(encfs_source) + str(dir), playback=resolvedPlayback,item=item, player=player)
 
