@@ -1121,7 +1121,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         # load captions
         if (settings.srt or settings.cc) and service.protocol == 2:
             while not (player.isPlaying()):
-                xbmc.sleep(1000)
+                xbmc.sleep(1500)
 
             for file in encfsSubTitles:
                 if file != '':

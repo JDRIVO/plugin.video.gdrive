@@ -839,6 +839,8 @@ class cloudservice(object):
                 progress.create(self.addon.getLocalizedString(30035), playbackURL)
 
 
+            downloadedBytes = 0
+
             #seek to end of file for append
             # - must use python for append (xbmcvfs not supported)
             # - if path is not local or KODI-specific user must restart complete download
@@ -884,14 +886,13 @@ class cloudservice(object):
                     self.crashreport.sendError('downloadMediaFile',str(e))
                     return
 
-            downloadedBytes = 0
-            while sizeDownload > downloadedBytes:
-                if not self.settings.encfsStream and not self.settings.encfsCacheSingle:
-                    progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30035))
-                chunk = response.read(CHUNK)
-                if not chunk: break
-                f.write(chunk)
-                downloadedBytes = downloadedBytes + CHUNK
+                while sizeDownload > downloadedBytes:
+                    if not self.settings.encfsStream and not self.settings.encfsCacheSingle:
+                        progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30035))
+                    chunk = response.read(CHUNK)
+                    if not chunk: break
+                    f.write(chunk)
+                    downloadedBytes = downloadedBytes + CHUNK
 
         if playbackURL != '':
 
