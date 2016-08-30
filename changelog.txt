@@ -1,8 +1,12 @@
-v0.8.2 (2016-08-27)
+v0.8.03 (2016-08-30)
+- fix: STRM Creation Failure 0.8.0 #86
+- fix: Cant create strm from folder #78
+- fix: closed captions support broken #85
+v0.8.02 (2016-08-27)
 - fix: encfs resume in prefer to stream
 - encfs playback improvement
 - fix: encfs srt support
-v0.8.1 (2016-08-26)
+v0.8.01 (2016-08-26)
 - added better support for photos
 - added resolution option in addon settings->Pictures
 v0.8.0 (2016-08-25)

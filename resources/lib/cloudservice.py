@@ -494,7 +494,8 @@ class cloudservice(object):
                                     strmFile.write(url+'\n')
                                     strmFile.close()
 
-                        spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
+                        if spreadsheetFile is not None:
+                            spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
 
         elif mediaItems and encfs:
 

@@ -533,7 +533,8 @@ elif mode == 'main' or mode == 'index':
                 if service.gSpreadsheet is None:
                     service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
 
-                service.gSpreadsheet.updateMediaPackageList(service.worksheetID, folderID, mediaItems)
+                if service.worksheetID != '':
+                    service.gSpreadsheet.updateMediaPackageList(service.worksheetID, folderID, mediaItems)
 
             if mediaItems:
                 for item in sorted(mediaItems):
