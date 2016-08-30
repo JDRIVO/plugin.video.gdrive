@@ -801,7 +801,7 @@ class gdrive(cloudservice):
 
     ##
     # retrieve a srt file for playback
-    #   parameters: title of the video file
+    #   parameters: package
     #   returns: download url for srt
     ##
     def getSRT(self, package):
@@ -930,9 +930,11 @@ class gdrive(cloudservice):
 
 
     ##
+    # Google Drive specific
+    #
     # retrieve tts file(s) for playback
     #  -- will download tts file(s) associated with the video to path
-    #   parameters: TTS Base URL
+    #   parameters: baseURL - TTS Base URL
     #   returns: nothing
     ##
     def getTTS(self, baseURL):
@@ -993,7 +995,7 @@ class gdrive(cloudservice):
     ##
     # retrieve the resource ID for root folder
     #   parameters: none
-    #   returns: resource ID
+    #   returns: resource ID for root
     ##
     def getRootID(self):
 
@@ -1050,7 +1052,7 @@ class gdrive(cloudservice):
         return resourceID
 
     ##
-    # retrieve the download URL for given docid
+    # retrieve the download URL for given resorce ID
     #   parameters: resource ID
     #   returns: download URL
     ##
@@ -1095,9 +1097,9 @@ class gdrive(cloudservice):
 
 
     ##
-    # retrieve the details for a file given docid
+    # retrieve the details for a file given resource ID
     #   parameters: resource ID
-    #   returns: download URL
+    #   returns: entry
     ##
     def getMediaDetails(self, docid):
 
