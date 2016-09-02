@@ -814,16 +814,16 @@ class gdrive(cloudservice):
         # merge contribution by dabinn
         q = ''
         # search in current folder for SRT files
-        if package.folder is not None and (package.folder.id != False or package.folder.id != ''):
+        if package.folder is not None and (package.folder.id != False and  package.folder.id != ''):
 
             q = "'"+str(package.folder.id)+"' in parents"
-
+        else:
         # search for title in SRT file
-#        if package.file is not None and (package.file.title != False or package.file.title != ''):
-#            title = os.path.splitext(package.file.title)[0]
-#            if q != '':
-#                q = q + ' and '
-#            q = q + "title contains '" + str(title) + "'"
+            if package.file is not None and (package.file.title != False and package.file.title != ''):
+                title = os.path.splitext(package.file.title)[0]
+                if q != '':
+                    q = q + ' and '
+                q = q + "title contains '" + str(title) + "'"
 
         url = url + "?" + urllib.urlencode({'q':q})
 
