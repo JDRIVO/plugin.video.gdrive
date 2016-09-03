@@ -1,3 +1,5 @@
+v0.8.05 (2016-09-02)
+- push unstable to stable
 v0.8.04 (2016-09-01)
 - fix: SRT playback when using STRM #87
 - fix: Subtitle doesn't load from folder shortcut #72
