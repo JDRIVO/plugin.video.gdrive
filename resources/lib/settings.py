@@ -69,8 +69,8 @@ def parse_query(query):
 
 plugin_queries = parse_query(sys.argv[2][1:])
 
-#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
-addon = xbmcaddon.Addon(id='plugin.video.gdrive')
+addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+#addon = xbmcaddon.Addon(id='plugin.video.gdrive')
 
 #
 #
