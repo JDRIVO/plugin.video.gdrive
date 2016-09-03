@@ -533,7 +533,8 @@ elif mode == 'main' or mode == 'index':
                 if service.gSpreadsheet is None:
                     service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
 
-                service.gSpreadsheet.updateMediaPackageList(service.worksheetID, folderID, mediaItems)
+                if service.worksheetID != '':
+                    service.gSpreadsheet.updateMediaPackageList(service.worksheetID, folderID, mediaItems)
 
             if mediaItems:
                 for item in sorted(mediaItems):
@@ -611,8 +612,7 @@ elif mode == 'kiosk':
                                 player.saveTime()
                                 xbmc.sleep(5000)
 
-##**
-
+##** not in use
 elif mode == 'photo':
 
     title = settings.getParameter('title',0)
@@ -1041,9 +1041,9 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             for file in files:
                 index = ''
                 if encfs_inode == 0:
-                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + file).st_ino())
+                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPathWithoutFilename) + file).st_ino())
                 else:
-                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPath) + file).st_ctime())
+                    index = str(xbmcvfs.Stat(encfs_target + str(dencryptedPathWithoutFilename) + file).st_ctime())
                 if index in fileListINodes.keys():
                     fileListINodes[index].file.decryptedTitle = file
                     if media_re.search(str(file)):
@@ -1078,8 +1078,9 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 #we found a file
                 if index in fileListINodes.keys():
                     xbmcvfs.rmdir(encfs_source + str(dir))
+                    addon.setSetting('encfs_last', str(encryptedPath) +str(title))
 
-                    service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', folderName=str(encfs_source) + str(dir), playback=resolvedPlayback,item=item, player=player)
+                    service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', folderName=str(encfs_source) + str(dir), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
 
             #already downloaded (partial or full)
             for file in files:
@@ -1092,16 +1093,16 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 if index in fileListINodes.keys():
                     #resume
                     if settings.encfsLast == str(encryptedPath) +str(title):
-                        service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=False,folderName=str(encfs_source) + str(file), playback=resolvedPlayback,item=item, player=player)
+                        service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=False,folderName=str(encfs_source) + str(file), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
 
                     #new file
                     else:
                         addon.setSetting('encfs_last', str(encryptedPath) +str(title))
 
-                        service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=True, folderName=str(encfs_source) + str(file), playback=resolvedPlayback,item=item, player=player)
+                        service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=True, folderName=str(encfs_source) + str(file), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
 
         else:
-            service.downloadEncfsFile(mediaURL, package, playbackURL=playbackTarget, folderName=str(encfs_source) + encryptedPath +str(title), playback=resolvedPlayback,item=item, player=player)
+            service.downloadEncfsFile(mediaURL, package, playbackURL=playbackTarget, folderName=str(encfs_source) + encryptedPath +str(title), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
 
 
             #should already be playing by this point, so don't restart it
@@ -1111,26 +1112,14 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 #            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
         # need to seek?
-        if seek > 0:
-            player.PlayStream(playbackTarget, item, seek, startPlayback=startPlayback, package=package)
-        elif float(package.file.resume) > 0:
-            player.PlayStream(playbackTarget, item, package.file.resume, startPlayback=startPlayback, package=package)
-        else:
-            player.PlayStream(playbackTarget, item, 0, startPlayback=startPlayback, package=package)
+        #if seek > 0:
+        #    player.PlayStream(playbackTarget, item, seek, startPlayback=startPlayback, package=package)
+        #elif float(package.file.resume) > 0:
+        #    player.PlayStream(playbackTarget, item, package.file.resume, startPlayback=startPlayback, package=package)
+        #else:
+        #    player.PlayStream(playbackTarget, item, 0, startPlayback=startPlayback, package=package)
 
-        # load captions
-        if (settings.srt or settings.cc) and service.protocol == 2:
-            while not (player.isPlaying()):
-                xbmc.sleep(1000)
 
-            for file in encfsSubTitles:
-                if file != '':
-                    try:
-                        file = file.decode('unicode-escape')
-                        file = file.encode('utf-8')
-                    except:
-                        pass
-                    player.setSubtitles(file)
 
 
         #loop until finished

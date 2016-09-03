@@ -98,6 +98,7 @@ class cache:
                 for file in cc:
                     if not xbmcvfs.exists(cachePath + str(file[0])):
                         service.downloadTTS(file[1], str(cachePath) + str(file[0]))
+                    self.srt.append(str(cachePath) + str(file[0]))
 
     ##
     #  fetch the SRT

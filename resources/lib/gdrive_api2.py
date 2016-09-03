@@ -722,8 +722,14 @@ class gdrive(cloudservice):
                 elif ((resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType) and contentType in (2,4,5,6,7)):
                     mediaFile = file.file(resourceID, title, title, self.MEDIA_TYPE_PICTURE, fanart, thumbnail, size=fileSize, download=url, checksum=md5)
 
+                    photoURL = url
+                    #*** downsize photo
+                    if width > self.settings.photoResolution:
+                        photoURL = re.sub('=s\d\d\d', '=s'+ str(self.settings.photoResolution), thumbnail)
+
+
                     media = package.package(mediaFile,folder.folder(folderName,''))
-                    media.setMediaURL(mediaurl.mediaurl(url, '','',''))
+                    media.setMediaURL(mediaurl.mediaurl(photoURL, '','',''))
                     return media
 
                 # entry is a photo, but we are not in a photo display
@@ -795,7 +801,7 @@ class gdrive(cloudservice):
 
     ##
     # retrieve a srt file for playback
-    #   parameters: title of the video file
+    #   parameters: package
     #   returns: download url for srt
     ##
     def getSRT(self, package):
@@ -808,16 +814,16 @@ class gdrive(cloudservice):
         # merge contribution by dabinn
         q = ''
         # search in current folder for SRT files
-        if package.folder is not None and (package.folder.id != False or package.folder.id != ''):
+        if package.folder is not None and (package.folder.id != False and  package.folder.id != ''):
 
             q = "'"+str(package.folder.id)+"' in parents"
-
+        else:
         # search for title in SRT file
-#        if package.file is not None and (package.file.title != False or package.file.title != ''):
-#            title = os.path.splitext(package.file.title)[0]
-#            if q != '':
-#                q = q + ' and '
-#            q = q + "title contains '" + str(title) + "'"
+            if package.file is not None and (package.file.title != False and package.file.title != ''):
+                title = os.path.splitext(package.file.title)[0]
+                if q != '':
+                    q = q + ' and '
+                q = q + "title contains '" + str(title) + "'"
 
         url = url + "?" + urllib.urlencode({'q':q})
 
@@ -924,9 +930,11 @@ class gdrive(cloudservice):
 
 
     ##
+    # Google Drive specific
+    #
     # retrieve tts file(s) for playback
     #  -- will download tts file(s) associated with the video to path
-    #   parameters: TTS Base URL
+    #   parameters: baseURL - TTS Base URL
     #   returns: nothing
     ##
     def getTTS(self, baseURL):
@@ -987,7 +995,7 @@ class gdrive(cloudservice):
     ##
     # retrieve the resource ID for root folder
     #   parameters: none
-    #   returns: resource ID
+    #   returns: resource ID for root
     ##
     def getRootID(self):
 
@@ -1044,7 +1052,7 @@ class gdrive(cloudservice):
         return resourceID
 
     ##
-    # retrieve the download URL for given docid
+    # retrieve the download URL for given resorce ID
     #   parameters: resource ID
     #   returns: download URL
     ##
@@ -1089,9 +1097,9 @@ class gdrive(cloudservice):
 
 
     ##
-    # retrieve the details for a file given docid
+    # retrieve the details for a file given resource ID
     #   parameters: resource ID
-    #   returns: download URL
+    #   returns: entry
     ##
     def getMediaDetails(self, docid):
 

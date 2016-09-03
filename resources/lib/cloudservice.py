@@ -494,7 +494,8 @@ class cloudservice(object):
                                     strmFile.write(url+'\n')
                                     strmFile.close()
 
-                        spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
+                        if spreadsheetFile is not None:
+                            spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
 
         elif mediaItems and encfs:
 
@@ -793,7 +794,7 @@ class cloudservice(object):
     # download/retrieve a media file
     #   parameters: whether to playback file, media url object, package object, whether to force download (overwrite), whether the file is encfs, folder name (option)
     ##
-    def downloadEncfsFile(self, mediaURL, package, playbackURL='', force=False, folderName='', playback=1,item='', player=None):
+    def downloadEncfsFile(self, mediaURL, package, playbackURL='', force=False, folderName='', playback=1,item='', player=None, srt=None):
 
         progress = ''
         cachePercent = int(self.settings.encfsCachePercent)
@@ -838,6 +839,8 @@ class cloudservice(object):
                 progressBar = fileSize
                 progress.create(self.addon.getLocalizedString(30035), playbackURL)
 
+
+            downloadedBytes = 0
 
             #seek to end of file for append
             # - must use python for append (xbmcvfs not supported)
@@ -884,14 +887,13 @@ class cloudservice(object):
                     self.crashreport.sendError('downloadMediaFile',str(e))
                     return
 
-            downloadedBytes = 0
-            while sizeDownload > downloadedBytes:
-                if not self.settings.encfsStream and not self.settings.encfsCacheSingle:
-                    progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30035))
-                chunk = response.read(CHUNK)
-                if not chunk: break
-                f.write(chunk)
-                downloadedBytes = downloadedBytes + CHUNK
+                while sizeDownload > downloadedBytes:
+                    if not self.settings.encfsStream and not self.settings.encfsCacheSingle:
+                        progress.update((int)(float(downloadedBytes)/progressBar*100),self.addon.getLocalizedString(30035))
+                    chunk = response.read(CHUNK)
+                    if not chunk: break
+                    f.write(chunk)
+                    downloadedBytes = downloadedBytes + CHUNK
 
         if playbackURL != '':
 
@@ -904,9 +906,23 @@ class cloudservice(object):
                 #else:
                     #xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
                 #player.PlayStream(playbackURL, item, package.file.resume, startPlayback=True, package=package)
-                while not (player.isPlaying()) and not player.isExit:
-                    xbmc.sleep(1000)
+#                while not (player.isPlaying()) and not player.isExit:
+#                    xbmc.sleep(1000)
                     #print str(player.playStatus)
+
+                    # load captions
+            if (self.settings.srt or self.settings.cc):
+                while not (player.isPlaying()):
+                    xbmc.sleep(1000)
+
+                for file in srt:
+                    if file != '':
+                        try:
+                            file = file.decode('unicode-escape')
+                            file = file.encode('utf-8')
+                        except:
+                            pass
+                        player.setSubtitles(file)
         try:
             count =1
             while True:
@@ -1295,7 +1311,10 @@ class cloudservice(object):
             playbackURL = '?mode=photo'
 #            listitem.setProperty('IsPlayable', 'false')
             listitem.setProperty('IsPlayable', 'true')
-            url = package.file.download+'|' + self.getHeadersEncoded()
+            if package.mediaurl.url != '':
+                url = package.mediaurl.url +'|' + self.getHeadersEncoded()
+            else:
+                url = package.file.download+'|' + self.getHeadersEncoded()
             xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=False, totalItems=0)
             return url

@@ -100,6 +100,23 @@ class settings:
         self.seek = getParameter('seek', 0)
         self.trace = getSetting('trace', False)
 
+        self.photoResolution = int(self.getSetting('photo_resolution', 0))
+        if self.photoResolution == 0:
+            self.photoResolution = 1280
+        elif self.photoResolution == 1:
+            self.photoResolution = 1920
+        elif self.photoResolution == 2:
+            self.photoResolution = 3840
+        elif self.photoResolution == 3:
+            self.photoResolution = 7680
+        elif self.photoResolution == 4:
+            self.photoResolution = 15360
+        elif self.photoResolution == 5:
+            self.photoResolution = 720
+        else:
+            self.photoResolution = 99999
+
+
 
     def setVideoParameters(self):
         self.resume = getParameter('resume', False)
