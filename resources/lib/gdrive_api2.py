@@ -470,11 +470,80 @@ class gdrive(cloudservice):
         return mediaFiles
 
 
+    ##
+    # retrieve a list of changes
+    #   parameters: prompt for video quality (optional)
+    #   returns: list of packages (file, folder)
+    ##
+    def getChangeList(self, contentType=7, nextPage=''):
+
+        # retrieve all items
+        url = self.API_URL +'changes/'
+
+        url = url + "?includeDeleted=false&includeSubscribed=false&includeSubscribed=1000"
+
+        if (nextPage != ''):
+            url = url + '&startChangeId=' + str(nextPage)
+
+        while True:
+            mediaFiles = []
+
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.refreshToken()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                  self.crashreport.sendError('getChangeList',str(e))
+                  return
+              else:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getChangeList',str(e))
+                return
+
+            response_data = response.read()
+            response.close()
+
+            # parsing page for videos
+            # video-entry
+            for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\}\s+\]\s+\}' ,response_data, re.DOTALL):
+                entryS = r2.group(1)
+
+                for r1 in re.finditer('\{(.*?)\"spaces\"\:' , entryS, re.DOTALL):
+                    entry = r1.group(1)
+                    media = self.getMediaPackage(entry, folderName=folderName, contentType=contentType, fanart=folderFanart, icon=folderIcon)
+                    if media is not None:
+                        mediaFiles.append(media)
+
+            # look for more pages of videos
+            nextURL = ''
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                nextURL = r.group(1)
+
+
+            return (mediaItems, nextURL)
+            # are there more pages to process?
+            if nextURL == '':
+                break
+            else:
+                url = nextURL
+
+
+
 
     ##
     # retrieve a list of videos, using playback type stream
     #   parameters: prompt for video quality (optional), cache type (optional)
     #   returns: list of videos
+    ### *** looks like this does nothing?
     ##
     def getOfflineMediaList(self, folderName=False, title=False, contentType=7):
 
