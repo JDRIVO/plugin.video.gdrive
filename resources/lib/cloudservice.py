@@ -629,79 +629,79 @@ class cloudservice(object):
         import xbmcvfs
         xbmcvfs.mkdir(path)
 
-        (mediaItems, nextURL) = self.getChangeList(contentType=contentType)
+        count = 0
+        while True:
+            (mediaItems, nextURL) = self.getChangeList(contentType=contentType)
 
-        if mediaItems:
-            for item in mediaItems:
+            if mediaItems:
+                for item in mediaItems:
+                    url = ''
+                    if item.file is not None:
+                        count = count + 1
 
-                url = 0
-                if item.file is None:
-                    self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile)
-                else:
-                    #'content_type': 'video',
-                    values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
-                    if item.file.type == 1:
-                        url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
-                    else:
-                        url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
+                        #'content_type': 'video',
+                        values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
+                        if item.file.type == 1:
+                            url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
+                        else:
+                            url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
 
-                    #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
+                        #url = self.PLUGIN_URL+'?mode=video&title='+str(item.file.title)+'&filename='+str(item.file.id)+ '&username='+str(self.authorization.username)
 
+                        title = item.file.title
 
-                if url != 0:
-                    title = item.file.title
+                        if pDialog is not None:
+                            pDialog.update(message='STRMs created '+str(count))
 
-                    if pDialog is not None:
-                        pDialog.update(message=title)
+                        if not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm'):
+                            filename = str(path) + '/' + str(title)+'.strm'
+                            strmFile = xbmcvfs.File(filename, "w")
 
-                    if not xbmcvfs.exists(str(path) + '/' + str(title)+'.strm'):
-                        filename = str(path) + '/' + str(title)+'.strm'
-                        strmFile = xbmcvfs.File(filename, "w")
+                            strmFile.write(url+'\n')
+                            strmFile.close()
 
-                        strmFile.write(url+'\n')
-                        strmFile.close()
+                            episode = ''
+                            # nekwebdev contribution
+                            if self.addon.getSetting('tvshows_path') != '' or self.addon.getSetting('movies_path') != '':
+                                pathLib = ''
 
-                        episode = ''
-                        # nekwebdev contribution
-                        if self.addon.getSetting('tvshows_path') != '' or self.addon.getSetting('movies_path') != '':
-                            pathLib = ''
+                                regmovie = re.compile('(.*?\(\d{4}\))'
+                                                  '.*?'
+                                                  '(?:(\d{3}\d?p)|\Z)?')
 
-                            regmovie = re.compile('(.*?\(\d{4}\))'
-                                              '.*?'
-                                              '(?:(\d{3}\d?p)|\Z)?')
+                                tv = item.file.regtv1.match(title)
+                                if not tv:
+                                    tv = item.file.regtv2.match(title)
+                                if not tv:
+                                    tv = item.file.regtv3.match(title)
 
-                            tv = item.file.regtv1.match(title)
-                            if not tv:
-                                tv = item.file.regtv2.match(title)
-                            if not tv:
-                                tv = item.file.regtv3.match(title)
+                                if tv and self.addon.getSetting('tvshows_path') != '':
+                                    show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
+                                    show = show.rstrip("\.")
+                                    season = tv.group(2)
+                                    episode = tv.group(3)
+                                    pathLib = self.addon.getSetting('tvshows_path') + '/' + show
+                                    if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                        xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                    pathLib = pathLib + '/Season ' + season
+                                    if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                        xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                elif self.addon.getSetting('movies_path') != '':
+                                    movie = regmovie.match(title)
+                                    if movie:
+                                        pathLib = self.addon.getSetting('movies_path')
 
-                            if tv and self.addon.getSetting('tvshows_path') != '':
-                                show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
-                                show = show.rstrip("\.")
-                                season = tv.group(2)
-                                episode = tv.group(3)
-                                pathLib = self.addon.getSetting('tvshows_path') + '/' + show
-                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                                pathLib = pathLib + '/Season ' + season
-                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                            elif self.addon.getSetting('movies_path') != '':
-                                movie = regmovie.match(title)
-                                if movie:
-                                    pathLib = self.addon.getSetting('movies_path')
+                                if pathLib != '':
+                                    if not xbmcvfs.exists(pathLib + '/' + str(title)+'.strm'):
+                                        filename = str(pathLib) + '/' + str(title)+'.strm'
+                                        strmFile = xbmcvfs.File(filename, "w")
+                                        strmFile.write(url+'\n')
+                                        strmFile.close()
 
-                            if pathLib != '':
-                                if not xbmcvfs.exists(pathLib + '/' + str(title)+'.strm'):
-                                    filename = str(pathLib) + '/' + str(title)+'.strm'
-                                    strmFile = xbmcvfs.File(filename, "w")
-                                    strmFile.write(url+'\n')
-                                    strmFile.close()
-
-                        if spreadsheetFile is not None:
-                            spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
-
+                            if spreadsheetFile is not None:
+                                spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
+            if nextURL == '' or nextURL is None:
+                break
 
 
     ##
