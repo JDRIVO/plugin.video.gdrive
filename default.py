@@ -116,6 +116,7 @@ xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 
 numberOfAccounts = cloudservice.numberOfAccounts(PLUGIN_NAME)
+invokedUsername = settings.getParameter('username')
 
 # cloudservice - utilities
 ###
@@ -274,8 +275,51 @@ elif mode == 'buildstrm':
 
 ###
 
+#create strm files
+elif mode == 'buildstrm2':
 
-invokedUsername = settings.getParameter('username')
+    silent = settings.getParameter('silent', settings.getSetting('strm_silent',0))
+    if silent == '':
+        silent = 0
+
+    try:
+        path = settings.getSetting('strm_path')
+    except:
+        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+        addon.setSetting('strm_path', path)
+
+    if path == '':
+        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+        addon.setSetting('strm_path', path)
+
+    if path != '':
+        returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
+
+
+    if path != '' and returnPrompt:
+
+        try:
+            pDialog = xbmcgui.DialogProgressBG()
+            pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
+        except:
+            pass
+
+
+        service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+
+        service.buildSTRM2(path, contentType=contentType, pDialog=pDialog)
+
+
+        try:
+            pDialog.update(100)
+            pDialog.close()
+        except:
+            pass
+    xbmcplugin.endOfDirectory(plugin_handle)
+
+###
+
+
 instanceName = cloudservice.getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, numberOfAccounts, contextType)
 
 service = None
@@ -413,6 +457,7 @@ elif mode == 'main' or mode == 'index':
         kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=SHARED&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30098)+']')
         kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
         kodi_common.addMenu(PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
+        kodi_common.addMenu(PLUGIN_URL+'?mode=buildstrm2&instance='+str(service.instanceName)+'&content_type='+str(contextType),'<Testing - Change Tracking Build STRM>')
 
         #CLOUD_DB
         if service.gSpreadsheet is not None:

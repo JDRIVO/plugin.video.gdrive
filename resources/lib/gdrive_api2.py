@@ -518,7 +518,7 @@ class gdrive(cloudservice):
 
                 for r1 in re.finditer('\{(.*?)\"spaces\"\:' , entryS, re.DOTALL):
                     entry = r1.group(1)
-                    media = self.getMediaPackage(entry, folderName=folderName, contentType=contentType, fanart=folderFanart, icon=folderIcon)
+                    media = self.getMediaPackage(entry, contentType=contentType)
                     if media is not None:
                         mediaFiles.append(media)
 
@@ -529,7 +529,7 @@ class gdrive(cloudservice):
                 nextURL = r.group(1)
 
 
-            return (mediaItems, nextURL)
+            return (mediaFiles, nextURL)
             # are there more pages to process?
             if nextURL == '':
                 break
