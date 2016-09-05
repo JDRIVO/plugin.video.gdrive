@@ -475,15 +475,21 @@ class gdrive(cloudservice):
     #   parameters: prompt for video quality (optional)
     #   returns: list of packages (file, folder)
     ##
-    def getChangeList(self, contentType=7, nextPage=''):
+    def getChangeList(self, contentType=7, nextPage='', changeToken=''):
 
-        # retrieve all items
-        url = self.API_URL +'changes/'
 
-        url = url + "?includeDeleted=false&includeSubscribed=false&includeSubscribed=1000"
+        url = ''
+        if nextPage == '':
 
-        if (nextPage != ''):
-            url = url + '&startChangeId=' + str(nextPage)
+            # retrieve all items
+            url = self.API_URL +'changes/'
+
+            url = url + "?includeDeleted=false&includeSubscribed=false&includeSubscribed=1000"
+
+            if (changeToken != ''):
+                url = url + '&startChangeId=' + str(changeToken)
+        else:
+            url = nextPage
 
         nextURL = ''
         nextPageToken = ''
@@ -530,10 +536,13 @@ class gdrive(cloudservice):
                              response_data, re.DOTALL):
                 nextURL = r.group(1)
 
-            # look for more pages of videos
-            for r in re.finditer('\"nextPageToken\"\:\s+\"([^\"]+)\"' ,
-                             response_data, re.DOTALL):
-                nextPageToken = r.group(1)
+            ## look for more pages of videos
+            #for r in re.finditer('\"nextPageToken\"\:\s+\"([^\"]+)\"' ,
+            #                 response_data, re.DOTALL):
+            #    nextPageToken = r.group(1)
+
+
+            return (mediaFiles, nextURL)
 
             # are there more pages to process?
             if nextURL == '':
