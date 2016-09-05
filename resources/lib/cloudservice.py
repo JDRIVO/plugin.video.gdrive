@@ -639,10 +639,14 @@ class cloudservice(object):
         xbmcvfs.mkdir(videoPath)
         xbmcvfs.mkdir(moviePath)
 
+        changeToken = self.addon.getSetting(self.instanceName+'_changetoken')
+
+
         count = 0
         nextPageToken = ''
+        largestChangeId = ''
         while True:
-            (mediaItems, nextPageToken) = self.getChangeList(contentType=contentType, nextPage=nextPageToken)
+            (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(contentType=contentType, nextPage=nextPageToken, changeToken=changeToken)
 
             if mediaItems:
                 for item in mediaItems:
@@ -714,6 +718,8 @@ class cloudservice(object):
                                 spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
             if nextPageToken == '' or nextPageToken is None:
                 break
+        self.addon.setSetting(instanceName + '_changetoken', largestChangeId)
+
 
 
     ##

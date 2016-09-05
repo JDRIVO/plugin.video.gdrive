@@ -278,25 +278,13 @@ elif mode == 'buildstrm':
 #create strm files
 elif mode == 'buildstrm2':
 
-    silent = settings.getParameter('silent', settings.getSetting('strm_silent',0))
-    if silent == '':
-        silent = 0
-
     try:
         path = settings.getSetting('strm_path')
     except:
-        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
-        addon.setSetting('strm_path', path)
+        pass
 
-    if path == '':
-        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
-        addon.setSetting('strm_path', path)
 
     if path != '':
-        returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
-
-
-    if path != '' and returnPrompt:
 
         try:
             pDialog = xbmcgui.DialogProgressBG()
@@ -1541,6 +1529,36 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             while not player.isExit:
                 player.saveTime()
                 xbmc.sleep(5000)
+
+
+#automation - create strm files
+if service is not None:
+
+    try:
+        path = settings.getSetting('strm_path')
+    except:
+        pass
+
+
+    if path != '':
+
+        try:
+            pDialog = xbmcgui.DialogProgressBG()
+            pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
+        except:
+            pass
+
+
+        #service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+
+        service.buildSTRM2(path, contentType=contentType, pDialog=pDialog)
+
+
+        try:
+            pDialog.update(100)
+            pDialog.close()
+        except:
+            pass
 
 xbmcplugin.endOfDirectory(plugin_handle)
 

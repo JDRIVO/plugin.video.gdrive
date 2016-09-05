@@ -532,6 +532,11 @@ class gdrive(cloudservice):
                         mediaFiles.append(media)
 
             # look for more pages of videos
+            for r in re.finditer('\"largestChangeId\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                largestChangeId = r.group(1)
+
+            # look for more pages of videos
             for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
                 nextURL = r.group(1)
@@ -542,7 +547,7 @@ class gdrive(cloudservice):
             #    nextPageToken = r.group(1)
 
 
-            return (mediaFiles, nextURL)
+            return (mediaFiles, nextURL, largestChangeId)
 
             # are there more pages to process?
             if nextURL == '':
