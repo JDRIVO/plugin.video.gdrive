@@ -479,6 +479,7 @@ class gdrive(cloudservice):
 
 
         url = ''
+        maxChangeID = 0;
         if nextPage == '':
 
             # retrieve all items
@@ -527,12 +528,17 @@ class gdrive(cloudservice):
 
                 for r1 in re.finditer('\{(.*?)\"spaces\"\:' , entryS, re.DOTALL):
                     entry = r1.group(1)
+                    for r in re.finditer('\"id\"\:\s+\"(\d+)\"' ,
+                             entry, re.DOTALL):
+                        id = r.group(1)
+                        if id > maxChangeID:
+                            maxChangeID = id
                     media = self.getMediaPackage(entry, contentType=contentType)
                     if media is not None:
                         mediaFiles.append(media)
 
             # look for more pages of videos
-            for r in re.finditer('\"largestChangeId\"\:\s+\"([^\"]+)\"' ,
+            for r in re.finditer('\"largestChangeId\"\:\s+\"(\d)\"' ,
                              response_data, re.DOTALL):
                 largestChangeId = r.group(1)
 
@@ -547,7 +553,7 @@ class gdrive(cloudservice):
             #    nextPageToken = r.group(1)
 
 
-            return (mediaFiles, nextURL, largestChangeId)
+            return (mediaFiles, nextURL, maxChangeID)
 
             # are there more pages to process?
             if nextURL == '':
@@ -555,7 +561,7 @@ class gdrive(cloudservice):
             else:
                 url = nextURL
 
-        return (mediaFiles, nextPageToken)
+        return (mediaFiles, nextURL, maxChangeID)
 
 
 

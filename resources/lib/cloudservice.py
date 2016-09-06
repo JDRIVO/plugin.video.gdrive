@@ -716,9 +716,10 @@ class cloudservice(object):
 
                             if spreadsheetFile is not None:
                                 spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
+            self.addon.setSetting(self.instanceName + '_changetoken', largestChangeId)
+
             if nextPageToken == '' or nextPageToken is None:
                 break
-        self.addon.setSetting(instanceName + '_changetoken', largestChangeId)
 
 
 
