@@ -485,7 +485,7 @@ class gdrive(cloudservice):
             # retrieve all items
             url = self.API_URL +'changes/'
 
-            url = url + "?includeDeleted=false&includeSubscribed=false&includeSubscribed=1000"
+            url = url + "?includeDeleted=false&includeSubscribed=false&maxResults=1000"
 
             if (changeToken != ''):
                 url = url + '&startChangeId=' + str(changeToken)
