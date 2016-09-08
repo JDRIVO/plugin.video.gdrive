@@ -485,9 +485,9 @@ class gdrive(cloudservice):
             # retrieve all items
             url = self.API_URL +'changes/'
 
-            url = url + "?includeDeleted=false&includeSubscribed=false&maxResults=1000"
-
-            if (changeToken != ''):
+#            url = url + "?includeDeleted=false&includeSubscribed=false&maxResults=1000"
+            url = url + "?includeDeleted=true&includeSubscribed=false&maxResults=1000"
+            if (changeToken != '' and nextPage == ''):
                 url = url + '&startChangeId=' + str(changeToken)
         else:
             url = nextPage
@@ -684,6 +684,7 @@ class gdrive(cloudservice):
                 thumbnail = ''
                 fileExtension = ''
                 md5 = ''
+                deleted = False
 
                 url = ''
                 for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
@@ -727,6 +728,11 @@ class gdrive(cloudservice):
                 for r in re.finditer('\"width\"\:\s+(\d+)' ,
                              entry, re.DOTALL):
                   width = r.group(1)
+                  break
+
+                for r in re.finditer('\"deleted\"\:\s+true,' ,
+                             entry, re.DOTALL):
+                  deleted = True
                   break
 
                 # file property - gdrive
@@ -782,6 +788,9 @@ class gdrive(cloudservice):
 
                             mediaFile.setTVMeta(show,season,episode,showtitle)
 
+
+                    if deleted:
+                        mediaFile.deleted = True
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
 
@@ -811,6 +820,8 @@ class gdrive(cloudservice):
                             mediaFile.setAlbumMeta(album,artist,'',track,'', trackTitle)
                             break
 
+                    if deleted:
+                        mediaFile.deleted = True
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
                     return media

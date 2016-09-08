@@ -1,3 +1,4 @@
+- implement deletion function - automation of creation of STRM #62
 v0.8.06 (2016-09-05)
 - implement for testing: automation of creation of STRM #62
 v0.8.05 (2016-09-02)

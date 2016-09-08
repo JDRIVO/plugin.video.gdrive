@@ -661,9 +661,11 @@ class cloudservice(object):
                         values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
                         if item.file.type == 1:
                             url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
+                            filename = musicPath + '/' + str(title)+'.strm'
 
-                            if not xbmcvfs.exists(musicPath + '/' + str(title)+'.strm'):
-                                filename = musicPath + '/' + str(title)+'.strm'
+                            if item.file.deleted and xbmcvfs.exists(filename):
+                                xbmcvfs.delete(filename)
+                            elif not item.file.deleted  and not xbmcvfs.exists(filename):
                                 strmFile = xbmcvfs.File(filename, "w")
 
                                 strmFile.write(url+'\n')
@@ -708,8 +710,10 @@ class cloudservice(object):
                                     pathLib = videoPath
 
                             if pathLib != '':
-                                if not xbmcvfs.exists(pathLib + '/' + str(title)+'.strm'):
-                                    filename = str(pathLib) + '/' + str(title)+'.strm'
+                                filename = str(pathLib) + '/' + str(title)+'.strm'
+                                if item.file.deleted and xbmcvfs.exists(filename):
+                                    xbmcvfs.delete(filename)
+                                elif not item.file.deleted and not xbmcvfs.exists(filename):
                                     strmFile = xbmcvfs.File(filename, "w")
                                     strmFile.write(url+'\n')
                                     strmFile.close()

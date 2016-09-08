@@ -67,6 +67,7 @@ class file:
         self.isTV = False
         self.isMovie = False
         self.cloudResume = 0
+        self.deleted = False
 
 
         # nekwebdev contribution
