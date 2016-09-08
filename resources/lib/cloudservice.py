@@ -646,7 +646,7 @@ class cloudservice(object):
         nextPageToken = ''
         largestChangeId = ''
         while True:
-            (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(contentType=contentType, nextPage=nextPageToken, changeToken=changeToken)
+            (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)
 
             if mediaItems:
                 for item in mediaItems:

@@ -475,22 +475,21 @@ class gdrive(cloudservice):
     #   parameters: prompt for video quality (optional)
     #   returns: list of packages (file, folder)
     ##
-    def getChangeList(self, contentType=7, nextPage='', changeToken=''):
+    def getChangeList(self, contentType=7, nextPageToken='', changeToken=''):
 
 
         url = ''
         maxChangeID = 0;
-        if nextPage == '':
-
-            # retrieve all items
-            url = self.API_URL +'changes/'
+        # retrieve all items
+        url = self.API_URL +'changes'
 
 #            url = url + "?includeDeleted=false&includeSubscribed=false&maxResults=1000"
-            url = url + "?includeDeleted=true&includeSubscribed=false&maxResults=1000"
-            if (changeToken != '' and nextPage == ''):
-                url = url + '&startChangeId=' + str(changeToken)
-        else:
-            url = nextPage
+        url = url + "?includeDeleted=true&includeSubscribed=false&maxResults=1000"
+        if (changeToken != ''):
+            url = url + '&startChangeId=' + str(changeToken)
+        if (nextPageToken != ''):
+            url = url + '&pageToken=' + str(nextPageToken)
+
 
         nextURL = ''
         nextPageToken = ''
@@ -548,12 +547,12 @@ class gdrive(cloudservice):
                 nextURL = r.group(1)
 
             ## look for more pages of videos
-            #for r in re.finditer('\"nextPageToken\"\:\s+\"([^\"]+)\"' ,
-            #                 response_data, re.DOTALL):
-            #    nextPageToken = r.group(1)
+            for r in re.finditer('\"nextPageToken\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                nextPageToken = r.group(1)
 
 
-            return (mediaFiles, nextURL, maxChangeID)
+            return (mediaFiles, nextPageToken, maxChangeID)
 
             # are there more pages to process?
             if nextURL == '':
@@ -561,7 +560,7 @@ class gdrive(cloudservice):
             else:
                 url = nextURL
 
-        return (mediaFiles, nextURL, maxChangeID)
+        return (mediaFiles, nextPageToken, maxChangeID)
 
 
 
