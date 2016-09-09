@@ -484,7 +484,7 @@ class gdrive(cloudservice):
         url = self.API_URL +'changes'
 
 #            url = url + "?includeDeleted=false&includeSubscribed=false&maxResults=1000"
-        url = url + "?includeDeleted=true&includeSubscribed=false&maxResults=1000"
+        url = url + "?includeDeleted=true&includeSubscribed=false&maxResults=300"
         if (changeToken != ''):
             url = url + '&startChangeId=' + str(changeToken)
         if (nextPageToken != ''):
@@ -493,7 +493,6 @@ class gdrive(cloudservice):
 
         nextURL = ''
         nextPageToken = ''
-
         while True:
             mediaFiles = []
 
@@ -502,6 +501,7 @@ class gdrive(cloudservice):
             # if action fails, validate login
             try:
               response = urllib2.urlopen(req)
+              xbmc.sleep(5000)
             except urllib2.URLError, e:
               if e.code == 403 or e.code == 401:
                 self.refreshToken()
@@ -551,7 +551,7 @@ class gdrive(cloudservice):
                              response_data, re.DOTALL):
                 nextPageToken = r.group(1)
 
-
+            print 'nextPageToken = '+ str(nextPageToken) + ' nextPageToken = ' + str(maxChangeID) + "\n"
             return (mediaFiles, nextPageToken, maxChangeID)
 
             # are there more pages to process?
@@ -709,6 +709,7 @@ class gdrive(cloudservice):
                 for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   url = r.group(1)
+                  url = self.API_URL +'files/' + str(resourceID) + '?alt=media'
                   break
                 for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
@@ -1165,6 +1166,10 @@ class gdrive(cloudservice):
     ##
     def getDownloadURL(self, docid):
 
+            url = self.API_URL +'files/' + str(docid) + '?alt=media'
+
+            return url
+
             url = self.API_URL +'files/' + docid
 
             req = urllib2.Request(url, None, self.getHeadersList())
@@ -1355,6 +1360,12 @@ class gdrive(cloudservice):
 
         # encryption?
         if package is None:
+
+
+            # new method of fetching original stream -- using alt=media
+            url = self.API_URL +'files/' + str(docid) + '?alt=media'
+            mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
+
             return (mediaURLs, package)
 
         # there are no streams for music

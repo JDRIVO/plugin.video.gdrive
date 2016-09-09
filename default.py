@@ -317,11 +317,11 @@ if mode == 'buildstrm2':
 
         #service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
-        try:
-            addon.setSetting(instanceName + '_changedate', currentDate)
-            service.buildSTRM2(path, contentType=contentType, pDialog=pDialog)
-        except:
-            pass
+#        try:
+        addon.setSetting(instanceName + '_changedate', currentDate)
+        service.buildSTRM2(path, contentType=contentType, pDialog=pDialog)
+#        except:
+#            pass
 
         try:
             pDialog.update(100)
