@@ -30,13 +30,13 @@
     <string id="30025">Videos</string>
     <string id="30029">Photos</string>
     <string id="30030">Media</string>
-    <string id="30031">Video and Music</string>
+    <string id="30031">Video / Music</string>
     <string id="30032">Music and Photos</string>
     <string id="30034">Photos</string>
     <string id="30037">Context</string>
-    <string id="30038">Photo offline/cache folder</string>
+    <string id="30038">Photo offline folder</string>
 
-    <string id="30090">Location to store cache files</string>
+    <string id="30090">Location to store offline files</string>
     <string id="30091">Chunk size</string>
     <string id="30092">Downloading...</string>
     <string id="30035">Caching...</string>
@@ -92,14 +92,14 @@
 
     <string id="30113">Make offline</string>
 
-    <string id="30114">Downloads and Cache</string>
+    <string id="30114">Downloads</string>
     <string id="30115">Stream Perferences</string>
-    <string id="30116">Cache</string>
+    <string id="30116">Offline</string>
     <string id="30117">Listings</string>
-    <string id="30121">Always cache for playback</string>
+    <string id="30121">Always make offline for playback</string>
     <string id="30122">Never transcode</string>
     <string id="30123">Play original</string>
-	<string id="30124">Play + cache</string>
+	<string id="30124">Play + make offline</string>
 	<string id="30125">Play offline</string>
 	<string id="30126">Slideshow</string>
 
@@ -111,8 +111,8 @@
 	<string id="30132">Force into single file</string>
 	<string id="30133">Hide "opening stream..." dialogs</string>
 	<string id="30134">Advance</string>
-	<string id="30135">Subtitle cache folder</string>
-	<string id="30136">Select a subtitle cache folder</string>
+	<string id="30135">Subtitle offline folder</string>
+	<string id="30136">Select a subtitle offline folder</string>
 	<string id="30137">Do you want to create the subtitles files in the path</string>
 	<string id="30138">Play with subtitles</string>
 	<string id="30139">Select a subtitle</string>
@@ -174,8 +174,8 @@
 	<string id="30178">Mark as Watched</string>
 	<string id="30179">Queue</string>
 	<string id="30180">Sort by</string>
-	<string id="30181">Cache SRT</string>
-	<string id="30182">Cache Thumbnails</string>
+	<string id="30181">Offline SRT</string>
+	<string id="30182">Offline Thumbnails</string>
 	<string id="30183">Choose SRT file to load</string>
 
 	<string id="30184">Enable trace logging</string>

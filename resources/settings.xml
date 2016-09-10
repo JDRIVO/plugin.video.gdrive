@@ -142,12 +142,11 @@
 
 	<!-- cache properties -->
     <category label="30116">
+        <setting id="cache_folder" type="folder" label="30090" default="" />
+    	<setting id="cache_thumbnails" type="bool" subsetting="true" label="30182" default="false" />
+    	<setting id="cache_srt" type="bool" subsetting="true" label="30181" default="false" />
         <setting label="30031" type="lsep"/>
     	<setting id="always_cache" type="bool" subsetting="true" label="30121" default="false" />
-    	<setting id="cache_srt" type="bool" subsetting="true" label="30181" default="false" />
-    	<setting id="cache_thumbnails" type="bool" subsetting="true" label="30182" default="false" />
-
-        <setting id="cache_folder" type="folder" subsetting="true" label="30090" default="" />
         <setting id="cache_single" type="bool" subsetting="true" label="30132" default="false" />
         <setting id="cache_continue" type="bool" subsetting="true" label="30174" default="false" />
         <setting id="chunk_size" type="enum" subsetting="true" label="30091" values="32224|32768|262144|1048576" default="2" />

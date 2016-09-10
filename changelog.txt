@@ -1,3 +1,4 @@
+- clarify cache ==> offline
 v0.8.08 (2016-09-09)
 - add timeouts for automation of creation of STRM #62
 v0.8.07 (2016-09-08)
