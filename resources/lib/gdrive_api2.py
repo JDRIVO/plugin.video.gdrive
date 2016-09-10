@@ -503,6 +503,7 @@ class gdrive(cloudservice):
               response = urllib2.urlopen(req)
               xbmc.sleep(5000)
             except urllib2.URLError, e:
+
               if e.code == 403 or e.code == 401:
                 self.refreshToken()
                 req = urllib2.Request(url, None, self.getHeadersList())
@@ -516,7 +517,8 @@ class gdrive(cloudservice):
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                 self.crashreport.sendError('getChangeList',str(e))
                 return
-
+            except socket.timeout, e:
+                return ([],nextPageToken,changeToken)
             response_data = response.read()
             response.close()
 
