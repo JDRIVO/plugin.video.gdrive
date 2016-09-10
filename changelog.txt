@@ -1,3 +1,5 @@
+v0.8.08 (2016-09-09)
+- add timeouts for automation of creation of STRM #62
 v0.8.07 (2016-09-08)
 - implement deletion function - automation of creation of STRM #62
 - reliablity improvements for automation of creation of STRM #62

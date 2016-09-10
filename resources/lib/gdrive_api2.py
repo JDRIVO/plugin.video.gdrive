@@ -23,6 +23,8 @@ import os
 import re
 import sys
 import urllib, urllib2
+import socket
+
 import cookielib
 import unicodedata
 
@@ -509,6 +511,8 @@ class gdrive(cloudservice):
                 req = urllib2.Request(url, None, self.getHeadersList())
                 try:
                   response = urllib2.urlopen(req)
+                except socket.timeout, e:
+                    return ([],nextPageToken,changeToken)
                 except urllib2.URLError, e:
                   xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                   self.crashreport.sendError('getChangeList',str(e))
