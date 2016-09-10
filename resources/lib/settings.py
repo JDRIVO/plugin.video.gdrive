@@ -93,9 +93,9 @@ class settings:
         self.parseTV = self.getSetting('parse_tv', True)
         self.parseMusic = self.getSetting('parse_music', True)
         self.skipResume = self.getSetting('video_skip', 0.98)
-        self.cloudResume = self.getSetting('resumepoint', 0)
+#        self.cloudResume = self.getSetting('resumepoint', 0)
         self.cloudResumePrompt = self.getSetting('resumeprompt', False)
-        self.cloudSpreadsheet = self.getSetting('library_filename', 'CLOUD_DB')
+#        self.cloudSpreadsheet = self.getSetting('library_filename', 'CLOUD_DB')
 
         self.seek = getParameter('seek', 0)
         self.trace = getSetting('trace', False)

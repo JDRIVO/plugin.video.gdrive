@@ -213,7 +213,7 @@ elif mode == 'buildstrm':
 
 
 
-                if settings.cloudResume == '2':
+                if service.cloudResume == '2':
                     spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
                     service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile)
                     spreadsheetFile.close()
@@ -374,7 +374,7 @@ elif mode == 'cloud_db':
     package=package.package(mediaFile,mediaFolder)
 
         # TESTING
-    if settings.cloudResume == '2':
+    if service.cloudResume == '2':
         if service.worksheetID == '':
 
             try:
@@ -396,7 +396,7 @@ elif mode == 'cloud_db':
                 break
 
         # TESTING
-    if settings.cloudResume == '2':
+    if service.cloudResume == '2':
 
         if service.gSpreadsheet is None:
             service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
@@ -572,7 +572,7 @@ elif mode == 'main' or mode == 'index':
         # real folder
         if folderID != '':
             mediaItems = service.getMediaList(folderID,contentType=contentType)
-            if settings.cloudResume == '2':
+            if service.cloudResume == '2':
 
                 if service.gSpreadsheet is None:
                     service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
@@ -1268,7 +1268,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             # right-click - download (download only + force)
             if not seek > 0 and not (settings.download and not settings.play):
                     # TESTING
-                if settings.cloudResume == '2':
+                if service.cloudResume == '2':
                     if service.worksheetID == '':
 
                         try:
@@ -1290,7 +1290,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                             break
 
                     # TESTING
-                if settings.cloudResume == '2':
+                if service.cloudResume == '2':
 
                     if service.gSpreadsheet is None:
                         service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)

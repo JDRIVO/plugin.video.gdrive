@@ -114,7 +114,9 @@ class gdrive(cloudservice):
         self.cache = cache.cache()
 
 
-        if settings.cloudResume == '2':
+        self.cloudResume = self.addon.getSetting(self.instanceName+'_resumepoint',0)
+
+        if self.cloudResume == '2':
             if self.worksheetID == '':
 
                 try:
@@ -655,7 +657,7 @@ class gdrive(cloudservice):
                             folderIcon = foldericon + '|' + self.getHeadersEncoded()
 
                     # file property - gdrive
-                    if self.settings.cloudResume == 1:
+                    if self.cloudResume == 1:
                         self.setProperty(folderName,'icon', 1)
 
             # look for more pages of videos
@@ -744,7 +746,7 @@ class gdrive(cloudservice):
                 # file property - gdrive
                 resume = 0
                 playcount = 0
-                if  self.settings.cloudResume == 1:
+                if  self.cloudResume == 1:
                     for r in re.finditer('\"key\"\:\s+\"resume\"[^\"]+\"visibility\"\:\s+\"[^\"]+\"[^\"]+\"value\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                         resume = r.group(1)
