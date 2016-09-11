@@ -114,7 +114,8 @@ class gdrive(cloudservice):
         self.cache = cache.cache()
 
 
-        self.cloudResume = self.addon.getSetting(self.instanceName+'_resumepoint',0)
+        self.cloudResume = self.addon.getSetting(self.instanceName+'_resumepoint')
+        self.cloudSpreadsheet = self.addon.getSetting(self.instanceName+'_spreadsheetname')
 
         if self.cloudResume == '2':
             if self.worksheetID == '':
@@ -127,7 +128,7 @@ class gdrive(cloudservice):
                     pass
 
                 for title in spreadsheets.iterkeys():
-                    if title == settings.cloudSpreadsheet:#'CLOUD_DB':
+                    if title == service.cloudSpreadsheet:#'CLOUD_DB':
                         worksheets = self.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
 
                         for worksheet in worksheets.iterkeys():
