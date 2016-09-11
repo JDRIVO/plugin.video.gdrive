@@ -151,7 +151,7 @@
     	<setting id="always_cache" type="bool" subsetting="true" label="30121" default="false" />
         <setting id="cache_single" type="bool" subsetting="true" label="30132" default="false" />
         <setting id="cache_continue" type="bool" subsetting="true" label="30174" default="false" />
-        <setting id="chunk_size" type="enum" subsetting="true" label="30091" values="32224|32768|262144|1048576" default="2" />
+        <setting id="chunk_size" type="slider" subsetting="true" label="30091" option="int" range="131072,8192,8388608" default="163840" />
         <setting id="cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100" />
     </category>
 
@@ -166,7 +166,7 @@
         <setting id="encfs_cache_single" type="bool" subsetting="true" label="30132" default="false" enable="eq(-1,false)" />
         <setting id="encfs_continue" type="bool" subsetting="true" label="30174" default="false" enable="eq(-2,false)" />
         <setting id="encfs_cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100" />
-        <setting id="encfs_chunk_size" type="enum" subsetting="true" label="30091" values="32224|32768|262144|1048576" default="2" />
+        <setting id="encfs_chunk_size" type="slider" subsetting="true" label="30091" option="int" range="131072,8192,8388608" default="163840" />
         <setting label="30037" type="lsep"/>
         <setting id="context_evideo" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Don't Filter" default="0"/>
         <setting id="context_emusic" type="enum" subsetting="true" label="30023" values="Music only|Don't Filter" default="0"/>

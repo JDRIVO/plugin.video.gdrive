@@ -1,3 +1,5 @@
+
+- fix cache and encryption chunk sizes in settings
 v0.8.09 (2016-09-10)
 - clarify cache ==> offline
 - cleanup settings
