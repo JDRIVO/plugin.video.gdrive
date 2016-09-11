@@ -923,7 +923,7 @@ class cloudservice(object):
         CHUNK = int(self.settings.encfsCacheChunkSize)
 
         if CHUNK < 1024:
-            CHUNK = 16 * 1024
+            CHUNK = 131072
 
         count = 0
 
@@ -1115,7 +1115,7 @@ class cloudservice(object):
         CHUNK = int(self.settings.cacheChunkSize)
 
         if CHUNK < 1024:
-            CHUNK = 16 * 1024
+            CHUNK = 131072
 
         count = 0
 
