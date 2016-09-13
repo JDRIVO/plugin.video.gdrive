@@ -116,6 +116,7 @@ class settings:
         else:
             self.photoResolution = 99999
 
+        self.encfsDownloadType = int(self.getSetting('encfs_download_type', 0))
 
 
     def setVideoParameters(self):

@@ -717,8 +717,10 @@ class gdrive(cloudservice):
                   break
                 for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                  url = r.group(1)
-                  url = self.API_URL +'files/' + str(resourceID) + '?alt=media'
+                  if self.settings.encfsDownloadType == 0:
+                      url = r.group(1)
+                  else:
+                      url = self.API_URL +'files/' + str(resourceID) + '?alt=media'
                   break
                 for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):

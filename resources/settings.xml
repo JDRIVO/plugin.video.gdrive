@@ -167,6 +167,7 @@
         <setting id="encfs_continue" type="bool" subsetting="true" label="30174" default="false" enable="eq(-2,false)" />
         <setting id="encfs_cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100" />
         <setting id="encfs_chunk_size" type="slider" subsetting="true" label="30091" option="int" range="131072,8192,8388608" default="163840" />
+        <setting id="encfs_download_type" type="enum" subsetting="true" label="30186" values="regular|optimized for media" default="0" />
         <setting label="30037" type="lsep"/>
         <setting id="context_evideo" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Don't Filter" default="0"/>
         <setting id="context_emusic" type="enum" subsetting="true" label="30023" values="Music only|Don't Filter" default="0"/>

@@ -1,3 +1,5 @@
+v0.8.11 (2016-09-12)
+- add encfs download type
 v0.8.10 (2016-09-11)
 - new minimum chunk size for offline + encfs
 - fix cache and encryption chunk sizes in settings
