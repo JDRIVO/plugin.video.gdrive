@@ -1,5 +1,5 @@
+v0.8.12 (2016-09-13)
 - fix spreadsheet error
-
 v0.8.11 (2016-09-12)
 - add encfs download type
 v0.8.10 (2016-09-11)
