@@ -128,7 +128,7 @@ class gdrive(cloudservice):
                     pass
 
                 for title in spreadsheets.iterkeys():
-                    if title == service.cloudSpreadsheet:#'CLOUD_DB':
+                    if title == self.cloudSpreadsheet:#'CLOUD_DB':
                         worksheets = self.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
 
                         for worksheet in worksheets.iterkeys():
