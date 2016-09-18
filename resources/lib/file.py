@@ -87,6 +87,9 @@ class file:
                                        '(?:[ .](\d{3}\d?p)|\Z)?'
                                        '\..*', re.IGNORECASE)
 
+        self.regmovie = re.compile('(.*?[ \(]?[ .]?[ \-]?\d{4}[ \)]?[ .]?[ \-]?)'
+                          '.*?'
+                          '(?:(\d{3}\d?p)|\Z)?')
 
     def setAlbumMeta(self,album,artist,releaseDate,trackNumber,genre, trackTitle):
         self.album = album

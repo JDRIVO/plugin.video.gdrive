@@ -699,6 +699,10 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                   resourceID = r.group(1)
                   break
+                for r in re.finditer('\"fileId\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  resourceID = r.group(1)
+                  break
                 for r in re.finditer('\"mimeType\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   resourceType = r.group(1)

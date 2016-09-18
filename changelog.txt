@@ -1,3 +1,6 @@
+v0.8.13 (2016-09-18)
+- STRM creation: treat .YYYY. and -YYYY- as movie (user321 contribution)
+- STMR creation: fix fileID issue with autmatic STRM creation
 v0.8.12 (2016-09-13)
 - fix spreadsheet error
 v0.8.11 (2016-09-12)

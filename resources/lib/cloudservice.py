@@ -461,9 +461,6 @@ class cloudservice(object):
                         if self.addon.getSetting('tvshows_path') != '' or self.addon.getSetting('movies_path') != '':
                             pathLib = ''
 
-                            regmovie = re.compile('(.*?\(\d{4}\))'
-                                              '.*?'
-                                              '(?:(\d{3}\d?p)|\Z)?')
 
                             tv = item.file.regtv1.match(title)
                             if not tv:
@@ -483,7 +480,7 @@ class cloudservice(object):
                                 if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
                                     xbmcvfs.mkdir(xbmc.translatePath(pathLib))
                             elif self.addon.getSetting('movies_path') != '':
-                                movie = regmovie.match(title)
+                                movie = item.file.regmovie.match(title)
                                 if movie:
                                     pathLib = self.addon.getSetting('movies_path')
 
@@ -681,9 +678,6 @@ class cloudservice(object):
                             # nekwebdev contribution
                             pathLib = ''
 
-                            regmovie = re.compile('(.*?\(\d{4}\))'
-                                              '.*?'
-                                              '(?:(\d{3}\d?p)|\Z)?')
 
                             tv = item.file.regtv1.match(title)
                             if not tv:
@@ -703,7 +697,7 @@ class cloudservice(object):
                                 if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
                                     xbmcvfs.mkdir(xbmc.translatePath(pathLib))
                             else:
-                                movie = regmovie.match(title)
+                                movie = item.file.regmovie.match(title)
                                 if movie:
                                     pathLib = moviePath
                                 else:
