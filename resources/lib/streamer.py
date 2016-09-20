@@ -17,34 +17,44 @@
 
 '''
 
-import time
-import sys
 
-#!/usr/bin/python
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 
-PORT_NUMBER = 8080
 
-#This class will handles any incoming request from
-#the browser
-class myHandler(BaseHTTPRequestHandler):
+
+
+class MyHTTPServer(HTTPServer):
+
+    def __init__(self, *args, **kw):
+        HTTPServer.__init__(self, *args, **kw)
+
+    def setFile(self, playbackURL, chunksize):
+        self.playbackURL = playbackURL
+        self.chunksize = chunksize
+        self.ready = True
+        self.state = 0
+
+
+class myStreamer(BaseHTTPRequestHandler):
+
 
     #Handler for the GET requests
     def do_GET(self):
         self.send_response(200)
         self.send_header('Content-type','video/mp4')
         self.end_headers()
-        # Send the html message
-        self.wfile.write("Hello World !")
+        if self.server.state != 0:
+            with open(self.server.playbackURL, "rb") as f:
+                while True:
+                    chunk = f.read(self.server.chunksize)
+                    if chunk:
+                        self.wfile.write(chunk)
+                    else:
+                        break
+            #self.server.state = 1
+            self.server.ready = False
+        else:
+            self.server.state = 1
+            self.server.ready = True
         return
 
-try:
-
-    server = HTTPServer(('', PORT_NUMBER), myHandler)
-    print 'Started httpserver on port ' , PORT_NUMBER
-    while True:
-        server.handle_request()
-    #server.serve_forever()
-
-except KeyboardInterrupt:
-    server.socket.close()

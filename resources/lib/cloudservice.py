@@ -30,6 +30,7 @@ import xbmcvfs
 from resources.lib import mediaurl
 from resources.lib import kodi_common
 from resources.lib import settings
+from resources.lib import streamer
 
 
 
@@ -1047,6 +1048,124 @@ class cloudservice(object):
                 progress.close()
 
         except: pass
+
+
+
+    ##
+    # download/retrieve a media file
+    #   parameters: whether to playback file, media url object, package object, whether to force download (overwrite), whether the file is encfs, folder name (option)
+    ##
+    def downloadEncfsFile2(self, mediaURL, package, playbackURL='', force=False, folderName='', playback=1,item='', player=None, srt=None):
+
+        cachePercent = int(self.settings.encfsCachePercent)
+
+        if cachePercent < 1:
+            cachePercent = 1
+        elif cachePercent > 100:
+            cachePercent = 100
+
+        fileSize = (int)(package.file.size)
+        if fileSize == '' or fileSize < 1000:
+            fileSize = 5000000
+
+        sizeDownload = fileSize * (cachePercent*0.01)
+
+        if sizeDownload < 3000000:
+            sizeDownload = 3000000
+
+        CHUNK = int(self.settings.encfsCacheChunkSize)
+
+        if CHUNK < 1024:
+            CHUNK = 131072
+
+        count = 0
+
+
+        path = re.sub(r'\/[^\/]+$', r'', folderName)
+        if folderName == path:
+            path = re.sub(r'\\[^\\]+$', r'', folderName) #needed for windows?
+
+        #ensure the folder and path exists
+        try:
+            xbmcvfs.mkdirs(path)
+        except: pass
+
+        playbackFile = folderName
+
+
+        downloadedBytes = 0
+
+        #seek to end of file for append
+        # - must use python for append (xbmcvfs not supported)
+        # - if path is not local or KODI-specific user must restart complete download
+
+        req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
+
+        f = xbmcvfs.File(playbackFile, 'w')
+
+
+        # if action fails, validate login
+        try:
+          response = urllib2.urlopen(req)
+
+        except urllib2.URLError, e:
+          self.refreshToken()
+          req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
+          try:
+              response = urllib2.urlopen(req)
+
+          except urllib2.URLError, e:
+            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+            self.crashreport.sendError('downloadMediaFile',str(e))
+            return
+
+        while sizeDownload > downloadedBytes:
+            chunk = response.read(CHUNK)
+            if not chunk: break
+            f.write(chunk)
+            downloadedBytes = downloadedBytes + CHUNK
+
+        f.close()
+
+        if playbackURL != '':
+
+
+            if playback == True:#self.PLAYBACK_NONE:
+                pid = os.fork()
+                if (pid == 0): #child
+                    from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+
+                    server = streamer.MyHTTPServer(('', 8081), streamer.myStreamer)
+                    server.setFile(playbackURL,4096)
+                    while server.ready:
+                        server.handle_request()
+                    server.socket.close()
+                    sys.exit()
+                item.setPath('http://localhost:8081')
+                #if playback == self.PLAYBACK_RESOLVED:
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+
+                #else:
+                    #xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
+                #player.PlayStream(playbackURL, item, package.file.resume, startPlayback=True, package=package)
+#                while not (player.isPlaying()) and not player.isExit:
+#                    xbmc.sleep(1000)
+                    #print str(player.playStatus)
+
+                    # load captions
+            if (self.settings.srt or self.settings.cc):
+                while not (player.isPlaying()):
+                    xbmc.sleep(1000)
+
+                for file in srt:
+                    if file != '':
+                        try:
+                            file = file.decode('unicode-escape')
+                            file = file.encode('utf-8')
+                        except:
+                            pass
+                        player.setSubtitles(file)
 
 
 
