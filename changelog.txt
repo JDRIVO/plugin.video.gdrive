@@ -1,3 +1,5 @@
+v0.8.14 (2016-09-20)
+- experiment with new encfs streamer
 v0.8.13 (2016-09-18)
 - STRM creation: treat .YYYY. and -YYYY- as movie (user321 contribution)
 - STMR creation: fix fileID issue with autmatic STRM creation

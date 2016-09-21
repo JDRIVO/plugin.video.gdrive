@@ -1101,7 +1101,9 @@ class cloudservice(object):
 
         req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
 
-        f = xbmcvfs.File(playbackFile, 'w')
+        if (1):
+
+            f = xbmcvfs.File(playbackFile, 'w')
 
 
         # if action fails, validate login
@@ -1119,14 +1121,14 @@ class cloudservice(object):
             self.crashreport.sendError('downloadMediaFile',str(e))
             return
 
-        while sizeDownload > downloadedBytes:
-            chunk = response.read(CHUNK)
-            if not chunk: break
-            f.write(chunk)
-            downloadedBytes = downloadedBytes + CHUNK
+        CHUNK = 4096*100
 
-        f.close()
+        header = response.read(CHUNK)
+        #f.write(header)
+        if (1):
+            f.write(header)
 
+            f.close()
         if playbackURL != '':
 
 
@@ -1135,15 +1137,15 @@ class cloudservice(object):
                 if (pid == 0): #child
                     from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 
-                    server = streamer.MyHTTPServer(('', 8081), streamer.myStreamer)
-                    server.setFile(playbackURL,4096)
+                    server = streamer.MyHTTPServer(('', 8093), streamer.myStreamer)
+                    server.setFile(playbackURL,CHUNK, playbackFile, response)
                     while server.ready:
                         server.handle_request()
                     server.socket.close()
                     sys.exit()
-                item.setPath('http://localhost:8081')
-                #if playback == self.PLAYBACK_RESOLVED:
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                else:
+                    item.setPath('http://localhost:8093')
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 
                 #else:

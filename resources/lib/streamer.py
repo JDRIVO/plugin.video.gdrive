@@ -28,9 +28,11 @@ class MyHTTPServer(HTTPServer):
     def __init__(self, *args, **kw):
         HTTPServer.__init__(self, *args, **kw)
 
-    def setFile(self, playbackURL, chunksize):
+    def setFile(self, playbackURL, chunksize, playbackFile, response):
         self.playbackURL = playbackURL
         self.chunksize = chunksize
+        self.playbackFile = playbackFile
+        self.response = response
         self.ready = True
         self.state = 0
 
@@ -43,15 +45,49 @@ class myStreamer(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type','video/mp4')
         self.end_headers()
-        if self.server.state != 0:
-            with open(self.server.playbackURL, "rb") as f:
-                while True:
-                    chunk = f.read(self.server.chunksize)
-                    if chunk:
-                        self.wfile.write(chunk)
-                    else:
-                        break
+        if self.server.state == 0:
+            previousChunk = ''
+            if 1:
+                with open(self.server.playbackURL, "rb") as f:
+                    while True:
+                        chunk = f.read(self.server.chunksize)
+                        if chunk:
+                            self.wfile.write(chunk)
+                        else:
+                            break
+                f.close()
+
+                with open(self.server.playbackFile, "rb") as f:
+                    while True:
+                        previousChunk = f.read(self.server.chunksize)
+                        if chunk:
+                            self.wfile.write(chunk)
+                        else:
+                            break
+                f.close()
             #self.server.state = 1
+            #try:
+            while True:
+                chunk = self.server.response.read(self.server.chunksize)
+                if not chunk: break
+                fi = open(self.server.playbackFile, 'wb')
+                #fi.write(self.server.header)
+                fi.write(previousChunk)
+                fi.write(chunk)
+                fi.close()
+                previousChunk = chunk
+
+                chunk = ''
+                with open(self.server.playbackURL, "rb") as f:
+                        chunk = f.read(self.server.chunksize)
+                        chunk = f.read(self.server.chunksize)
+                        self.wfile.write(chunk)
+
+                f.close()
+
+
+
+            #except: pass
             self.server.ready = False
         else:
             self.server.state = 1
