@@ -1154,7 +1154,15 @@ class cloudservice(object):
 
                 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 
-                server = streamer.MyHTTPServer(('', 8006), streamer.myStreamer)
+                try:
+                    server = streamer.MyHTTPServer(('', 8006), streamer.myStreamer)
+                except:
+                    req = urllib2.Request('http://localhost:8005/kill', None, None)
+                    try:
+                        response = urllib2.urlopen(req)
+                    except: pass
+                    server = streamer.MyHTTPServer(('', 8006), streamer.myStreamer)
+
                 server.setFile(playbackURL,CHUNK, playbackFile, response, fileSize,  mediaURL.url, self)
                 item.setPath('http://localhost:8006')
                 xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
