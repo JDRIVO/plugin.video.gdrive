@@ -1,3 +1,5 @@
+v0.8.15 (2016-09-21)
+- enabled experimental encfs viewer
 v0.8.14 (2016-09-20)
 - experiment with new encfs streamer
 v0.8.13 (2016-09-18)

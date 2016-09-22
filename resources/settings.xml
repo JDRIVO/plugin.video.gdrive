@@ -162,12 +162,13 @@
         <setting id="encfs_source" type="folder" subsetting="true" label="30128" default="" />
         <setting id="encfs_target" type="folder" subsetting="true" label="30129" default="" />
         <setting id="encfs_inode" type="enum" subsetting="true" label="30155" values="local|samba/nfs/remote/other" default="0" />
+        <setting id="encfs_download_type" type="enum" subsetting="true" label="30186" values="regular|optimized for media (resumeable)" default="1" />
         <setting id="encfs_stream" type="bool" subsetting="true" label="30152" default="false" />
-        <setting id="encfs_cache_single" type="bool" subsetting="true" label="30132" default="false" enable="eq(-1,false)" />
-        <setting id="encfs_continue" type="bool" subsetting="true" label="30174" default="false" enable="eq(-2,false)" />
-        <setting id="encfs_cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100" />
-        <setting id="encfs_chunk_size" type="slider" subsetting="true" label="30091" option="int" range="131072,8192,8388608" default="163840" />
-        <setting id="encfs_download_type" type="enum" subsetting="true" label="30186" values="regular|optimized for media" default="0" />
+        <setting id="encfs_exp" type="bool" subsetting="true" label="30187" default="false" enable="eq(-1,true)"  />
+        <setting id="encfs_cache_single" type="bool" subsetting="true" label="30132" default="false" enable="eq(-2,false)" />
+        <setting id="encfs_continue" type="bool" subsetting="true" label="30174" default="false" enable="eq(-3,false)" />
+        <setting id="encfs_cache_percent" type="slider" subsetting="true" label="30093" default="10" option="percent" range="0,1,100" enable="eq(-3,false)" />
+        <setting id="encfs_chunk_size" type="slider" subsetting="true" label="30091" option="int" range="131072,8192,8388608" default="163840" enable="eq(-4,false)" />
         <setting label="30037" type="lsep"/>
         <setting id="context_evideo" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Don't Filter" default="0"/>
         <setting id="context_emusic" type="enum" subsetting="true" label="30023" values="Music only|Don't Filter" default="0"/>

@@ -1133,19 +1133,51 @@ class cloudservice(object):
 
 
             if playback == True:#self.PLAYBACK_NONE:
-                pid = os.fork()
-                if (pid == 0): #child
-                    from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 
-                    server = streamer.MyHTTPServer(('', 8093), streamer.myStreamer)
-                    server.setFile(playbackURL,CHUNK, playbackFile, response)
-                    while server.ready:
+                if (0):
+                    pid = os.fork()
+
+                    if (pid == 0): #child
+                        from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+
+                        server = streamer.MyHTTPServer(('', 8003), streamer.myStreamer)
+                        server.setFile(playbackURL,CHUNK, playbackFile, response, fileSize, mediaURL.url, self)
+                        while server.ready:
+                            try:
+                                server.handle_request()
+                            except: pass
+                        server.socket.close()
+    #                    os._exit()
+                    else:
+                        item.setPath('http://localhost:8005')
+                        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+                from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+
+                server = streamer.MyHTTPServer(('', 8006), streamer.myStreamer)
+                server.setFile(playbackURL,CHUNK, playbackFile, response, fileSize,  mediaURL.url, self)
+                item.setPath('http://localhost:8006')
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                setCC = True
+                while server.ready:
+                    try:
                         server.handle_request()
-                    server.socket.close()
-                    sys.exit()
-                else:
-                    item.setPath('http://localhost:8093')
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                    except:
+                        break
+                    if (setCC and (self.settings.srt or self.settings.cc)):
+                        setCC = False
+                        while not (player.isPlaying()):
+                            xbmc.sleep(1000)
+
+                        for file in srt:
+                            if file != '':
+                                try:
+                                    file = file.decode('unicode-escape')
+                                    file = file.encode('utf-8')
+                                except:
+                                    pass
+                                player.setSubtitles(file)
+                server.socket.close()
 
 
                 #else:

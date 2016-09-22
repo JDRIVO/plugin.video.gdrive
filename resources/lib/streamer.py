@@ -20,7 +20,10 @@
 
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 
+import re
+import urllib, urllib2
 
+import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
 
 class MyHTTPServer(HTTPServer):
@@ -28,13 +31,17 @@ class MyHTTPServer(HTTPServer):
     def __init__(self, *args, **kw):
         HTTPServer.__init__(self, *args, **kw)
 
-    def setFile(self, playbackURL, chunksize, playbackFile, response):
+    def setFile(self, playbackURL, chunksize, playbackFile, response, fileSize, url, service):
         self.playbackURL = playbackURL
         self.chunksize = chunksize
         self.playbackFile = playbackFile
         self.response = response
+        self.fileSize = fileSize
+        self.url = url
+        self.service = service
         self.ready = True
         self.state = 0
+        self.lock = 0
 
 
 class myStreamer(BaseHTTPRequestHandler):
@@ -42,55 +49,109 @@ class myStreamer(BaseHTTPRequestHandler):
 
     #Handler for the GET requests
     def do_GET(self):
-        self.send_response(200)
+
+        if self.path == '/kill':
+            self.server.ready = False
+            return
+
+        headers = str(self.headers)
+        print(headers)
+
+        start = ''
+        end = ''
+        count = 0
+        for r in re.finditer('Range\:\s+bytes\=(\d+)\-' ,
+                     headers, re.DOTALL):
+          start = int(r.group(1))
+          break
+        for r in re.finditer('Range\:\s+bytes\=\d+\-(\d+)' ,
+                     headers, re.DOTALL):
+          end = int(r.group(1))
+          if end == 0:
+              end = ''
+          break
+
+
+        if start == '':
+            self.send_response(200)
+            self.send_header('Content-Length',self.server.fileSize)
+        else:
+            self.send_response(206)
+            if start  > 0:
+                count = int(start/int(self.server.chunksize))
+
+            self.send_header('Content-Length',str(self.server.fileSize-(count*int(self.server.chunksize))))
+            self.send_header('Content-Range','bytes ' + str(start) + '-' + str(self.server.fileSize-1)+'/'+str(self.server.fileSize))
+
+            req = urllib2.Request(self.server.url, None, self.server.service.getHeadersList(additionalHeader='Range', additionalValue='bytes '+ str(start) + '-' + str(end)))
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                print "error " + str(e.code) + ' header Range' + str(start) + '-' + str(end)
+                self.server.service.refreshToken()
+                req = urllib2.Request(self.server.url, None, self.server.service.getHeadersList(additionalHeader='Range', additionalValue='bytes '+ str(start) + '-' + str(end)))
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    print "error " + str(e.code)
+                    return
+
         self.send_header('Content-type','video/mp4')
+
+        self.send_header('Accept-Ranges','bytes')
         self.end_headers()
+
+        #while self.server.state == 2:
+        #    self.server.state = 3
+        #while self.server.state == 3:
+        #    xbmc.sleep(10)
+
         if self.server.state == 0:
-            previousChunk = ''
-            if 1:
+            #self.server.state = 2
+            #try:
+            if count == 0:
                 with open(self.server.playbackURL, "rb") as f:
                     while True:
                         chunk = f.read(self.server.chunksize)
                         if chunk:
                             self.wfile.write(chunk)
+                            count = count + 1
                         else:
                             break
                 f.close()
 
-                with open(self.server.playbackFile, "rb") as f:
-                    while True:
-                        previousChunk = f.read(self.server.chunksize)
-                        if chunk:
-                            self.wfile.write(chunk)
-                        else:
-                            break
-                f.close()
+            #fi = open(self.server.playbackFile, 'ab')
             #self.server.state = 1
-            #try:
-            while True:
+            if  self.server.lock != 0:
+                 self.server.lock = 2
+                 xbmc.sleep(1000)
+
+            self.server.lock = 1
+            while self.server.lock ==1:#self.server.state == 2:
+
                 chunk = self.server.response.read(self.server.chunksize)
                 if not chunk: break
                 fi = open(self.server.playbackFile, 'wb')
-                #fi.write(self.server.header)
-                fi.write(previousChunk)
+                fi.seek(self.server.chunksize*count,0)
                 fi.write(chunk)
                 fi.close()
-                previousChunk = chunk
 
-                chunk = ''
                 with open(self.server.playbackURL, "rb") as f:
-                        chunk = f.read(self.server.chunksize)
+                        f.seek(self.server.chunksize*count,0)
                         chunk = f.read(self.server.chunksize)
                         self.wfile.write(chunk)
 
                 f.close()
-
-
-
+                count = count + 1
+            self.server.lock = 0
+            #fi.close()
             #except: pass
+            #if self.server.state == 2:
+            #    self.server.ready = False
+            #self.server.state = 0
             self.server.ready = False
-        else:
-            self.server.state = 1
-            self.server.ready = True
+#        else:
+#            self.server.state = 1
+#            self.server.ready = False
         return
 
