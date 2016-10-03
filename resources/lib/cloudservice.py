@@ -1025,6 +1025,11 @@ class cloudservice(object):
                         except:
                             pass
                         player.setSubtitles(file)
+
+
+            # need to seek?
+            #if seek > 0:
+            #player.PlayStream('', item, 99, startPlayback=False, package=package)
         try:
             count =1
             while True:

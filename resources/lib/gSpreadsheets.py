@@ -597,6 +597,9 @@ class gSpreadsheets:
                     # not a general folder ID but another file ID
                     if media.group(1) == 'fileid' and media.group(2) not in mediaHash.keys():
                         break
+                    elif media.group(1) == 'folderid' and media.group(2) not in mediaHash.keys():
+                        break
+
                     elif media.group(1) == 'fileid':
                         newPackage = mediaList[mediaHash[media.group(2)]]
 

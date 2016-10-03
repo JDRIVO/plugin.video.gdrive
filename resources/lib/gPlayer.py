@@ -267,7 +267,9 @@ class gPlayer(xbmc.Player):
 
     def onPlayBackPaused(self):
         print "PLAYBACK Paused"
-        #self.seekTime(10)
+        if self.seek > 0:
+            self.seekTime(self.seek)
+            self.seek = 0
 
     def seekTo(self, seek):
         if seek != '':
