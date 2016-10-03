@@ -86,6 +86,7 @@ class settings:
         self.cc = getParameter('cc', self.getSetting('cc', True))
         self.srt = getParameter('srt', self.getSetting('srt', True))
         #self.srt_folder = getParameter('srt_folder', self.getSetting('srt_folder', False))
+        self.strm = getParameter('strm', False)
 
         self.username = getParameter('username', '')
         self.setCacheParameters()

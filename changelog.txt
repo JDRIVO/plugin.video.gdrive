@@ -1,3 +1,5 @@
+v0.8.16 (2016-10-03)
+- add strm spreadsheet functionality
 v0.8.15 (2016-09-21)
 - enabled experimental encfs viewer
 v0.8.14 (2016-09-20)

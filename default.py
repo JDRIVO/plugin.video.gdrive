@@ -118,6 +118,9 @@ xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 numberOfAccounts = cloudservice.numberOfAccounts(PLUGIN_NAME)
 invokedUsername = settings.getParameter('username')
 
+if invokedUsername == '' and instanceName == '':
+    instanceName = 'gdrive' + str(settings.getSetting('account_default', 1))
+
 # cloudservice - utilities
 ###
 
@@ -605,7 +608,7 @@ elif mode == 'kiosk':
     if spreadshetModule:
             gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
             service.gSpreadsheet = gSpreadsheet
-            spreadsheets = gSpreadsheet.getSpreadsheetList()
+            spreadsheets = service.getSpreadsheetList()
 
 
             channels = []
@@ -931,6 +934,21 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
     title = settings.getParameter('title') #file title
     filename = settings.getParameter('filename') #file ID
     folderID = settings.getParameter('folder') #folder ID
+
+
+    spreadsheetSTRM = settings.getParameter('spreadsheet')
+    sheetSTRM = settings.getParameter('sheet')
+
+    year = settings.getParameter('year')
+
+    if sheetSTRM != None and sheetSTRM != '':
+
+
+        if service.gSpreadsheet is None:
+            service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+
+
+        filename = service.gSpreadsheet.getSTRMplaybackMovie('https://spreadsheets.google.com/feeds/list/'+spreadsheetSTRM+'/'+sheetSTRM+'/private/full', title, year)
 
     if folderID == 'False':
             folderID = 'SEARCH'
@@ -1379,7 +1397,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                         resolvedPlayback = False
 
                     # STRM (force resolve) -- resolve-only
-                    elif settings.username != '':
+                    elif settings.username != '' or settings.strm:
                         startPlayback = False
                         resolvedPlayback = True
                         startPlayback = False

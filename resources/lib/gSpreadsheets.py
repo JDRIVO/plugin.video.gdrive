@@ -308,6 +308,122 @@ class gSpreadsheets:
 
         return worksheets
 
+
+
+    #
+    # returns a list of worksheets with a link to their listfeeds
+    #
+    def getSpreadsheetWorksheets(self,url):
+
+        worksheets = {}
+        while True:
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('getSpreadsheetWorksheets') + ': ' + str(e), xbmc.LOGERROR)
+              else:
+                xbmc.log(self.addon.getAddonInfo('getSpreadsheetWorksheets') + ': ' + str(e), xbmc.LOGERROR)
+
+            response_data = response.read()
+            response.close()
+
+
+            for r in re.finditer('<title[^>]+\>([^<]+)</title><content[^>]+\>[^<]+</content><link rel=\'[^\#]+\#listfeed\' type=\'application/atom\+xml\' href=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                title,url = r.groups()
+                worksheets[title] = url
+
+            nextURL = ''
+            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                nextURL = r.groups()
+
+
+            if nextURL == '':
+                break
+            else:
+                url = nextURL[0]
+
+
+        return worksheets
+
+
+
+    #spreadsheet STRM
+    def getSTRMplaybackMovie(self,url,title,year):
+
+
+        params = urllib.urlencode({'title': '"' +str(title)+'"'}, {'year': year})
+        url = url + '?sq=' + params
+
+
+        files = {}
+        while True:
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    return ''
+              else:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return ''
+            response_data = response.read()
+
+            count=0;
+            for r in re.finditer('<gsx:mins>([^<]*)</gsx:mins><gsx:resolution>([^<]*)</gsx:resolution><gsx:md5>[^<]*</gsx:md5><gsx:filename>[^<]*</gsx:filename><gsx:fileid>([^<]*)</gsx:fileid>' ,
+                             response_data, re.DOTALL):
+                files[count] = r.groups()
+#source,nfo,show,season,episode,part,watched,duration
+#channel,month,day,weekday,hour,minute,show,order,includeWatched
+                count = count + 1
+
+            nextURL = ''
+            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                nextURL = r.groups()
+
+            response.close()
+
+            if nextURL == '':
+                break
+            else:
+                url = nextURL[0]
+
+        if len(files) == 0:
+            return ''
+        elif len(files) == 1:
+            return files[0][2]
+
+
+        options = []
+
+        if files:
+            for item in files:
+                    options.append('resolution ' + str(files[item][1]) + 'p - mins '  + str(files[item][0]))
+
+        ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30112), options)
+        return files[ret][2]
+
+
+
+
+
     def getShows(self,url,channel):
 
 
