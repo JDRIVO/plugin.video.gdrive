@@ -30,11 +30,9 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
 from resources.lib import settings
 from resources.lib import offlinefile
 
-
-
 # global variables
-#addon = xbmcaddon.Addon(id='plugin.video.gdrive')
-addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+import addon_parameters
+addon = addon_parameters.addon
 PLUGIN_URL = sys.argv[0]
 plugin_handle = int(sys.argv[1])
 

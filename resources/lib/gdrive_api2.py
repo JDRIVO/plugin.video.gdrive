@@ -47,7 +47,6 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin, xbmcvfs
 SERVICE_NAME = 'dmdgdrive'
 
 
-
 #
 # Google Drive API 2 implementation of Google Drive
 #

@@ -1,5 +1,5 @@
 '''
-    gdrive XBMC Plugin
+    CloudService XBMC Plugin
     Copyright (C) 2013-2014 ddurdle
 
     This program is free software: you can redistribute it and/or modify
@@ -30,16 +30,21 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
 # common routines
 from resources.lib import kodi_common
 
+# global variables
+import addon_parameters
+addon = addon_parameters.addon
+cloudservice2 = addon_parameters.cloudservice2
+cloudservice1 = addon_parameters.cloudservice1
 
 
 #*** testing - gdrive
-from resources.lib import gdrive
-from resources.lib import gdrive_api2
 from resources.lib import tvWindow
 from resources.lib import gSpreadsheets
 ##**
 
 # cloudservice - standard modules
+#from resources.lib import gdrive
+#from resources.lib import gdrive_api2
 from resources.lib import cloudservice
 from resources.lib import authorization
 from resources.lib import folder
@@ -53,10 +58,6 @@ from resources.lib import settings
 from resources.lib import cache
 
 
-# global variables
-PLUGIN_NAME = 'gdrive'
-#addon = xbmcaddon.Addon(id='plugin.video.gdrive')
-addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 
 #global variables
 PLUGIN_URL = sys.argv[0]
@@ -115,18 +116,18 @@ xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
 #    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TRACKNUM)
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 
-numberOfAccounts = cloudservice.numberOfAccounts(PLUGIN_NAME)
+numberOfAccounts = cloudservice.numberOfAccounts(addon_parameters.PLUGIN_NAME)
 invokedUsername = settings.getParameter('username')
 
 if invokedUsername == '' and instanceName == '':
-    instanceName = 'gdrive' + str(settings.getSetting('account_default', 1))
+    instanceName = addon_parameters.PLUGIN_NAME + str(settings.getSetting('account_default', 1))
 
 # cloudservice - utilities
 ###
 
 if mode == 'dummy' or mode == 'delete' or mode == 'enroll':
 
-    cloudservice.accountActions(addon, PLUGIN_NAME, mode, instanceName, numberOfAccounts)
+    cloudservice.accountActions(addon, addon_parameters.PLUGIN_NAME, mode, instanceName, numberOfAccounts)
 
 #create strm files
 elif mode == 'buildstrm':
@@ -186,20 +187,20 @@ elif mode == 'buildstrm':
                 count = 1
                 loop = True
                 while loop:
-                    instanceName = PLUGIN_NAME+str(count)
+                    instanceName = addon_parameters.PLUGIN_NAME+str(count)
                     try:
                         username = settings.getSetting(instanceName+'_username')
                         if username == invokedUsername:
 
                             #let's log in
                             if ( int(settings.getSetting(instanceName+'_type',0))==0):
-                                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+                                service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings)
                             else:
-                                service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+                                service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
                             loop = False
                     except:
-                        service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                        service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent)
                         break
 
                     if count == numberOfAccounts:
@@ -208,9 +209,9 @@ elif mode == 'buildstrm':
                         except NameError:
                             #fallback on first defined account
                             if ( int(settings.getSetting(instanceName+'_type',0))==0):
-                                service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
+                                service = cloudservice1(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
                             else:
-                                service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
+                                service = cloudservice2(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
                         break
                     count = count + 1
 
@@ -242,14 +243,14 @@ elif mode == 'buildstrm':
 
                 count = 1
                 while True:
-                    instanceName = PLUGIN_NAME+str(count)
+                    instanceName = addon_parameters.PLUGIN_NAME+str(count)
                     username = settings.getSetting(instanceName+'_username')
 
                     if username != '' and username == invokedUsername:
                         if ( int(settings.getSetting(instanceName+'_type',0))==0):
-                                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+                                service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings)
                         else:
-                            service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+                            service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
                         service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
 
@@ -260,9 +261,9 @@ elif mode == 'buildstrm':
                         except NameError:
                             #fallback on first defined account
                             if ( int(settings.getSetting(instanceName+'_type',0))==0):
-                                    service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
+                                    service = cloudservice1(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
                             else:
-                                service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
+                                service = cloudservice2(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
                         break
                     count = count + 1
 
@@ -283,17 +284,17 @@ elif mode == 'buildstrm':
 ###
 
 
-instanceName = cloudservice.getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, numberOfAccounts, contextType)
+instanceName = cloudservice.getInstanceName(addon, addon_parameters.PLUGIN_NAME, mode, instanceName, invokedUsername, numberOfAccounts, contextType)
 
 service = None
 if instanceName is None and (mode == 'index' or mode == 'main' or mode == 'offline'):
     service = None
 elif instanceName is None:
-    service = gdrive_api2.gdrive(PLUGIN_URL,addon,'', user_agent, settings, authenticate=False)
+    service = cloudservice2(PLUGIN_URL,addon,'', user_agent, settings, authenticate=False)
 elif int(settings.getSetting(instanceName+'_type',0))==0 :
-    service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+    service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings)
 else:
-    service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+    service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
 #create strm files
 if mode == 'buildstrm2':
@@ -476,7 +477,7 @@ elif mode == 'main' or mode == 'index':
         service
     except NameError:
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
-        xbmc.log(addon.getLocalizedString(30050)+ 'gdrive-login', xbmc.LOGERROR)
+        xbmc.log(addon.getLocalizedString(30050)+ addon_parameters.PLUGIN_NAME+'-login', xbmc.LOGERROR)
         xbmcplugin.endOfDirectory(plugin_handle)
 
     #if encrypted, get everything(as encrypted files will be of type application/ostream)
@@ -653,7 +654,7 @@ elif mode == 'kiosk':
                             #player.setService(service)
 #                            player.setContent(episodes)
                             player.setWorksheet(worksheets['db'])
-                            player.PlayStream('plugin://plugin.video.gdrive-testing/?mode=video&instance='+str(service.instanceName)+'&title='+episodes[0][3], None,episodes[0][7],episodes[0][2])
+                            player.PlayStream('plugin://plugin.video.'+addon_parameters.PLUGIN_NAME+'-testing/?mode=video&instance='+str(service.instanceName)+'&title='+episodes[0][3], None,episodes[0][7],episodes[0][2])
                             #player.next()
                             while not player.isExit:
                                 player.saveTime()
@@ -735,7 +736,7 @@ elif mode == 'downloadfolder':
         service
     except NameError:
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
-        xbmc.log(addon.getLocalizedString(30050)+ 'gdrive-login',xbmc.LOGERROR)
+        xbmc.log(addon.getLocalizedString(30050)+ addon_parameters.PLUGIN_NAME + '-login',xbmc.LOGERROR)
         xbmcplugin.endOfDirectory(plugin_handle)
 
     if encfs:
@@ -968,7 +969,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         service
     except NameError:
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
-        xbmc.log(addon.getLocalizedString(30050)+ 'gdrive-login', xbmc.LOGERROR)
+        xbmc.log(addon.getLocalizedString(30050)+ addon_parameters.PLUGIN_NAME + '-login', xbmc.LOGERROR)
         xbmcplugin.endOfDirectory(plugin_handle)
 
     #settings.setCacheParameters()
