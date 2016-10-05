@@ -1,3 +1,5 @@
+v0.8.17 (2016-10-05)
+- fix for [enroll account] screen missing
 - abstract gdrive references
 v0.8.16 (2016-10-03)
 - add strm spreadsheet functionality
