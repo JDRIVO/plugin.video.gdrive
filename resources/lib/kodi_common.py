@@ -251,3 +251,174 @@ def addOfflineMediaFile(offlinefile):
                             isFolder=False, totalItems=0)
     return offlinefile.playbackpath
 
+
+
+##
+# Delete an account, enroll an account or refresh the current listings
+#   parameters: addon, plugin name, mode, instance name, user provided username, number of accounts, current context
+#   returns: selected instance name
+##
+def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, numberOfAccounts, contextType):
+
+    # show list of services
+    if mode == 'delete' or mode == 'dummy':
+                count = 1
+
+    elif numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
+
+            addMenu(PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'[enroll account]')
+
+            if contextType != 'image':
+                path = settings.getSetting('cache_folder')
+                if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
+                    addMenu(PLUGIN_URL+'?mode=offline&content_type='+str(contextType),'<offline media>')
+
+            if contextType == 'image':
+                path = settings.getSetting('photo_folder')
+                if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
+                    addMenu(path,'<offline photos>')
+
+            path = settings.getSetting('encfs_target')
+            if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
+                addMenu(path,'<offline encfs>')
+
+
+            mode = ''
+            count = 1
+            while True:
+                instanceName = PLUGIN_NAME+str(count)
+                try:
+                    username = settings.getSetting(instanceName+'_username')
+                    if username != '':
+                        addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
+
+                except:
+                    pass
+                if count == numberOfAccounts:
+                    break
+                count = count + 1
+            return None
+
+    #        spreadshetModule = getSetting('library', False)
+    #        libraryAccount = getSetting('library_account')
+
+     #       if spreadshetModule:
+     #           addMenu(PLUGIN_URL+'?mode=kiosk&content_type='+str(contextType)+'&instance='+PLUGIN_NAME+str(libraryAccount),'[kiosk mode]')
+
+    elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
+
+            count = 1
+            options = []
+            accounts = []
+
+            for count in range (1, numberOfAccounts+1):
+                instanceName = PLUGIN_NAME+str(count)
+                try:
+                    username = settings.getSetting(instanceName+'_username')
+                    if username != '':
+                        options.append(username)
+                        accounts.append(instanceName)
+
+                    if username != '':
+
+                        return instanceName
+                except:
+                    return instanceName
+
+            #fallback on first defined account
+            return accounts[0]
+
+    # no accounts defined and url provided; assume public
+    elif numberOfAccounts == 0 and mode=='streamurl':
+        return None
+
+    # offline mode
+    elif mode=='offline':
+        return None
+        # no accounts defined
+    elif numberOfAccounts == 0:
+
+            #legacy account conversion
+            try:
+                username = settings.getSetting('username')
+
+                if username != '':
+                    addon.setSetting(PLUGIN_NAME+'1_username', username)
+                    addon.setSetting(PLUGIN_NAME+'1_password', settings,getSetting('password'))
+                    addon.setSetting(PLUGIN_NAME+'1_auth_writely', settings.getSetting('auth_writely'))
+                    addon.setSetting(PLUGIN_NAME+'1_auth_wise', settings.getSetting('auth_wise'))
+                    addon.setSetting('username', '')
+                    addon.setSetting('password', '')
+                    addon.setSetting('auth_writely', '')
+                    addon.setSetting('auth_wise', '')
+                else:
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30015))
+                    xbmcplugin.endOfDirectory(plugin_handle)
+            except :
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30015))
+                xbmcplugin.endOfDirectory(plugin_handle)
+
+            return instanceName
+
+    # show entries of a single account (such as folder)
+    elif instanceName != '':
+
+        return instanceName
+
+
+
+    elif invokedUsername != '':
+
+            options = []
+            accounts = []
+            for count in range (1, numberOfAccounts+1):
+                instanceName = PLUGIN_NAME+str(count)
+                try:
+                    username = settings.getSetting(instanceName+'_username')
+                    if username != '':
+                        options.append(username)
+                        accounts.append(instanceName)
+
+                    if username == invokedUsername:
+                        return instanceName
+
+                except:
+                    return instanceName
+
+
+            #fallback on first defined account
+            return accounts[0]
+
+    #prompt before playback
+    else:
+
+            options = []
+            accounts = []
+
+            # url provided; provide public option
+            if mode=='streamurl':
+                options.append('*public')
+                accounts.append('public')
+
+            for count in range (1, numberOfAccounts+1):
+                instanceName = PLUGIN_NAME+str(count)
+                try:
+                    username = settings.getSetting(instanceName+'_username',10)
+                    if username != '':
+                        options.append(username)
+                        accounts.append(instanceName)
+                except:
+                    break
+
+            # url provided; provide public option
+            if mode=='streamurl':
+                options.append('public')
+                accounts.append('public')
+
+            ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), options)
+
+            #fallback on first defined account
+            if accounts[ret] == 'public':
+                return None
+            else:
+                return accounts[ret]

@@ -119,8 +119,6 @@ xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 numberOfAccounts = cloudservice.numberOfAccounts(addon_parameters.PLUGIN_NAME)
 invokedUsername = settings.getParameter('username')
 
-if invokedUsername == '' and instanceName == '':
-    instanceName = addon_parameters.PLUGIN_NAME + str(settings.getSetting('account_default', 1))
 
 # cloudservice - utilities
 ###
@@ -284,7 +282,7 @@ elif mode == 'buildstrm':
 ###
 
 
-instanceName = cloudservice.getInstanceName(addon, addon_parameters.PLUGIN_NAME, mode, instanceName, invokedUsername, numberOfAccounts, contextType)
+instanceName = kodi_common.getInstanceName(addon, addon_parameters.PLUGIN_NAME, mode, instanceName, invokedUsername, numberOfAccounts, contextType)
 
 service = None
 if instanceName is None and (mode == 'index' or mode == 'main' or mode == 'offline'):
@@ -294,6 +292,10 @@ elif instanceName is None:
 elif int(settings.getSetting(instanceName+'_type',0))==0 :
     service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings)
 else:
+
+    if invokedUsername == '' and instanceName == '':
+        instanceName = addon_parameters.PLUGIN_NAME + str(settings.getSetting('account_default', 1))
+
     service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
 #create strm files
