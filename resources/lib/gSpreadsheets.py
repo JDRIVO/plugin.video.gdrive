@@ -386,7 +386,7 @@ class gSpreadsheets:
             response_data = response.read()
 
             count=0;
-            for r in re.finditer('<gsx:mins>([^<]*)</gsx:mins><gsx:resolution>([^<]*)</gsx:resolution><gsx:md5>[^<]*</gsx:md5><gsx:filename>[^<]*</gsx:filename><gsx:fileid>([^<]*)</gsx:fileid>' ,
+            for r in re.finditer('<entry>.*?<gsx:part>([^<]*)</gsx:part><gsx:mins>([^<]*)</gsx:mins><gsx:resolution>([^<]*)</gsx:resolution><gsx:version>([^<]*)</gsx:version>.*?<gsx:fileid>([^<]*)</gsx:fileid></entry>' ,
                              response_data, re.DOTALL):
                 files[count] = r.groups()
 #source,nfo,show,season,episode,part,watched,duration
@@ -408,17 +408,24 @@ class gSpreadsheets:
         if len(files) == 0:
             return ''
         elif len(files) == 1:
-            return files[0][2]
+            return files[0][4]
 
 
         options = []
 
         if files:
             for item in files:
-                    options.append('resolution ' + str(files[item][1]) + 'p - mins '  + str(files[item][0]))
+                    option = ''
+                    if  str(files[item][0]) != '':
+                        option  = option + 'part '+ str(files[item][0])+ ' - '
+                    option = option + 'resolution ' + str(files[item][2]) + 'p - mins '  + str(files[item][1])
+                    if  str(files[item][3])  != '':
+                        option = option  + ' - version' +  str(files[item][3])
+
+                    options.append( option )
 
         ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30112), options)
-        return files[ret][2]
+        return files[ret][4]
 
 
 

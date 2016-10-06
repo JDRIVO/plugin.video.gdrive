@@ -116,7 +116,7 @@ xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
 #    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TRACKNUM)
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 
-numberOfAccounts = cloudservice.numberOfAccounts(addon_parameters.PLUGIN_NAME)
+numberOfAccounts = kodi_common.numberOfAccounts(addon_parameters.PLUGIN_NAME)
 invokedUsername = settings.getParameter('username')
 
 
@@ -125,7 +125,7 @@ invokedUsername = settings.getParameter('username')
 
 if mode == 'dummy' or mode == 'delete' or mode == 'enroll':
 
-    cloudservice.accountActions(addon, addon_parameters.PLUGIN_NAME, mode, instanceName, numberOfAccounts)
+    kodi_common.accountActions(addon, addon_parameters.PLUGIN_NAME, mode, instanceName, numberOfAccounts)
 
 #create strm files
 elif mode == 'buildstrm':
@@ -281,6 +281,10 @@ elif mode == 'buildstrm':
 
 ###
 
+#STRM playback without instance name; use default
+if invokedUsername == '' and instanceName == '' and (mode == 'video' or mode == 'audio'):
+    instanceName = addon_parameters.PLUGIN_NAME + str(settings.getSetting('account_default', 1))
+
 
 instanceName = kodi_common.getInstanceName(addon, addon_parameters.PLUGIN_NAME, mode, instanceName, invokedUsername, numberOfAccounts, contextType)
 
@@ -292,11 +296,8 @@ elif instanceName is None:
 elif int(settings.getSetting(instanceName+'_type',0))==0 :
     service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings)
 else:
-
-    if invokedUsername == '' and instanceName == '':
-        instanceName = addon_parameters.PLUGIN_NAME + str(settings.getSetting('account_default', 1))
-
     service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
+
 
 #create strm files
 if mode == 'buildstrm2':
