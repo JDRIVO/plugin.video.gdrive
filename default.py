@@ -213,6 +213,14 @@ elif mode == 'buildstrm':
                         break
                     count = count + 1
 
+                # encfs -- extract filename
+                if encfs:
+                    extrapulatedFolderName = re.compile('([^/]+)/$')
+
+                    titleDecrypted = extrapulatedFolderName.match(dencryptedPath)
+
+                    if titleDecrypted is not None:
+                        title = titleDecrypted.group(1)
 
 
                 if addon_parameters.spreadsheet and service.cloudResume == '2':
@@ -225,6 +233,14 @@ elif mode == 'buildstrm':
             elif filename != '':
                             if encfs:
                                 values = {'title': title, 'encfs': 'True', 'epath': encryptedPath, 'dpath': dencryptedPath, 'filename': filename, 'username': invokedUsername}
+                                # encfs -- extract filename
+                                extrapulatedFileName = re.compile('.*?/([^/]+)$')
+
+                                titleDecrypted = extrapulatedFileName.match(dencryptedPath)
+
+                                if titleDecrypted is not None:
+                                    title = titleDecrypted.group(1)
+
                             else:
                                 values = {'title': title, 'filename': filename, 'username': invokedUsername}
                             if type == 1:
@@ -1082,6 +1098,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             mediaList = ['.sub', '.srt']
             media_re = re.compile("|".join(mediaList), re.I)
 
+
+            # encfs -- extract path
             extrapulatedPath = re.compile('(.*?)/[^/]+$')
 
             dencryptedPathWithoutFilename = extrapulatedPath.match(dencryptedPath)

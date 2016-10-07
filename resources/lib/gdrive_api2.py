@@ -1270,7 +1270,7 @@ class gdrive(cloudservice):
     #   parameters: package (optional), title of media file, isExact allowing for fuzzy searches
     #   returns: url for playback
     ##
-    def getPlaybackCall(self, package=None, title='', isExact=True):
+    def getPlaybackCall(self, package=None, title='', isExact=True, contentType=None):
 
         try:
             pquality = int(self.addon.getSetting('preferred_quality'))

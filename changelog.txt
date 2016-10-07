@@ -1,3 +1,4 @@
+- save encfs STRM with decrypted names
 v0.8.18 (2016-10-06)
 - incorporate new fields and other fixes for strm spreadsheet functionality
 v0.8.17 (2016-10-05)

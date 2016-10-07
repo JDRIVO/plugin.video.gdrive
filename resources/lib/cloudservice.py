@@ -237,8 +237,9 @@ class cloudservice(object):
 #                    dirTitle = dir + ' [' +dirListINodes[index].title+ ']'
                     encryptedDir = dirListINodes[index].title
                     dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
+
                     #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
-                    self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile)
+                    self.buildSTRM(path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile)
 
                 elif index in fileListINodes.keys():
                     xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
@@ -1106,10 +1107,11 @@ class cloudservice(object):
 
                         cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
 
-                    #elif contextType != 'image':
-                        #values = {'username': self.authorization.username, 'epath': epath, 'dpath': dpath, 'encfs':'true' ,'title': folder.title, 'folder': folder.id, 'content_type': contextType }
+                    #encfs
+                    elif contextType != 'image':
+                        values = {'username': self.authorization.username, 'epath': epath, 'dpath': dpath, 'encfs':'true' ,'title': folder.title, 'folder': folder.id, 'content_type': contextType }
 
-                        #cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
+                        cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
 
                     elif contextType == 'image':
                         # slideshow
