@@ -47,18 +47,6 @@ def getParameter(key,default=''):
     except:
         return default
 
-def getSettingInt(self, key, default=0):
-    try:
-        value = int(self.addon.getSetting(key))
-        if value == 'true':
-            return True
-        elif value == 'false':
-            return False
-        else:
-            return value
-    except:
-        return default
-
 def getSetting(key,default=''):
     try:
         value = addon.getSetting(key)
@@ -197,3 +185,12 @@ class settings:
                 return value
         except:
             return default
+
+
+
+    def getSettingInt(self, key,default=0):
+        try:
+            return int(self.addon.getSetting(key))
+        except:
+            return default
+

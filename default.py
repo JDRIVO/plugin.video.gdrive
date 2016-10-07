@@ -191,7 +191,7 @@ elif mode == 'buildstrm':
                         if username == invokedUsername:
 
                             #let's log in
-                            if ( int(settings.getSetting(instanceName+'_type',0))==0):
+                            if ( settings.getSettingInt(instanceName+'_type',0)==0):
                                 service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings)
                             else:
                                 service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
@@ -206,7 +206,7 @@ elif mode == 'buildstrm':
                             service
                         except NameError:
                             #fallback on first defined account
-                            if ( int(settings.getSetting(instanceName+'_type',0))==0):
+                            if ( settings.getSettingInt(instanceName+'_type',0)==0):
                                 service = cloudservice1(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
                             else:
                                 service = cloudservice2(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
@@ -215,7 +215,7 @@ elif mode == 'buildstrm':
 
 
 
-                if service.cloudResume == '2':
+                if addon_parameters.spreadsheet and service.cloudResume == '2':
                     spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
                     service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile)
                     spreadsheetFile.close()
@@ -245,7 +245,7 @@ elif mode == 'buildstrm':
                     username = settings.getSetting(instanceName+'_username')
 
                     if username != '' and username == invokedUsername:
-                        if ( int(settings.getSetting(instanceName+'_type',0))==0):
+                        if ( settings.getSettingInt(instanceName+'_type',0)==0):
                                 service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings)
                         else:
                             service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
@@ -258,7 +258,7 @@ elif mode == 'buildstrm':
                             service
                         except NameError:
                             #fallback on first defined account
-                            if ( int(settings.getSetting(instanceName+'_type',0))==0):
+                            if ( settings.getSettingInt(instanceName+'_type',0)==0):
                                     service = cloudservice1(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
                             else:
                                 service = cloudservice2(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
@@ -293,7 +293,7 @@ if instanceName is None and (mode == 'index' or mode == 'main' or mode == 'offli
     service = None
 elif instanceName is None:
     service = cloudservice2(PLUGIN_URL,addon,'', user_agent, settings, authenticate=False)
-elif int(settings.getSetting(instanceName+'_type',0))==0 :
+elif settings.getSettingInt(instanceName+'_type',0)==0 :
     service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings)
 else:
     service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
@@ -381,7 +381,7 @@ elif mode == 'cloud_db':
     package=package.package(mediaFile,mediaFolder)
 
         # TESTING
-    if service.cloudResume == '2':
+    if addon_parameters.spreadsheet and service.cloudResume == '2':
         if service.worksheetID == '':
 
             try:
@@ -403,7 +403,7 @@ elif mode == 'cloud_db':
                 break
 
         # TESTING
-    if service.cloudResume == '2':
+    if addon_parameters.spreadsheet and service.cloudResume == '2':
 
         if service.gSpreadsheet is None:
             service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
@@ -444,29 +444,34 @@ elif mode == 'main' or mode == 'index':
     # display option for all Videos/Music/Photos, across gdrive
     #** gdrive specific
     if mode == 'main':
-        if contentType in (2,4,7):
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=ALL&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30030)+']')
-        elif contentType == 1:
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=VIDEOMUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30031)+']')
-        elif contentType == 0:
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=VIDEO&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30025)+']')
-        elif contentType == 3:
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=MUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30094)+']')
-        elif contentType == 5:
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=PHOTO&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30034)+']')
-        elif contentType == 6:
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=PHOTOMUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30032)+']')
+        if ('gdrive' in addon_parameters.PLUGIN_NAME):
+
+            if contentType in (2,4,7):
+                kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=ALL&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30030)+']')
+            elif contentType == 1:
+                kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=VIDEOMUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30031)+']')
+            elif contentType == 0:
+                kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=VIDEO&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30025)+']')
+            elif contentType == 3:
+                kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=MUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30094)+']')
+            elif contentType == 5:
+                kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=PHOTO&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30034)+']')
+            elif contentType == 6:
+                kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=PHOTOMUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30032)+']')
         folderID = 'root'
-        if (service.protocol != 2):
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILES&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' '+addon.getLocalizedString(30095)+']')
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30096)+']')
-        kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=SHARED&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30098)+']')
-        kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
+
+        if ('gdrive' in addon_parameters.PLUGIN_NAME):
+
+#        if (service.protocol != 2):
+#            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILES&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' '+addon.getLocalizedString(30095)+']')
+#            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30096)+']')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=SHARED&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30098)+']')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
         kodi_common.addMenu(PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
         kodi_common.addMenu(PLUGIN_URL+'?mode=buildstrm2&instance='+str(service.instanceName)+'&content_type='+str(contextType),'<Testing - manual run of change tracking build STRM>')
 
         #CLOUD_DB
-        if service.gSpreadsheet is not None:
+        if 'gdrive' in addon_parameters.PLUGIN_NAME and service.gSpreadsheet is not None:
                 kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_db&action=recentstarted&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' recently started]')
                 kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_db&action=recentwatched&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' recently watched]')
                 kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_db&action=library&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' library]')
@@ -579,7 +584,7 @@ elif mode == 'main' or mode == 'index':
         # real folder
         if folderID != '':
             mediaItems = service.getMediaList(folderID,contentType=contentType)
-            if service.cloudResume == '2':
+            if addon_parameters.spreadsheet and service.cloudResume == '2':
 
                 if service.gSpreadsheet is None:
                     service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
@@ -1010,7 +1015,10 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         encfs_source = settings.encfsSource
         encfs_target = settings.encfsTarget
         encfs_inode = settings.encfsInode
-        (mediaURLs,package) = service.getPlaybackCall(None,title=title)
+        mediaFile = file.file(filename, title, '', 0, '','')
+        mediaFolder = folder.folder(folderID,'')
+        (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder), title=title, contentType=8)
+        #(mediaURLs,package) = service.getPlaybackCall(None,title=title)
         mediaURL = mediaURLs[0]
 
         playbackTarget = encfs_target + dencryptedPath
@@ -1300,7 +1308,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             # right-click - download (download only + force)
             if not seek > 0 and not (settings.download and not settings.play):
                     # TESTING
-                if service.cloudResume == '2':
+                if addon_parameters.spreadsheet and service.cloudResume == '2':
                     if service.worksheetID == '':
 
                         try:
@@ -1322,7 +1330,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                             break
 
                     # TESTING
-                if service.cloudResume == '2':
+                if addon_parameters.spreadsheet and service.cloudResume == '2':
 
                     if service.gSpreadsheet is None:
                         service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
