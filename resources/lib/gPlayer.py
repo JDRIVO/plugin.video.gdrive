@@ -24,6 +24,7 @@ import urllib, urllib2
 
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
+import addon_parameters
 
 class gPlayer(xbmc.Player):
 
@@ -187,7 +188,7 @@ class gPlayer(xbmc.Player):
 #        self.next()
         if self.package is not None:
             try:
-                if self.service.settings.cloudResume == '1' and  self.service.protocol == 2 and self.time > self.package.file.resume:
+                if addon_parameters.spreadsheet and self.service.cloudResume == '1' and  self.service.protocol == 2 and self.time > self.package.file.resume:
                     xbmc.log(self.service.addon.getAddonInfo('name') + ': PLAYBACK ENDED 1 ' + str(self.package.file.playcount), xbmc.LOGNOTICE)
 
                     self.service.setProperty(self.package.file.id,'resume', self.time)
@@ -196,7 +197,7 @@ class gPlayer(xbmc.Player):
                     if self.service.settings:
                         xbmc.log(self.service.addon.getAddonInfo('name') + ': Updated remote db ', xbmc.LOGNOTICE)
 
-                elif self.service.settings.cloudResume == '2' and  self.service.protocol == 2 and (self.time/self.package.file.duration) >= int(self.service.settings.skipResume)*0.01:#and self.time > self.package.file.resume:
+                elif addon_parameters.spreadsheet and self.service.cloudResume == '2' and  self.service.protocol == 2 and (self.time/self.package.file.duration) >= int(self.service.settings.skipResume)*0.01:#and self.time > self.package.file.resume:
                     xbmc.log(self.service.addon.getAddonInfo('name') + ': PLAYBACK ENDED 2 ' + str(self.package.file.playcount), xbmc.LOGNOTICE)
 
                     self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, watched= int(self.package.file.playcount)+1, resume=0)
@@ -230,7 +231,7 @@ class gPlayer(xbmc.Player):
         print "PLAYBACK STOPPED"
         if self.package is not None:
             try:
-                if self.service.settings.cloudResume == '1' and  self.service.protocol == 2 and float(self.time) > float(self.package.file.resume):
+                if addon_parameters.spreadsheet and self.service.cloudResume == '1' and  self.service.protocol == 2 and float(self.time) > float(self.package.file.resume):
                     xbmc.log(self.service.addon.getAddonInfo('name') + ': PLAYBACK STOPPED 1 ' + str(self.time), xbmc.LOGNOTICE)
 
                     self.service.setProperty(self.package.file.id,'resume', self.time)
@@ -238,7 +239,7 @@ class gPlayer(xbmc.Player):
                     if self.service.settings:
                         xbmc.log(self.service.addon.getAddonInfo('name') + ': Updated remote db ', xbmc.LOGNOTICE)
 
-                elif self.service.settings.cloudResume == '2' and  self.service.protocol == 2:# and float(self.time) > float(self.package.file.resume):
+                elif addon_parameters.spreadsheet  and self.service.cloudResume == '2' and  self.service.protocol == 2:# and float(self.time) > float(self.package.file.resume):
                     xbmc.log(self.service.addon.getAddonInfo('name') + ': PLAYBACK STOPPED 2 ' + str(self.time), xbmc.LOGNOTICE)
 
                     self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, resume=self.time)
