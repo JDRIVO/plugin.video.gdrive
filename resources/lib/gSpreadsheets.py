@@ -420,7 +420,7 @@ class gSpreadsheets:
                         option  = option + 'part '+ str(files[item][0])+ ' - '
                     option = option + 'resolution ' + str(files[item][2]) + 'p - mins '  + str(files[item][1])
                     if  str(files[item][3])  != '':
-                        option = option  + ' - version' +  str(files[item][3])
+                        option = option  + ' - version ' +  str(files[item][3])
 
                     options.append( option )
 
