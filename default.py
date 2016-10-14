@@ -447,6 +447,69 @@ elif mode == 'cloud_db':
 
     service.updateAuthorization(addon)
 
+#cloud_db actions
+elif mode == 'cloud_dbtest':
+
+    title = settings.getParameter('title')
+    folderID = settings.getParameter('folder')
+    folderName = settings.getParameter('foldername')
+    filename = settings.getParameter('filename')
+
+    action = settings.getParameter('action')
+
+    mediaFile = file.file(filename, title, '', 0, '','')
+    mediaFolder = folder.folder(folderID,folderName)
+    package=package.package(mediaFile,mediaFolder)
+
+    spreadsheet = None
+        # TESTING
+    if addon_parameters.spreadsheet:
+
+            try:
+                service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+
+                spreadsheets = service.gSpreadsheet.getSpreadsheetList()
+            except:
+                pass
+
+            for title in spreadsheets.iterkeys():
+                if title == 'Movie2':
+                    worksheets = service.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+
+                    for worksheet in worksheets.iterkeys():
+                        if worksheet == 'db':
+                            spreadsheet = worksheets[worksheet]
+                        break
+                break
+
+        # TESTING
+    if addon_parameters.spreadsheet:
+
+        if service.gSpreadsheet is None:
+            service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+        if action == 'watch':
+            service.gSpreadsheet.setMediaStatus(service.worksheetID,package, watched=1)
+            xbmc.executebuiltin("XBMC.Container.Refresh")
+        elif action == 'queue':
+            package.folder.id = 'QUEUED'
+            service.gSpreadsheet.setMediaStatus(service.worksheetID,package)
+        elif action == 'recentwatched' or action == 'recentstarted' or action == 'library' or action == 'queued':
+
+            mediaItems = service.gSpreadsheet.getMovies(spreadsheet)
+
+            #ensure that folder view playback
+            if contextType == '':
+                contextType = 'video'
+
+            if mediaItems:
+                for item in mediaItems:
+
+                        if item.file is None:
+                            service.addDirectory(item.folder, contextType=contextType)
+                        else:
+                            service.addMediaFile(item, contextType=contextType)
+
+    service.updateAuthorization(addon)
 #dump a list of videos available to play
 elif mode == 'main' or mode == 'index':
 

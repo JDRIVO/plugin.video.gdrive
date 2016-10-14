@@ -428,6 +428,97 @@ class gSpreadsheets:
         return files[ret][4]
 
 
+    #spreadsheet STRM
+    def getMovies(self, url):
+
+
+#        params = urllib.urlencode({'title': '"' +str(title)+'"'}, {'year': year})
+        #url = url + '?sq=' + params
+#        url = url + 'gviz/?tq=SELECT%20B%2C%20C%2C%20D%2C%20F%20WHERE%20C%20CONTAINS%20%27Florida%27'
+
+        for r in re.finditer('list/([^\/]+)\/' ,
+                         url, re.DOTALL):
+            spreadsheetID = r.group(1)
+            url = 'https://docs.google.com/spreadsheets/d/'+spreadsheetID+'/gviz/tq?tqx=out.csv'
+
+        #title star with A
+  #      url = url + '&tq=select%20A%20where%20A%20starts%20with%20\'A\''
+
+        #all genre
+        #url = url + '&tq=select%20D%2Ccount(A)%20group%20by%20D'
+
+        #exclude multiple genre
+        #url = url + '&tq=select%20D%2Ccount(A)%20where%20not%20D%20contains%20\'%7C\'%20group%20by%20D'
+
+        #year
+        url = url + '&tq=select%20B%2Ccount(A)%20group%20by%20B%20order%20by%20B'
+
+
+
+
+
+        files = {}
+        while True:
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.service.refreshToken()
+                req = urllib2.Request(url, None, self.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    return ''
+              else:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return ''
+            response_data = response.read()
+
+            count=0;
+            for r in re.finditer('<entry>.*?<gsx:part>([^<]*)</gsx:part><gsx:mins>([^<]*)</gsx:mins><gsx:resolution>([^<]*)</gsx:resolution><gsx:version>([^<]*)</gsx:version>.*?<gsx:fileid>([^<]*)</gsx:fileid></entry>' ,
+                             response_data, re.DOTALL):
+                files[count] = r.groups()
+#source,nfo,show,season,episode,part,watched,duration
+#channel,month,day,weekday,hour,minute,show,order,includeWatched
+                count = count + 1
+
+            nextURL = ''
+            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
+                             response_data, re.DOTALL):
+                nextURL = r.groups()
+
+            response.close()
+
+            if nextURL == '':
+                break
+            else:
+                url = nextURL[0]
+
+        if len(files) == 0:
+            return ''
+        elif len(files) == 1:
+            return files[0][4]
+
+
+        options = []
+
+        if files:
+            for item in files:
+                    option = ''
+                    if  str(files[item][0]) != '':
+                        option  = option + 'part '+ str(files[item][0])+ ' - '
+                    option = option + 'resolution ' + str(files[item][2]) + 'p - mins '  + str(files[item][1])
+                    if  str(files[item][3])  != '':
+                        option = option  + ' - version ' +  str(files[item][3])
+
+                    options.append( option )
+
+        ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30112), options)
+        return files[ret][4]
+
 
 
 
