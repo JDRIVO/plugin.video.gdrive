@@ -429,7 +429,7 @@ class gSpreadsheets:
 
 
     #spreadsheet STRM
-    def getMovies(self, url):
+    def getMovies(self, url, genre=None):
 
 
 #        params = urllib.urlencode({'title': '"' +str(title)+'"'}, {'year': year})
@@ -447,78 +447,114 @@ class gSpreadsheets:
         #all genre
         #url = url + '&tq=select%20D%2Ccount(A)%20group%20by%20D'
 
-        #exclude multiple genre
-        #url = url + '&tq=select%20D%2Ccount(A)%20where%20not%20D%20contains%20\'%7C\'%20group%20by%20D'
+        if genre is None:
+            #exclude multiple genre
+            url = url + '&tq=select%20D%2Ccount(A)%20where%20not%20D%20contains%20\'%7C\'%20group%20by%20D'
+        elif genre is not None:
+            #exclude multiple genre
+            url = url + '&tq=select%20*%20where%20D%20%3D%20\''+genre+'\''
 
         #year
-        url = url + '&tq=select%20B%2Ccount(A)%20group%20by%20B%20order%20by%20B'
+        #url = url + '&tq=select%20B%2Ccount(A)%20group%20by%20B%20order%20by%20B'
 
 
 
 
 
-        files = {}
-        while True:
+        mediaList = []
+
+        req = urllib2.Request(url, None, self.service.getHeadersList())
+
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
             req = urllib2.Request(url, None, self.service.getHeadersList())
-
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
-              if e.code == 403 or e.code == 401:
-                self.service.refreshToken()
-                req = urllib2.Request(url, None, self.service.getHeadersList())
-                try:
-                    response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-                    return ''
-              else:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
                 return ''
-            response_data = response.read()
-
-            count=0;
-            for r in re.finditer('<entry>.*?<gsx:part>([^<]*)</gsx:part><gsx:mins>([^<]*)</gsx:mins><gsx:resolution>([^<]*)</gsx:resolution><gsx:version>([^<]*)</gsx:version>.*?<gsx:fileid>([^<]*)</gsx:fileid></entry>' ,
-                             response_data, re.DOTALL):
-                files[count] = r.groups()
-#source,nfo,show,season,episode,part,watched,duration
-#channel,month,day,weekday,hour,minute,show,order,includeWatched
-                count = count + 1
-
-            nextURL = ''
-            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
-                             response_data, re.DOTALL):
-                nextURL = r.groups()
-
-            response.close()
-
-            if nextURL == '':
-                break
-            else:
-                url = nextURL[0]
-
-        if len(files) == 0:
+          else:
+            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return ''
-        elif len(files) == 1:
-            return files[0][4]
+        response_data = response.read()
+        response.close()
+
+        count=0;
+        for r in re.finditer('\{"c":\[\{"v":"([^\"]*)"\},\{"v":[^\,]*,"f":"([^\"]*)"\},\{"v":[^\,]*,"f":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\}\]\}' ,
+                         response_data, re.DOTALL):
+            title = r.group(1)
+            year = r.group(2)
+            rating = r.group(3)
+            genre = r.group(4)
+            plot = r.group(5)
+            poster = r.group(6)
+            fanart = r.group(7)
+            country = r.group(8)
+            set = r.group(9)
+            director = r.group(10)
+            actors = r.group(11)
+
+            newPackage = package.package( file.file('', title, plot, self.service.MEDIA_TYPE_VIDEO, fanart,poster),folder.folder('', ''))
+            mediaList.append(newPackage)
 
 
-        options = []
+#
+        return mediaList
 
-        if files:
-            for item in files:
-                    option = ''
-                    if  str(files[item][0]) != '':
-                        option  = option + 'part '+ str(files[item][0])+ ' - '
-                    option = option + 'resolution ' + str(files[item][2]) + 'p - mins '  + str(files[item][1])
-                    if  str(files[item][3])  != '':
-                        option = option  + ' - version ' +  str(files[item][3])
 
-                    options.append( option )
+    #spreadsheet STRM
+    def getGenre(self, url):
 
-        ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30112), options)
-        return files[ret][4]
 
+
+        for r in re.finditer('list/([^\/]+)\/' ,
+                         url, re.DOTALL):
+            spreadsheetID = r.group(1)
+            url = 'https://docs.google.com/spreadsheets/d/'+spreadsheetID+'/gviz/tq?tqx=out.csv'
+
+        #all genre
+        #url = url + '&tq=select%20D%2Ccount(A)%20group%20by%20D'
+
+        url = url + '&tq=select%20D%2Ccount(A)%20where%20not%20D%20contains%20\'%7C\'%20group%20by%20D'
+
+
+
+
+
+        mediaList = []
+
+        req = urllib2.Request(url, None, self.service.getHeadersList())
+
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return ''
+          else:
+            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+            return ''
+        response_data = response.read()
+        response.close()
+
+        count=0;
+        for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
+                         response_data, re.DOTALL):
+            item = r.group(1)
+
+            newPackage = package.package( None,folder.folder('CLOUD_DB_GENRE', item))
+            mediaList.append(newPackage)
+
+
+        return mediaList
 
 
 
