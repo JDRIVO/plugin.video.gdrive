@@ -493,12 +493,16 @@ elif mode == 'cloud_dbtest':
         elif action == 'queue':
             package.folder.id = 'QUEUED'
             service.gSpreadsheet.setMediaStatus(service.worksheetID,package)
-        elif action == 'genre' or action == 'year' or action == 'recentstarted' or  'library' in action or action == 'queued':
+        elif action == 'genre' or action == 'year' or action == 'title' or action == 'recentstarted' or  'library' in action or action == 'queued':
 
             if action == 'genre':
                 mediaItems = service.gSpreadsheet.getMovies(spreadsheet, genre=title)
             elif action == 'year':
                 mediaItems = service.gSpreadsheet.getMovies(spreadsheet, year=title)
+            elif action == 'title':
+                mediaItems = service.gSpreadsheet.getMovies(spreadsheet, title=title)
+            elif action == 'library_title':
+                mediaItems = service.gSpreadsheet.getTitle(spreadsheet)
             elif action == 'library_genre':
                 mediaItems = service.gSpreadsheet.getGenre(spreadsheet)
             elif action == 'library_year':
@@ -559,6 +563,7 @@ elif mode == 'main' or mode == 'index':
         if addon_parameters.testing_features:
             kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&action=library_genre&content_type='+str(contextType),'<Testing - movies - genre>')
             kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&action=library_year&content_type='+str(contextType),'<Testing - movies - year>')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&action=library_title&content_type='+str(contextType),'<Testing - movies - title>')
 
         #CLOUD_DB
         if 'gdrive' in addon_parameters.PLUGIN_NAME and service.gSpreadsheet is not None:

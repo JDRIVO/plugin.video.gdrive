@@ -429,7 +429,7 @@ class gSpreadsheets:
 
 
     #spreadsheet STRM
-    def getMovies(self, url, genre=None, year=None):
+    def getMovies(self, url, genre=None, year=None, title=None):
 
 
 #        params = urllib.urlencode({'title': '"' +str(title)+'"'}, {'year': year})
@@ -441,18 +441,20 @@ class gSpreadsheets:
             spreadsheetID = r.group(1)
             url = 'https://docs.google.com/spreadsheets/d/'+spreadsheetID+'/gviz/tq?tqx=out.csv'
 
-        #title star with A
-  #      url = url + '&tq=select%20A%20where%20A%20starts%20with%20\'A\''
+
 
         #all genre
         #url = url + '&tq=select%20D%2Ccount(A)%20group%20by%20D'
 
         if year is not None:
             #exclude multiple genre
-            url = url + '&tq=select%20*%20where%20B%20%3D%20'+year
+            url = url + '&tq=select%20*%20where%20B%20%3D%20'+str(year)
         elif genre is not None:
             #exclude multiple genre
-            url = url + '&tq=select%20*%20where%20D%20%3D%20\''+genre+'\''
+            url = url + '&tq=select%20*%20where%20D%20contains%20\''+str(genre)+'\''
+        elif title is not None:
+            #title star with A
+            url = url + '&tq=select%20*%20where%20A%20starts%20with%20\''+str(title).lower()+ '\'%20or%20A%20starts%20with%20\''+str(title).upper()+'\''
 
         #year
         #url = url + '&tq=select%20B%2Ccount(A)%20group%20by%20B%20order%20by%20B'
@@ -565,6 +567,20 @@ class gSpreadsheets:
 
         return mediaList
 
+
+    #spreadsheet STRM
+    # loop through alphabet
+    def getTitle(self, url):
+
+        mediaList = []
+        from string import ascii_lowercase
+        for c in ascii_lowercase:
+
+            newPackage = package.package( None,folder.folder('CLOUD_DB_TITLE', c))
+            mediaList.append(newPackage)
+
+
+        return mediaList
 
     #spreadsheet STRM
     def getYear(self, url):
