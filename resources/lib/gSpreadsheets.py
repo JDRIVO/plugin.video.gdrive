@@ -429,7 +429,7 @@ class gSpreadsheets:
 
 
     #spreadsheet STRM
-    def getMovies(self, url, genre=None):
+    def getMovies(self, url, genre=None, year=None):
 
 
 #        params = urllib.urlencode({'title': '"' +str(title)+'"'}, {'year': year})
@@ -447,9 +447,9 @@ class gSpreadsheets:
         #all genre
         #url = url + '&tq=select%20D%2Ccount(A)%20group%20by%20D'
 
-        if genre is None:
+        if year is not None:
             #exclude multiple genre
-            url = url + '&tq=select%20D%2Ccount(A)%20where%20not%20D%20contains%20\'%7C\'%20group%20by%20D'
+            url = url + '&tq=select%20*%20where%20B%20%3D%20'+year
         elif genre is not None:
             #exclude multiple genre
             url = url + '&tq=select%20*%20where%20D%20%3D%20\''+genre+'\''
@@ -498,6 +498,7 @@ class gSpreadsheets:
             actors = r.group(11)
 
             newPackage = package.package( file.file('', title, plot, self.service.MEDIA_TYPE_VIDEO, fanart,poster),folder.folder('', ''))
+            newPackage.file.rating = rating
             mediaList.append(newPackage)
 
 
@@ -508,8 +509,6 @@ class gSpreadsheets:
     #spreadsheet STRM
     def getGenre(self, url):
 
-
-
         for r in re.finditer('list/([^\/]+)\/' ,
                          url, re.DOTALL):
             spreadsheetID = r.group(1)
@@ -519,10 +518,6 @@ class gSpreadsheets:
         #url = url + '&tq=select%20D%2Ccount(A)%20group%20by%20D'
 
         url = url + '&tq=select%20D%2Ccount(A)%20where%20not%20D%20contains%20\'%7C\'%20group%20by%20D'
-
-
-
-
 
         mediaList = []
 
@@ -556,6 +551,51 @@ class gSpreadsheets:
 
         return mediaList
 
+
+    #spreadsheet STRM
+    def getYear(self, url):
+
+        for r in re.finditer('list/([^\/]+)\/' ,
+                         url, re.DOTALL):
+            spreadsheetID = r.group(1)
+            url = 'https://docs.google.com/spreadsheets/d/'+spreadsheetID+'/gviz/tq?tqx=out.csv'
+
+        #all genre
+        #url = url + '&tq=select%20D%2Ccount(A)%20group%20by%20D'
+
+        url = url + '&tq=select%20B%2Ccount(A)%20group%20by%20B'
+
+        mediaList = []
+
+        req = urllib2.Request(url, None, self.service.getHeadersList())
+
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return ''
+          else:
+            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+            return ''
+        response_data = response.read()
+        response.close()
+
+        count=0;
+        for r in re.finditer('"c"\:\[\{"v"\:(\d+)' ,
+                         response_data, re.DOTALL):
+            item = r.group(1)
+
+            newPackage = package.package( None,folder.folder('CLOUD_DB_YEAR', item))
+            mediaList.append(newPackage)
+
+
+        return mediaList
 
 
     def getShows(self,url,channel):
