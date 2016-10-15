@@ -18,25 +18,24 @@
 '''
 import urllib
 import re
+import file
 
 
 #
 #
 #
-class movie:
+class movie(file):
     # CloudService v0.3
 
 
     ##
     ##
-    def __init__(self, title, year, rating=None, genre=None, plot=None, thumbnail=None, fanart=None, country=None, set=None, director=None, authors=None):
-        self.title = title
+    def __init__(self, title, year, type, rating=None, genre=None, plot=None, thumbnail=None, fanart=None, country=None, set=None, director=None, authors=None):
+        File.__init__(self,'', title, plot, type, fanart,thumbnail, date='', size=0, resolution=None, playcount=0, duration=-1, download='', checksum='')
         self.year = year
         self.rating = rating
         self.genre = genre
         self.plot = plot
-        self.thumbnail = thumbnail
-        self.fanart = fanart
         self.country = country
         self.set = set
         self.director = director

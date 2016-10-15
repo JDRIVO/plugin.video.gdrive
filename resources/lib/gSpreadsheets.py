@@ -495,7 +495,13 @@ class gSpreadsheets:
             country = r.group(8)
             set = r.group(9)
             director = r.group(10)
-            actors = r.group(11)
+
+
+            actorList = r.group(11)
+            actors = []
+            for r in re.finditer('([^\|]+)\|' ,actorList, re.DOTALL):
+                actor = r.group(1)
+                actors.append( (actor, actor))
 
             newPackage = package.package( file.file('', title, plot, self.service.MEDIA_TYPE_VIDEO, fanart,poster),folder.folder('', ''))
             newPackage.file.rating = rating
@@ -504,6 +510,8 @@ class gSpreadsheets:
             newPackage.file.genre = genre
             newPackage.file.country = country
             newPackage.file.year = year
+            if len(actors) > 0:
+                newPackage.file.actors = actors
 
             mediaList.append(newPackage)
 

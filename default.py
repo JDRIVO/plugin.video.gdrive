@@ -479,8 +479,8 @@ elif mode == 'cloud_dbtest':
                     for worksheet in worksheets.iterkeys():
                         if worksheet == 'db':
                             spreadsheet = worksheets[worksheet]
-                        break
-                break
+                            break
+                    break
 
         # TESTING
     if addon_parameters.spreadsheet:

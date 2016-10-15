@@ -73,6 +73,7 @@ class file:
         self.genre = ''
         self.country = ''
         self.year = ''
+        self.actors = None
 
 
         # nekwebdev contribution
