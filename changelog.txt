@@ -1,3 +1,5 @@
+v0.8.22 (2016-10-15)
+- enable playback for testing features
 v0.8.21 (2016-10-14)
 - testing browse movie by year
 v0.8.20 (2016-10-13)

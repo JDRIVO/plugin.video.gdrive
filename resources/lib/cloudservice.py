@@ -1256,7 +1256,7 @@ class cloudservice(object):
             if package.file.hasMeta:
                 infolabels = decode_dict({ 'title' : package.file.displayShowTitle() ,  'plot' : package.file.plot, 'TVShowTitle': package.file.show, 'EpisodeName': package.file.showtitle, 'season': package.file.season, 'episode': package.file.episode,'size' : package.file.size })
             else:
-                infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'cast': [('dd', 'x')],  'plot' : package.file.plot, 'size' : package.file.size})
+                infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'cast': [('dd', 'x')],  'plot' : package.file.plot,  'ratingandvotes' : package.file.rating, 'director': package.file.director, 'set': package.file.set, 'country': package.file.country, 'genre': package.file.genre, 'year': package.file.year,  'size' : package.file.size})
             listitem.setInfo('Video', infolabels)
             playbackURL = '?mode=video'
             if self.integratedPlayer:
@@ -1319,6 +1319,10 @@ class cloudservice(object):
     #    url = PLUGIN_URL+playbackURL+'&title='+package.file.title+'&filename='+package.file.id+'&instance='+str(self.instanceName)+'&folder='+str(package.folder.id)
         if encfs:
             values = {'instance': self.instanceName, 'dpath': dpath, 'epath': epath, 'encfs': 'true', 'title': package.file.title, 'filename': package.file.id, 'folder': package.folder.id}
+
+        elif package.file.id == '':
+            values = {'instance': self.instanceName, 'title': package.file.title, 'sheet': 'x', 'year': package.file.year, 'folder': package.folder.id}
+
         else:
             values = {'instance': self.instanceName, 'title': package.file.title, 'filename': package.file.id, 'folder': package.folder.id}
         url = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)

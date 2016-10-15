@@ -1046,8 +1046,28 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         if service.gSpreadsheet is None:
             service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
 
+        try:
+            service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
 
-        filename = service.gSpreadsheet.getSTRMplaybackMovie('https://spreadsheets.google.com/feeds/list/'+spreadsheetSTRM+'/'+sheetSTRM+'/private/full', title, year)
+            spreadsheets = service.gSpreadsheet.getSpreadsheetList()
+        except:
+            pass
+
+        spreadsheet = None
+        for t in spreadsheets.iterkeys():
+            if t == 'Movies':
+                worksheets = service.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[t])
+
+                for worksheet in worksheets.iterkeys():
+                    if worksheet == 'db':
+                        spreadsheet = worksheets[worksheet]
+                        break
+                break
+
+        if spreadsheet != None:
+            filename = service.gSpreadsheet.getSTRMplaybackMovie(spreadsheet, title, year)
+        else:
+            filename = service.gSpreadsheet.getSTRMplaybackMovie('https://spreadsheets.google.com/feeds/list/'+spreadsheetSTRM+'/'+sheetSTRM+'/private/full', title, year)
 
     if folderID == 'False':
             folderID = 'SEARCH'

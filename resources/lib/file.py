@@ -68,6 +68,11 @@ class file:
         self.isMovie = False
         self.cloudResume = 0
         self.deleted = False
+        self.director = ''
+        self.set = ''
+        self.genre = ''
+        self.country = ''
+        self.year = ''
 
 
         # nekwebdev contribution

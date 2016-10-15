@@ -499,6 +499,12 @@ class gSpreadsheets:
 
             newPackage = package.package( file.file('', title, plot, self.service.MEDIA_TYPE_VIDEO, fanart,poster),folder.folder('', ''))
             newPackage.file.rating = rating
+            newPackage.file.director = director
+            newPackage.file.set = set
+            newPackage.file.genre = genre
+            newPackage.file.country = country
+            newPackage.file.year = year
+
             mediaList.append(newPackage)
 
 
