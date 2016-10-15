@@ -1,3 +1,5 @@
+v0.8.21 (2016-10-14)
+- testing browse movie by year
 v0.8.20 (2016-10-13)
 - testing movie genre + year
 v0.8.19 (2016-10-11)
