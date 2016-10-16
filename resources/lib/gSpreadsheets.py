@@ -31,22 +31,6 @@ from resources.lib import package
 from resources.lib import file
 from resources.lib import folder
 
-def decode(data):
-        return re.sub("&#(\d+)(;|(?=\s))", _callback, data).strip()
-
-def decode_dict(data):
-        for k, v in data.items():
-            if type(v) is str or type(v) is unicode:
-                data[k] = decode(v)
-        return data
-
-#http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
-def _callback(matches):
-    id = matches.group(1)
-    try:
-        return unichr(int(id))
-    except:
-        return id
 
 class gSpreadsheets:
 
@@ -445,7 +429,7 @@ class gSpreadsheets:
 
 
     #spreadsheet STRM
-    def getMovies(self, url, genre=None, year=None, title=None, country=None, director=None):
+    def getMovies(self, url, genre=None, year=None, title=None, country=None, director=None, studio=None):
 
 
 #        params = urllib.urlencode({'title': '"' +str(title)+'"'}, {'year': year})
@@ -464,24 +448,29 @@ class gSpreadsheets:
 
         if year is not None:
             #exclude multiple genre
-            url = url + '&tq=select%20*%20where%20B%20%3D%20'+str(year)
+            url = url + '&tq=select%20A%2CB%2CC%2CD%2CE%2CF%2CG%2CH%2CI%2CJ%2CK%20where%20B%20%3D%20'+str(year)
         elif genre is not None:
             #exclude multiple genre
-            url = url + '&tq=select%20*%20where%20D%20contains%20\''+str(genre)+'\''
+            url = url + '&tq=select%20A%2CB%2CC%2CD%2CE%2CF%2CG%2CH%2CI%2CJ%2CK%20where%20D%20contains%20\''+str(genre)+'\''
         elif country is not None:
             #exclude multiple genre
             country = re.sub(' ', '%20', country)
-            url = url + '&tq=select%20*%20where%20H%20%3D%20\''+str(country)+'\''
+#            url = url + '&tq=select%20*%20where%20H%20%3D%20\''+str(country)+'\''
+            url = url + '&tq=select%20A%2CB%2CC%2CD%2CE%2CF%2CG%2CH%2CI%2CJ%2CK%20where%20H%20%3D%20\''+str(country)+'\''
         elif director is not None:
             #exclude multiple genre
             director = re.sub(' ', '%20', director)
-            url = url + '&tq=select%20*%20where%20J%20%3D%20\''+str(director)+'\''
+            url = url + '&tq=select%20A%2CB%2CC%2CD%2CE%2CF%2CG%2CH%2CI%2CJ%2CK%20where%20J%20%3D%20\''+str(director)+'\''
+        elif studio is not None:
+            #exclude multiple genre
+            studio = re.sub(' ', '%20', studio)
+            url = url + '&tq=select%20A%2CB%2CC%2CD%2CE%2CF%2CG%2CH%2CI%2CJ%2CK%20where%20I%20%3D%20\''+str(studio)+'\''
         elif title is not None and title != '#all':
             #title star with A
-            url = url + '&tq=select%20*%20where%20A%20starts%20with%20\''+str(title).lower()+ '\'%20or%20A%20starts%20with%20\''+str(title).upper()+'\''
+            url = url + '&tq=select%20A%2CB%2CC%2CD%2CE%2CF%2CG%2CH%2CI%2CJ%2CK%20where%20A%20starts%20with%20\''+str(title).lower()+ '\'%20or%20A%20starts%20with%20\''+str(title).upper()+'\''
         elif title is not None and title == '#all':
             #title star with A
-            url = url + '&tq=select%20*'#%20where%20A%20starts%20with%20\'A\'%20or%20A%20starts%20with%20\'a\'%20or%20A%20starts%20with%20\'B\'%20or%20A%20starts%20with%20\'b\'%20or%20A%20starts%20with%20\'C\'%20or%20A%20starts%20with%20\'c\'%20or%20A%20starts%20with%20\'D\'%20or%20A%20starts%20with%20\'d\'%20or%20A%20starts%20with%20\'E\'%20or%20A%20starts%20with%20\'e\'%20or%20A%20starts%20with%20\'F\'%20or%20A%20starts%20with%20\'f\'%20or%20A%20starts%20with%20\'G\'%20or%20A%20starts%20with%20\'g\''
+            url = url + '&tq=select%20A%2CB%2CC%2CD%2CE%2CF%2CG%2CH%2CI%2CJ%2CK'#%20where%20A%20starts%20with%20\'A\'%20or%20A%20starts%20with%20\'a\'%20or%20A%20starts%20with%20\'B\'%20or%20A%20starts%20with%20\'b\'%20or%20A%20starts%20with%20\'C\'%20or%20A%20starts%20with%20\'c\'%20or%20A%20starts%20with%20\'D\'%20or%20A%20starts%20with%20\'d\'%20or%20A%20starts%20with%20\'E\'%20or%20A%20starts%20with%20\'e\'%20or%20A%20starts%20with%20\'F\'%20or%20A%20starts%20with%20\'f\'%20or%20A%20starts%20with%20\'G\'%20or%20A%20starts%20with%20\'g\''
 
         #year
         #url = url + '&tq=select%20B%2Ccount(A)%20group%20by%20B%20order%20by%20B'
@@ -512,7 +501,9 @@ class gSpreadsheets:
         response.close()
 
 
-        for r in re.finditer('\{"c":\[\{"v":"([^\"]*)"\},\{"v":[^\,]*,"f":"([^\"]*)"\},\{"v":[^\,]*,"f":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\}\]\}' ,
+        #\{"c":\[\{"v":"([^\"]*)"\},\{"v":[^\,]*,"f":"([^\"]*)"\},\{"v":[^\,]*,"f":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\}\]\}' ,
+
+        for r in re.finditer('\{"c"\:\[\{"v"\:"([^\"]+)"\},\{"v"\:[^\,]+\,"f"\:"([^\"]+)"\},\{"v":[^\,]+,"f"\:"([^\"]+)"\},\{"v":"([^\"]+)"\},\{"v":"([^\"]+)"\},\{"v":"([^\"]+)"\},\{"v":"([^\"]+)"\},\{"v":"([^\"]+)"\},\{"v":"([^\"]+)"\},\{"v":"([^\"]+)"\},\{"v":"([^\"]+)"\}\]\}',
                          response_data, re.DOTALL):
             title = r.group(1)
             year = r.group(2)
@@ -642,6 +633,50 @@ class gSpreadsheets:
         return mediaList
 
 
+
+
+    #spreadsheet STRM
+    def getStudio(self, url):
+
+        for r in re.finditer('list/([^\/]+)\/' ,
+                         url, re.DOTALL):
+            spreadsheetID = r.group(1)
+            url = 'https://docs.google.com/spreadsheets/d/'+spreadsheetID+'/gviz/tq?tqx=out.csv'
+
+
+        url = url + '&tq=select%20I%2Ccount(A)%20group%20by%20I'
+
+        mediaList = []
+
+        req = urllib2.Request(url, None, self.service.getHeadersList())
+
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return ''
+          else:
+            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+            return ''
+        response_data = response.read()
+        response.close()
+
+        count=0;
+        for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
+                         response_data, re.DOTALL):
+            item = r.group(1)
+
+            newPackage = package.package( None,folder.folder('CLOUD_DB_STUDIO', item))
+            mediaList.append(newPackage)
+
+
+        return mediaList
 
     #spreadsheet STRM
     # loop through alphabet

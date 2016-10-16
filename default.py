@@ -457,78 +457,95 @@ elif mode == 'cloud_dbtest':
 
     action = settings.getParameter('action')
 
-    mediaFile = file.file(filename, title, '', 0, '','')
-    mediaFolder = folder.folder(folderID,folderName)
-    package=package.package(mediaFile,mediaFolder)
 
-    spreadsheet = None
-        # TESTING
-    if addon_parameters.spreadsheet:
+    if action == 'library_menu':
 
-            try:
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_genre&content_type='+str(contextType),'Genre')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_year&content_type='+str(contextType),'Year')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_title&content_type='+str(contextType),'Title')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_country&content_type='+str(contextType),'Countries')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_director&content_type='+str(contextType),'Directors')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_studio&content_type='+str(contextType),'Studio')
+
+    else:
+
+        mediaFile = file.file(filename, title, '', 0, '','')
+        mediaFolder = folder.folder(folderID,folderName)
+        package=package.package(mediaFile,mediaFolder)
+
+        spreadsheet = None
+            # TESTING
+        if addon_parameters.spreadsheet:
+
+                try:
+                    service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+
+                    spreadsheets = service.gSpreadsheet.getSpreadsheetList()
+                except:
+                    pass
+
+                for t in spreadsheets.iterkeys():
+                    if t == 'Movie2':
+                        worksheets = service.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[t])
+
+                        for worksheet in worksheets.iterkeys():
+                            if worksheet == 'db':
+                                spreadsheet = worksheets[worksheet]
+                                break
+                        break
+
+            # TESTING
+        if addon_parameters.spreadsheet:
+
+            if service.gSpreadsheet is None:
                 service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+            if action == 'watch':
+                service.gSpreadsheet.setMediaStatus(service.worksheetID,package, watched=1)
+                xbmc.executebuiltin("XBMC.Container.Refresh")
+            elif action == 'queue':
+                package.folder.id = 'QUEUED'
+                service.gSpreadsheet.setMediaStatus(service.worksheetID,package)
+            elif action == 'genre' or action == 'year' or action == 'title' or action == 'country' or action == 'director' or action == 'studio' or action == 'recentstarted' or  'library' in action or action == 'queued':
 
-                spreadsheets = service.gSpreadsheet.getSpreadsheetList()
-            except:
-                pass
+                if action == 'genre':
+                    mediaItems = service.gSpreadsheet.getMovies(spreadsheet, genre=title)
+                elif action == 'year':
+                    mediaItems = service.gSpreadsheet.getMovies(spreadsheet, year=title)
+                elif action == 'title':
+                    mediaItems = service.gSpreadsheet.getMovies(spreadsheet, title=title)
+                elif action == 'country':
+                    mediaItems = service.gSpreadsheet.getMovies(spreadsheet, country=title)
+                elif action == 'director':
+                    mediaItems = service.gSpreadsheet.getMovies(spreadsheet, director=title)
+                elif action == 'studio':
+                    mediaItems = service.gSpreadsheet.getMovies(spreadsheet, studio=title)
+                elif action == 'library_title':
+                    mediaItems = service.gSpreadsheet.getTitle(spreadsheet)
+                elif action == 'library_genre':
+                    mediaItems = service.gSpreadsheet.getGenre(spreadsheet)
+                elif action == 'library_year':
+                    mediaItems = service.gSpreadsheet.getYear(spreadsheet)
+                elif action == 'library_country':
+                    mediaItems = service.gSpreadsheet.getCountries(spreadsheet)
+                elif action == 'library_director':
+                    mediaItems = service.gSpreadsheet.getDirector(spreadsheet)
+                elif action == 'library_studio':
+                    mediaItems = service.gSpreadsheet.getStudio(spreadsheet)
 
-            for t in spreadsheets.iterkeys():
-                if t == 'Movie2':
-                    worksheets = service.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[t])
+                #ensure that folder view playback
+                if contextType == '':
+                    contextType = 'video'
 
-                    for worksheet in worksheets.iterkeys():
-                        if worksheet == 'db':
-                            spreadsheet = worksheets[worksheet]
-                            break
-                    break
+                if mediaItems:
+                    for item in mediaItems:
 
-        # TESTING
-    if addon_parameters.spreadsheet:
+                            if item.file is None:
+                                service.addDirectory(item.folder, contextType=contextType)
+                            else:
+                                service.addMediaFile(item, contextType=contextType)
 
-        if service.gSpreadsheet is None:
-            service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
-        if action == 'watch':
-            service.gSpreadsheet.setMediaStatus(service.worksheetID,package, watched=1)
-            xbmc.executebuiltin("XBMC.Container.Refresh")
-        elif action == 'queue':
-            package.folder.id = 'QUEUED'
-            service.gSpreadsheet.setMediaStatus(service.worksheetID,package)
-        elif action == 'genre' or action == 'year' or action == 'title' or action == 'country' or action == 'director' or action == 'recentstarted' or  'library' in action or action == 'queued':
+        service.updateAuthorization(addon)
 
-            if action == 'genre':
-                mediaItems = service.gSpreadsheet.getMovies(spreadsheet, genre=title)
-            elif action == 'year':
-                mediaItems = service.gSpreadsheet.getMovies(spreadsheet, year=title)
-            elif action == 'title':
-                mediaItems = service.gSpreadsheet.getMovies(spreadsheet, title=title)
-            elif action == 'country':
-                mediaItems = service.gSpreadsheet.getMovies(spreadsheet, country=title)
-            elif action == 'director':
-                mediaItems = service.gSpreadsheet.getMovies(spreadsheet, director=title)
-            elif action == 'library_title':
-                mediaItems = service.gSpreadsheet.getTitle(spreadsheet)
-            elif action == 'library_genre':
-                mediaItems = service.gSpreadsheet.getGenre(spreadsheet)
-            elif action == 'library_year':
-                mediaItems = service.gSpreadsheet.getYear(spreadsheet)
-            elif action == 'library_country':
-                mediaItems = service.gSpreadsheet.getCountries(spreadsheet)
-            elif action == 'library_director':
-                mediaItems = service.gSpreadsheet.getDirector(spreadsheet)
-
-            #ensure that folder view playback
-            if contextType == '':
-                contextType = 'video'
-
-            if mediaItems:
-                for item in mediaItems:
-
-                        if item.file is None:
-                            service.addDirectory(item.folder, contextType=contextType)
-                        else:
-                            service.addMediaFile(item, contextType=contextType)
-
-    service.updateAuthorization(addon)
 #dump a list of videos available to play
 elif mode == 'main' or mode == 'index':
 
@@ -568,11 +585,8 @@ elif mode == 'main' or mode == 'index':
         kodi_common.addMenu(PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
         kodi_common.addMenu(PLUGIN_URL+'?mode=buildstrm2&instance='+str(service.instanceName)+'&content_type='+str(contextType),'<Testing - manual run of change tracking build STRM>')
         if addon_parameters.testing_features:
-            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&action=library_genre&content_type='+str(contextType),'<Testing - movies - genre>')
-            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&action=library_year&content_type='+str(contextType),'<Testing - movies - year>')
-            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&action=library_title&content_type='+str(contextType),'<Testing - movies - title>')
-            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&action=library_country&content_type='+str(contextType),'<Testing - movies - countries>')
-            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&action=library_director&content_type='+str(contextType),'<Testing - movies - directors>')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_menu&content_type='+str(contextType),'[MOVIES]')
+
 
         #CLOUD_DB
         if 'gdrive' in addon_parameters.PLUGIN_NAME and service.gSpreadsheet is not None:
