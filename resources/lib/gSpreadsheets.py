@@ -31,6 +31,22 @@ from resources.lib import package
 from resources.lib import file
 from resources.lib import folder
 
+def decode(data):
+        return re.sub("&#(\d+)(;|(?=\s))", _callback, data).strip()
+
+def decode_dict(data):
+        for k, v in data.items():
+            if type(v) is str or type(v) is unicode:
+                data[k] = decode(v)
+        return data
+
+#http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
+def _callback(matches):
+    id = matches.group(1)
+    try:
+        return unichr(int(id))
+    except:
+        return id
 
 class gSpreadsheets:
 
@@ -429,7 +445,7 @@ class gSpreadsheets:
 
 
     #spreadsheet STRM
-    def getMovies(self, url, genre=None, year=None, title=None):
+    def getMovies(self, url, genre=None, year=None, title=None, country=None, director=None):
 
 
 #        params = urllib.urlencode({'title': '"' +str(title)+'"'}, {'year': year})
@@ -452,9 +468,20 @@ class gSpreadsheets:
         elif genre is not None:
             #exclude multiple genre
             url = url + '&tq=select%20*%20where%20D%20contains%20\''+str(genre)+'\''
-        elif title is not None:
+        elif country is not None:
+            #exclude multiple genre
+            country = re.sub(' ', '%20', country)
+            url = url + '&tq=select%20*%20where%20H%20%3D%20\''+str(country)+'\''
+        elif director is not None:
+            #exclude multiple genre
+            director = re.sub(' ', '%20', director)
+            url = url + '&tq=select%20*%20where%20J%20%3D%20\''+str(director)+'\''
+        elif title is not None and title != '#all':
             #title star with A
             url = url + '&tq=select%20*%20where%20A%20starts%20with%20\''+str(title).lower()+ '\'%20or%20A%20starts%20with%20\''+str(title).upper()+'\''
+        elif title is not None and title == '#all':
+            #title star with A
+            url = url + '&tq=select%20*'#%20where%20A%20starts%20with%20\'A\'%20or%20A%20starts%20with%20\'a\'%20or%20A%20starts%20with%20\'B\'%20or%20A%20starts%20with%20\'b\'%20or%20A%20starts%20with%20\'C\'%20or%20A%20starts%20with%20\'c\'%20or%20A%20starts%20with%20\'D\'%20or%20A%20starts%20with%20\'d\'%20or%20A%20starts%20with%20\'E\'%20or%20A%20starts%20with%20\'e\'%20or%20A%20starts%20with%20\'F\'%20or%20A%20starts%20with%20\'f\'%20or%20A%20starts%20with%20\'G\'%20or%20A%20starts%20with%20\'g\''
 
         #year
         #url = url + '&tq=select%20B%2Ccount(A)%20group%20by%20B%20order%20by%20B'
@@ -484,7 +511,7 @@ class gSpreadsheets:
         response_data = response.read()
         response.close()
 
-        count=0;
+
         for r in re.finditer('\{"c":\[\{"v":"([^\"]*)"\},\{"v":[^\,]*,"f":"([^\"]*)"\},\{"v":[^\,]*,"f":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\},\{"v":"([^\"]*)"\}\]\}' ,
                          response_data, re.DOTALL):
             title = r.group(1)
@@ -520,6 +547,53 @@ class gSpreadsheets:
 
 #
         return mediaList
+
+
+    #spreadsheet STRM
+    def getDirector(self, url):
+
+        for r in re.finditer('list/([^\/]+)\/' ,
+                         url, re.DOTALL):
+            spreadsheetID = r.group(1)
+            url = 'https://docs.google.com/spreadsheets/d/'+spreadsheetID+'/gviz/tq?tqx=out.csv'
+
+        #all genre
+        #url = url + '&tq=select%20D%2Ccount(A)%20group%20by%20D'
+
+        url = url + '&tq=select%20J%2Ccount(A)%20group%20by%20J'
+
+        mediaList = []
+
+        req = urllib2.Request(url, None, self.service.getHeadersList())
+
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return ''
+          else:
+            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+            return ''
+        response_data = response.read()
+        response.close()
+
+        count=0;
+        for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
+                         response_data, re.DOTALL):
+            item = r.group(1)
+
+            newPackage = package.package( None,folder.folder('CLOUD_DB_DIRECTOR', item))
+            mediaList.append(newPackage)
+
+
+        return mediaList
+
 
 
     #spreadsheet STRM
@@ -568,6 +642,7 @@ class gSpreadsheets:
         return mediaList
 
 
+
     #spreadsheet STRM
     # loop through alphabet
     def getTitle(self, url):
@@ -579,6 +654,8 @@ class gSpreadsheets:
             newPackage = package.package( None,folder.folder('CLOUD_DB_TITLE', c))
             mediaList.append(newPackage)
 
+        newPackage = package.package( None,folder.folder('CLOUD_DB_TITLE', '#all'))
+        mediaList.append(newPackage)
 
         return mediaList
 
@@ -627,6 +704,51 @@ class gSpreadsheets:
 
         return mediaList
 
+
+    #spreadsheet STRM
+    def getCountries(self, url):
+
+        for r in re.finditer('list/([^\/]+)\/' ,
+                         url, re.DOTALL):
+            spreadsheetID = r.group(1)
+            url = 'https://docs.google.com/spreadsheets/d/'+spreadsheetID+'/gviz/tq?tqx=out.csv'
+
+        #all genre
+        #url = url + '&tq=select%20D%2Ccount(A)%20group%20by%20D'
+
+        url = url + '&tq=select%20H%2Ccount(A)%20group%20by%20H'
+
+        mediaList = []
+
+        req = urllib2.Request(url, None, self.service.getHeadersList())
+
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
+            req = urllib2.Request(url, None, self.service.getHeadersList())
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return ''
+          else:
+            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+            return ''
+        response_data = response.read()
+        response.close()
+
+        count=0;
+        for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
+                         response_data, re.DOTALL):
+            item = r.group(1)
+
+            newPackage = package.package( None,folder.folder('CLOUD_DB_COUNTRY', item))
+            mediaList.append(newPackage)
+
+
+        return mediaList
 
     def getShows(self,url,channel):
 
