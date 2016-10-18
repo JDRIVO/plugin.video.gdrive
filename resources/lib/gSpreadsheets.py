@@ -678,6 +678,29 @@ class gSpreadsheets:
 
         return mediaList
 
+
+
+    #spreadsheet STRM
+    def getResolution(self, url):
+
+
+        mediaList = []
+
+        newPackage = package.package( None,folder.folder('CLOUD_DB_RESOLUTION', '1 >1080p'))
+        mediaList.append(newPackage)
+        newPackage = package.package( None,folder.folder('CLOUD_DB_RESOLUTION', '2  1080p'))
+        mediaList.append(newPackage)
+        newPackage = package.package( None,folder.folder('CLOUD_DB_RESOLUTION', '3  720p'))
+        mediaList.append(newPackage)
+        newPackage = package.package( None,folder.folder('CLOUD_DB_RESOLUTION', '4  480p'))
+        mediaList.append(newPackage)
+        newPackage = package.package( None,folder.folder('CLOUD_DB_RESOLUTION', '5 <480p'))
+        mediaList.append(newPackage)
+
+        return mediaList
+
+
+
     #spreadsheet STRM
     # loop through alphabet
     def getTitle(self, url):

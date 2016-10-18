@@ -461,9 +461,9 @@ elif mode == 'cloud_dbtest':
     action = settings.getParameter('action')
 
 
-    s = gSheets_api4.gSheets_api4(service,addon, user_agent)
-    s.createSpreadsheet()
-
+#    s = gSheets_api4.gSheets_api4(service,addon, user_agent)
+#    s.createSpreadsheet()
+#    s.addRows()
     if action == 'library_menu':
 
             kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_genre&content_type='+str(contextType),'Genre')
@@ -472,6 +472,7 @@ elif mode == 'cloud_dbtest':
             kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_country&content_type='+str(contextType),'Countries')
             kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_director&content_type='+str(contextType),'Directors')
             kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_studio&content_type='+str(contextType),'Studio')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_resolution&content_type='+str(contextType),'Quality (Resolution)')
 
     else:
 
@@ -519,6 +520,8 @@ elif mode == 'cloud_dbtest':
                     mediaItems = service.gSpreadsheet.getMovies(spreadsheet, year=title)
                 elif action == 'title':
                     mediaItems = service.gSpreadsheet.getMovies(spreadsheet, title=title)
+                elif action == 'resolution':
+                    mediaItems = service.gSpreadsheet.getMovies(spreadsheet, resolution=title)
                 elif action == 'country':
                     mediaItems = service.gSpreadsheet.getMovies(spreadsheet, country=title)
                 elif action == 'director':
@@ -537,6 +540,8 @@ elif mode == 'cloud_dbtest':
                     mediaItems = service.gSpreadsheet.getDirector(spreadsheet)
                 elif action == 'library_studio':
                     mediaItems = service.gSpreadsheet.getStudio(spreadsheet)
+                elif action == 'library_resolution':
+                    mediaItems = service.gSpreadsheet.getResolution(spreadsheet)
 
                 #ensure that folder view playback
                 if contextType == '':

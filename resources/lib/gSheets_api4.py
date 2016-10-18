@@ -51,7 +51,7 @@ class gSheets_api4:
 
 
     #
-    # returns a list of spreadsheets contained in the Google Docs account
+    # returns a spreadsheet
     #
     def createSpreadsheet(self):
 
@@ -61,6 +61,43 @@ class gSheets_api4:
  #       entry = { 'properties' : {'title': 'TEST1234'}}
 
         url = self.API_URL #+ '?key=AIzaSyD-a9IF8KKYgoC3cpgS-Al7hLQDbugrDcw&alt=json'
+#        url = 'https://sheets.googleapis.com/v4/spreadsheets/1lrARPXpjLAO-edm5J9p0UK7nmkukST6bv07u8ai1MY8'
+        req = urllib2.Request(url, entry, self.service.getHeadersList(isPOST=True))
+
+        #req = urllib2.Request(url,  json.dumps(entry), self.service.getHeadersList(isPOST=True, isJSON=True))
+ #       req = urllib2.Request(url, None, self.service.getHeadersList())
+
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
+            req = urllib2.Request(url, entry, self.service.getHeadersList(isPOST=True))
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return False
+          else:
+            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+            return False
+
+
+        response_data = response.read()
+        response.close()
+
+        return True
+
+    #
+    # append data to spreadsheet
+    #
+    def addRows(self, spreadsheetID):
+
+
+
+        entry = '{"values": [[ "title", "TEST123" ]]}'
+
+        url = self.API_URL + '/'+spreadsheetID+'/values/A1:append?valueInputOption=USER_ENTERED'#values/Sheet1!A1:A3?valueInputOption=USER_ENTERED'
 #        url = 'https://sheets.googleapis.com/v4/spreadsheets/1lrARPXpjLAO-edm5J9p0UK7nmkukST6bv07u8ai1MY8'
         req = urllib2.Request(url, entry, self.service.getHeadersList(isPOST=True))
 

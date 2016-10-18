@@ -1110,6 +1110,14 @@ class cloudservice(object):
 
                 xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=True, totalItems=0)
+            elif folder.id == 'CLOUD_DB_RESOLUTION':
+                listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
+                values = {'instance': self.instanceName, 'title': folder.title}
+
+                url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=resolution&content_type='+contextType + '&' + urllib.urlencode(values)
+
+                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=True, totalItems=0)
             elif folder.id == 'CLOUD_DB_YEAR':
                 listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
                 values = {'instance': self.instanceName, 'title': folder.title}
