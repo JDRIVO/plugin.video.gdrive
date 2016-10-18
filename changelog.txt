@@ -1,3 +1,6 @@
+v0.8.24 (2016-10-17)
+- add Google Sheets API v4
+- add TMDB API
 v0.8.23 (2016-10-16)
 - tesitng browser movies by studio
 - tesitng browser movies by directors

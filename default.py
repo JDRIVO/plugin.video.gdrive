@@ -40,6 +40,8 @@ cloudservice1 = addon_parameters.cloudservice1
 #*** testing - gdrive
 from resources.lib import tvWindow
 from resources.lib import gSpreadsheets
+from resources.lib import gSheets_api4
+
 ##**
 
 # cloudservice - standard modules
@@ -56,6 +58,7 @@ from resources.lib import crashreport
 from resources.lib import gPlayer
 from resources.lib import settings
 from resources.lib import cache
+from resources.lib import TMDB
 
 
 
@@ -458,6 +461,9 @@ elif mode == 'cloud_dbtest':
     action = settings.getParameter('action')
 
 
+    s = gSheets_api4.gSheets_api4(service,addon, user_agent)
+    s.createSpreadsheet()
+
     if action == 'library_menu':
 
             kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_genre&content_type='+str(contextType),'Genre')
@@ -536,12 +542,16 @@ elif mode == 'cloud_dbtest':
                 if contextType == '':
                     contextType = 'video'
 
+                tmdb= TMDB.TMDB(service,addon, user_agent)
+
                 if mediaItems:
                     for item in mediaItems:
 
                             if item.file is None:
                                 service.addDirectory(item.folder, contextType=contextType)
                             else:
+                               # movieID = tmdb.movieSearch(item.file.title,item.file.year)
+                               # tmdb.movieDetails(movieID)
                                 service.addMediaFile(item, contextType=contextType)
 
         service.updateAuthorization(addon)
