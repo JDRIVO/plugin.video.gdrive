@@ -1,3 +1,5 @@
+v0.8.26 (2016-10-19)
+- merge modified method of STRM creation with old manual STRM creation
 v0.8.25 (2016-10-18)
 - add browse by quality (resolution)
 v0.8.24 (2016-10-17)
