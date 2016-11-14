@@ -1738,9 +1738,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
 xbmcplugin.endOfDirectory(plugin_handle)
 
-
 #automation - create strm files
-if service is not None:
+if service is not None and instanceName is not None:
 
 
     import time
