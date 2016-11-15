@@ -23,6 +23,8 @@ import os
 import re
 import sys
 import urllib, urllib2
+import socket
+
 import cookielib
 import unicodedata
 
@@ -43,7 +45,6 @@ from resources.lib import gSpreadsheets
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin, xbmcvfs
 
 SERVICE_NAME = 'dmdgdrive'
-
 
 
 #
@@ -112,7 +113,10 @@ class gdrive(cloudservice):
         self.cache = cache.cache()
 
 
-        if settings.cloudResume == '2':
+        self.cloudResume = self.addon.getSetting(self.instanceName+'_resumepoint')
+        self.cloudSpreadsheet = self.addon.getSetting(self.instanceName+'_spreadsheetname')
+
+        if self.cloudResume == '2':
             if self.worksheetID == '':
 
                 try:
@@ -123,7 +127,7 @@ class gdrive(cloudservice):
                     pass
 
                 for title in spreadsheets.iterkeys():
-                    if title == settings.cloudSpreadsheet:#'CLOUD_DB':
+                    if title == self.cloudSpreadsheet:#'CLOUD_DB':
                         worksheets = self.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
 
                         for worksheet in worksheets.iterkeys():
@@ -321,17 +325,26 @@ class gdrive(cloudservice):
     # return the appropriate "headers" for Google Drive requests that include 1) user agent, 2) authorization token
     #   returns: list containing the header
     ##
-    def getHeadersList(self, isPOST=False, additionalHeader=None, additionalValue=None):
+    def getHeadersList(self, isPOST=False, additionalHeader=None, additionalValue=None, isJSON=False):
         if self.authorization.isToken(self.instanceName,self.addon, 'auth_access_token') and not isPOST:
 #            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
             if additionalHeader is not None:
                 return { 'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token'), additionalHeader : additionalValue }
             else:
                 return {  'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+        elif isJSON and self.authorization.isToken(self.instanceName,self.addon, 'auth_access_token'):
+#            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+            return { 'Content-Type': 'application/json', 'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
         elif self.authorization.isToken(self.instanceName,self.addon, 'auth_access_token'):
 #            return { 'User-Agent' : self.user_agent, 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
             return { "If-Match" : '*', 'Content-Type': 'application/atom+xml', 'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
             #return {  'Content-Type': 'application/atom+xml', 'Authorization' : 'Bearer ' + self.authorization.getToken('auth_access_token') }
+        elif self.authorization.isToken(self.instanceName,self.addon, 'DRIVE_STREAM') and not isPOST:
+            if additionalHeader is not None:
+                return { 'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM'), additionalHeader : additionalValue }
+            else:
+                return {  'Cookie' : 'DRIVE_STREAM='+ self.authorization.getToken('DRIVE_STREAM') }
+
         else:
             return { 'User-Agent' : self.user_agent}
 
@@ -470,11 +483,111 @@ class gdrive(cloudservice):
         return mediaFiles
 
 
+    ##
+    # retrieve a list of changes
+    #   parameters: prompt for video quality (optional)
+    #   returns: list of packages (file, folder)
+    ##
+    def getChangeList(self, contentType=7, nextPageToken='', changeToken=''):
+
+
+        url = ''
+        maxChangeID = 0;
+        # retrieve all items
+        url = self.API_URL +'changes'
+
+#            url = url + "?includeDeleted=false&includeSubscribed=false&maxResults=1000"
+        url = url + "?includeDeleted=true&includeSubscribed=false&maxResults=300"
+        if (changeToken != ''):
+            url = url + '&startChangeId=' + str(changeToken)
+        if (nextPageToken != ''):
+            url = url + '&pageToken=' + str(nextPageToken)
+
+
+        nextURL = ''
+        nextPageToken = ''
+        while True:
+            mediaFiles = []
+
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+              xbmc.sleep(5000)
+            except urllib2.URLError, e:
+
+              if e.code == 403 or e.code == 401:
+                self.refreshToken()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  response = urllib2.urlopen(req)
+                except socket.timeout, e:
+                    return ([],nextPageToken,changeToken)
+                except urllib2.URLError, e:
+                  xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                  self.crashreport.sendError('getChangeList',str(e))
+                  return
+              else:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                self.crashreport.sendError('getChangeList',str(e))
+                return
+            except socket.timeout, e:
+                return ([],nextPageToken,changeToken)
+            response_data = response.read()
+            response.close()
+
+            # parsing page for videos
+            # video-entry
+            for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\}\s+\]\s+\}' ,response_data, re.DOTALL):
+                entryS = r2.group(1)
+
+                for r1 in re.finditer('\{(.*?)\"spaces\"\:' , entryS, re.DOTALL):
+                    entry = r1.group(1)
+                    for r in re.finditer('\"id\"\:\s+\"(\d+)\"' ,
+                             entry, re.DOTALL):
+                        id = r.group(1)
+                        if id > maxChangeID:
+                            maxChangeID = id
+                    media = self.getMediaPackage(entry, contentType=contentType)
+                    if media is not None:
+                        mediaFiles.append(media)
+
+            # look for more pages of videos
+            for r in re.finditer('\"largestChangeId\"\:\s+\"(\d)\"' ,
+                             response_data, re.DOTALL):
+                largestChangeId = r.group(1)
+
+            # look for more pages of videos
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                nextURL = r.group(1)
+
+            ## look for more pages of videos
+            for r in re.finditer('\"nextPageToken\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                nextPageToken = r.group(1)
+
+            print 'nextPageToken = '+ str(nextPageToken) + ' nextPageToken = ' + str(maxChangeID) + "\n"
+            return (mediaFiles, nextPageToken, maxChangeID)
+
+            # are there more pages to process?
+            if nextURL == '':
+                break
+            else:
+                url = nextURL
+
+        return (mediaFiles, nextPageToken, maxChangeID)
+
+
+
+
 
     ##
     # retrieve a list of videos, using playback type stream
     #   parameters: prompt for video quality (optional), cache type (optional)
     #   returns: list of videos
+    ### *** looks like this does nothing?
     ##
     def getOfflineMediaList(self, folderName=False, title=False, contentType=7):
 
@@ -553,7 +666,7 @@ class gdrive(cloudservice):
                             folderIcon = foldericon + '|' + self.getHeadersEncoded()
 
                     # file property - gdrive
-                    if self.settings.cloudResume == 1:
+                    if self.cloudResume == 1:
                         self.setProperty(folderName,'icon', 1)
 
             # look for more pages of videos
@@ -587,9 +700,14 @@ class gdrive(cloudservice):
                 thumbnail = ''
                 fileExtension = ''
                 md5 = ''
+                deleted = False
 
                 url = ''
                 for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  resourceID = r.group(1)
+                  break
+                for r in re.finditer('\"fileId\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   resourceID = r.group(1)
                   break
@@ -611,7 +729,10 @@ class gdrive(cloudservice):
                   break
                 for r in re.finditer('\"downloadUrl\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
-                  url = r.group(1)
+                  if self.settings.encfsDownloadType == 0:
+                      url = r.group(1)
+                  else:
+                      url = self.API_URL +'files/' + str(resourceID) + '?alt=media'
                   break
                 for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
@@ -632,10 +753,15 @@ class gdrive(cloudservice):
                   width = r.group(1)
                   break
 
+                for r in re.finditer('\"deleted\"\:\s+true,' ,
+                             entry, re.DOTALL):
+                  deleted = True
+                  break
+
                 # file property - gdrive
                 resume = 0
                 playcount = 0
-                if  self.settings.cloudResume == 1:
+                if  self.cloudResume == 1:
                     for r in re.finditer('\"key\"\:\s+\"resume\"[^\"]+\"visibility\"\:\s+\"[^\"]+\"[^\"]+\"value\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                         resume = r.group(1)
@@ -685,6 +811,9 @@ class gdrive(cloudservice):
 
                             mediaFile.setTVMeta(show,season,episode,showtitle)
 
+
+                    if deleted:
+                        mediaFile.deleted = True
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
 
@@ -714,6 +843,8 @@ class gdrive(cloudservice):
                             mediaFile.setAlbumMeta(album,artist,'',track,'', trackTitle)
                             break
 
+                    if deleted:
+                        mediaFile.deleted = True
                     media = package.package(mediaFile,folder.folder(folderName,''))
                     media.setMediaURL(mediaurl.mediaurl(url, 'original', 0, 9999))
                     return media
@@ -1058,6 +1189,10 @@ class gdrive(cloudservice):
     ##
     def getDownloadURL(self, docid):
 
+            url = self.API_URL +'files/' + str(docid) + '?alt=media'
+
+            return url
+
             url = self.API_URL +'files/' + docid
 
             req = urllib2.Request(url, None, self.getHeadersList())
@@ -1144,7 +1279,7 @@ class gdrive(cloudservice):
     #   parameters: package (optional), title of media file, isExact allowing for fuzzy searches
     #   returns: url for playback
     ##
-    def getPlaybackCall(self, package=None, title='', isExact=True):
+    def getPlaybackCall(self, package=None, title='', isExact=True, contentType=None):
 
         try:
             pquality = int(self.addon.getSetting('preferred_quality'))
@@ -1248,6 +1383,12 @@ class gdrive(cloudservice):
 
         # encryption?
         if package is None:
+
+
+            # new method of fetching original stream -- using alt=media
+            url = self.API_URL +'files/' + str(docid) + '?alt=media'
+            mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
+
             return (mediaURLs, package)
 
         # there are no streams for music
@@ -1551,6 +1692,12 @@ class gdrive(cloudservice):
         response_data = response.read()
         response.close()
 
+
+        for r in re.finditer('([^\s]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
+            cookieType,cookieValue = r.groups()
+            if cookieType == 'DRIVE_STREAM':
+                print cookieValue
+                self.authorization.setToken(cookieType,cookieValue)
 
         for r in re.finditer('\"fmt_list\"\,\"([^\"]+)\"' ,
                              response_data, re.DOTALL):

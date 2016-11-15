@@ -69,8 +69,12 @@ def parse_query(query):
 
 plugin_queries = parse_query(sys.argv[2][1:])
 
+# global variables
+import addon_parameters
+addon = addon_parameters.addon
+
 #addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
-addon = xbmcaddon.Addon(id='plugin.video.gdrive')
+#addon = xbmcaddon.Addon(id='plugin.video.gdrive')
 
 #
 #
@@ -86,6 +90,7 @@ class settings:
         self.cc = getParameter('cc', self.getSetting('cc', True))
         self.srt = getParameter('srt', self.getSetting('srt', True))
         #self.srt_folder = getParameter('srt_folder', self.getSetting('srt_folder', False))
+        self.strm = getParameter('strm', False)
 
         self.username = getParameter('username', '')
         self.setCacheParameters()
@@ -93,9 +98,9 @@ class settings:
         self.parseTV = self.getSetting('parse_tv', True)
         self.parseMusic = self.getSetting('parse_music', True)
         self.skipResume = self.getSetting('video_skip', 0.98)
-        self.cloudResume = self.getSetting('resumepoint', 0)
+#        self.cloudResume = self.getSetting('resumepoint', 0)
         self.cloudResumePrompt = self.getSetting('resumeprompt', False)
-        self.cloudSpreadsheet = self.getSetting('library_filename', 'CLOUD_DB')
+#        self.cloudSpreadsheet = self.getSetting('library_filename', 'CLOUD_DB')
 
         self.seek = getParameter('seek', 0)
         self.trace = getSetting('trace', False)
@@ -116,6 +121,16 @@ class settings:
         else:
             self.photoResolution = 99999
 
+
+#        self.thumbnailResolution = int(self.getSetting('thumb_resolution', 0))
+#        if self.thumbnailResolution == 0:
+#            self.thumbnailResolution = 80
+#        elif self.thumbnailResolution == 1:
+#            self.thumbnailResolution = 120
+#        else:
+#            self.thumbnailResolution = 200
+
+        self.encfsDownloadType = int(self.getSetting('encfs_download_type', 1))
 
 
     def setVideoParameters(self):
@@ -149,6 +164,7 @@ class settings:
         self.encfsTarget = self.getSetting('encfs_target')
         self.encfsContinue = self.getSetting('encfs_continue', False)
         self.encfsStream = self.getSetting('encfs_stream', False)
+        self.encfsExp = self.getSetting('encfs_exp', False)
 
         self.encfsInode = int(self.getSetting('encfs_inode', 0))
         self.encfsLast = self.getSetting('encfs_last', '')
@@ -178,3 +194,12 @@ class settings:
                 return value
         except:
             return default
+
+
+
+    def getSettingInt(self, key,default=0):
+        try:
+            return int(self.addon.getSetting(key))
+        except:
+            return default
+

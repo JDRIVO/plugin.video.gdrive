@@ -22,6 +22,7 @@ import os
 import re
 import urllib, urllib2
 import cookielib
+import json
 
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
@@ -32,27 +33,11 @@ from resources.lib import file
 from resources.lib import folder
 
 
-class gSpreadsheets:
-
-    S_CHANNEL=0
-    S_MONTH=1
-    S_DAY=2
-    S_WEEKDAY=3
-    S_HOUR=4
-    S_MINUTE=5
-    S_SHOW=6
-    S_ORDER=7
-    S_INCLUDE_WATCHED=8
+class gSheets_api4:
 
 
-    D_SOURCE=0
-    D_NFO=1
-    D_SHOW=2
-    D_SEASON=3
-    D_EPISODE=4
-    D_PART=5
-    D_WATCHED=6
-    D_DURATION=7
+    API_URL = 'https://sheets.googleapis.com/v4/spreadsheets'
+
 
     def __init__(self, service, addon, user_agent):
         self.addon = addon
@@ -63,6 +48,82 @@ class gSpreadsheets:
         self.user_agent = user_agent
 
         return
+
+
+    #
+    # returns a spreadsheet
+    #
+    def createSpreadsheet(self):
+
+        #header = { 'User-Agent' : self.user_agent, 'Authorization' : 'GoogleLogin auth=%s' % self.authorization.getToken('wise'), 'GData-Version' : '3.0',  'Content-Type': 'application/atom+xml' }
+
+        entry = '{"properties": { "title": "TEST123" }}'
+ #       entry = { 'properties' : {'title': 'TEST1234'}}
+
+        url = self.API_URL #+ '?key=AIzaSyD-a9IF8KKYgoC3cpgS-Al7hLQDbugrDcw&alt=json'
+#        url = 'https://sheets.googleapis.com/v4/spreadsheets/1lrARPXpjLAO-edm5J9p0UK7nmkukST6bv07u8ai1MY8'
+        req = urllib2.Request(url, entry, self.service.getHeadersList(isPOST=True))
+
+        #req = urllib2.Request(url,  json.dumps(entry), self.service.getHeadersList(isPOST=True, isJSON=True))
+ #       req = urllib2.Request(url, None, self.service.getHeadersList())
+
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
+            req = urllib2.Request(url, entry, self.service.getHeadersList(isPOST=True))
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return False
+          else:
+            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+            return False
+
+
+        response_data = response.read()
+        response.close()
+
+        return True
+
+    #
+    # append data to spreadsheet
+    #
+    def addRows(self, spreadsheetID):
+
+
+
+        entry = '{"values": [[ "title", "TEST123" ]]}'
+
+        url = self.API_URL + '/'+spreadsheetID+'/values/A1:append?valueInputOption=USER_ENTERED'#values/Sheet1!A1:A3?valueInputOption=USER_ENTERED'
+#        url = 'https://sheets.googleapis.com/v4/spreadsheets/1lrARPXpjLAO-edm5J9p0UK7nmkukST6bv07u8ai1MY8'
+        req = urllib2.Request(url, entry, self.service.getHeadersList(isPOST=True))
+
+        #req = urllib2.Request(url,  json.dumps(entry), self.service.getHeadersList(isPOST=True, isJSON=True))
+ #       req = urllib2.Request(url, None, self.service.getHeadersList())
+
+        try:
+            response = urllib2.urlopen(req)
+        except urllib2.URLError, e:
+          if e.code == 403 or e.code == 401:
+            self.service.refreshToken()
+            req = urllib2.Request(url, entry, self.service.getHeadersList(isPOST=True))
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                return False
+          else:
+            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+            return False
+
+
+        response_data = response.read()
+        response.close()
+
+        return True
 
 
 
@@ -677,29 +738,6 @@ class gSpreadsheets:
 
 
         return mediaList
-
-
-
-    #spreadsheet STRM
-    def getResolution(self, url):
-
-
-        mediaList = []
-
-        newPackage = package.package( None,folder.folder('CLOUD_DB_RESOLUTION', '1 >1080p'))
-        mediaList.append(newPackage)
-        newPackage = package.package( None,folder.folder('CLOUD_DB_RESOLUTION', '2  1080p'))
-        mediaList.append(newPackage)
-        newPackage = package.package( None,folder.folder('CLOUD_DB_RESOLUTION', '3  720p'))
-        mediaList.append(newPackage)
-        newPackage = package.package( None,folder.folder('CLOUD_DB_RESOLUTION', '4  480p'))
-        mediaList.append(newPackage)
-        newPackage = package.package( None,folder.folder('CLOUD_DB_RESOLUTION', '5 <480p'))
-        mediaList.append(newPackage)
-
-        return mediaList
-
-
 
     #spreadsheet STRM
     # loop through alphabet

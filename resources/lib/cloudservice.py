@@ -28,8 +28,9 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 import xbmcvfs
 
 from resources.lib import mediaurl
-from resources.lib import kodi_common
-from resources.lib import settings
+#from resources.lib import kodi_common
+#from resources.lib import settings
+from resources.lib import streamer
 
 
 
@@ -56,321 +57,6 @@ def _callback(matches):
         return unichr(int(id))
     except:
         return id
-
-
-##
-# Calculate the number of accounts defined in settings
-#   parameters: the account type (usually plugin name)
-##
-def numberOfAccounts(accountType):
-
-    return 9
-    count = 1
-    max_count = int(settings.getSetting(accountType+'_numaccounts',9))
-
-    actualCount = 0
-    while True:
-        try:
-            if settings.getSetting(accountType+str(count)+'_username') != '':
-                actualCount = actualCount + 1
-        except:
-            break
-        if count == max_count:
-            break
-        count = count + 1
-    return actualCount
-
-
-
-##
-# Delete an account, enroll an account or refresh the current listings
-#   parameters: mode
-##
-def accountActions(addon, PLUGIN_NAME, mode, instanceName, numberOfAccounts):
-
-    if mode == 'dummy':
-        xbmc.executebuiltin("XBMC.Container.Refresh")
-
-    # delete the configuration for the specified account
-    elif mode == 'delete':
-
-        #*** old - needs to be re-written
-        if instanceName != '':
-
-            try:
-                # gdrive specific ***
-                addon.setSetting(instanceName + '_username', '')
-                addon.setSetting(instanceName + '_code', '')
-                addon.setSetting(instanceName + '_client_id', '')
-                addon.setSetting(instanceName + '_client_secret', '')
-                addon.setSetting(instanceName + '_url', '')
-                addon.setSetting(instanceName + '_password', '')
-                addon.setSetting(instanceName + '_passcode', '')
-                addon.setSetting(instanceName + '_auth_access_token', '')
-                addon.setSetting(instanceName + '_auth_refresh_token', '')
-                # ***
-                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30158))
-            except:
-                #error: instance doesn't exist
-                pass
-        xbmc.executebuiltin("XBMC.Container.Refresh")
-
-
-    # enroll a new account
-    elif mode == 'enroll':
-
-
-            invokedUsername = settings.getParameter('username')
-            code = settings.getParameter('code', '')
-
-
-            if code == '':
-                options = []
-                options.append('Google Apps')
-                ret = xbmcgui.Dialog().select('select type', options)
-
-                invokedUsername = ''
-                password = ''
-                if ret == 0:
-                    try:
-                        dialog = xbmcgui.Dialog()
-                        invokedUsername = dialog.input('username', type=xbmcgui.INPUT_ALPHANUM)
-                        passcode = dialog.input('passcode', type=xbmcgui.INPUT_ALPHANUM)
-                    except:
-                        pass
-
-                count = 1
-                loop = True
-                while loop:
-                    instanceName = PLUGIN_NAME+str(count)
-                    try:
-                        username = settings.getSetting(instanceName+'_username')
-                        if username == invokedUsername:
-                            addon.setSetting(instanceName + '_type', str(4))
-                            addon.setSetting(instanceName + '_username', str(invokedUsername))
-                            addon.setSetting(instanceName + '_passcode', str(passcode))
-                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                            loop = False
-                        elif username == '':
-                            addon.setSetting(instanceName + '_type', str(4))
-                            addon.setSetting(instanceName + '_username', str(invokedUsername))
-                            addon.setSetting(instanceName + '_passcode', str(passcode))
-                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                            loop = False
-
-                    except:
-                        pass
-
-                    if count == numberOfAccounts:
-                        #fallback on first defined account
-                        addon.setSetting(instanceName + '_type', str(4))
-                        addon.setSetting(instanceName + '_username', invokedUsername)
-                        addon.setSetting(instanceName + '_passcode', str(passcode))
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                        loop = False
-                    count = count + 1
-
-            else:
-                count = 1
-                loop = True
-                while loop:
-                    instanceName = PLUGIN_NAME+str(count)
-                    try:
-                        username = settings.getSetting(instanceName+'_username')
-                        if username == invokedUsername:
-                            addon.setSetting(instanceName + '_type', str(1))
-                            addon.setSetting(instanceName + '_code', str(code))
-                            addon.setSetting(instanceName + '_username', str(invokedUsername))
-                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                            loop = False
-                        elif username == '':
-                            addon.setSetting(instanceName + '_type', str(1))
-                            addon.setSetting(instanceName + '_code', str(code))
-                            addon.setSetting(instanceName + '_username', str(invokedUsername))
-                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                            loop = False
-
-                    except:
-                        pass
-
-                    if count == numberOfAccounts:
-                        #fallback on first defined account
-                        addon.setSetting(instanceName + '_type', str(1))
-                        addon.setSetting(instanceName + '_code', code)
-                        addon.setSetting(instanceName + '_username', invokedUsername)
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                        loop = False
-                    count = count + 1
-
-##
-# Delete an account, enroll an account or refresh the current listings
-#   parameters: addon, plugin name, mode, instance name, user provided username, number of accounts, current context
-#   returns: selected instance name
-##
-def getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, numberOfAccounts, contextType):
-
-    # show list of services
-    if mode == 'delete' or mode == 'dummy':
-                count = 1
-
-    elif numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
-
-            kodi_common.addMenu(PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'[enroll account]')
-
-            if contextType != 'image':
-                path = settings.getSetting('cache_folder')
-                if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
-                    kodi_common.addMenu(PLUGIN_URL+'?mode=offline&content_type='+str(contextType),'<offline media>')
-
-            if contextType == 'image':
-                path = settings.getSetting('photo_folder')
-                if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
-                    kodi_common.addMenu(path,'<offline photos>')
-
-            path = settings.getSetting('encfs_target')
-            if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
-                kodi_common.addMenu(path,'<offline encfs>')
-
-
-            mode = ''
-            count = 1
-            while True:
-                instanceName = PLUGIN_NAME+str(count)
-                try:
-                    username = settings.getSetting(instanceName+'_username')
-                    if username != '':
-                        kodi_common.addMenu(PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
-
-                except:
-                    pass
-                if count == numberOfAccounts:
-                    break
-                count = count + 1
-            return None
-
-    #        spreadshetModule = getSetting('library', False)
-    #        libraryAccount = getSetting('library_account')
-
-     #       if spreadshetModule:
-     #           kodi_common.addMenu(PLUGIN_URL+'?mode=kiosk&content_type='+str(contextType)+'&instance='+PLUGIN_NAME+str(libraryAccount),'[kiosk mode]')
-
-    elif instanceName == '' and invokedUsername == '' and numberOfAccounts == 1:
-
-            count = 1
-            options = []
-            accounts = []
-
-            for count in range (1, numberOfAccounts+1):
-                instanceName = PLUGIN_NAME+str(count)
-                try:
-                    username = settings.getSetting(instanceName+'_username')
-                    if username != '':
-                        options.append(username)
-                        accounts.append(instanceName)
-
-                    if username != '':
-
-                        return instanceName
-                except:
-                    return instanceName
-
-            #fallback on first defined account
-            return accounts[0]
-
-    # no accounts defined and url provided; assume public
-    elif numberOfAccounts == 0 and mode=='streamurl':
-        return None
-
-    # offline mode
-    elif mode=='offline':
-        return None
-        # no accounts defined
-    elif numberOfAccounts == 0:
-
-            #legacy account conversion
-            try:
-                username = settings.getSetting('username')
-
-                if username != '':
-                    addon.setSetting(PLUGIN_NAME+'1_username', username)
-                    addon.setSetting(PLUGIN_NAME+'1_password', settings,getSetting('password'))
-                    addon.setSetting(PLUGIN_NAME+'1_auth_writely', settings.getSetting('auth_writely'))
-                    addon.setSetting(PLUGIN_NAME+'1_auth_wise', settings.getSetting('auth_wise'))
-                    addon.setSetting('username', '')
-                    addon.setSetting('password', '')
-                    addon.setSetting('auth_writely', '')
-                    addon.setSetting('auth_wise', '')
-                else:
-                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30015))
-                    xbmcplugin.endOfDirectory(plugin_handle)
-            except :
-                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30015))
-                xbmcplugin.endOfDirectory(plugin_handle)
-
-            return instanceName
-
-    # show entries of a single account (such as folder)
-    elif instanceName != '':
-
-        return instanceName
-
-
-
-    elif invokedUsername != '':
-
-            options = []
-            accounts = []
-            for count in range (1, numberOfAccounts+1):
-                instanceName = PLUGIN_NAME+str(count)
-                try:
-                    username = settings.getSetting(instanceName+'_username')
-                    if username != '':
-                        options.append(username)
-                        accounts.append(instanceName)
-
-                    if username == invokedUsername:
-                        return instanceName
-
-                except:
-                    return instanceName
-
-
-            #fallback on first defined account
-            return accounts[0]
-
-    #prompt before playback
-    else:
-
-            options = []
-            accounts = []
-
-            # url provided; provide public option
-            if mode=='streamurl':
-                options.append('*public')
-                accounts.append('public')
-
-            for count in range (1, numberOfAccounts+1):
-                instanceName = PLUGIN_NAME+str(count)
-                try:
-                    username = settings.getSetting(instanceName+'_username',10)
-                    if username != '':
-                        options.append(username)
-                        accounts.append(instanceName)
-                except:
-                    break
-
-            # url provided; provide public option
-            if mode=='streamurl':
-                options.append('public')
-                accounts.append('public')
-
-            ret = xbmcgui.Dialog().select(addon.getLocalizedString(30120), options)
-
-            #fallback on first defined account
-            if accounts[ret] == 'public':
-                return None
-            else:
-                return accounts[ret]
 
 
 #
@@ -424,6 +110,17 @@ class cloudservice(object):
         import xbmcvfs
         xbmcvfs.mkdir(path)
 
+        musicPath = path + '/music'
+        moviePath = path + '/movies'
+        tvPath = path + '/tv'
+        videoPath = path + '/video-other'
+
+        xbmcvfs.mkdir(musicPath)
+        xbmcvfs.mkdir(tvPath)
+        xbmcvfs.mkdir(videoPath)
+        xbmcvfs.mkdir(moviePath)
+
+
         mediaItems = self.getMediaList(folderID,contentType=contentType)
 
         if mediaItems and not encfs:
@@ -458,41 +155,41 @@ class cloudservice(object):
 
                         episode = ''
                         # nekwebdev contribution
-                        if self.addon.getSetting('tvshows_path') != '' or self.addon.getSetting('movies_path') != '':
-                            pathLib = ''
+                        pathLib = ''
 
-                            regmovie = re.compile('(.*?\(\d{4}\))'
-                                              '.*?'
-                                              '(?:(\d{3}\d?p)|\Z)?')
 
-                            tv = item.file.regtv1.match(title)
-                            if not tv:
-                                tv = item.file.regtv2.match(title)
-                            if not tv:
-                                tv = item.file.regtv3.match(title)
+                        tv = item.file.regtv1.match(title)
+                        if not tv:
+                            tv = item.file.regtv2.match(title)
+                        if not tv:
+                            tv = item.file.regtv3.match(title)
 
-                            if tv and self.addon.getSetting('tvshows_path') != '':
-                                show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
-                                show = show.rstrip("\.")
-                                season = tv.group(2)
-                                episode = tv.group(3)
-                                pathLib = self.addon.getSetting('tvshows_path') + '/' + show
-                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                                pathLib = pathLib + '/Season ' + season
-                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
-                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                            elif self.addon.getSetting('movies_path') != '':
-                                movie = regmovie.match(title)
-                                if movie:
-                                    pathLib = self.addon.getSetting('movies_path')
+                        if tv:
+                            show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
+                            show = show.rstrip("\.")
+                            season = tv.group(2)
+                            episode = tv.group(3)
+                            pathLib = tvPath + '/' + show
+                            if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                            pathLib = pathLib + '/Season ' + season
+                            if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                        else:
+                            movie = item.file.regmovie.match(title)
+                            if movie:
+                                pathLib = moviePath
+                            else:
+                                pathLib = videoPath
 
-                            if pathLib != '':
-                                if not xbmcvfs.exists(pathLib + '/' + str(title)+'.strm'):
-                                    filename = str(pathLib) + '/' + str(title)+'.strm'
-                                    strmFile = xbmcvfs.File(filename, "w")
-                                    strmFile.write(url+'\n')
-                                    strmFile.close()
+                        if pathLib != '':
+                            filename = str(pathLib) + '/' + str(title)+'.strm'
+                            if item.file.deleted and xbmcvfs.exists(filename):
+                                xbmcvfs.delete(filename)
+                            elif not item.file.deleted and not xbmcvfs.exists(filename):
+                                strmFile = xbmcvfs.File(filename, "w")
+                                strmFile.write(url+'\n')
+                                strmFile.close()
 
                         if spreadsheetFile is not None:
                             spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
@@ -554,8 +251,9 @@ class cloudservice(object):
 #                    dirTitle = dir + ' [' +dirListINodes[index].title+ ']'
                     encryptedDir = dirListINodes[index].title
                     dirListINodes[index].displaytitle = dir + ' [' +dirListINodes[index].title+ ']'
+
                     #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
-                    self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile)
+                    self.buildSTRM(path + '/'+str(dir), dirListINodes[index].id, pDialog=pDialog, contentType=contentType, encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' , spreadsheetFile=spreadsheetFile)
 
                 elif index in fileListINodes.keys():
                     xbmcvfs.rmdir(encfs_target + str(dencryptedPath) + dir)
@@ -619,6 +317,110 @@ class cloudservice(object):
 
                             strmFile.write(url+'\n')
                             strmFile.close()
+
+    ##
+    # build STRM files to a given path for a given folder ID
+    #   parameters: path, folder id, content type, dialog object (optional)
+    ##
+    def buildSTRM2(self, path, contentType=1, pDialog=None, spreadsheetFile=None):
+
+        import xbmcvfs
+        xbmcvfs.mkdir(path)
+
+        musicPath = path + '/music'
+        moviePath = path + '/movies'
+        tvPath = path + '/tv'
+        videoPath = path + '/video-other'
+
+        xbmcvfs.mkdir(musicPath)
+        xbmcvfs.mkdir(tvPath)
+        xbmcvfs.mkdir(videoPath)
+        xbmcvfs.mkdir(moviePath)
+
+        changeToken = self.addon.getSetting(self.instanceName+'_changetoken')
+
+
+        count = 0
+        nextPageToken = ''
+        largestChangeId = ''
+        while True:
+            (mediaItems, nextPageToken, largestChangeId) = self.getChangeList(contentType=contentType, nextPageToken=nextPageToken, changeToken=changeToken)
+
+            if mediaItems:
+                for item in mediaItems:
+                    url = ''
+                    if item.file is not None:
+                        count = count + 1
+
+                        if pDialog is not None:
+                            pDialog.update(message='STRMs created '+str(count))
+
+                        #'content_type': 'video',
+                        values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
+                        if item.file.type == 1:
+                            url = self.PLUGIN_URL+ '?mode=audio&' + urllib.urlencode(values)
+                            filename = musicPath + '/' + str(title)+'.strm'
+
+                            if item.file.deleted and xbmcvfs.exists(filename):
+                                xbmcvfs.delete(filename)
+                            elif not item.file.deleted  and not xbmcvfs.exists(filename):
+                                strmFile = xbmcvfs.File(filename, "w")
+
+                                strmFile.write(url+'\n')
+                                strmFile.close()
+
+                        else:
+                            url = self.PLUGIN_URL+ '?mode=video&' + urllib.urlencode(values)
+
+
+                            title = item.file.title
+
+                            episode = ''
+                            # nekwebdev contribution
+                            pathLib = ''
+
+
+                            tv = item.file.regtv1.match(title)
+                            if not tv:
+                                tv = item.file.regtv2.match(title)
+                            if not tv:
+                                tv = item.file.regtv3.match(title)
+
+                            if tv:
+                                show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
+                                show = show.rstrip("\.")
+                                season = tv.group(2)
+                                episode = tv.group(3)
+                                pathLib = tvPath + '/' + show
+                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                pathLib = pathLib + '/Season ' + season
+                                if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
+                                    xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                            else:
+                                movie = item.file.regmovie.match(title)
+                                if movie:
+                                    pathLib = moviePath
+                                else:
+                                    pathLib = videoPath
+
+                            if pathLib != '':
+                                filename = str(pathLib) + '/' + str(title)+'.strm'
+                                if item.file.deleted and xbmcvfs.exists(filename):
+                                    xbmcvfs.delete(filename)
+                                elif not item.file.deleted and not xbmcvfs.exists(filename):
+                                    strmFile = xbmcvfs.File(filename, "w")
+                                    strmFile.write(url+'\n')
+                                    strmFile.close()
+
+                            if spreadsheetFile is not None:
+                                spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
+            self.addon.setSetting(self.instanceName + '_changetoken', str(largestChangeId))
+
+            if nextPageToken == '' or nextPageToken is None:
+                break
+
+
 
     ##
     # retrieve a directory url
@@ -816,7 +618,7 @@ class cloudservice(object):
         CHUNK = int(self.settings.encfsCacheChunkSize)
 
         if CHUNK < 1024:
-            CHUNK = 16 * 1024
+            CHUNK = 131072
 
         count = 0
 
@@ -923,6 +725,11 @@ class cloudservice(object):
                         except:
                             pass
                         player.setSubtitles(file)
+
+
+            # need to seek?
+            #if seek > 0:
+            #player.PlayStream('', item, 99, startPlayback=False, package=package)
         try:
             count =1
             while True:
@@ -946,6 +753,166 @@ class cloudservice(object):
                 progress.close()
 
         except: pass
+
+
+
+    ##
+    # download/retrieve a media file
+    #   parameters: whether to playback file, media url object, package object, whether to force download (overwrite), whether the file is encfs, folder name (option)
+    ##
+    def downloadEncfsFile2(self, mediaURL, package, playbackURL='', force=False, folderName='', playback=1,item='', player=None, srt=None):
+
+        cachePercent = int(self.settings.encfsCachePercent)
+
+        if cachePercent < 1:
+            cachePercent = 1
+        elif cachePercent > 100:
+            cachePercent = 100
+
+        fileSize = (int)(package.file.size)
+        if fileSize == '' or fileSize < 1000:
+            fileSize = 5000000
+
+        sizeDownload = fileSize * (cachePercent*0.01)
+
+        if sizeDownload < 3000000:
+            sizeDownload = 3000000
+
+        CHUNK = int(self.settings.encfsCacheChunkSize)
+
+        if CHUNK < 1024:
+            CHUNK = 131072
+
+        count = 0
+
+
+        path = re.sub(r'\/[^\/]+$', r'', folderName)
+        if folderName == path:
+            path = re.sub(r'\\[^\\]+$', r'', folderName) #needed for windows?
+
+        #ensure the folder and path exists
+        try:
+            xbmcvfs.mkdirs(path)
+        except: pass
+
+        playbackFile = folderName
+
+
+        downloadedBytes = 0
+
+        #seek to end of file for append
+        # - must use python for append (xbmcvfs not supported)
+        # - if path is not local or KODI-specific user must restart complete download
+
+        req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
+
+        if (1):
+
+            f = xbmcvfs.File(playbackFile, 'w')
+
+
+        # if action fails, validate login
+        try:
+          response = urllib2.urlopen(req)
+
+        except urllib2.URLError, e:
+          self.refreshToken()
+          req = urllib2.Request(mediaURL.url, None, self.getHeadersList())
+          try:
+              response = urllib2.urlopen(req)
+
+          except urllib2.URLError, e:
+            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+            self.crashreport.sendError('downloadMediaFile',str(e))
+            return
+
+        CHUNK = 4096*100
+
+        header = response.read(CHUNK)
+        #f.write(header)
+        if (1):
+            f.write(header)
+
+            f.close()
+        if playbackURL != '':
+
+
+            if playback == True:#self.PLAYBACK_NONE:
+
+                if (0):
+                    pid = os.fork()
+
+                    if (pid == 0): #child
+                        from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+
+                        server = streamer.MyHTTPServer(('', 8003), streamer.myStreamer)
+                        server.setFile(playbackURL,CHUNK, playbackFile, response, fileSize, mediaURL.url, self)
+                        while server.ready:
+                            try:
+                                server.handle_request()
+                            except: pass
+                        server.socket.close()
+    #                    os._exit()
+                    else:
+                        item.setPath('http://localhost:8005')
+                        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+                from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+
+                try:
+                    server = streamer.MyHTTPServer(('', 8006), streamer.myStreamer)
+                except:
+                    req = urllib2.Request('http://localhost:8005/kill', None, None)
+                    try:
+                        response = urllib2.urlopen(req)
+                    except: pass
+                    server = streamer.MyHTTPServer(('', 8006), streamer.myStreamer)
+
+                server.setFile(playbackURL,CHUNK, playbackFile, response, fileSize,  mediaURL.url, self)
+                item.setPath('http://localhost:8006')
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                setCC = True
+                while server.ready:
+                    try:
+                        server.handle_request()
+                    except:
+                        break
+                    if (setCC and (self.settings.srt or self.settings.cc)):
+                        setCC = False
+                        while not (player.isPlaying()):
+                            xbmc.sleep(1000)
+
+                        for file in srt:
+                            if file != '':
+                                try:
+                                    file = file.decode('unicode-escape')
+                                    file = file.encode('utf-8')
+                                except:
+                                    pass
+                                player.setSubtitles(file)
+                server.socket.close()
+
+
+                #else:
+                    #xbmc.executebuiltin("XBMC.PlayMedia("+playbackFile+")")
+                #player.PlayStream(playbackURL, item, package.file.resume, startPlayback=True, package=package)
+#                while not (player.isPlaying()) and not player.isExit:
+#                    xbmc.sleep(1000)
+                    #print str(player.playStatus)
+
+                    # load captions
+            if (self.settings.srt or self.settings.cc):
+                while not (player.isPlaying()):
+                    xbmc.sleep(1000)
+
+                for file in srt:
+                    if file != '':
+                        try:
+                            file = file.decode('unicode-escape')
+                            file = file.encode('utf-8')
+                        except:
+                            pass
+                        player.setSubtitles(file)
 
 
 
@@ -1008,7 +975,7 @@ class cloudservice(object):
         CHUNK = int(self.settings.cacheChunkSize)
 
         if CHUNK < 1024:
-            CHUNK = 16 * 1024
+            CHUNK = 131072
 
         count = 0
 
@@ -1141,6 +1108,62 @@ class cloudservice(object):
 
                 xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
                                 isFolder=True, totalItems=0)
+            elif folder.id == 'CLOUD_DB_GENRE':
+                listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
+                values = {'instance': self.instanceName, 'title': folder.title}
+
+                url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=genre&content_type='+contextType + '&' + urllib.urlencode(values)
+
+                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=True, totalItems=0)
+            elif folder.id == 'CLOUD_DB_TITLE':
+                listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
+                values = {'instance': self.instanceName, 'title': folder.title}
+
+                url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=title&content_type='+contextType + '&' + urllib.urlencode(values)
+
+                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=True, totalItems=0)
+            elif folder.id == 'CLOUD_DB_RESOLUTION':
+                listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
+                values = {'instance': self.instanceName, 'title': folder.title}
+
+                url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=resolution&content_type='+contextType + '&' + urllib.urlencode(values)
+
+                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=True, totalItems=0)
+            elif folder.id == 'CLOUD_DB_YEAR':
+                listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
+                values = {'instance': self.instanceName, 'title': folder.title}
+
+                url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=year&content_type='+contextType + '&' + urllib.urlencode(values)
+
+                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=True, totalItems=0)
+            elif folder.id == 'CLOUD_DB_COUNTRY':
+                listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
+                values = {'instance': self.instanceName, 'title': folder.title}
+
+                url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=country&content_type='+contextType + '&' + urllib.urlencode(values)
+
+                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=True, totalItems=0)
+            elif folder.id == 'CLOUD_DB_DIRECTOR':
+                listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
+                values = {'instance': self.instanceName, 'title': folder.title}
+
+                url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=director&content_type='+contextType + '&' + urllib.urlencode(values)
+
+                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=True, totalItems=0)
+            elif folder.id == 'CLOUD_DB_STUDIO':
+                listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
+                values = {'instance': self.instanceName, 'title': folder.title}
+
+                url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=studio&content_type='+contextType + '&' + urllib.urlencode(values)
+
+                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                                isFolder=True, totalItems=0)
             else:
                 listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
 
@@ -1154,10 +1177,11 @@ class cloudservice(object):
 
                         cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
 
-                    #elif contextType != 'image':
-                        #values = {'username': self.authorization.username, 'epath': epath, 'dpath': dpath, 'encfs':'true' ,'title': folder.title, 'folder': folder.id, 'content_type': contextType }
+                    #encfs
+                    elif contextType != 'image':
+                        values = {'username': self.authorization.username, 'epath': epath, 'dpath': dpath, 'encfs':'true' ,'title': folder.title, 'folder': folder.id, 'content_type': contextType }
 
-                        #cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
+                        cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
 
                     elif contextType == 'image':
                         # slideshow
@@ -1286,7 +1310,12 @@ class cloudservice(object):
             if package.file.hasMeta:
                 infolabels = decode_dict({ 'title' : package.file.displayShowTitle() ,  'plot' : package.file.plot, 'TVShowTitle': package.file.show, 'EpisodeName': package.file.showtitle, 'season': package.file.season, 'episode': package.file.episode,'size' : package.file.size })
             else:
-                infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'cast': [('dd', 'x')],  'plot' : package.file.plot, 'size' : package.file.size})
+                if package.file.actors != None:
+                    infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'cast': package.file.actors,  'plot' : package.file.plot,  'ratingandvotes' : package.file.rating, 'director': package.file.director, 'set': package.file.set, 'country': package.file.country, 'genre': package.file.genre, 'year': package.file.year,  'size' : package.file.size})
+                else:
+                    infolabels = decode_dict({ 'title' : package.file.displayTitle() , 'plot' : package.file.plot,  'ratingandvotes' : package.file.rating, 'director': package.file.director, 'set': package.file.set, 'country': package.file.country, 'genre': package.file.genre, 'year': package.file.year,  'size' : package.file.size})
+
+
             listitem.setInfo('Video', infolabels)
             playbackURL = '?mode=video'
             if self.integratedPlayer:
@@ -1349,6 +1378,10 @@ class cloudservice(object):
     #    url = PLUGIN_URL+playbackURL+'&title='+package.file.title+'&filename='+package.file.id+'&instance='+str(self.instanceName)+'&folder='+str(package.folder.id)
         if encfs:
             values = {'instance': self.instanceName, 'dpath': dpath, 'epath': epath, 'encfs': 'true', 'title': package.file.title, 'filename': package.file.id, 'folder': package.folder.id}
+
+        elif package.file.id == '':
+            values = {'instance': self.instanceName, 'title': package.file.title, 'sheet': 'x', 'year': package.file.year, 'folder': package.folder.id}
+
         else:
             values = {'instance': self.instanceName, 'title': package.file.title, 'filename': package.file.id, 'folder': package.folder.id}
         url = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)

@@ -1,5 +1,5 @@
 '''
-    gdrive XBMC Plugin
+    CloudService XBMC Plugin
     Copyright (C) 2013-2014 ddurdle
 
     This program is free software: you can redistribute it and/or modify
@@ -30,16 +30,23 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
 # common routines
 from resources.lib import kodi_common
 
+# global variables
+import addon_parameters
+addon = addon_parameters.addon
+cloudservice2 = addon_parameters.cloudservice2
+cloudservice1 = addon_parameters.cloudservice1
 
 
 #*** testing - gdrive
-from resources.lib import gdrive
-from resources.lib import gdrive_api2
 from resources.lib import tvWindow
 from resources.lib import gSpreadsheets
+from resources.lib import gSheets_api4
+
 ##**
 
 # cloudservice - standard modules
+#from resources.lib import gdrive
+#from resources.lib import gdrive_api2
 from resources.lib import cloudservice
 from resources.lib import authorization
 from resources.lib import folder
@@ -51,12 +58,9 @@ from resources.lib import crashreport
 from resources.lib import gPlayer
 from resources.lib import settings
 from resources.lib import cache
+from resources.lib import TMDB
 
 
-# global variables
-PLUGIN_NAME = 'gdrive'
-addon = xbmcaddon.Addon(id='plugin.video.gdrive')
-#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 
 #global variables
 PLUGIN_URL = sys.argv[0]
@@ -115,14 +119,16 @@ xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
 #    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TRACKNUM)
 xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_SIZE)
 
-numberOfAccounts = cloudservice.numberOfAccounts(PLUGIN_NAME)
+numberOfAccounts = kodi_common.numberOfAccounts(addon_parameters.PLUGIN_NAME)
+invokedUsername = settings.getParameter('username')
+
 
 # cloudservice - utilities
 ###
 
 if mode == 'dummy' or mode == 'delete' or mode == 'enroll':
 
-    cloudservice.accountActions(addon, PLUGIN_NAME, mode, instanceName, numberOfAccounts)
+    kodi_common.accountActions(addon, addon_parameters.PLUGIN_NAME, mode, instanceName, numberOfAccounts)
 
 #create strm files
 elif mode == 'buildstrm':
@@ -182,20 +188,20 @@ elif mode == 'buildstrm':
                 count = 1
                 loop = True
                 while loop:
-                    instanceName = PLUGIN_NAME+str(count)
+                    instanceName = addon_parameters.PLUGIN_NAME+str(count)
                     try:
                         username = settings.getSetting(instanceName+'_username')
                         if username == invokedUsername:
 
                             #let's log in
-                            if ( int(settings.getSetting(instanceName+'_type',0))==0):
-                                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+                            if ( settings.getSettingInt(instanceName+'_type',0)==0):
+                                service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings)
                             else:
-                                service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+                                service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
                             loop = False
                     except:
-                        service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent)
+                        service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent)
                         break
 
                     if count == numberOfAccounts:
@@ -203,16 +209,24 @@ elif mode == 'buildstrm':
                             service
                         except NameError:
                             #fallback on first defined account
-                            if ( int(settings.getSetting(instanceName+'_type',0))==0):
-                                service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
+                            if ( settings.getSettingInt(instanceName+'_type',0)==0):
+                                service = cloudservice1(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
                             else:
-                                service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
+                                service = cloudservice2(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
                         break
                     count = count + 1
 
+                # encfs -- extract filename
+                if encfs:
+                    extrapulatedFolderName = re.compile('([^/]+)/$')
+
+                    titleDecrypted = extrapulatedFolderName.match(dencryptedPath)
+
+                    if titleDecrypted is not None:
+                        title = titleDecrypted.group(1)
 
 
-                if settings.cloudResume == '2':
+                if addon_parameters.spreadsheet and service.cloudResume == '2':
                     spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
                     service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile)
                     spreadsheetFile.close()
@@ -222,6 +236,14 @@ elif mode == 'buildstrm':
             elif filename != '':
                             if encfs:
                                 values = {'title': title, 'encfs': 'True', 'epath': encryptedPath, 'dpath': dencryptedPath, 'filename': filename, 'username': invokedUsername}
+                                # encfs -- extract filename
+                                extrapulatedFileName = re.compile('.*?/([^/]+)$')
+
+                                titleDecrypted = extrapulatedFileName.match(dencryptedPath)
+
+                                if titleDecrypted is not None:
+                                    title = titleDecrypted.group(1)
+
                             else:
                                 values = {'title': title, 'filename': filename, 'username': invokedUsername}
                             if type == 1:
@@ -238,14 +260,14 @@ elif mode == 'buildstrm':
 
                 count = 1
                 while True:
-                    instanceName = PLUGIN_NAME+str(count)
+                    instanceName = addon_parameters.PLUGIN_NAME+str(count)
                     username = settings.getSetting(instanceName+'_username')
 
                     if username != '' and username == invokedUsername:
-                        if ( int(settings.getSetting(instanceName+'_type',0))==0):
-                                service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+                        if ( settings.getSettingInt(instanceName+'_type',0)==0):
+                                service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings)
                         else:
-                            service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+                            service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
                         service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
 
@@ -255,10 +277,10 @@ elif mode == 'buildstrm':
                             service
                         except NameError:
                             #fallback on first defined account
-                            if ( int(settings.getSetting(instanceName+'_type',0))==0):
-                                    service = gdrive.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
+                            if ( settings.getSettingInt(instanceName+'_type',0)==0):
+                                    service = cloudservice1(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
                             else:
-                                service = gdrive_api2.gdrive(PLUGIN_URL,addon,PLUGIN_NAME+'1', user_agent, settings)
+                                service = cloudservice2(PLUGIN_URL,addon,addon_parameters.PLUGIN_NAME+'1', user_agent, settings)
                         break
                     count = count + 1
 
@@ -275,18 +297,65 @@ elif mode == 'buildstrm':
 ###
 
 
-invokedUsername = settings.getParameter('username')
-instanceName = cloudservice.getInstanceName(addon, PLUGIN_NAME, mode, instanceName, invokedUsername, numberOfAccounts, contextType)
+
+###
+
+#STRM playback without instance name; use default
+if invokedUsername == '' and instanceName == '' and (mode == 'video' or mode == 'audio'):
+    instanceName = addon_parameters.PLUGIN_NAME + str(settings.getSetting('account_default', 1))
+
+
+instanceName = kodi_common.getInstanceName(addon, addon_parameters.PLUGIN_NAME, mode, instanceName, invokedUsername, numberOfAccounts, contextType)
 
 service = None
 if instanceName is None and (mode == 'index' or mode == 'main' or mode == 'offline'):
     service = None
 elif instanceName is None:
-    service = gdrive_api2.gdrive(PLUGIN_URL,addon,'', user_agent, settings, authenticate=False)
-elif int(settings.getSetting(instanceName+'_type',0))==0 :
-    service = gdrive.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+    service = cloudservice2(PLUGIN_URL,addon,'', user_agent, settings, authenticate=False)
+elif settings.getSettingInt(instanceName+'_type',0)==0 :
+    service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings)
 else:
-    service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+    service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
+
+
+#create strm files
+if mode == 'buildstrm2':
+
+
+    import time
+    currentDate = time.strftime("%Y%m%d")
+
+
+    try:
+        path = settings.getSetting('strm_path')
+    except:
+        pass
+
+
+    if path != '':
+
+        try:
+            pDialog = xbmcgui.DialogProgressBG()
+            pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
+        except:
+            pass
+
+
+        #service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+
+#        try:
+        addon.setSetting(instanceName + '_changedate', currentDate)
+        service.buildSTRM2(path, contentType=contentType, pDialog=pDialog)
+#        except:
+#            pass
+
+        try:
+            pDialog.update(100)
+            pDialog.close()
+        except:
+            pass
+
+    xbmcplugin.endOfDirectory(plugin_handle)
 
 
 
@@ -331,7 +400,7 @@ elif mode == 'cloud_db':
     package=package.package(mediaFile,mediaFolder)
 
         # TESTING
-    if settings.cloudResume == '2':
+    if addon_parameters.spreadsheet and service.cloudResume == '2':
         if service.worksheetID == '':
 
             try:
@@ -353,7 +422,7 @@ elif mode == 'cloud_db':
                 break
 
         # TESTING
-    if settings.cloudResume == '2':
+    if addon_parameters.spreadsheet and service.cloudResume == '2':
 
         if service.gSpreadsheet is None:
             service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
@@ -381,6 +450,117 @@ elif mode == 'cloud_db':
 
     service.updateAuthorization(addon)
 
+#cloud_db actions
+elif mode == 'cloud_dbtest':
+
+    title = settings.getParameter('title')
+    folderID = settings.getParameter('folder')
+    folderName = settings.getParameter('foldername')
+    filename = settings.getParameter('filename')
+
+    action = settings.getParameter('action')
+
+
+#    s = gSheets_api4.gSheets_api4(service,addon, user_agent)
+#    s.createSpreadsheet()
+#    s.addRows()
+    if action == 'library_menu':
+
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_genre&content_type='+str(contextType),'Genre')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_year&content_type='+str(contextType),'Year')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_title&content_type='+str(contextType),'Title')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_country&content_type='+str(contextType),'Countries')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_director&content_type='+str(contextType),'Directors')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_studio&content_type='+str(contextType),'Studio')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_resolution&content_type='+str(contextType),'Quality (Resolution)')
+
+    else:
+
+        mediaFile = file.file(filename, title, '', 0, '','')
+        mediaFolder = folder.folder(folderID,folderName)
+        package=package.package(mediaFile,mediaFolder)
+
+        spreadsheet = None
+            # TESTING
+        if addon_parameters.spreadsheet:
+
+                try:
+                    service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+
+                    spreadsheets = service.gSpreadsheet.getSpreadsheetList()
+                except:
+                    pass
+
+                for t in spreadsheets.iterkeys():
+                    if t == 'Movie2':
+                        worksheets = service.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[t])
+
+                        for worksheet in worksheets.iterkeys():
+                            if worksheet == 'db':
+                                spreadsheet = worksheets[worksheet]
+                                break
+                        break
+
+            # TESTING
+        if addon_parameters.spreadsheet:
+
+            if service.gSpreadsheet is None:
+                service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+            if action == 'watch':
+                service.gSpreadsheet.setMediaStatus(service.worksheetID,package, watched=1)
+                xbmc.executebuiltin("XBMC.Container.Refresh")
+            elif action == 'queue':
+                package.folder.id = 'QUEUED'
+                service.gSpreadsheet.setMediaStatus(service.worksheetID,package)
+            elif action == 'genre' or action == 'year' or action == 'title' or action == 'country' or action == 'director' or action == 'studio' or action == 'recentstarted' or  'library' in action or action == 'queued':
+
+                if action == 'genre':
+                    mediaItems = service.gSpreadsheet.getMovies(spreadsheet, genre=title)
+                elif action == 'year':
+                    mediaItems = service.gSpreadsheet.getMovies(spreadsheet, year=title)
+                elif action == 'title':
+                    mediaItems = service.gSpreadsheet.getMovies(spreadsheet, title=title)
+                elif action == 'resolution':
+                    mediaItems = service.gSpreadsheet.getMovies(spreadsheet, resolution=title)
+                elif action == 'country':
+                    mediaItems = service.gSpreadsheet.getMovies(spreadsheet, country=title)
+                elif action == 'director':
+                    mediaItems = service.gSpreadsheet.getMovies(spreadsheet, director=title)
+                elif action == 'studio':
+                    mediaItems = service.gSpreadsheet.getMovies(spreadsheet, studio=title)
+                elif action == 'library_title':
+                    mediaItems = service.gSpreadsheet.getTitle(spreadsheet)
+                elif action == 'library_genre':
+                    mediaItems = service.gSpreadsheet.getGenre(spreadsheet)
+                elif action == 'library_year':
+                    mediaItems = service.gSpreadsheet.getYear(spreadsheet)
+                elif action == 'library_country':
+                    mediaItems = service.gSpreadsheet.getCountries(spreadsheet)
+                elif action == 'library_director':
+                    mediaItems = service.gSpreadsheet.getDirector(spreadsheet)
+                elif action == 'library_studio':
+                    mediaItems = service.gSpreadsheet.getStudio(spreadsheet)
+                elif action == 'library_resolution':
+                    mediaItems = service.gSpreadsheet.getResolution(spreadsheet)
+
+                #ensure that folder view playback
+                if contextType == '':
+                    contextType = 'video'
+
+                tmdb= TMDB.TMDB(service,addon, user_agent)
+
+                if mediaItems:
+                    for item in mediaItems:
+
+                            if item.file is None:
+                                service.addDirectory(item.folder, contextType=contextType)
+                            else:
+                               # movieID = tmdb.movieSearch(item.file.title,item.file.year)
+                               # tmdb.movieDetails(movieID)
+                                service.addMediaFile(item, contextType=contextType)
+
+        service.updateAuthorization(addon)
+
 #dump a list of videos available to play
 elif mode == 'main' or mode == 'index':
 
@@ -394,28 +574,37 @@ elif mode == 'main' or mode == 'index':
     # display option for all Videos/Music/Photos, across gdrive
     #** gdrive specific
     if mode == 'main':
-        if contentType in (2,4,7):
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=ALL&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30030)+']')
-        elif contentType == 1:
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=VIDEOMUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30031)+']')
-        elif contentType == 0:
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=VIDEO&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30025)+']')
-        elif contentType == 3:
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=MUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30094)+']')
-        elif contentType == 5:
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=PHOTO&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30034)+']')
-        elif contentType == 6:
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=PHOTOMUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30032)+']')
+        if ('gdrive' in addon_parameters.PLUGIN_NAME):
+
+            if contentType in (2,4,7):
+                kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=ALL&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30030)+']')
+            elif contentType == 1:
+                kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=VIDEOMUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30031)+']')
+            elif contentType == 0:
+                kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=VIDEO&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30025)+']')
+            elif contentType == 3:
+                kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=MUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30094)+']')
+            elif contentType == 5:
+                kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=PHOTO&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30034)+']')
+            elif contentType == 6:
+                kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=PHOTOMUSIC&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+' '+addon.getLocalizedString(30032)+']')
         folderID = 'root'
-        if (service.protocol != 2):
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILES&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' '+addon.getLocalizedString(30095)+']')
-            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30096)+']')
-        kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=SHARED&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30098)+']')
-        kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
+
+        if ('gdrive' in addon_parameters.PLUGIN_NAME):
+
+#        if (service.protocol != 2):
+#            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILES&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+ ' '+addon.getLocalizedString(30095)+']')
+#            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30096)+']')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=SHARED&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30098)+']')
+            kodi_common.addMenu(PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
         kodi_common.addMenu(PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
+        kodi_common.addMenu(PLUGIN_URL+'?mode=buildstrm2&instance='+str(service.instanceName)+'&content_type='+str(contextType),'<Testing - manual run of change tracking build STRM>')
+        if addon_parameters.testing_features:
+            kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_menu&content_type='+str(contextType),'[MOVIES]')
+
 
         #CLOUD_DB
-        if service.gSpreadsheet is not None:
+        if 'gdrive' in addon_parameters.PLUGIN_NAME and service.gSpreadsheet is not None:
                 kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_db&action=recentstarted&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' recently started]')
                 kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_db&action=recentwatched&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' recently watched]')
                 kodi_common.addMenu(PLUGIN_URL+'?mode=cloud_db&action=library&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' library]')
@@ -429,7 +618,7 @@ elif mode == 'main' or mode == 'index':
         service
     except NameError:
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
-        xbmc.log(addon.getLocalizedString(30050)+ 'gdrive-login', xbmc.LOGERROR)
+        xbmc.log(addon.getLocalizedString(30050)+ addon_parameters.PLUGIN_NAME+'-login', xbmc.LOGERROR)
         xbmcplugin.endOfDirectory(plugin_handle)
 
     #if encrypted, get everything(as encrypted files will be of type application/ostream)
@@ -528,7 +717,7 @@ elif mode == 'main' or mode == 'index':
         # real folder
         if folderID != '':
             mediaItems = service.getMediaList(folderID,contentType=contentType)
-            if settings.cloudResume == '2':
+            if addon_parameters.spreadsheet and service.cloudResume == '2':
 
                 if service.gSpreadsheet is None:
                     service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
@@ -561,7 +750,7 @@ elif mode == 'kiosk':
     if spreadshetModule:
             gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
             service.gSpreadsheet = gSpreadsheet
-            spreadsheets = gSpreadsheet.getSpreadsheetList()
+            spreadsheets = service.getSpreadsheetList()
 
 
             channels = []
@@ -606,7 +795,7 @@ elif mode == 'kiosk':
                             #player.setService(service)
 #                            player.setContent(episodes)
                             player.setWorksheet(worksheets['db'])
-                            player.PlayStream('plugin://plugin.video.gdrive-testing/?mode=video&instance='+str(service.instanceName)+'&title='+episodes[0][3], None,episodes[0][7],episodes[0][2])
+                            player.PlayStream('plugin://plugin.video.'+addon_parameters.PLUGIN_NAME+'-testing/?mode=video&instance='+str(service.instanceName)+'&title='+episodes[0][3], None,episodes[0][7],episodes[0][2])
                             #player.next()
                             while not player.isExit:
                                 player.saveTime()
@@ -688,7 +877,7 @@ elif mode == 'downloadfolder':
         service
     except NameError:
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
-        xbmc.log(addon.getLocalizedString(30050)+ 'gdrive-login',xbmc.LOGERROR)
+        xbmc.log(addon.getLocalizedString(30050)+ addon_parameters.PLUGIN_NAME + '-login',xbmc.LOGERROR)
         xbmcplugin.endOfDirectory(plugin_handle)
 
     if encfs:
@@ -888,6 +1077,41 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
     filename = settings.getParameter('filename') #file ID
     folderID = settings.getParameter('folder') #folder ID
 
+
+    spreadsheetSTRM = settings.getParameter('spreadsheet')
+    sheetSTRM = settings.getParameter('sheet')
+
+    year = settings.getParameter('year')
+
+    if sheetSTRM != None and sheetSTRM != '':
+
+
+        if service.gSpreadsheet is None:
+            service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+
+        try:
+            service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
+
+            spreadsheets = service.gSpreadsheet.getSpreadsheetList()
+        except:
+            pass
+
+        spreadsheet = None
+        for t in spreadsheets.iterkeys():
+            if t == 'Movies':
+                worksheets = service.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[t])
+
+                for worksheet in worksheets.iterkeys():
+                    if worksheet == 'db':
+                        spreadsheet = worksheets[worksheet]
+                        break
+                break
+
+        if spreadsheet != None:
+            filename = service.gSpreadsheet.getSTRMplaybackMovie(spreadsheet, title, year)
+        else:
+            filename = service.gSpreadsheet.getSTRMplaybackMovie('https://spreadsheets.google.com/feeds/list/'+spreadsheetSTRM+'/'+sheetSTRM+'/private/full', title, year)
+
     if folderID == 'False':
             folderID = 'SEARCH'
 
@@ -906,7 +1130,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         service
     except NameError:
         xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30051), addon.getLocalizedString(30052))
-        xbmc.log(addon.getLocalizedString(30050)+ 'gdrive-login', xbmc.LOGERROR)
+        xbmc.log(addon.getLocalizedString(30050)+ addon_parameters.PLUGIN_NAME + '-login', xbmc.LOGERROR)
         xbmcplugin.endOfDirectory(plugin_handle)
 
     #settings.setCacheParameters()
@@ -944,7 +1168,10 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
         encfs_source = settings.encfsSource
         encfs_target = settings.encfsTarget
         encfs_inode = settings.encfsInode
-        (mediaURLs,package) = service.getPlaybackCall(None,title=title)
+        mediaFile = file.file(filename, title, '', 0, '','')
+        mediaFolder = folder.folder(folderID,'')
+        (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder), title=title, contentType=8)
+        #(mediaURLs,package) = service.getPlaybackCall(None,title=title)
         mediaURL = mediaURLs[0]
 
         playbackTarget = encfs_target + dencryptedPath
@@ -1008,6 +1235,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             mediaList = ['.sub', '.srt']
             media_re = re.compile("|".join(mediaList), re.I)
 
+
+            # encfs -- extract path
             extrapulatedPath = re.compile('(.*?)/[^/]+$')
 
             dencryptedPathWithoutFilename = extrapulatedPath.match(dencryptedPath)
@@ -1080,7 +1309,10 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                     xbmcvfs.rmdir(encfs_source + str(dir))
                     addon.setSetting('encfs_last', str(encryptedPath) +str(title))
 
-                    service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', folderName=str(encfs_source) + str(dir), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
+                    if settings.encfsExp:
+                        service.downloadEncfsFile2(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', folderName=str(encfs_source) + str(dir), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
+                    else:
+                        service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', folderName=str(encfs_source) + str(dir), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
 
             #already downloaded (partial or full)
             for file in files:
@@ -1093,15 +1325,22 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 if index in fileListINodes.keys():
                     #resume
                     if settings.encfsLast == str(encryptedPath) +str(title):
-                        service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=False,folderName=str(encfs_source) + str(file), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
-
+                        if settings.encfsExp:
+                            service.downloadEncfsFile2(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=False,folderName=str(encfs_source) + str(file), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
+                        else:
+                            service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=False,folderName=str(encfs_source) + str(file), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
                     #new file
                     else:
                         addon.setSetting('encfs_last', str(encryptedPath) +str(title))
 
-                        service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=True, folderName=str(encfs_source) + str(file), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
+                        if settings.encfsExp:
+                            service.downloadEncfsFile2(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=True, folderName=str(encfs_source) + str(file), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
+                        else:
+                            service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=True, folderName=str(encfs_source) + str(file), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
+
 
         else:
+            #service.downloadEncfsFile2(mediaURL, package, playbackURL=playbackTarget, folderName=str(encfs_source) + encryptedPath +str(title), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
             service.downloadEncfsFile(mediaURL, package, playbackURL=playbackTarget, folderName=str(encfs_source) + encryptedPath +str(title), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
 
 
@@ -1224,7 +1463,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             # right-click - download (download only + force)
             if not seek > 0 and not (settings.download and not settings.play):
                     # TESTING
-                if settings.cloudResume == '2':
+                if addon_parameters.spreadsheet and service.cloudResume == '2':
                     if service.worksheetID == '':
 
                         try:
@@ -1246,7 +1485,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                             break
 
                     # TESTING
-                if settings.cloudResume == '2':
+                if addon_parameters.spreadsheet and service.cloudResume == '2':
 
                     if service.gSpreadsheet is None:
                         service.gSpreadsheet = gSpreadsheets.gSpreadsheets(service,addon, user_agent)
@@ -1325,7 +1564,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                         resolvedPlayback = False
 
                     # STRM (force resolve) -- resolve-only
-                    elif settings.username != '':
+                    elif settings.username != '' or settings.strm:
                         startPlayback = False
                         resolvedPlayback = True
                         startPlayback = False
@@ -1498,6 +1737,46 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                 xbmc.sleep(5000)
 
 xbmcplugin.endOfDirectory(plugin_handle)
+
+#automation - create strm files
+if service is not None and instanceName is not None:
+
+
+    import time
+    currentDate = time.strftime("%Y%m%d")
+
+    if addon.getSetting(instanceName+'_changedate') == '' or int(addon.getSetting(instanceName+'_changedate')) < int(currentDate):
+
+
+        try:
+            path = settings.getSetting('strm_path')
+        except:
+            pass
+
+
+        if path != '':
+
+            try:
+                pDialog = xbmcgui.DialogProgressBG()
+                pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
+            except:
+                pass
+
+
+            #service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
+
+            try:
+                addon.setSetting(instanceName + '_changedate', currentDate)
+                service.buildSTRM2(path, contentType=contentType, pDialog=pDialog)
+            except:
+                pass
+
+            try:
+                pDialog.update(100)
+                pDialog.close()
+            except:
+                pass
+
 
 
 #                player = gPlayer.gPlayer()

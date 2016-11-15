@@ -67,6 +67,13 @@ class file:
         self.isTV = False
         self.isMovie = False
         self.cloudResume = 0
+        self.deleted = False
+        self.director = ''
+        self.set = ''
+        self.genre = ''
+        self.country = ''
+        self.year = ''
+        self.actors = None
 
 
         # nekwebdev contribution
@@ -86,6 +93,9 @@ class file:
                                        '(?:[ .](\d{3}\d?p)|\Z)?'
                                        '\..*', re.IGNORECASE)
 
+        self.regmovie = re.compile('(.*?[ \(]?[ .]?[ \-]?\d{4}[ \)]?[ .]?[ \-]?)'
+                          '.*?'
+                          '(?:(\d{3}\d?p)|\Z)?')
 
     def setAlbumMeta(self,album,artist,releaseDate,trackNumber,genre, trackTitle):
         self.album = album
