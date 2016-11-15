@@ -121,6 +121,15 @@ class settings:
         else:
             self.photoResolution = 99999
 
+
+#        self.thumbnailResolution = int(self.getSetting('thumb_resolution', 0))
+#        if self.thumbnailResolution == 0:
+#            self.thumbnailResolution = 80
+#        elif self.thumbnailResolution == 1:
+#            self.thumbnailResolution = 120
+#        else:
+#            self.thumbnailResolution = 200
+
         self.encfsDownloadType = int(self.getSetting('encfs_download_type', 1))
 
 
