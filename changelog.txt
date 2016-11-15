@@ -1,3 +1,59 @@
+v0.8.27 (2016-11-13)
+- fix public streams (streamURL)
+- fix: Public streams #99
+v0.8.26 (2016-10-19)
+- merge modified method of STRM creation with old manual STRM creation
+v0.8.25 (2016-10-18)
+- add browse by quality (resolution)
+v0.8.24 (2016-10-17)
+- add Google Sheets API v4
+- add TMDB API
+v0.8.23 (2016-10-16)
+- tesitng browser movies by studio
+- tesitng browser movies by directors
+- implement movie browsing by title
+v0.8.22 (2016-10-15)
+- enable playback for testing features
+v0.8.21 (2016-10-14)
+- testing browse movie by year
+v0.8.20 (2016-10-13)
+- testing movie genre + year
+v0.8.19 (2016-10-11)
+- fix for cloud_db saving playback times
+- cleanup
+v0.8.18 (2016-10-06)
+- incorporate new fields and other fixes for strm spreadsheet functionality
+v0.8.17 (2016-10-05)
+- fix for [enroll account] screen missing
+- abstract gdrive references
+v0.8.16 (2016-10-03)
+- add strm spreadsheet functionality
+v0.8.15 (2016-09-21)
+- enabled experimental encfs viewer
+v0.8.14 (2016-09-20)
+- experiment with new encfs streamer
+v0.8.13 (2016-09-18)
+- STRM creation: treat .YYYY. and -YYYY- as movie (user321 contribution)
+- STMR creation: fix fileID issue with autmatic STRM creation
+v0.8.12 (2016-09-13)
+- fix spreadsheet error
+v0.8.11 (2016-09-12)
+- add encfs download type
+v0.8.10 (2016-09-11)
+- new minimum chunk size for offline + encfs
+- fix cache and encryption chunk sizes in settings
+v0.8.09 (2016-09-10)
+- clarify cache ==> offline
+- cleanup settings
+- move cloud_db spreadsheet into accounts
+v0.8.08 (2016-09-09)
+- add timeouts for automation of creation of STRM #62
+v0.8.07 (2016-09-08)
+- implement deletion function - automation of creation of STRM #62
+- reliablity improvements for automation of creation of STRM #62
+- change encfs download type
+v0.8.06 (2016-09-05)
+- implement for testing: automation of creation of STRM #62
 v0.8.05 (2016-09-02)
 - push unstable to stable
 v0.8.04 (2016-09-01)
