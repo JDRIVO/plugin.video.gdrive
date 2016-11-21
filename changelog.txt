@@ -1,3 +1,5 @@
+v0.8.31 (2016-11-20)
+- delete spreadsheet values when deleting account
 v0.8.30 (2016-11-17)
 - add automatic strm toggle in settings
 - add prompt to resume (cloud resume)
