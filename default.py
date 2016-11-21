@@ -1694,6 +1694,14 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                     service.downloadMediaFile(mediaURL, item, package, player=player)
                     resolvedPlayback = False
 
+            if float(package.file.cloudResume) > 0 or  float(package.file.resume) > 0:
+                options = []
+                options.append('Resume from ' + str(int(float(package.file.resume))/60).zfill(2) +':' + str(int(float(package.file.resume))%60).zfill(2) )
+                options.append('Start from begining')
+
+                ret = xbmcgui.Dialog().select(addon.getLocalizedString(30176), options)
+                if ret == 1:
+                    package.file.resume = 0
 
             if resolvedPlayback:
 
@@ -1739,7 +1747,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 xbmcplugin.endOfDirectory(plugin_handle)
 
 #automation - create strm files
-if service is not None and instanceName is not None:
+if service is not None and instanceName is not None and settings.strm:
 
 
     import time
