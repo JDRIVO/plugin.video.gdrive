@@ -71,20 +71,21 @@ class encryption():
 
         return text
 
-   # def encrypt(string):
-   #     if ENCRYPTION_ENABLE == 0:
-   #         return
-   #     import base64
-#
-#        return base64.b64encode(string)
-#    def decrypt(string):
-#        if ENCRYPTION_ENABLE == 0:
-#            return
-#        try:
-#            import base64
-#            return base64.b64decode(string)
-#        except:
-#            return ''
+    def encryptFilename(fileName):
+        if ENCRYPTION_ENABLE == 0:
+            return
+        import base64
+
+        return base64.b64encode(fileName)
+
+    def decrypt(fileName):
+        if ENCRYPTION_ENABLE == 0:
+            return
+        try:
+            import base64
+            return base64.b64decode(fileName)
+        except:
+            return ''
 
     def decryptFile(self, in_filename, out_filename=None, chunksize=24*1024):
         """ Decrypts a file using AES (CBC mode) with the
@@ -120,7 +121,7 @@ class encryption():
                 return
     #    with open(in_filename, 'rb') as infile:
             origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
-            decryptor = AES.new(key, AES.MODE_ECB)
+            decryptor = AES.new(self.key, AES.MODE_ECB)
 
             with open(out_filename, 'w') as outfile:
                 while True:

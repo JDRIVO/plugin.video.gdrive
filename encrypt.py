@@ -14,17 +14,16 @@ encrypt = encryption.encryption(saltFile,password)
 encrypt.decryptFile(file+'1.enc')
 
 
-    def decrypt_dir(key,path,dir):
-      if ENCRYPTION_ENABLE == 0:
-            return
-      current, dirs, files = os.walk(path+'/'+dir).next()
+def decrypt_dir(key,path,dir):
 
-      for file in files:
-        dec_file = decrypt(file)
-        if (dec_file != ''):
-          if not os.path.exists(path + '/'+dir+'/'+dec_file + '.JPG'):
-            decrypt_file(key, path + '/' + dir + '/' + file,path + '/' + dir + '/' + dec_file + '.JPG')
-          else:
-            print "skipping " + file + ' ' + dec_file + "\n"
+  current, dirs, files = os.walk(path+'/'+dir).next()
+
+  for file in files:
+    dec_file = decrypt(file)
+    if (dec_file != ''):
+      if not os.path.exists(path + '/'+dir+'/'+dec_file + '.JPG'):
+        decrypt_file(key, path + '/' + dir + '/' + file,path + '/' + dir + '/' + dec_file + '.JPG')
+      else:
+        print "skipping " + file + ' ' + dec_file + "\n"
 
 #print encrypt.generateSalt()

@@ -1,3 +1,4 @@
+- testing crypto support - https://github.com/ddurdle/GDrive-for-KODI/issues/104
 v0.8.31 (2016-11-20)
 - delete spreadsheet values when deleting account
 - fix: On account delete, cleanup entries #103

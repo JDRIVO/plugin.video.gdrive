@@ -7,6 +7,7 @@ A video add-on for XBMC that enables playback of videos stored in a Google Drive
 
 Supports [Tested on]:
 All XBMC 12/13/14 including Linux, Windows, OS X, Android, Pivos, iOS (including ATV2)
+Tested successfully on KODI 17 BETA 7.  If you encounter issues, update to BETA 7 or later.
 
 The plugin uses the Google Docs API 3 and Google Drive API 2
 
