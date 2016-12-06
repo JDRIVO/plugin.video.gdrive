@@ -1,3 +1,5 @@
+v0.8.32 (2016-12-05)
+- fix: strm files containing an apostrophe #101
 - testing crypto support - https://github.com/ddurdle/GDrive-for-KODI/issues/104
 v0.8.31 (2016-11-20)
 - delete spreadsheet values when deleting account
