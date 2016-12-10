@@ -303,6 +303,9 @@ def accountActions(addon, PLUGIN_NAME, mode, instanceName, numberOfAccounts):
                 addon.setSetting(instanceName + '_passcode', '')
                 addon.setSetting(instanceName + '_auth_access_token', '')
                 addon.setSetting(instanceName + '_auth_refresh_token', '')
+                addon.setSetting(instanceName + '_spreadsheetname', '')
+                addon.setSetting(instanceName + '_spreadsheetname', '')
+                addon.setSetting(instanceName + '_spreadsheet', '')
                 # ***
                 xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30158))
             except:

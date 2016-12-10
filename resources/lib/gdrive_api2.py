@@ -1302,6 +1302,14 @@ class gdrive(cloudservice):
             url = self.API_URL +'files/'
             # search by video title
             encodedTitle = re.sub(' ', '+', title)
+            encodedTitle = re.sub('\'', '\\\'', encodedTitle)
+            encodedTitle = re.sub('&', '\\\&', encodedTitle)
+            #encodedTitle = re.sub('?', '\\\?', encodedTitle)
+            #encodedTitle = re.sub('#', '\\\#', encodedTitle)
+            #encodedTitle = re.sub('(', '\\\(', encodedTitle)
+            #encodedTitle = re.sub(')', '\\\)', encodedTitle)
+            #encodedTitle = re.sub('$', '\\\$', encodedTitle)
+
             if isExact == True:
                 url = url + "?q=title%3d'" + str(encodedTitle) + "'"
             else:

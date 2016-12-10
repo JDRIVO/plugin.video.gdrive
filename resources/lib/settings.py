@@ -105,7 +105,7 @@ class settings:
         self.seek = getParameter('seek', 0)
         self.trace = getSetting('trace', False)
 
-        self.photoResolution = int(self.getSetting('photo_resolution', 0))
+        self.photoResolution = int(self.getSettingInt('photo_resolution', 0))
         if self.photoResolution == 0:
             self.photoResolution = 1280
         elif self.photoResolution == 1:

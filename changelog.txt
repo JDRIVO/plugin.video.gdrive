@@ -1,3 +1,17 @@
+v0.8.33 (2016-12-06)
+- fix: strm files containing an apostrophe #101
+v0.8.32 (2016-12-05)
+- fix: strm files containing an apostrophe #101
+- testing crypto support - https://github.com/ddurdle/GDrive-for-KODI/issues/104
+v0.8.31 (2016-11-20)
+- delete spreadsheet values when deleting account
+- fix: On account delete, cleanup entries #103
+v0.8.30 (2016-11-17)
+- add automatic strm toggle in settings
+- add prompt to resume (cloud resume)
+v0.8.29 (2016-11-16)
+v0.8.28 (2016-11-16)
+- push testing to stable
 v0.8.27 (2016-11-13)
 - fix public streams (streamURL)
 - fix: Public streams #99
