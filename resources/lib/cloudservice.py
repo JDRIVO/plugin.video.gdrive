@@ -110,15 +110,19 @@ class cloudservice(object):
         import xbmcvfs
         xbmcvfs.mkdir(path)
 
-        musicPath = path + '/music'
-        moviePath = path + '/movies'
-        tvPath = path + '/tv'
-        videoPath = path + '/video-other'
+        #musicPath = path + '/music'
+        #moviePath = path + '/movies'
+        #tvPath = path + '/tv'
+        #videoPath = path + '/video-other'
+        musicPath = path
+        moviePath = path
+        tvPath = path
+        videoPath = path
 
-        xbmcvfs.mkdir(musicPath)
-        xbmcvfs.mkdir(tvPath)
-        xbmcvfs.mkdir(videoPath)
-        xbmcvfs.mkdir(moviePath)
+        #xbmcvfs.mkdir(musicPath)
+        #xbmcvfs.mkdir(tvPath)
+        #xbmcvfs.mkdir(videoPath)
+        #xbmcvfs.mkdir(moviePath)
 
 
         mediaItems = self.getMediaList(folderID,contentType=contentType)
@@ -164,7 +168,7 @@ class cloudservice(object):
                         if not tv:
                             tv = item.file.regtv3.match(title)
 
-                        if tv:
+                        if 0 and tv:
                             show = tv.group(1).replace("\S{2,}\.\S{2,}", " ")
                             show = show.rstrip("\.")
                             season = tv.group(2)
