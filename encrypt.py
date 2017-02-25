@@ -10,8 +10,10 @@ password = str(sys.argv[2])
 file = str(sys.argv[3])
 
 encrypt = encryption.encryption(saltFile,password)
+#encrypt.encryptString(file)
+encrypt.decryptString(file)
 #encrypt.encryptFile(file)
-encrypt.decryptFile(file+'1.enc')
+#encrypt.decryptFile(file+'.enc')
 
 
 def decrypt_dir(key,path,dir):
