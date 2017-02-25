@@ -199,7 +199,7 @@ class encryption():
         import base64
         stringEncrypted = base64.b64encode(encryptor.encrypt(stringDecrypted))
         stringEncrypted = re.sub('/', '---', stringEncrypted)
-        print stringEncrypted
+        return stringEncrypted
 
 
     def decryptString(self, stringEncrypted):
@@ -215,5 +215,5 @@ class encryption():
         stringEncrypted = re.sub('---', '/', stringEncrypted)
         stringDecrypted = decryptor.decrypt(base64.b64decode(stringEncrypted))
 
-        print stringDecrypted
+        return stringDecrypted
 

@@ -11,7 +11,8 @@ file = str(sys.argv[3])
 
 encrypt = encryption.encryption(saltFile,password)
 #encrypt.encryptString(file)
-encrypt.decryptString(file)
+print encrypt.decryptString(file)
+#encrypt.decryptStream
 #encrypt.encryptFile(file)
 #encrypt.decryptFile(file+'.enc')
 
