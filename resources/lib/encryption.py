@@ -33,7 +33,7 @@ class encryption():
 
         if password != None and password != '':
             self.key = self.generateKey(password,)
-            print self.key
+            #print self.key
 
 
     def generateKey(self,password, iterations=NUMBER_OF_ITERATIONS):
@@ -43,7 +43,7 @@ class encryption():
         assert iterations > 0
 
         key = str(password) + str(self.salt)
-        print "iterations " + str(iterations)
+        #print "iterations " + str(iterations)
         for i in range(iterations):
             key = hashlib.sha256(key).digest()
 
