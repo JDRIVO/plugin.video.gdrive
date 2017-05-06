@@ -1,3 +1,4 @@
+- promote to stable
 v0.8.37 (2017-01-05)
 - disable automatic STRM
 - disable tv scraping
