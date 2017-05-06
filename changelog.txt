@@ -1,3 +1,10 @@
+- promote to stable
+v0.8.37 (2017-01-05)
+- disable automatic STRM
+- disable tv scraping
+- fix: Folder Creation When Saving STRM - additional subdirectories and blank folder names #105
+v0.8.36 (2016-12-12)
+- sync
 v0.8.33 (2016-12-06)
 - fix: strm files containing an apostrophe #101
 v0.8.32 (2016-12-05)

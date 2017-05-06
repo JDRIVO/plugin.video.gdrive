@@ -1,5 +1,5 @@
 #http://stackoverflow.com/questions/6425131/encrpyt-decrypt-data-in-python-with-salt
-import os, random, struct, string
+import os, random, struct, string, re
 
 try:
     import Crypto.Random
@@ -33,7 +33,7 @@ class encryption():
 
         if password != None and password != '':
             self.key = self.generateKey(password,)
-            print self.key
+            #print self.key
 
 
     def generateKey(self,password, iterations=NUMBER_OF_ITERATIONS):
@@ -43,7 +43,7 @@ class encryption():
         assert iterations > 0
 
         key = str(password) + str(self.salt)
-        print "iterations " + str(iterations)
+        #print "iterations " + str(iterations)
         for i in range(iterations):
             key = hashlib.sha256(key).digest()
 
@@ -178,4 +178,42 @@ class encryption():
 
                     outfile.write(encryptor.encrypt(chunk))
 
+
+    def encryptString(self, stringDecrypted):
+
+        if ENCRYPTION_ENABLE == 0:
+            return
+
+
+    #    key = generate_key(key, salt, NUMBER_OF_ITERATIONS)
+
+    #    iv = ''.join(chr(random.randint(0, 0xFF)) for i in range(16))
+        encryptor = AES.new(self.key, AES.MODE_ECB)
+
+
+        if len(stringDecrypted) == 0:
+            return
+        elif len(stringDecrypted) % 16 != 0:
+            stringDecrypted += ' ' * (16 - len(stringDecrypted) % 16)
+
+        import base64
+        stringEncrypted = base64.b64encode(encryptor.encrypt(stringDecrypted))
+        stringEncrypted = re.sub('/', '---', stringEncrypted)
+        return stringEncrypted
+
+
+    def decryptString(self, stringEncrypted):
+
+        if ENCRYPTION_ENABLE == 0:
+            return
+
+        decryptor = AES.new(self.key, AES.MODE_ECB)
+
+        if len(stringEncrypted) == 0:
+            return
+        import base64
+        stringEncrypted = re.sub('---', '/', stringEncrypted)
+        stringDecrypted = decryptor.decrypt(base64.b64decode(stringEncrypted))
+
+        return stringDecrypted
 
