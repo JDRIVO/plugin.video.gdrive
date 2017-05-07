@@ -160,8 +160,15 @@
     </category>
 
 
-	<!-- encfs properties -->
+	<!-- encryption properties -->
     <category label="30165">
+		<!-- crypto properties -->
+
+        <setting label="30190" type="lsep"/>
+        <setting id="crypto_password" type="text" subsetting="true" label="30002" default="" />
+        <setting id="crypto_salt" type="file" subsetting="true" label="30128" default="" />
+
+		<!-- encfs properties -->
         <setting label="30127" type="lsep"/>
         <setting id="encfs_source" type="folder" subsetting="true" label="30128" default="" />
         <setting id="encfs_target" type="folder" subsetting="true" label="30129" default="" />
@@ -179,7 +186,6 @@
         <setting id="context_ephoto" type="enum" subsetting="true" label="30024" values="Photos only|Don't Filter" default="0"/>
         <setting label="30166" subsetting="true" type="lsep"/>
     </category>
-
 	<!-- advanced properties -->
     <category label="30134">
 <!-->    	<setting id="integrated_player" type="bool" label="30133" default="false" />-->
