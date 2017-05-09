@@ -1213,7 +1213,8 @@ class cloudservice(object):
 
                         #add encfs option unless viewing as encfs already
                         if not encfs:
-                            cm.append(( '[treat as encfs]', 'XBMC.Container.Update('+self.PLUGIN_URL+'?mode=index&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
+                            cm.append((  self.addon.getLocalizedString(30192), 'XBMC.Container.Update('+self.PLUGIN_URL+'?mode=index&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
+                        cm.append((  self.addon.getLocalizedString(30193), 'XBMC.Container.Update('+self.PLUGIN_URL+'?mode=index&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
                         #if within encfs and pictures, disable right-click default photo options; add download-folder
                         if encfs and contextType == 'image':
                             values = {'instance': self.instanceName, 'epath': epath, 'foldername': folder.title, 'folder': folder.id}

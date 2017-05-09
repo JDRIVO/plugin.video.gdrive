@@ -166,7 +166,7 @@
 
         <setting label="30190" type="lsep"/>
         <setting id="crypto_password" type="text" subsetting="true" label="30002" default="" />
-        <setting id="crypto_salt" type="file" subsetting="true" label="30128" default="" />
+        <setting id="crypto_salt" type="file" subsetting="true" label="30191" default="" />
 
 		<!-- encfs properties -->
         <setting label="30127" type="lsep"/>

@@ -169,7 +169,9 @@ class settings:
         self.encfsInode = int(self.getSetting('encfs_inode', 0))
         self.encfsLast = self.getSetting('encfs_last', '')
 
-
+    def setCryptoParameters(self):
+        self.cryptoPassword = self.getSetting('crypto_password')
+        self.cryptoSalt = self.getSetting('crypto_salt')
 
     def getParameter(self, key, default=''):
         try:

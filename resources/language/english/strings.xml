@@ -190,5 +190,7 @@
 
 	<string id="30190">Crypto</string>
 	<string id="30191">Salt file</string>
-	
+	<string id="30192">[treat as encfs]</string>
+	<string id="30193">[treat as crypto]</string>
+
 </strings>
