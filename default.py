@@ -652,9 +652,11 @@ elif mode == 'main' or mode == 'index':
                         item.folder.displaytitle =  encrypt.decryptString(str(item.folder.title))
                         service.addDirectory(item.folder, contextType=contextType, encfs=True )
                     else:
-                        print encrypt.decryptString(str(item.file.title))
-                        #service.addDirectory(dirListINodes[index], contextType=contextType,  encfs=True, dpath=str(dencryptedPath) + str(dir) + '/', epath=str(encryptedPath) + str(encryptedDir) + '/' )
-                        #if contentType < 9 or media_re.search(str(dir)):
+                        item.file.displaytitle = encrypt.decryptString(str(item.file.title))
+                        print item.file.displaytitle
+                        item.file.title =  item.file.displaytitle
+                        if contentType < 9 or media_re.search(str(item.file.title)):
+                            service.addMediaFile(item, contextType=contextType,  encfs=True)
 
 
         else:
