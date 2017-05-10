@@ -1,3 +1,4 @@
+- add streamer class activation and settings
 - encryption crypto - add logic to decrypt file names
 - encryption crypto - add logic to decrypt folder names
 - encryption-crypto - integrate crypto into settings
