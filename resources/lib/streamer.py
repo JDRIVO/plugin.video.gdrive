@@ -30,6 +30,7 @@ class MyHTTPServer(HTTPServer):
 
     def __init__(self, *args, **kw):
         HTTPServer.__init__(self, *args, **kw)
+        self.ready = True
 
     def setFile(self, playbackURL, chunksize, playbackFile, response, fileSize, url, service):
         self.playbackURL = playbackURL
@@ -43,6 +44,10 @@ class MyHTTPServer(HTTPServer):
         self.state = 0
         self.lock = 0
 
+    def setDomain(self, service, domain):
+        self.service = service
+        self.domain = domain
+        self.ready = True
 
 class myStreamer(BaseHTTPRequestHandler):
 
