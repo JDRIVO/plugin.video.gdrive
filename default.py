@@ -357,28 +357,6 @@ if mode == 'buildstrm2':
 
     xbmcplugin.endOfDirectory(plugin_handle)
 
-# streamer
-if service is not None and service.settings.streamer:
-
-    from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-    from resources.lib import streamer
-    import urllib, urllib2
-
-    try:
-        server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
-        server.setDomain(service, '')
-        while server.ready:
-            print "ENABLE\n"
-            server.handle_request()
-            #xbmc.sleep(10)
-        server.socket.close()
-    except: pass
-    #    req = urllib2.Request('http://localhost:8005/kill', None, None)
-    #    try:
-    #        response = urllib2.urlopen(req)
-    #    except: pass
-    #    server = streamer.MyHTTPServer(('', 8006), streamer.myStreamer)
-
 
 
 # options menu
@@ -1818,6 +1796,29 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
 xbmcplugin.endOfDirectory(plugin_handle)
 
+
+# must load after all other (becomes blocking)
+# streamer
+if service is not None and service.settings.streamer:
+
+    from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+    from resources.lib import streamer
+    import urllib, urllib2
+
+    try:
+        server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
+        server.setDomain(service, '')
+        while server.ready:
+            print "ENABLE\n"
+            server.handle_request()
+            #xbmc.sleep(10)
+        server.socket.close()
+    except: pass
+    #    req = urllib2.Request('http://localhost:8005/kill', None, None)
+    #    try:
+    #        response = urllib2.urlopen(req)
+    #    except: pass
+    #    server = streamer.MyHTTPServer(('', 8006), streamer.myStreamer)
 
 
 #automation - create strm files
