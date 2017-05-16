@@ -49,6 +49,11 @@ class MyHTTPServer(HTTPServer):
         self.domain = domain
         self.ready = True
 
+    def setAuth(self, auth_access_token, refresh_token, drivee_stream):
+        self.auth_access_token = auth_access_token
+        self.refresh_token = refresh_token
+        self.drivee_stream = drivee_stream
+
 class myStreamer(BaseHTTPRequestHandler):
 
 
