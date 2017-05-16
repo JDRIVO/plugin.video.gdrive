@@ -44,15 +44,11 @@ class MyHTTPServer(HTTPServer):
         self.state = 0
         self.lock = 0
 
-    def setDomain(self, service, domain):
+    def setAccount(self, service, domain):
         self.service = service
         self.domain = domain
         self.ready = True
 
-    def setAuth(self, auth_access_token, refresh_token, drivee_stream):
-        self.auth_access_token = auth_access_token
-        self.refresh_token = refresh_token
-        self.drivee_stream = drivee_stream
 
 class myStreamer(BaseHTTPRequestHandler):
 
@@ -60,13 +56,66 @@ class myStreamer(BaseHTTPRequestHandler):
     #Handler for the GET requests
     def do_GET(self):
 
+        # debug - print headers in log
+        headers = str(self.headers)
+        print(headers)
+
+        # passed a kill signal?
         if self.path == '/kill':
             self.server.ready = False
             return
 
+        # redirect url to output
+        else:
+            url =  str(self.server.domain) + str(self.path)
+            print 'GET ' + url + "\n"
+            req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                if e.code == 403 or e.code == 401:
+                    print "ERROR\n"
+                    self.server.service.refreshToken()
+                    req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
+                    try:
+                        response = urllib2.urlopen(req)
+                    except:
+                        return
+                else:
+                    return
+
+            self.send_response(200)
+            #print str(response.info()) + "\n"
+            self.send_header('Content-Type',response.info().getheader('Content-Type'))
+            self.send_header('Content-Length',response.info().getheader('Content-Length'))
+            self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
+            self.send_header('Date',response.info().getheader('Date'))
+            #self.send_header('ETag',response.info().getheader('ETag'))
+            #self.send_header('Server',response.info().getheader('Server'))
+            self.end_headers()
+
+            ## may want to add more granular control over chunk fetches
+            self.wfile.write(response.read())
+
+            #response_data = response.read()
+            response.close()
+            print "DONE"
+
+
+    #TO DELETE
+    def do_GET2(self):
+
+        # passed a kill signal?
+        if self.path == '/kill':
+            self.server.ready = False
+            return
+
+        # debug - print headers in log
         headers = str(self.headers)
         print(headers)
 
+
+        # client passed a range of bytes to fetch
         start = ''
         end = ''
         count = 0
@@ -82,6 +131,7 @@ class myStreamer(BaseHTTPRequestHandler):
           break
 
 
+        # pass back the appropriate headers
         if start == '':
             self.send_response(200)
             self.send_header('Content-Length',self.server.fileSize)
@@ -111,12 +161,17 @@ class myStreamer(BaseHTTPRequestHandler):
         self.send_header('Accept-Ranges','bytes')
         self.end_headers()
 
+
+
         #while self.server.state == 2:
         #    self.server.state = 3
         #while self.server.state == 3:
         #    xbmc.sleep(10)
 
+        # is streamer ready to serve packets?
         if self.server.state == 0:
+
+            ## fetch the entire stream?
             #self.server.state = 2
             #try:
             if count == 0:
@@ -164,4 +219,3 @@ class myStreamer(BaseHTTPRequestHandler):
 #            self.server.state = 1
 #            self.server.ready = False
         return
-

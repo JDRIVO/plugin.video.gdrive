@@ -1755,8 +1755,29 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
             if resolvedPlayback:
 
-                    item.setPath(mediaURL.url)
-                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                    # use streamer if defined
+                    if service.settings.streamer:
+                        from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+                        from resources.lib import streamer
+                        import urllib, urllib2
+
+                        try:
+                            server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
+                            server.setDomain(service, '')
+                            print "ENABLE\n"
+
+                            while server.ready:
+                                server.handle_request()
+                                #xbmc.sleep(10)
+                            server.socket.close()
+                        except: pass
+                        item.setPath('http://localhost:' + str(service.settings.streamPort))
+                        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+                    else:
+                        # regular playback
+                        item.setPath(mediaURL.url)
+                        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 
             ## contribution by dabinn
@@ -1808,8 +1829,9 @@ if service is not None and service.settings.streamer:
     try:
         server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
         server.setDomain(service, '')
+        print "ENABLE\n"
+
         while server.ready:
-            print "ENABLE\n"
             server.handle_request()
             #xbmc.sleep(10)
         server.socket.close()
