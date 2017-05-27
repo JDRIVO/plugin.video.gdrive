@@ -1829,7 +1829,7 @@ if service is not None and service.settings.streamer:
     try:
         server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
         server.setDomain(service, '')
-        print "ENABLE\n"
+        print "ENABLE\n\n\n"
 
         while server.ready:
             server.handle_request()
