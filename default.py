@@ -1783,17 +1783,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             ## contribution by dabinn
             # handle situation where playback is skipped to next file, wait for new source to load
             if player.isPlaying():
-                xbmc.sleep(1000)
-
-            # need to seek?
-            if seek > 0:
-                player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
-            elif float(package.file.cloudResume) > 0:
-                player.PlayStream(mediaURL.url, item, package.file.cloudResume, startPlayback=startPlayback, package=package)
-            elif float(package.file.resume) > 0:
-                player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
-            else:
-                player.PlayStream(mediaURL.url, item, 0, startPlayback=startPlayback, package=package)
+                xbmc.sleep(100)
 
             # load captions
             if  (settings.srt or settings.cc) and service.protocol == 2:
@@ -1809,6 +1799,21 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                         except:
                             pass
                         player.setSubtitles(file)
+
+            xbmc.sleep(100)
+
+
+            # need to seek?
+            if seek > 0:
+                player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
+            elif float(package.file.cloudResume) > 0:
+                player.PlayStream(mediaURL.url, item, package.file.cloudResume, startPlayback=startPlayback, package=package)
+            elif float(package.file.resume) > 0:
+                player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
+            else:
+                player.PlayStream(mediaURL.url, item, 0, startPlayback=startPlayback, package=package)
+
+
 
             # we need to keep the plugin alive for as long as there is playback from the plugin, or the player object closes
             while not player.isExit:
