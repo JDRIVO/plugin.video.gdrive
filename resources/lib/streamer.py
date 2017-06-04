@@ -44,14 +44,45 @@ class MyHTTPServer(HTTPServer):
         self.state = 0
         self.lock = 0
 
+    def setURL(self, playbackURL):
+        self.playbackURL = playbackURL
+
+
     def setAccount(self, service, domain):
         self.service = service
         self.domain = domain
+        self.playbackURL = ''
         self.ready = True
 
 
 class myStreamer(BaseHTTPRequestHandler):
 
+
+    #Handler for the GET requests
+    def do_POST(self):
+
+        # debug - print headers in log
+        headers = str(self.headers)
+        print(headers)
+
+        # passed a kill signal?
+        if self.path == '/kill':
+            self.server.ready = False
+            return
+
+
+        # redirect url to output
+        elif self.path == '/playurl':
+            content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
+            post_data = self.rfile.read(content_length) # <--- Gets the data itself
+            print post_data
+            for r in re.finditer('url\=([^\|]+)' ,
+                     post_data, re.DOTALL):
+                url = r.group(1)
+                print "url = " + url + "\n"
+                self.server.playbackURL = url
+            self.send_response(200)
+            self.end_headers()
 
     #Handler for the GET requests
     def do_GET(self):
@@ -64,6 +95,44 @@ class myStreamer(BaseHTTPRequestHandler):
         if self.path == '/kill':
             self.server.ready = False
             return
+
+
+        # redirect url to output
+        elif self.path == '/play':
+            url =  self.server.playbackURL
+            print 'GET ' + url + "\n"
+            req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
+        #try:
+            response = urllib2.urlopen(req)
+        #except urllib2.URLError, e:
+            if e.code == 403 or e.code == 401:
+                print "ERROR\n" + self.server.service.getHeadersEncoded()
+                self.server.service.refreshToken()
+                req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
+                try:
+                    response = urllib2.urlopen(req)
+                except:
+                    print "STILL ERROR\n" + self.server.service.getHeadersEncoded()
+                    return
+            else:
+                return
+
+            self.send_response(200)
+            #print str(response.info()) + "\n"
+            self.send_header('Content-Type',response.info().getheader('Content-Type'))
+            self.send_header('Content-Length',response.info().getheader('Content-Length'))
+            self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
+            self.send_header('Date',response.info().getheader('Date'))
+            #self.send_header('ETag',response.info().getheader('ETag'))
+            #self.send_header('Server',response.info().getheader('Server'))
+            self.end_headers()
+
+            ## may want to add more granular control over chunk fetches
+            self.wfile.write(response.read())
+
+            #response_data = response.read()
+            response.close()
+            print "DONE"
 
         # redirect url to output
         else:

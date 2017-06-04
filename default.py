@@ -1771,6 +1771,20 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                                 #xbmc.sleep(10)
                             server.socket.close()
                         except: pass
+
+
+
+                        url = 'http://localhost:' + str(service.settings.streamPort) + '/playurl'
+                        req = urllib2.Request(url, 'url=' + mediaURL.url)
+
+                        try:
+                            response = urllib2.urlopen(req)
+                            response_data = response.read()
+                            response.close()
+                        except urllib2.URLError, e:
+                            xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+
+
                         item.setPath('http://localhost:' + str(service.settings.streamPort))
                         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
@@ -1833,8 +1847,8 @@ if service is not None and service.settings.streamer:
 
     try:
         server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
-        server.setDomain(service, '')
-        print "ENABLE\n\n\n"
+        server.setAccount(service, '')
+        print "ENABLED STREAMER \n\n\n"
 
         while server.ready:
             server.handle_request()
