@@ -76,11 +76,17 @@ class myStreamer(BaseHTTPRequestHandler):
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
             print post_data
-            for r in re.finditer('url\=([^\|]+)' ,
+            for r in re.finditer('url\=([^\|]+)\|Cookie\=DRIVE_STREAM\%3D([^\&]+)' ,
                      post_data, re.DOTALL):
                 url = r.group(1)
+                drive_stream = r.group(2)
+                print "drive_stream = " + drive_stream + "\n"
                 print "url = " + url + "\n"
+
                 self.server.playbackURL = url
+                self.server.drive_stream = drive_stream
+                self.server.service.authorization.setToken('DRIVE_STREAM',drive_stream)
+
             self.send_response(200)
             self.end_headers()
 
@@ -102,53 +108,17 @@ class myStreamer(BaseHTTPRequestHandler):
             url =  self.server.playbackURL
             print 'GET ' + url + "\n"
             req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
-        #try:
-            response = urllib2.urlopen(req)
-        #except urllib2.URLError, e:
-            if e.code == 403 or e.code == 401:
-                print "ERROR\n" + self.server.service.getHeadersEncoded()
-                self.server.service.refreshToken()
-                req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
-                try:
-                    response = urllib2.urlopen(req)
-                except:
-                    print "STILL ERROR\n" + self.server.service.getHeadersEncoded()
-                    return
-            else:
-                return
-
-            self.send_response(200)
-            #print str(response.info()) + "\n"
-            self.send_header('Content-Type',response.info().getheader('Content-Type'))
-            self.send_header('Content-Length',response.info().getheader('Content-Length'))
-            self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
-            self.send_header('Date',response.info().getheader('Date'))
-            #self.send_header('ETag',response.info().getheader('ETag'))
-            #self.send_header('Server',response.info().getheader('Server'))
-            self.end_headers()
-
-            ## may want to add more granular control over chunk fetches
-            self.wfile.write(response.read())
-
-            #response_data = response.read()
-            response.close()
-            print "DONE"
-
-        # redirect url to output
-        else:
-            url =  str(self.server.domain) + str(self.path)
-            print 'GET ' + url + "\n"
-            req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
                 if e.code == 403 or e.code == 401:
-                    print "ERROR\n"
+                    print "ERROR\n" + self.server.service.getHeadersEncoded()
                     self.server.service.refreshToken()
                     req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
                     try:
                         response = urllib2.urlopen(req)
                     except:
+                        print "STILL ERROR\n" + self.server.service.getHeadersEncoded()
                         return
                 else:
                     return
@@ -164,11 +134,23 @@ class myStreamer(BaseHTTPRequestHandler):
             self.end_headers()
 
             ## may want to add more granular control over chunk fetches
-            self.wfile.write(response.read())
+            #self.wfile.write(response.read())
+
+            CHUNK = 16 * 1024
+            while True:
+                chunk = response.read(CHUNK)
+                if not chunk:
+                    break
+                self.wfile.write(chunk)
 
             #response_data = response.read()
             response.close()
             print "DONE"
+
+        # redirect url to output
+        else:
+            url =  str(self.server.domain) + str(self.path)
+            print 'GET ' + url + "\n"
 
 
     #TO DELETE

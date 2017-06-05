@@ -1785,7 +1785,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
 
 
-                        item.setPath('http://localhost:' + str(service.settings.streamPort))
+                        item.setPath('http://localhost:' + str(service.settings.streamPort) + '/play')
                         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
                     else:
