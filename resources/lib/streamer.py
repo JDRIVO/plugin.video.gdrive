@@ -90,8 +90,8 @@ class myStreamer(BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
 
-    #Handler for the GET requests
-    def do_GET(self):
+
+    def do_HEAD(self):
 
         # debug - print headers in log
         headers = str(self.headers)
@@ -106,8 +106,10 @@ class myStreamer(BaseHTTPRequestHandler):
         # redirect url to output
         elif self.path == '/play':
             url =  self.server.playbackURL
-            print 'GET ' + url + "\n"
+            print 'HEAD ' + url + "\n"
             req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
+            req.get_method = lambda : 'HEAD'
+
             try:
                 response = urllib2.urlopen(req)
             except urllib2.URLError, e:
@@ -115,6 +117,8 @@ class myStreamer(BaseHTTPRequestHandler):
                     print "ERROR\n" + self.server.service.getHeadersEncoded()
                     self.server.service.refreshToken()
                     req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
+                    req.get_method = lambda : 'HEAD'
+
                     try:
                         response = urllib2.urlopen(req)
                     except:
@@ -130,6 +134,94 @@ class myStreamer(BaseHTTPRequestHandler):
             self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
             self.send_header('Date',response.info().getheader('Date'))
             self.send_header('Content-type','video/mp4')
+            self.send_header('Accept-Ranges','bytes')
+
+            #self.send_header('ETag',response.info().getheader('ETag'))
+            #self.send_header('Server',response.info().getheader('Server'))
+            self.end_headers()
+
+            ## may want to add more granular control over chunk fetches
+            #self.wfile.write(response.read())
+
+            response.close()
+            print "DONE"
+
+        # redirect url to output
+        else:
+            url =  str(self.server.domain) + str(self.path)
+            print 'GET ' + url + "\n"
+
+
+
+
+
+    #Handler for the GET requests
+    def do_GET(self):
+
+        # debug - print headers in log
+        headers = str(self.headers)
+        print(headers)
+
+        start = ''
+        end = ''
+        for r in re.finditer('Range\:\s+bytes\=(\d+)\-' ,
+                     headers, re.DOTALL):
+          start = int(r.group(1))
+          break
+        for r in re.finditer('Range\:\s+bytes\=\d+\-(\d+)' ,
+                     headers, re.DOTALL):
+          end = int(r.group(1))
+          break
+
+
+        # passed a kill signal?
+        if self.path == '/kill':
+            self.server.ready = False
+            return
+
+
+        # redirect url to output
+        elif self.path == '/play':
+            url =  self.server.playbackURL
+            print 'GET ' + url + "\n"
+            if start == '':
+                req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
+            else:
+                req = urllib2.Request(url,  None,  self.server.service.getHeadersList(additionalHeader='Range', additionalValue='bytes='+str(start)+'-' + str(end)))
+
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                if e.code == 403 or e.code == 401:
+                    print "ERROR\n" + self.server.service.getHeadersEncoded()
+                    self.server.service.refreshToken()
+                    req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
+                    try:
+                        response = urllib2.urlopen(req)
+                    except:
+                        print "STILL ERROR\n" + self.server.service.getHeadersEncoded()
+                        return
+                else:
+                    return
+
+            if start == '':
+                self.send_response(200)
+                self.send_header('Content-Length',response.info().getheader('Content-Length'))
+            else:
+                self.send_response(206)
+                self.send_header('Content-Length',response.info().getheader('Content-Length'))
+                #self.send_header('Content-Range','bytes ' + str(start) + '-' +str(end))
+                self.send_header('Content-Range',response.info().getheader('Content-Range'))
+                print 'Content-Range' + response.info().getheader('Content-Range') + "\n"
+
+            print str(response.info()) + "\n"
+            self.send_header('Content-Type',response.info().getheader('Content-Type'))
+
+#            self.send_header('Content-Length',response.info().getheader('Content-Length'))
+            self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
+            self.send_header('Date',response.info().getheader('Date'))
+            self.send_header('Content-type','video/mp4')
+            self.send_header('Accept-Ranges','bytes')
 
             #self.send_header('ETag',response.info().getheader('ETag'))
             #self.send_header('Server',response.info().getheader('Server'))

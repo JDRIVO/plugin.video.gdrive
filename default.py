@@ -1764,9 +1764,10 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                         try:
                             server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
                             server.setDomain(service, '')
-                            print "ENABLE\n"
 
                             while server.ready:
+                                print "ready!!!\n"
+
                                 server.handle_request()
                                 #xbmc.sleep(10)
                             server.socket.close()
@@ -1851,6 +1852,8 @@ if service is not None and service.settings.streamer:
         print "ENABLED STREAMER \n\n\n"
 
         while server.ready:
+            print "ready!!!\n"
+
             server.handle_request()
             #xbmc.sleep(10)
         server.socket.close()
