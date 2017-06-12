@@ -1845,6 +1845,9 @@ if service is not None and service.settings.streamer:
     from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
     from resources.lib import streamer
     import urllib, urllib2
+    from SocketServer import ThreadingMixIn
+    import threading
+
 
     try:
         server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)

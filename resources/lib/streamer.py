@@ -20,13 +20,17 @@
 
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 
+from SocketServer import ThreadingMixIn
+import threading
 import re
 import urllib, urllib2
 
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    """Handle requests in a separate thread."""
 
-class MyHTTPServer(HTTPServer):
+class MyHTTPServer(ThreadingMixIn,HTTPServer):
 
     def __init__(self, *args, **kw):
         HTTPServer.__init__(self, *args, **kw)

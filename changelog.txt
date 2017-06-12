@@ -1,3 +1,4 @@
+- streamer class fix seeking by adding threading
 - streamer class now plays back video content successfully
 v0.8.38 (2017-06-03)
 - change SRT load timing (for dealing with KODI 17+ https://github.com/ddurdle/GDrive-for-KODI/issues/119
