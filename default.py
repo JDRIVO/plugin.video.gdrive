@@ -1838,6 +1838,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 xbmcplugin.endOfDirectory(plugin_handle)
 
 
+
 # must load after all other (becomes blocking)
 # streamer
 if service is not None and service.settings.streamer:
