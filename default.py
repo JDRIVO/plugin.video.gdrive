@@ -1209,7 +1209,44 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder), title=title, contentType=8)
             #(mediaURLs,package) = service.getPlaybackCall(None,title=title)
             mediaURL = mediaURLs[0]
+            #mediaURL.url =  mediaURL.url +'|' + service.getHeadersEncoded()
+            #print "mediaURLDD = " + mediaURL.url
 
+            # use streamer if defined
+            if 1 or service.settings.streamer:
+                from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+                from resources.lib import streamer
+                import urllib, urllib2
+
+                try:
+                    server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
+                    server.setDomain(service, '')
+
+                    while server.ready:
+                        print "ready!!!\n"
+
+                        server.handle_request()
+                        #xbmc.sleep(10)
+                    server.socket.close()
+                except: pass
+
+
+
+                url = 'http://localhost:' + str(service.settings.streamPort) + '/crypto_playurl'
+                req = urllib2.Request(url, 'url=' + mediaURL.url)
+                print "mediaURL = "+mediaURL.url
+                try:
+                    response = urllib2.urlopen(req)
+                    response.close()
+                except urllib2.URLError, e:
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+
+
+                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                thumbnailImage=package.file.thumbnail, path='http://localhost:' + str(service.settings.streamPort) + '/play')
+
+                item.setPath('http://localhost:' + str(service.settings.streamPort) + '/play')
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
         else:
 
             settings.setEncfsParameters()

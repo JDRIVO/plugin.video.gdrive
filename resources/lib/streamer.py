@@ -56,6 +56,7 @@ class MyHTTPServer(ThreadingMixIn,HTTPServer):
         self.service = service
         self.domain = domain
         self.playbackURL = ''
+        self.crypto = False
         self.ready = True
 
 
@@ -79,7 +80,7 @@ class myStreamer(BaseHTTPRequestHandler):
         elif self.path == '/playurl':
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
-            print post_data
+            #print post_data
             for r in re.finditer('url\=([^\|]+)\|Cookie\=DRIVE_STREAM\%3D([^\&]+)' ,
                      post_data, re.DOTALL):
                 url = r.group(1)
@@ -93,7 +94,23 @@ class myStreamer(BaseHTTPRequestHandler):
 
             self.send_response(200)
             self.end_headers()
+        elif self.path == '/crypto_playurl':
+            content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
+            post_data = self.rfile.read(content_length) # <--- Gets the data itself
+            #print post_data
+            for r in re.finditer('url\=([^\|]+)' ,
+                     post_data, re.DOTALL):
+                url = r.group(1)
+                drive_stream = ''
+                print "drive_stream = " + drive_stream + "\n"
+                print "url = " + url + "\n"
 
+                self.server.crypto = True
+                self.server.playbackURL = url
+                self.server.drive_stream = drive_stream
+
+            self.send_response(200)
+            self.end_headers()
 
     def do_HEAD(self):
 
@@ -187,7 +204,7 @@ class myStreamer(BaseHTTPRequestHandler):
         # redirect url to output
         elif self.path == '/play':
             url =  self.server.playbackURL
-            print 'GET ' + url + "\n"
+            print 'GET ' + url + "\n" + self.server.service.getHeadersEncoded() + "\n"
             if start == '':
                 req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
             else:
@@ -216,7 +233,7 @@ class myStreamer(BaseHTTPRequestHandler):
                 self.send_header('Content-Length',response.info().getheader('Content-Length'))
                 #self.send_header('Content-Range','bytes ' + str(start) + '-' +str(end))
                 self.send_header('Content-Range',response.info().getheader('Content-Range'))
-                print 'Content-Range' + response.info().getheader('Content-Range') + "\n"
+                #print 'Content-Range' + response.info().getheader('Content-Range') + "\n"
 
             print str(response.info()) + "\n"
             self.send_header('Content-Type',response.info().getheader('Content-Type'))
@@ -234,12 +251,23 @@ class myStreamer(BaseHTTPRequestHandler):
             ## may want to add more granular control over chunk fetches
             #self.wfile.write(response.read())
 
-            CHUNK = 16 * 1024
-            while True:
-                chunk = response.read(CHUNK)
-                if not chunk:
-                    break
-                self.wfile.write(chunk)
+            if (self.server.crypto):
+
+                self.server.service.settings.setCryptoParameters()
+
+                from resources.lib import  encryption
+                decrypt = encryption.encryption(self.server.service.settings.cryptoSalt,self.server.service.settings.cryptoPassword)
+
+                CHUNK = 16 * 1024
+                decrypt.decryptStreamChunk(response,self.wfile,CHUNK)
+
+            else:
+                CHUNK = 16 * 1024
+                while True:
+                    chunk = response.read(CHUNK)
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
 
             #response_data = response.read()
             response.close()

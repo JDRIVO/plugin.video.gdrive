@@ -132,6 +132,20 @@ class encryption():
 
                 outfile.truncate(origsize)
 
+    def decryptStreamChunk(self,response, wfile, chunksize=24*1024):
+            if ENCRYPTION_ENABLE == 0:
+                return
+    #    with open(in_filename, 'rb') as infile:
+            origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
+            decryptor = AES.new(self.key, AES.MODE_ECB)
+
+            while True:
+                chunk = response.read(chunksize)
+                if len(chunk) == 0:
+                    break
+                wfile.write(decryptor.decrypt(chunk))
+
+
     def encryptFile(self, in_filename, out_filename=None, chunksize=64*1024):
         """ Encrypts a file using AES (CBC mode) with the
             given key.

@@ -1,3 +1,4 @@
+- add crypto support to streamer class
 - streamer class fix seeking by adding threading
 - streamer class now plays back video content successfully
 v0.8.38 (2017-06-03)
