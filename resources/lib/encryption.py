@@ -160,15 +160,18 @@ class encryption():
             origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
             decryptor = AES.new(self.key, AES.MODE_ECB)
 
+            count = 0
             while True:
                 chunk = response.read(chunksize)
-
+                count = count + 1
                 if len(chunk) == 0:
                     break
                 print "CHUNK LEN = " + str(len(chunk))
 
                 responseChunk = decryptor.decrypt(chunk)
-                if (len(chunk)) < (len(responseChunk.strip())):
+                if count == 1 and startOffset !=0:
+                    wfile.write(responseChunk[startOffset:])
+                elif (len(chunk)) < (len(responseChunk.strip())):
                     wfile.write(responseChunk.strip())
                 else:
                     wfile.write(responseChunk)

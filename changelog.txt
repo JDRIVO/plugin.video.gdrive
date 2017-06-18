@@ -1,3 +1,4 @@
+- solved issue with non-faststart crypto files to streamer class
 - add crypto support to streamer class
 - streamer class fix seeking by adding threading
 - streamer class now plays back video content successfully

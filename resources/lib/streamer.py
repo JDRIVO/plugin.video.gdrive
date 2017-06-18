@@ -211,7 +211,7 @@ class myStreamer(BaseHTTPRequestHandler):
             if (self.server.crypto and start != '' and start > 16 and end == ''):
                 #start = start - (16 - (end % 16))
                 print "START = " + str(start)
-                startOffset = 16-(( int(self.server.length) - start) % 16)
+                startOffset = 16-(( int(self.server.length) - start) % 16)+8
 
 #            if (self.server.crypto and start == 23474184 ):
                 #start = start - (16 - (end % 16))
@@ -245,9 +245,13 @@ class myStreamer(BaseHTTPRequestHandler):
                 self.send_response(206)
                 self.send_header('Content-Length', str(int(response.info().getheader('Content-Length'))-startOffset))
                 #self.send_header('Content-Range','bytes ' + str(start) + '-' +str(end))
-                self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' +str(int(self.server.length)))
+                if end == '':
+                    self.send_header('Content-Range','bytes ' + str(start) + '-' +str(int(self.server.length)-1) + '/' +str(int(self.server.length)))
+                else:
+                    self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' +str(int(self.server.length)))
+
                 #self.send_header('Content-Range',response.info().getheader('Content-Range'))
-                #print 'Content-Range' + response.info().getheader('Content-Range') + "\n"
+                print 'Content-Range!!!' + str(start) + '-' + str(int(self.server.length)-1) + '/' +str(int(self.server.length)) + "\n"
 
             print str(response.info()) + "\n"
             self.send_header('Content-Type',response.info().getheader('Content-Type'))
