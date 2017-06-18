@@ -166,6 +166,7 @@ class myStreamer(BaseHTTPRequestHandler):
 
             response.close()
             print "DONE"
+            self.server.length = response.info().getheader('Content-Length')
 
         # redirect url to output
         else:
@@ -185,6 +186,7 @@ class myStreamer(BaseHTTPRequestHandler):
 
         start = ''
         end = ''
+        startOffset = 0
         for r in re.finditer('Range\:\s+bytes\=(\d+)\-' ,
                      headers, re.DOTALL):
           start = int(r.group(1))
@@ -195,6 +197,7 @@ class myStreamer(BaseHTTPRequestHandler):
           break
 
 
+
         # passed a kill signal?
         if self.path == '/kill':
             self.server.ready = False
@@ -203,12 +206,22 @@ class myStreamer(BaseHTTPRequestHandler):
 
         # redirect url to output
         elif self.path == '/play':
+
+
+            if (self.server.crypto and start != '' and start > 16 and end == ''):
+                #start = start - (16 - (end % 16))
+                print "START = " + str(start)
+                startOffset = 16-(( int(self.server.length) - start) % 16)
+
+#            if (self.server.crypto and start == 23474184 ):
+                #start = start - (16 - (end % 16))
+#                start = 23474184 - 8
             url =  self.server.playbackURL
             print 'GET ' + url + "\n" + self.server.service.getHeadersEncoded() + "\n"
             if start == '':
                 req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
             else:
-                req = urllib2.Request(url,  None,  self.server.service.getHeadersList(additionalHeader='Range', additionalValue='bytes='+str(start)+'-' + str(end)))
+                req = urllib2.Request(url,  None,  self.server.service.getHeadersList(additionalHeader='Range', additionalValue='bytes='+str(start- startOffset)+'-' + str(end)))
 
             try:
                 response = urllib2.urlopen(req)
@@ -230,9 +243,10 @@ class myStreamer(BaseHTTPRequestHandler):
                 self.send_header('Content-Length',response.info().getheader('Content-Length'))
             else:
                 self.send_response(206)
-                self.send_header('Content-Length',response.info().getheader('Content-Length'))
+                self.send_header('Content-Length', str(int(response.info().getheader('Content-Length'))-startOffset))
                 #self.send_header('Content-Range','bytes ' + str(start) + '-' +str(end))
-                self.send_header('Content-Range',response.info().getheader('Content-Range'))
+                self.send_header('Content-Range','bytes ' + str(start) + '-' + str(end) + '/' +str(int(self.server.length)))
+                #self.send_header('Content-Range',response.info().getheader('Content-Range'))
                 #print 'Content-Range' + response.info().getheader('Content-Range') + "\n"
 
             print str(response.info()) + "\n"
@@ -259,7 +273,7 @@ class myStreamer(BaseHTTPRequestHandler):
                 decrypt = encryption.encryption(self.server.service.settings.cryptoSalt,self.server.service.settings.cryptoPassword)
 
                 CHUNK = 16 * 1024
-                decrypt.decryptStreamChunk(response,self.wfile,CHUNK)
+                decrypt.decryptStreamChunk(response,self.wfile, startOffset=startOffset)
 
             else:
                 CHUNK = 16 * 1024
@@ -273,6 +287,77 @@ class myStreamer(BaseHTTPRequestHandler):
             response.close()
             print "DONE"
 
+
+        # redirect url to output
+        elif self.path == '/playx':
+
+
+#            if (self.server.crypto and start != '' and end == ''):
+#                #start = start - (16 - (end % 16))
+#                print "START = " + str(start)
+#                start = start - (16-(( int(self.server.length) - start) % 16) )
+
+#            if (self.server.crypto and start == 23474184 ):
+                #start = start - (16 - (end % 16))
+#                start = 23474184 - 8
+            url =  self.server.playbackURL
+            print 'GET ' + url + "\n" + self.server.service.getHeadersEncoded() + "\n"
+            req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
+            try:
+                response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+                if e.code == 403 or e.code == 401:
+                    print "ERROR\n" + self.server.service.getHeadersEncoded()
+                    self.server.service.refreshToken()
+                    req = urllib2.Request(url,  None,  self.server.service.getHeadersList())
+                    try:
+                        response = urllib2.urlopen(req)
+                    except:
+                        print "STILL ERROR\n" + self.server.service.getHeadersEncoded()
+                        return
+                else:
+                    return
+
+            self.send_response(200)
+            self.send_header('Content-Length',response.info().getheader('Content-Length'))
+
+            print str(response.info()) + "\n"
+            self.send_header('Content-Type',response.info().getheader('Content-Type'))
+
+#            self.send_header('Content-Length',response.info().getheader('Content-Length'))
+            self.send_header('Cache-Control',response.info().getheader('Cache-Control'))
+            self.send_header('Date',response.info().getheader('Date'))
+            self.send_header('Content-type','video/mp4')
+#            self.send_header('Accept-Ranges','bytes')
+
+            #self.send_header('ETag',response.info().getheader('ETag'))
+            #self.send_header('Server',response.info().getheader('Server'))
+            self.end_headers()
+
+            ## may want to add more granular control over chunk fetches
+            #self.wfile.write(response.read())
+
+            if (self.server.crypto):
+
+                self.server.service.settings.setCryptoParameters()
+
+                from resources.lib import  encryption
+                decrypt = encryption.encryption(self.server.service.settings.cryptoSalt,self.server.service.settings.cryptoPassword)
+
+                CHUNK = 16 * 1024
+                decrypt.decryptStreamChunk(response,self.wfile, 16)
+
+            else:
+                CHUNK = 16 * 1024
+                while True:
+                    chunk = response.read(CHUNK)
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
+
+            #response_data = response.read()
+            response.close()
+            print "DONE"
         # redirect url to output
         else:
             url =  str(self.server.domain) + str(self.path)
