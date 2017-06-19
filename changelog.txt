@@ -1,4 +1,5 @@
 v0.8.39 (2017-06-18)
+- handled by streamer (experimental), needs testing - Add proxy handling #117
 - implement tv watch status update - FEATURE REQUEST: marking viewed in STRM #113
 - solved issue with non-faststart crypto files to streamer class
 - add crypto support to streamer class
