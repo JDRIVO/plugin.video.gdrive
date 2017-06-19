@@ -195,4 +195,9 @@
 	<string id="30194">Streamer</string>
 	<string id="30195">Stream Port</string>
 
+
+	<string id="30196">Experimental</string>
+	<string id="30197">Update TV db watch status</string>
+	<string id="30198">Update Movie db watch status</string>
+
 </strings>

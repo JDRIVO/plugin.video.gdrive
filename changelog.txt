@@ -1,3 +1,4 @@
+- implement tv watch status update - FEATURE REQUEST: marking viewed in STRM #113
 - solved issue with non-faststart crypto files to streamer class
 - add crypto support to streamer class
 - streamer class fix seeking by adding threading

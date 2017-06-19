@@ -101,6 +101,8 @@ class settings:
 #        self.cloudResume = self.getSetting('resumepoint', 0)
         self.cloudResumePrompt = self.getSetting('resumeprompt', False)
 #        self.cloudSpreadsheet = self.getSetting('library_filename', 'CLOUD_DB')
+        self.tv_watch  = self.getSetting('tv_db_watch', False)
+        self.movie_watch  = self.getSetting('movie_db_watch', False)
 
         self.seek = getParameter('seek', 0)
         self.trace = getSetting('trace', False)

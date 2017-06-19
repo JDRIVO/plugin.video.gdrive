@@ -116,6 +116,25 @@
 
     </category>
 
+	<!-- experimental properties -->
+    <category label="30196">
+
+    	<!-- testing streamer -->
+        <setting id="streamer" type="bool" label="30194" default="false" />
+        <setting id="stream_port" type="number" subsetting="true" label="30195" default="8011" />
+
+    	<!-- update watch status -->
+        <setting id="tv_db_watch" type="bool" label="30197" default="false" />
+        <setting id="movie_db_watch" type="bool" label="30198" default="false" />
+
+		<!-- crypto properties -->
+        <setting label="30190" type="lsep"/>
+        <setting id="crypto_password" type="text" subsetting="true" label="30002" default="" />
+        <setting id="crypto_salt" type="file" subsetting="true" label="30191" default="" />
+
+
+    </category>
+
 	<!-- video properties -->
     <category label="30025">
 
@@ -167,11 +186,6 @@
 
 	<!-- encryption properties -->
     <category label="30165">
-		<!-- crypto properties -->
-
-        <setting label="30190" type="lsep"/>
-        <setting id="crypto_password" type="text" subsetting="true" label="30002" default="" />
-        <setting id="crypto_salt" type="file" subsetting="true" label="30191" default="" />
 
 		<!-- encfs properties -->
         <setting label="30127" type="lsep"/>
