@@ -949,7 +949,7 @@ class gdrive(cloudservice):
 
             q = "'"+str(package.folder.id)+"' in parents"
         else:
-        # search for title in SRT file
+            # search for title in SRT file
             if package.file is not None and (package.file.title != False and package.file.title != ''):
                 title = os.path.splitext(package.file.title)[0]
                 if q != '':

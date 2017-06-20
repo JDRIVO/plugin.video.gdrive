@@ -101,6 +101,8 @@ class settings:
 #        self.cloudResume = self.getSetting('resumepoint', 0)
         self.cloudResumePrompt = self.getSetting('resumeprompt', False)
 #        self.cloudSpreadsheet = self.getSetting('library_filename', 'CLOUD_DB')
+        self.tv_watch  = self.getSetting('tv_db_watch', False)
+        self.movie_watch  = self.getSetting('movie_db_watch', False)
 
         self.seek = getParameter('seek', 0)
         self.trace = getSetting('trace', False)
@@ -129,6 +131,10 @@ class settings:
 #            self.thumbnailResolution = 120
 #        else:
 #            self.thumbnailResolution = 200
+
+        self.streamer =  self.getSetting('streamer', True)
+        self.streamPort =  int(self.getSetting('stream_port', 8011))
+
 
         self.encfsDownloadType = int(self.getSetting('encfs_download_type', 1))
 
@@ -169,7 +175,9 @@ class settings:
         self.encfsInode = int(self.getSetting('encfs_inode', 0))
         self.encfsLast = self.getSetting('encfs_last', '')
 
-
+    def setCryptoParameters(self):
+        self.cryptoPassword = self.getSetting('crypto_password')
+        self.cryptoSalt = self.getSetting('crypto_salt')
 
     def getParameter(self, key, default=''):
         try:

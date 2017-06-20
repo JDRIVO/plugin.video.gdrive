@@ -188,4 +188,16 @@
 	<string id="30188">Default account for STRM</string>
 	<string id="30189">Automatic STRM creation</string>
 
+	<string id="30190">Crypto</string>
+	<string id="30191">Salt file</string>
+	<string id="30192">[treat as encfs]</string>
+	<string id="30193">[treat as crypto]</string>
+	<string id="30194">Streamer</string>
+	<string id="30195">Stream Port</string>
+
+
+	<string id="30196">Experimental</string>
+	<string id="30197">Update TV db watch status</string>
+	<string id="30198">Update Movie db watch status</string>
+
 </strings>

@@ -1,3 +1,18 @@
+v0.8.40 (2017-06-21)
+- fix streamer init
+v0.8.39 (2017-06-18)
+- handled by streamer (experimental), needs testing - Add proxy handling #117
+- implement tv watch status update - FEATURE REQUEST: marking viewed in STRM #113
+- solved issue with non-faststart crypto files to streamer class
+- add crypto support to streamer class
+- streamer class fix seeking by adding threading
+- streamer class now plays back video content successfully
+v0.8.38 (2017-06-03)
+- change SRT load timing (for dealing with KODI 17+ https://github.com/ddurdle/GDrive-for-KODI/issues/119
+- add streamer class activation and settings
+- encryption crypto - add logic to decrypt file names
+- encryption crypto - add logic to decrypt folder names
+- encryption-crypto - integrate crypto into settings
 - promote to stable
 v0.8.37 (2017-01-05)
 - disable automatic STRM

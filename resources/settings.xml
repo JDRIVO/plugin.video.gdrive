@@ -116,15 +116,39 @@
 
     </category>
 
+	<!-- experimental properties -->
+    <category label="30196">
+
+    	<!-- testing streamer -->
+        <setting id="streamer" type="bool" label="30194" default="false" />
+        <setting id="stream_port" type="number" subsetting="true" label="30195" default="8011" />
+
+    	<!-- update watch status -->
+        <setting id="tv_db_watch" type="bool" label="30197" default="false" />
+        <setting id="movie_db_watch" type="bool" label="30198" default="false" />
+
+		<!-- crypto properties -->
+        <setting label="30190" type="lsep"/>
+        <setting id="crypto_password" type="text" subsetting="true" label="30002" default="" />
+        <setting id="crypto_salt" type="file" subsetting="true" label="30191" default="" />
+
+
+    </category>
+
 	<!-- video properties -->
     <category label="30025">
+
+    	<!-- testing streamer -->
+        <setting id="streamer" type="bool" label="30194" default="false" />
+        <setting id="stream_port" type="number" subsetting="true" label="30195" default="8011" />
+
         <setting id="video_skip" type="slider" label="30161" default="98" option="percent" range="0,1,100" />
         <setting label="30037" type="lsep"/>
         <setting id="context_video" type="enum" subsetting="true" label="30022" values="Video only|Video and Music|Everything" default="0"/>
         <setting label="30006" type="lsep"/>
     	<setting id="prompt_quality" type="bool" subsetting="true" label="30019" default="true" />
     	<setting id="never_stream" type="bool" subsetting="true" label="30122" default="false" />
-        <setting label="30115" subsetting="true" enable="eq(-1,false)" type="lsep"/>
+        <setting label="30115" enable="eq(-1,false)" type="lsep"/>
     	<setting id="preferred_quality" type="enum" enable="eq(-2,false)" subsetting="true" label="30011" values="perfer best (1080,720,<720)|prefer 720 (720,<720,>720)|prefer SD (480,<480)" default="0" />
     	<setting id="preferred_format" type="enum" enable="eq(-3,false)" subsetting="true" label="30012" values="MP4,WebM,flv|MP4,flv,WebM|flv,WebM,MP4|flv,MP4,WebM|WebM,MP4,flv|WebM,flv,MP4" default="0" />
     	<setting id="avoid_codec" type="enum" enable="eq(-4,false)" subsetting="true" label="30013" values="none|VP8/vorbis" default="0"/>
@@ -160,8 +184,10 @@
     </category>
 
 
-	<!-- encfs properties -->
+	<!-- encryption properties -->
     <category label="30165">
+
+		<!-- encfs properties -->
         <setting label="30127" type="lsep"/>
         <setting id="encfs_source" type="folder" subsetting="true" label="30128" default="" />
         <setting id="encfs_target" type="folder" subsetting="true" label="30129" default="" />
@@ -179,7 +205,6 @@
         <setting id="context_ephoto" type="enum" subsetting="true" label="30024" values="Photos only|Don't Filter" default="0"/>
         <setting label="30166" subsetting="true" type="lsep"/>
     </category>
-
 	<!-- advanced properties -->
     <category label="30134">
 <!-->    	<setting id="integrated_player" type="bool" label="30133" default="false" />-->

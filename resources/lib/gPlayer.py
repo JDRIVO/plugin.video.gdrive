@@ -201,6 +201,11 @@ class gPlayer(xbmc.Player):
                     xbmc.log(self.service.addon.getAddonInfo('name') + ': PLAYBACK ENDED 2 ' + str(self.package.file.playcount), xbmc.LOGNOTICE)
 
                     self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, watched= int(self.package.file.playcount)+1, resume=0)
+
+                    if self.service.settings:
+                        xbmc.log(self.service.addon.getAddonInfo('name') + ': Updated local db ', xbmc.LOGNOTICE)
+
+                if self.service.settings.tv_watch:
                     exp = re.search('0?(\d+)',  self.package.file.season)
                     season = exp.group(1)
                     exp = re.search('0?(\d+)',  self.package.file.episode)
@@ -210,9 +215,6 @@ class gPlayer(xbmc.Player):
                     episodeID = exp.group(1)
                     #xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "resume": {"position": '+str(self.time)+', "total":  '+str(self.package.file.duration)+'}}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
                     xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
-
-                    if self.service.settings:
-                        xbmc.log(self.service.addon.getAddonInfo('name') + ': Updated local db ', xbmc.LOGNOTICE)
 
 
             except: pass

@@ -114,7 +114,7 @@ class encryption():
                         break
                     outfile.write(decryptor.decrypt(chunk))
 
-                outfile.truncate(origsize)
+                ##outfile.truncate(origsize)
 
     def decryptStream(self,response, chunksize=24*1024):
             if ENCRYPTION_ENABLE == 0:
@@ -131,6 +131,65 @@ class encryption():
                     outfile.write(decryptor.decrypt(chunk))
 
                 outfile.truncate(origsize)
+
+    def decryptStreamChunk44(self,response, wfile, chunksize=24*1024):
+            if ENCRYPTION_ENABLE == 0:
+                return
+    #    with open(in_filename, 'rb') as infile:
+            origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
+            decryptor = AES.new(self.key, AES.MODE_ECB)
+
+            currentSize = origsize
+            while True:
+                chunk = response.read(chunksize)
+                currentSize = currentSize + chunksize
+
+                if len(chunk) == 0:
+                    break
+                if currentSize <= origsize:
+                    wfile.write(decryptor.decrypt(chunk))
+                else:
+                    deltaSize = currentSize - origsize
+                    fixSize = chunk - deltaSize
+                    wfile.write(decryptor.decrypt(chunk)[:])
+
+    def decryptStreamChunk(self,response, wfile, chunksize=24*1024, startOffset=0):
+            if ENCRYPTION_ENABLE == 0:
+                return
+    #    with open(in_filename, 'rb') as infile:
+            origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
+            decryptor = AES.new(self.key, AES.MODE_ECB)
+
+            count = 0
+            while True:
+                chunk = response.read(chunksize)
+                count = count + 1
+                if len(chunk) == 0:
+                    break
+                print "CHUNK LEN = " + str(len(chunk))
+
+                responseChunk = decryptor.decrypt(chunk)
+                if count == 1 and startOffset !=0:
+                    wfile.write(responseChunk[startOffset:])
+                elif (len(chunk)) < (len(responseChunk.strip())):
+                    wfile.write(responseChunk.strip())
+                else:
+                    wfile.write(responseChunk)
+
+    def decryptStreamChunk2(self,response, wfile, chunksize=24*1024, startOffset=0):
+            if ENCRYPTION_ENABLE == 0:
+                return
+    #    with open(in_filename, 'rb') as infile:
+            origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
+            decryptor = AES.new(self.key, AES.MODE_ECB)
+
+            while True:
+                chunk = response.read(chunksize)
+
+                if len(chunk) == 0:
+                    break
+                print "CHUNK LEN = " + str(len(chunk))
+                wfile.write(decryptor.decrypt(chunk))
 
     def encryptFile(self, in_filename, out_filename=None, chunksize=64*1024):
         """ Encrypts a file using AES (CBC mode) with the
