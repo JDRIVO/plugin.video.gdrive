@@ -1214,21 +1214,25 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
             # use streamer if defined
             if 1 or service.settings.streamer:
+                # streamer
+
                 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
                 from resources.lib import streamer
                 import urllib, urllib2
+                from SocketServer import ThreadingMixIn
+                import threading
+
 
                 try:
                     server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
-                    server.setDomain(service, '')
+                    server.setAccount(service, '')
+                    print "ENABLED STREAMER \n\n\n"
 
                     while server.ready:
-                        print "ready!!!\n"
-
                         server.handle_request()
-                        #xbmc.sleep(10)
                     server.socket.close()
                 except: pass
+
 
 
 
@@ -1792,23 +1796,26 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
             if resolvedPlayback:
 
-                    # use streamer if defined
-                    if service.settings.streamer:
-                        from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-                        from resources.lib import streamer
-                        import urllib, urllib2
+                        # use streamer if defined
+                        # streamer
+                        if service is not None and service.settings.streamer:
 
-                        try:
-                            server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
-                            server.setDomain(service, '')
+                            from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+                            from resources.lib import streamer
+                            import urllib, urllib2
+                            from SocketServer import ThreadingMixIn
+                            import threading
 
-                            while server.ready:
-                                print "ready!!!\n"
 
-                                server.handle_request()
-                                #xbmc.sleep(10)
-                            server.socket.close()
-                        except: pass
+                            try:
+                                server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
+                                server.setAccount(service, '')
+                                print "ENABLED STREAMER \n\n\n"
+
+                                while server.ready:
+                                    server.handle_request()
+                                server.socket.close()
+                            except: pass
 
 
 
@@ -1893,17 +1900,9 @@ if service is not None and service.settings.streamer:
         print "ENABLED STREAMER \n\n\n"
 
         while server.ready:
-            print "ready!!!\n"
-
             server.handle_request()
-            #xbmc.sleep(10)
         server.socket.close()
     except: pass
-    #    req = urllib2.Request('http://localhost:8005/kill', None, None)
-    #    try:
-    #        response = urllib2.urlopen(req)
-    #    except: pass
-    #    server = streamer.MyHTTPServer(('', 8006), streamer.myStreamer)
 
 
 #automation - create strm files

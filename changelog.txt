@@ -1,3 +1,5 @@
+v0.8.40 (2017-06-21)
+- fix streamer init
 v0.8.39 (2017-06-18)
 - handled by streamer (experimental), needs testing - Add proxy handling #117
 - implement tv watch status update - FEATURE REQUEST: marking viewed in STRM #113
