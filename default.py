@@ -1796,26 +1796,26 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
             if resolvedPlayback:
 
-                        # use streamer if defined
-                        # streamer
-                        if service is not None and service.settings.streamer:
+                    # use streamer if defined
+                    # streamer
+                    if service is not None and service.settings.streamer:
 
-                            from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-                            from resources.lib import streamer
-                            import urllib, urllib2
-                            from SocketServer import ThreadingMixIn
-                            import threading
+                        from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+                        from resources.lib import streamer
+                        import urllib, urllib2
+                        from SocketServer import ThreadingMixIn
+                        import threading
 
 
-                            try:
-                                server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
-                                server.setAccount(service, '')
-                                print "ENABLED STREAMER \n\n\n"
+                        try:
+                            server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
+                            server.setAccount(service, '')
+                            print "ENABLED STREAMER \n\n\n"
 
-                                while server.ready:
-                                    server.handle_request()
-                                server.socket.close()
-                            except: pass
+                            while server.ready:
+                                server.handle_request()
+                            server.socket.close()
+                        except: pass
 
 
 
