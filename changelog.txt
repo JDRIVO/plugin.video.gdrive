@@ -1,3 +1,5 @@
+
+- add error handling around unencrypted files in an encrypted folder
 v0.8.40 (2017-06-21)
 - fix streamer init
 v0.8.39 (2017-06-18)

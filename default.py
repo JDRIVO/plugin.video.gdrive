@@ -649,8 +649,10 @@ elif mode == 'main' or mode == 'index':
 
 
                     if item.file is None:
-                        item.folder.displaytitle =  encrypt.decryptString(str(item.folder.title))
-                        service.addDirectory(item.folder, contextType=contextType, encfs=True )
+                        try:
+                            item.folder.displaytitle =  encrypt.decryptString(str(item.folder.title))
+                            service.addDirectory(item.folder, contextType=contextType, encfs=True )
+                        except: pass
                     else:
                         item.file.displaytitle = encrypt.decryptString(str(item.file.title))
                         print item.file.displaytitle
