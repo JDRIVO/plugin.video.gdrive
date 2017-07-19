@@ -1,4 +1,4 @@
-
+- troubleshooting progress on STRM playback with streamer class
 - add error handling around unencrypted files in an encrypted folder
 v0.8.40 (2017-06-21)
 - fix streamer init

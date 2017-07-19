@@ -300,6 +300,8 @@ elif mode == 'buildstrm':
 
 ###
 
+
+
 #STRM playback without instance name; use default
 if invokedUsername == '' and instanceName == '' and (mode == 'video' or mode == 'audio'):
     instanceName = addon_parameters.PLUGIN_NAME + str(settings.getSetting('account_default', 1))
@@ -317,9 +319,29 @@ elif settings.getSettingInt(instanceName+'_type',0)==0 :
 else:
     service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
+# must load after all other (becomes blocking)
+# streamer
+if service is not None and service.settings.streamer:
 
-#create strm files
-if mode == 'buildstrm2':
+    from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+    from resources.lib import streamer
+    import urllib, urllib2
+    from SocketServer import ThreadingMixIn
+    import threading
+
+
+    try:
+        server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
+        server.setAccount(service, '')
+        print "ENABLED STREAMER \n\n\n"
+
+        while server.ready:
+            server.handle_request()
+        server.socket.close()
+    except: pass
+
+        #create strm files
+if mode == 'buildf2':
 
 
     import time
