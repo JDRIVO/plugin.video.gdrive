@@ -657,12 +657,13 @@ elif mode == 'main' or mode == 'index':
                             service.addDirectory(item.folder, contextType=contextType, encfs=True )
                         except: pass
                     else:
-                        item.file.displaytitle = encrypt.decryptString(str(item.file.title))
-                        print item.file.displaytitle
-                        item.file.title =  item.file.displaytitle
-                        if contentType < 9 or media_re.search(str(item.file.title)):
-                            service.addMediaFile(item, contextType=contextType,  encfs=True)
-
+                        try:
+                            item.file.displaytitle = encrypt.decryptString(str(item.file.title))
+                            item.file.title =  item.file.displaytitle
+                            if contentType < 9 or media_re.search(str(item.file.title)):
+                                service.addMediaFile(item, contextType=contextType,  encfs=True)
+                        except:
+                            pass
 
         else:
 
