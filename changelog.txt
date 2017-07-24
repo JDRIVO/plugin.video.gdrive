@@ -1,3 +1,4 @@
+- updated enccryptFolder -- recursive + print encryption details
 - more error handling around unencrypted files in an encrypted folder
 v0.8.41 (2017-07-19)
 - fix for STRM plackback wth stramer class
