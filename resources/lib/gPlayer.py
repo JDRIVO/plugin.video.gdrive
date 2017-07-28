@@ -205,16 +205,19 @@ class gPlayer(xbmc.Player):
                     if self.service.settings:
                         xbmc.log(self.service.addon.getAddonInfo('name') + ': Updated local db ', xbmc.LOGNOTICE)
 
-                if self.service.settings.tv_watch:
-                    exp = re.search('0?(\d+)',  self.package.file.season)
-                    season = exp.group(1)
-                    exp = re.search('0?(\d+)',  self.package.file.episode)
-                    episode = exp.group(1)
-                    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {"filter":{"and": [{"field": "season", "operator": "is", "value": "'+str(season)+'"}, {"field": "episode", "operator": "is", "value": "'+str(episode)+'"}]}}, "id": 1}')
-                    exp = re.search('"episodeid":(\d+)', result)
-                    episodeID = exp.group(1)
-                    #xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "resume": {"position": '+str(self.time)+', "total":  '+str(self.package.file.duration)+'}}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
-                    xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
+                #if self.service.settings.tv_watch:
+                exp = re.search('0?(\d+)',  self.package.file.season)
+                season = exp.group(1)
+                exp = re.search('0?(\d+)',  self.package.file.episode)
+                episode = exp.group(1)
+                result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {"filter":{"and": [{"field": "season", "operator": "is", "value": "'+str(season)+'"}, {"field": "episode", "operator": "is", "value": "'+str(episode)+'"}]}}, "id": 1}')
+                exp = re.search('"episodeid":(\d+)', result)
+                episodeID = exp.group(1)
+                #xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "resume": {"position": '+str(self.time)+', "total":  '+str(self.package.file.duration)+'}}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
+                xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
+
+                if self.service.settings:
+                    xbmc.log(self.service.addon.getAddonInfo('name') + ': Updated local db ', xbmc.LOGNOTICE)
 
 
             except: pass
@@ -245,18 +248,19 @@ class gPlayer(xbmc.Player):
                     xbmc.log(self.service.addon.getAddonInfo('name') + ': PLAYBACK STOPPED 2 ' + str(self.time), xbmc.LOGNOTICE)
 
                     self.service.gSpreadsheet.setMediaStatus(self.service.worksheetID,self.package, resume=self.time)
-                    exp = re.search('0?(\d+)',  self.package.file.season)
-                    season = exp.group(1)
-                    exp = re.search('0?(\d+)',  self.package.file.episode)
-                    episode = exp.group(1)
-                    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {"filter":{"and": [{"field": "season", "operator": "is", "value": "'+str(season)+'"}, {"field": "episode", "operator": "is", "value": "'+str(episode)+'"}]}}, "id": 1}')
-                    exp = re.search('"episodeid":(\d+)', result)
-                    episodeID = exp.group(1)
-                    xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "resume": {"position": '+str(self.time)+', "total":  '+str(self.package.file.duration)+'}}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
-                    #xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
 
-                    if self.service.settings:
-                        xbmc.log(self.service.addon.getAddonInfo('name') + ': Updated local db ', xbmc.LOGNOTICE)
+                exp = re.search('0?(\d+)',  self.package.file.season)
+                season = exp.group(1)
+                exp = re.search('0?(\d+)',  self.package.file.episode)
+                episode = exp.group(1)
+                result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {"filter":{"and": [{"field": "season", "operator": "is", "value": "'+str(season)+'"}, {"field": "episode", "operator": "is", "value": "'+str(episode)+'"}]}}, "id": 1}')
+                exp = re.search('"episodeid":(\d+)', result)
+                episodeID = exp.group(1)
+                xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "resume": {"position": '+str(self.time)+', "total":  '+str(self.package.file.duration)+'}}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
+                #xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
+
+                if self.service.settings:
+                    xbmc.log(self.service.addon.getAddonInfo('name') + ': Updated local db ', xbmc.LOGNOTICE)
 
             except: pass
 
