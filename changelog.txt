@@ -1,3 +1,4 @@
+- fix for right-click play not working (caption handling was moved to far up the code)
 - fix: STRM - abbreviated constructed files won't run in 0.8.41 #137
 - updated enccryptFolder -- recursive + print encryption details
 - more error handling around unencrypted files in an encrypted folder

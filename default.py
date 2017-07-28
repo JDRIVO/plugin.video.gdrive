@@ -1871,6 +1871,18 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             if player.isPlaying():
                 xbmc.sleep(100)
 
+
+            # need to seek?
+            if seek > 0:
+                player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
+            elif float(package.file.cloudResume) > 0:
+                player.PlayStream(mediaURL.url, item, package.file.cloudResume, startPlayback=startPlayback, package=package)
+            elif float(package.file.resume) > 0:
+                player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
+            else:
+                player.PlayStream(mediaURL.url, item, 0, startPlayback=startPlayback, package=package)
+
+            # must occur after playback started (resolve or startPlayback in player)
             # load captions
             if  (settings.srt or settings.cc) and service.protocol == 2:
                 while not (player.isPlaying()):
@@ -1887,19 +1899,6 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                         player.setSubtitles(file)
 
             xbmc.sleep(100)
-
-
-            # need to seek?
-            if seek > 0:
-                player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
-            elif float(package.file.cloudResume) > 0:
-                player.PlayStream(mediaURL.url, item, package.file.cloudResume, startPlayback=startPlayback, package=package)
-            elif float(package.file.resume) > 0:
-                player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
-            else:
-                player.PlayStream(mediaURL.url, item, 0, startPlayback=startPlayback, package=package)
-
-
 
             # we need to keep the plugin alive for as long as there is playback from the plugin, or the player object closes
             while not player.isExit:
