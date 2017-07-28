@@ -1664,7 +1664,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                     elif settings.username != '' or settings.strm:
                         startPlayback = False
                         resolvedPlayback = True
-                        startPlayback = False
+
                         if not seek > 0  and package.file.cloudResume > 0 and not settings.cloudResumePrompt:
                             returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30176), str(int(float(package.file.cloudResume)/360)) + ':'+ str(int(float(package.file.cloudResume)/60)) + ':' + str(int(float(package.file.cloudResume)%60)))
                             if not returnPrompt:
