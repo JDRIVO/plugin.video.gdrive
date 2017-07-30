@@ -1,3 +1,6 @@
+v0.8.45 (2017-07-28)
+- fixed addon-name
+- refine logging in player class
 v0.8.44 (2017-07-28)
 - added watching/resuming STRM files for movies --  FEATURE REQUEST: marking viewed in STRM #113
 v0.8.43 (2017-07-27)
