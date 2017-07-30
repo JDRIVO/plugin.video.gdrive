@@ -1,3 +1,5 @@
+v0.8.43 (2017-07-27)
+- testing fixes for watching/resuming STRM files for TV shows --  FEATURE REQUEST: marking viewed in STRM #113
 v0.8.42 (2017-07-27)
 - move out update tv show watch/resume status out to run regardless of setting (also related to FEATURE REQUEST: marking viewed in STRM #113)
 - fix for right-click play not working (caption handling was moved to far up the code)
