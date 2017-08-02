@@ -1,3 +1,5 @@
+v0.8.46 (2017-08-02)
+- moved fetching of TV and MOVIE ID to player start (for faster saving on stop/ended streams)
 v0.8.45 (2017-07-28)
 - fixed addon-name
 - refine logging in player class

@@ -74,6 +74,9 @@ class file:
         self.country = ''
         self.year = ''
         self.actors = None
+        self.isTV = False
+        self.TVID = None
+        self.MOVIEID = None
 
 
         # nekwebdev contribution
