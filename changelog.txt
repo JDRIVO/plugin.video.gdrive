@@ -1,3 +1,4 @@
+- use label instead of file for searching for shows and movies in KODI db
 v0.8.47 (2017-08-02)
 - update watch status based on % completed based on setting in Addon Settings -> Video
 v0.8.46 (2017-08-02)
