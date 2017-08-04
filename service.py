@@ -64,9 +64,12 @@ from resources.lib import TMDB
 
 #global variables
 PLUGIN_URL = sys.argv[0]
-plugin_handle = int(sys.argv[1])
-plugin_queries = settings.parse_query(sys.argv[2][1:])
-
+plugin_handle = None
+plugin_queries = None
+try:
+    plugin_handle = int(sys.argv[1])
+    plugin_queries = settings.parse_query(sys.argv[2][1:])
+except: pass
 
 addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 

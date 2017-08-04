@@ -1,3 +1,6 @@
+v0.8.49 (2017-08-04)
+- limitation: Streamer needs to work with multiple accounts #141
+- fix: Streamer causes plugin to hang when running from STRM #140
 v0.8.48 (2017-08-04)
 - add a service.py
 - use label instead of file for searching for shows and movies in KODI db

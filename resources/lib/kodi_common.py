@@ -33,8 +33,12 @@ from resources.lib import offlinefile
 # global variables
 import addon_parameters
 addon = addon_parameters.addon
+
 PLUGIN_URL = sys.argv[0]
-plugin_handle = int(sys.argv[1])
+plugin_handle = None
+try:
+    plugin_handle = int(sys.argv[1])
+except:pass
 
 def decode(data):
         return re.sub("&#(\d+)(;|(?=\s))", _callback, data).strip()

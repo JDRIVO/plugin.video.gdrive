@@ -34,11 +34,12 @@ from resources.lib import streamer
 
 
 
-
-#global variables
 PLUGIN_URL = sys.argv[0]
-plugin_handle = int(sys.argv[1])
-
+plugin_handle = None
+try:
+    #global variables
+    plugin_handle = int(sys.argv[1])
+except:pass
 
 
 def decode(data):

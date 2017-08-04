@@ -1219,44 +1219,39 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             #print "mediaURLDD = " + mediaURL.url
 
             # use streamer if defined
-            if 1 or service.settings.streamer:
-                # streamer
-
+            useStreamer = False
+            if service is not None and service.settings.streamer:
+                # test streamer
                 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
                 from resources.lib import streamer
                 import urllib, urllib2
                 from SocketServer import ThreadingMixIn
                 import threading
-
-
                 try:
                     server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
                     server.setAccount(service, '')
-                    print "ENABLED STREAMER \n\n\n"
+                    #if we make it here, streamer was not already running as a service, so we need to abort and playback using normal method, otherwise we will lock
 
-                    while server.ready:
-                        server.handle_request()
-                    server.socket.close()
-                except: pass
+                except:
+                    useStreamer = True
 
+                if useStreamer:
 
-
-
-                url = 'http://localhost:' + str(service.settings.streamPort) + '/crypto_playurl'
-                req = urllib2.Request(url, 'url=' + mediaURL.url)
-                print "mediaURL = "+mediaURL.url
-                try:
-                    response = urllib2.urlopen(req)
-                    response.close()
-                except urllib2.URLError, e:
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    url = 'http://localhost:' + str(service.settings.streamPort) + '/crypto_playurl'
+                    req = urllib2.Request(url, 'url=' + mediaURL.url)
+                    print "mediaURL = "+mediaURL.url
+                    try:
+                        response = urllib2.urlopen(req)
+                        response.close()
+                    except urllib2.URLError, e:
+                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
 
 
-                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path='http://localhost:' + str(service.settings.streamPort) + '/play')
+                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                    thumbnailImage=package.file.thumbnail, path='http://localhost:' + str(service.settings.streamPort) + '/play')
 
-                item.setPath('http://localhost:' + str(service.settings.streamPort) + '/play')
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                    item.setPath('http://localhost:' + str(service.settings.streamPort) + '/play')
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
         else:
 
             settings.setEncfsParameters()
@@ -1804,23 +1799,23 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
                     # use streamer if defined
                     # streamer
+                    useStreamer = False
                     if service is not None and service.settings.streamer:
-
+                        # test streamer
                         from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
                         from resources.lib import streamer
                         import urllib, urllib2
                         from SocketServer import ThreadingMixIn
                         import threading
-
-
                         try:
                             server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
                             server.setAccount(service, '')
-                            print "ENABLED STREAMER \n\n\n"
+                            #if we make it here, streamer was not already running as a service, so we need to abort and playback using normal method, otherwise we will lock
 
-                            server.handle_request()
-                        except: pass
+                        except:
+                            useStreamer = True
 
+                    if useStreamer and service is not None and service.settings.streamer:
 
 
                         url = 'http://localhost:' + str(service.settings.streamPort) + '/playurl'
@@ -1837,26 +1832,6 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                         item.setPath('http://localhost:' + str(service.settings.streamPort) + '/play')
                         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
-                        # must load after all other (becomes blocking)
-                        # streamer
-                        if service is not None and service.settings.streamer:
-
-                            from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-                            from resources.lib import streamer
-                            import urllib, urllib2
-                            from SocketServer import ThreadingMixIn
-                            import threading
-
-
-                            try:
-                                server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
-                                server.setAccount(service, '')
-                                print "ENABLED STREAMER \n\n\n"
-
-                                while server.ready:
-                                    server.handle_request()
-                                server.socket.close()
-                            except: pass
 
                     else:
                         # regular playback
@@ -2004,23 +1979,3 @@ if 0 and service is not None and instanceName is not None and settings.strm:
                             #    xbmc.sleep(5000)
 
 
-# must load after all other (becomes blocking)
-# streamer
-if service is not None and service.settings.streamer:
-
-    from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-    from resources.lib import streamer
-    import urllib, urllib2
-    from SocketServer import ThreadingMixIn
-    import threading
-
-
-    try:
-        server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
-        server.setAccount(service, '')
-        print "ENABLED STREAMER \n\n\n"
-
-        while server.ready:
-            server.handle_request()
-        server.socket.close()
-    except: pass
