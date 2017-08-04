@@ -1,3 +1,5 @@
+v0.8.50 (2017-08-04)
+- reliability fixes for watch status / resume point updating
 v0.8.49 (2017-08-04)
 - limitation: Streamer needs to work with multiple accounts #141
 - fix: Streamer causes plugin to hang when running from STRM #140
