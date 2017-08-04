@@ -1,6 +1,8 @@
 gdrive for KODI / XBMC
 ======================
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/99da9b057bac419f925a466010b3fe24)](https://www.codacy.com/app/ddurdle/GDrive-for-KODI?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ddurdle/GDrive-for-KODI&amp;utm_campaign=Badge_Grade)
+
 Google Drive Video add-on for KODI / XBMC
 
 A video add-on for XBMC that enables playback of videos stored in a Google Drive account.
