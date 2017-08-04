@@ -1,3 +1,5 @@
+v0.8.48 (2017-08-04)
+- add a service.py
 - use label instead of file for searching for shows and movies in KODI db
 v0.8.47 (2017-08-02)
 - update watch status based on % completed based on setting in Addon Settings -> Video

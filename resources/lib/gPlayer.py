@@ -50,7 +50,24 @@ class gPlayer(xbmc.Player):
 
     def setService(self,service):
         self.service = service
+        if service is not None and service.settings.streamer:
 
+            from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+            from resources.lib import streamer
+            import urllib, urllib2
+            from SocketServer import ThreadingMixIn
+            import threading
+
+
+            try:
+                server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
+                server.setAccount(service, '')
+                print "ENABLED STREAMER \n\n\n"
+
+                while server.ready:
+                    server.handle_request()
+                server.socket.close()
+            except: pass
     def setWorksheet(self,worksheet):
         self.worksheet = worksheet
 

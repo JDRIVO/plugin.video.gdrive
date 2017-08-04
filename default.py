@@ -1818,9 +1818,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                             server.setAccount(service, '')
                             print "ENABLED STREAMER \n\n\n"
 
-                            while server.ready:
-                                server.handle_request()
-                            server.socket.close()
+                            server.handle_request()
                         except: pass
 
 
