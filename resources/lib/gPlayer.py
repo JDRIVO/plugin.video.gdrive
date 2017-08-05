@@ -185,7 +185,7 @@ class gPlayer(xbmc.Player):
 
         try:
 
-            if (self.service.settings.tv_watch or self.service.settings.move_watch):
+            if (self.service.settings.tv_watch or self.service.settings.movie_watch):
 
                 result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
                 #fixedTitle = re.escape(re.sub('.strm', '',self.package.file.title))
@@ -220,7 +220,7 @@ class gPlayer(xbmc.Player):
 
                 if foundMatch == 0:
                     result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
-                    for match in re.finditer('"file"\:"[^\"]+'+str(fixedTitle)+'.strm,"label":"[^\"]+","movieid":(\d+)', result):#, re.S):
+                    for match in re.finditer('"file":"[^\"]+'+str(fixedTitle)+'.strm","label":"[^\"]+","movieid":(\d+)', result):#, re.S):
 
                         xbmc.log(self.service.addon.getAddonInfo('name') + ': found movie ID '+ match.group(1), xbmc.LOGNOTICE)
                         self.package.file.MOVIEID = match.group(1)
@@ -278,7 +278,7 @@ class gPlayer(xbmc.Player):
 
                 else:
 
-                    if (self.service.settings.tv_watch or self.service.settings.move_watch):
+                    if (self.service.settings.tv_watch or self.service.settings.movie_watch):
                         result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
                         fixedTitle = re.escape(re.sub(' ', '+', self.package.file.title))
 
@@ -351,7 +351,7 @@ class gPlayer(xbmc.Player):
 #                episodeID = exp.group(1)
                 #result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"], "limits":{"end":3}}, "id": "1"}')
 
-                if (self.service.settings.tv_watch or self.service.settings.move_watch):
+                if (self.service.settings.tv_watch or self.service.settings.movie_watch):
 
                     if ( float(self.service.settings.skipResume)/100 < float (self.time/self.package.file.duration)):
 

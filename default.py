@@ -1252,6 +1252,23 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
                     item.setPath('http://localhost:' + str(service.settings.streamPort) + '/play')
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+
+                    ## contribution by dabinn
+                    # handle situation where playback is skipped to next file, wait for new source to load
+                    if player.isPlaying():
+                        xbmc.sleep(100)
+
+                    startPlayback = False
+                    # need to seek?
+                    if seek > 0:
+                        player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
+                    elif float(package.file.cloudResume) > 0:
+                        player.PlayStream(mediaURL.url, item, package.file.cloudResume, startPlayback=startPlayback, package=package)
+                    elif float(package.file.resume) > 0:
+                        player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
+                    else:
+                        player.PlayStream(mediaURL.url, item, 0, startPlayback=startPlayback, package=package)
         else:
 
             settings.setEncfsParameters()
