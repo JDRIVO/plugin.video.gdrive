@@ -1213,6 +1213,8 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             mediaFile = file.file(filename, title, '', 0, '','')
             mediaFolder = folder.folder(folderID,'')
             (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder), title=title, contentType=8)
+            #override title
+            package.file.title = title
             #(mediaURLs,package) = service.getPlaybackCall(None,title=title)
             mediaURL = mediaURLs[0]
             #mediaURL.url =  mediaURL.url +'|' + service.getHeadersEncoded()
