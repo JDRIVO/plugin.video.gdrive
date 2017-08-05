@@ -166,7 +166,6 @@ class encryption():
                 count = count + 1
                 if len(chunk) == 0:
                     break
-                print "CHUNK LEN = " + str(len(chunk))
 
                 responseChunk = decryptor.decrypt(chunk)
                 if count == 1 and startOffset !=0:
@@ -188,7 +187,6 @@ class encryption():
 
                 if len(chunk) == 0:
                     break
-                print "CHUNK LEN = " + str(len(chunk))
                 wfile.write(decryptor.decrypt(chunk))
 
     def encryptFile(self, in_filename, out_filename=None, chunksize=64*1024):
