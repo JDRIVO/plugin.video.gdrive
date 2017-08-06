@@ -1,3 +1,5 @@
+v0.8.52 (2017-08-05)
+- cleanup and added further debug for watch/resume status
 v0.8.51 (2017-08-05)
 - ensure the STRM watch/resume status is using settings preference
 - fix typo in movie status fetch
