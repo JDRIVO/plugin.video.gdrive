@@ -29,8 +29,8 @@ from resources.lib import gdrive
 
 # global variables
 PLUGIN_NAME = 'gdrive'
-#addon = xbmcaddon.Addon(id='plugin.video.gdrive')
-addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+addon = xbmcaddon.Addon(id='plugin.video.gdrive')
+#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 
 cloudservice2 = gdrive_api2.gdrive
 cloudservice1 = gdrive.gdrive
