@@ -39,7 +39,10 @@ from resources.lib import crashreport
 from resources.lib import cache
 from resources.lib import gSpreadsheets
 
+
 KODI = True
+if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
+    KODI = False
 
 if KODI:
 
@@ -84,11 +87,13 @@ class gdrive(cloudservice):
         self.protocol = 2
         self.settings = settings
         self.gSpreadsheet = gSpreadsheet
-        self.worksheetID = self.addon.getSetting(self.instanceName+'_spreadsheet')
+        self.worksheetID = None
         self.DBM = None
 
 
         if KODI:
+            self.worksheetID = self.addon.getSetting(self.instanceName+'_spreadsheet')
+
             if authenticate == True:
                 self.type = int(addon.getSetting(instanceName+'_type'))
                 self.crashreport = crashreport.crashreport(self.addon)
@@ -100,28 +105,49 @@ class gdrive(cloudservice):
             self.authorization = authorization.authorization(username)
 
         else:
-            self.type = 2
             self.crashreport = None
+            username = instanceName
             self.authorization = authorization.authorization(username)
-
             import anydbm
-            self.DBM = anydbm.open(DBM,'c')
-            self.DBM.close()
+            self.DBM  = anydbm.open(DBM,'c')
+
+            try:
+                self.type = int(self.DBM['type'])
+            except:
+                self.type = 2
+                print "ERROR: define your settings in the DBM first"
+                return
 
 
         self.cookiejar = cookielib.CookieJar()
 
         self.user_agent = user_agent
 
-        # load the OAUTH2 tokens or force fetch if not set
-        if (authenticate == True and (not self.authorization.loadToken(self.instanceName,addon, 'auth_access_token') or not self.authorization.loadToken(self.instanceName,addon, 'auth_refresh_token'))):
-            if self.type ==4 or self.addon.getSetting(self.instanceName+'_code'):
-                self.getToken(self.addon.getSetting(self.instanceName+'_code'))
-            else:
-                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
-                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
-        #***
-        self.cache = cache.cache()
+        if KODI:
+            # load the OAUTH2 tokens or force fetch if not set
+            if (authenticate == True and (not self.authorization.loadToken(self.instanceName,addon, 'auth_access_token') or not self.authorization.loadToken(self.instanceName,addon, 'auth_refresh_token'))):
+                if self.type ==4 or self.addon.getSetting(self.instanceName+'_code'):
+                    self.getToken(self.addon.getSetting(self.instanceName+'_code'))
+                else:
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
+                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+            #***
+            self.cache = cache.cache()
+        else:
+            # load the OAUTH2 tokens or force fetch if not set
+
+
+            if (authenticate == True and (not self.authorization.loadToken(self.instanceName,addon, 'auth_access_token') or not self.authorization.loadToken(self.instanceName,addon, 'auth_refresh_token'))):
+                if self.type ==4 or self.DBM['code']:
+                    self.getToken(None)
+                elif self.DBM['code']:
+                    self.getToken(self.DBM['code'])
+                else:
+                    print 'ERROR:' + str(e)
+            #***
+
+            self.cache = None
+
 
         if KODI:
             self.cloudResume = self.addon.getSetting(self.instanceName+'_resumepoint')

@@ -20,9 +20,15 @@
 # cloudservice - standard modules
 import os
 import re
+import sys
 
-# cloudservice - standard XBMC modules
-import xbmcgui, xbmcvfs
+KODI = True
+if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
+    KODI = False
+
+if KODI:
+    # cloudservice - standard XBMC modules
+    import xbmcgui, xbmcvfs
 
 #
 # This class handles fetching files from local when cached, rather then making calls to the web service

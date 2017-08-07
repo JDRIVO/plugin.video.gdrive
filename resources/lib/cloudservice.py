@@ -23,23 +23,30 @@ import urllib, urllib2
 import sys
 import os
 
-# cloudservice - standard XBMC modules
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin
-import xbmcvfs
+PLUGIN_URL = sys.argv[0]
+
+KODI = True
+if re.search(re.compile('.py', re.IGNORECASE),PLUGIN_URL) is not None:
+    KODI = False
+
+
+if KODI:
+    # cloudservice - standard XBMC modules
+    import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+    import xbmcvfs
 
 from resources.lib import mediaurl
 #from resources.lib import kodi_common
 #from resources.lib import settings
 from resources.lib import streamer
 
+if KODI:
 
-
-PLUGIN_URL = sys.argv[0]
-plugin_handle = None
-try:
-    #global variables
-    plugin_handle = int(sys.argv[1])
-except:pass
+    plugin_handle = None
+    try:
+        #global variables
+        plugin_handle = int(sys.argv[1])
+    except:pass
 
 
 def decode(data):

@@ -21,7 +21,14 @@ import re
 import urllib, urllib2
 import cookielib
 import random
-import xbmc, xbmcgui, xbmcplugin, xbmcaddon
+import sys
+
+KODI = True
+if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
+    KODI = False
+
+if KODI:
+    import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 
 #
