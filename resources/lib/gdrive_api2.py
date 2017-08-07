@@ -39,10 +39,12 @@ from resources.lib import crashreport
 from resources.lib import cache
 from resources.lib import gSpreadsheets
 
+KODI = True
 
+if KODI:
 
-# cloudservice - standard XBMC modules
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin, xbmcvfs
+    # cloudservice - standard XBMC modules
+    import xbmc, xbmcaddon, xbmcgui, xbmcplugin, xbmcvfs
 
 SERVICE_NAME = 'dmdgdrive'
 
@@ -74,7 +76,7 @@ class gdrive(cloudservice):
     ##
     # initialize (save addon, instance name, user agent)
     ##
-    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, settings, authenticate=True, gSpreadsheet=None):
+    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, settings, authenticate=True, gSpreadsheet=None, DBM=None):
         self.integratedPlayer = False
         self.PLUGIN_URL = PLUGIN_URL
         self.addon = addon
@@ -83,19 +85,28 @@ class gdrive(cloudservice):
         self.settings = settings
         self.gSpreadsheet = gSpreadsheet
         self.worksheetID = self.addon.getSetting(self.instanceName+'_spreadsheet')
+        self.DBM = None
 
 
-        if authenticate == True:
-            self.type = int(addon.getSetting(instanceName+'_type'))
+        if KODI:
+            if authenticate == True:
+                self.type = int(addon.getSetting(instanceName+'_type'))
+                self.crashreport = crashreport.crashreport(self.addon)
 
+            try:
+                username = self.addon.getSetting(self.instanceName+'_username')
+            except:
+                username = ''
+            self.authorization = authorization.authorization(username)
 
-        self.crashreport = crashreport.crashreport(self.addon)
+        else:
+            self.type = 2
+            self.crashreport = None
+            self.authorization = authorization.authorization(username)
 
-        try:
-            username = self.addon.getSetting(self.instanceName+'_username')
-        except:
-            username = ''
-        self.authorization = authorization.authorization(username)
+            import anydbm
+            self.DBM = anydbm.open(DBM,'c')
+            self.DBM.close()
 
 
         self.cookiejar = cookielib.CookieJar()
@@ -112,32 +123,32 @@ class gdrive(cloudservice):
         #***
         self.cache = cache.cache()
 
+        if KODI:
+            self.cloudResume = self.addon.getSetting(self.instanceName+'_resumepoint')
+            self.cloudSpreadsheet = self.addon.getSetting(self.instanceName+'_spreadsheetname')
 
-        self.cloudResume = self.addon.getSetting(self.instanceName+'_resumepoint')
-        self.cloudSpreadsheet = self.addon.getSetting(self.instanceName+'_spreadsheetname')
+            if self.cloudResume == '2':
+                if self.worksheetID == '':
 
-        if self.cloudResume == '2':
-            if self.worksheetID == '':
+                    try:
+                        self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
 
-                try:
+                        spreadsheets = self.gSpreadsheet.getSpreadsheetList()
+                    except:
+                        pass
+
+                    for title in spreadsheets.iterkeys():
+                        if title == self.cloudSpreadsheet:#'CLOUD_DB':
+                            worksheets = self.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+
+                            for worksheet in worksheets.iterkeys():
+                                if worksheet == 'db':
+                                    self.worksheetID = worksheets[worksheet]
+                                    addon.setSetting(instanceName + '_spreadsheet', self.worksheetID)
+                                    break
+                            break
+                if self.gSpreadsheet is None:
                     self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
-
-                    spreadsheets = self.gSpreadsheet.getSpreadsheetList()
-                except:
-                    pass
-
-                for title in spreadsheets.iterkeys():
-                    if title == self.cloudSpreadsheet:#'CLOUD_DB':
-                        worksheets = self.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
-
-                        for worksheet in worksheets.iterkeys():
-                            if worksheet == 'db':
-                                self.worksheetID = worksheets[worksheet]
-                                addon.setSetting(instanceName + '_spreadsheet', self.worksheetID)
-                                break
-                        break
-            if self.gSpreadsheet is None:
-                self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
 
 
 

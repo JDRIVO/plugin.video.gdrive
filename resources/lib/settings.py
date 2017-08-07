@@ -67,7 +67,10 @@ def parse_query(query):
     q['mode'] = q.get('mode', 'main')
     return q
 
-plugin_queries = parse_query(sys.argv[2][1:])
+plugin_queries = None
+try:
+    plugin_queries = parse_query(sys.argv[2][1:])
+except:pass
 
 # global variables
 import addon_parameters
@@ -90,7 +93,7 @@ class settings:
         self.cc = getParameter('cc', self.getSetting('cc', True))
         self.srt = getParameter('srt', self.getSetting('srt', True))
         #self.srt_folder = getParameter('srt_folder', self.getSetting('srt_folder', False))
-        self.strm = getParameter('strm', False)
+        self.strm = getParameter('strm', True) ## force to TRUE, set to false manually
 
         self.username = getParameter('username', '')
         self.setCacheParameters()

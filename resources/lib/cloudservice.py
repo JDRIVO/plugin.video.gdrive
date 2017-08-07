@@ -34,11 +34,12 @@ from resources.lib import streamer
 
 
 
-
-#global variables
 PLUGIN_URL = sys.argv[0]
-plugin_handle = int(sys.argv[1])
-
+plugin_handle = None
+try:
+    #global variables
+    plugin_handle = int(sys.argv[1])
+except:pass
 
 
 def decode(data):
@@ -1405,17 +1406,17 @@ class cloudservice(object):
                 # play-original for video only
                 if (contextType == 'video'):
                     if (package.file.type != package.file.AUDIO and self.settings.promptQuality) and not encfs:
-                        cm.append(( self.addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&original=true'+')', ))
+                        cm.append(( self.addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&strm=false&original=true'+')', ))
                     else:
-                        cm.append(( self.addon.getLocalizedString(30151), 'XBMC.RunPlugin('+url + '&promptquality=true'+')', ))
+                        cm.append(( self.addon.getLocalizedString(30151), 'XBMC.RunPlugin('+url + '&strm=false&promptquality=true'+')', ))
 
                     # if the options are disabled in settings, display option to playback with feature
                     if not self.settings.srt:
-                        cm.append(( self.addon.getLocalizedString(30138), 'XBMC.RunPlugin('+url + '&srt=true'+')', ))
+                        cm.append(( self.addon.getLocalizedString(30138), 'XBMC.RunPlugin('+url + '&strm=false&srt=true'+')', ))
                     if not self.settings.cc:
-                        cm.append(( self.addon.getLocalizedString(30146), 'XBMC.RunPlugin('+url + '&cc=true'+')', ))
+                        cm.append(( self.addon.getLocalizedString(30146), 'XBMC.RunPlugin('+url + '&strm=false&cc=true'+')', ))
 
-                    cm.append(( self.addon.getLocalizedString(30147), 'XBMC.RunPlugin('+url + '&seek=true'+')', ))
+                    cm.append(( self.addon.getLocalizedString(30147), 'XBMC.RunPlugin('+url + '&strm=false&seek=true'+')', ))
 #                    cm.append(( self.addon.getLocalizedString(30148), 'XBMC.RunPlugin('+url + '&resume=true'+')', ))
 #                    values = {'instance': self.instanceName, 'folder': package.folder.id}
 #                    folderurl = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)

@@ -300,6 +300,8 @@ elif mode == 'buildstrm':
 
 ###
 
+
+
 #STRM playback without instance name; use default
 if invokedUsername == '' and instanceName == '' and (mode == 'video' or mode == 'audio'):
     instanceName = addon_parameters.PLUGIN_NAME + str(settings.getSetting('account_default', 1))
@@ -318,8 +320,9 @@ else:
     service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
 
 
-#create strm files
-if mode == 'buildstrm2':
+
+        #create strm files
+if mode == 'buildf2':
 
 
     import time
@@ -649,15 +652,18 @@ elif mode == 'main' or mode == 'index':
 
 
                     if item.file is None:
-                        item.folder.displaytitle =  encrypt.decryptString(str(item.folder.title))
-                        service.addDirectory(item.folder, contextType=contextType, encfs=True )
+                        try:
+                            item.folder.displaytitle =  encrypt.decryptString(str(item.folder.title))
+                            service.addDirectory(item.folder, contextType=contextType, encfs=True )
+                        except: pass
                     else:
-                        item.file.displaytitle = encrypt.decryptString(str(item.file.title))
-                        print item.file.displaytitle
-                        item.file.title =  item.file.displaytitle
-                        if contentType < 9 or media_re.search(str(item.file.title)):
-                            service.addMediaFile(item, contextType=contextType,  encfs=True)
-
+                        try:
+                            item.file.displaytitle = encrypt.decryptString(str(item.file.title))
+                            item.file.title =  item.file.displaytitle
+                            if contentType < 9 or media_re.search(str(item.file.title)):
+                                service.addMediaFile(item, contextType=contextType,  encfs=True)
+                        except:
+                            pass
 
         else:
 
@@ -1207,50 +1213,90 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             mediaFile = file.file(filename, title, '', 0, '','')
             mediaFolder = folder.folder(folderID,'')
             (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder), title=title, contentType=8)
+            #override title
+            package.file.title = title
             #(mediaURLs,package) = service.getPlaybackCall(None,title=title)
             mediaURL = mediaURLs[0]
             #mediaURL.url =  mediaURL.url +'|' + service.getHeadersEncoded()
             #print "mediaURLDD = " + mediaURL.url
 
             # use streamer if defined
-            if 1 or service.settings.streamer:
-                # streamer
-
+            useStreamer = False
+            if service is not None and service.settings.streamer:
+                # test streamer
                 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
                 from resources.lib import streamer
                 import urllib, urllib2
                 from SocketServer import ThreadingMixIn
                 import threading
-
-
                 try:
                     server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
                     server.setAccount(service, '')
-                    print "ENABLED STREAMER \n\n\n"
+                    #if we make it here, streamer was not already running as a service, so we need to abort and playback using normal method, otherwise we will lock
 
-                    while server.ready:
-                        server.handle_request()
-                    server.socket.close()
-                except: pass
+                except:
+                    useStreamer = True
 
+                if useStreamer:
 
-
-
-                url = 'http://localhost:' + str(service.settings.streamPort) + '/crypto_playurl'
-                req = urllib2.Request(url, 'url=' + mediaURL.url)
-                print "mediaURL = "+mediaURL.url
-                try:
-                    response = urllib2.urlopen(req)
-                    response.close()
-                except urllib2.URLError, e:
-                    xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+                    url = 'http://localhost:' + str(service.settings.streamPort) + '/crypto_playurl'
+                    req = urllib2.Request(url, 'url=' + mediaURL.url)
+                    print "mediaURL = "+mediaURL.url
+                    try:
+                        response = urllib2.urlopen(req)
+                        response.close()
+                    except urllib2.URLError, e:
+                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
 
 
-                item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                thumbnailImage=package.file.thumbnail, path='http://localhost:' + str(service.settings.streamPort) + '/play')
+                    item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
+                                    thumbnailImage=package.file.thumbnail, path='http://localhost:' + str(service.settings.streamPort) + '/play')
 
-                item.setPath('http://localhost:' + str(service.settings.streamPort) + '/play')
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                    item.setPath('http://localhost:' + str(service.settings.streamPort) + '/play')
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
+
+                    ## contribution by dabinn
+                    # handle situation where playback is skipped to next file, wait for new source to load
+                    if player.isPlaying():
+                        xbmc.sleep(100)
+
+                    startPlayback = False
+                    # need to seek?
+                    if seek > 0:
+                        player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
+                    elif float(package.file.cloudResume) > 0:
+                        player.PlayStream(mediaURL.url, item, package.file.cloudResume, startPlayback=startPlayback, package=package)
+                    elif float(package.file.resume) > 0:
+                        player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
+                    else:
+                        player.PlayStream(mediaURL.url, item, 0, startPlayback=startPlayback, package=package)
+
+
+
+                    # must occur after playback started (resolve or startPlayback in player)
+                    # load captions
+                    if 0 and (settings.srt or settings.cc) and service.protocol == 2:
+                        while not (player.isPlaying()):
+                            xbmc.sleep(1000)
+
+                        files = cache.getSRT(service)
+                        for file in files:
+                            if file != '':
+                                try:
+                                    #file = file.decode('unicode-escape')
+                                    file = file.encode('utf-8')
+                                except:
+                                    pass
+                                player.setSubtitles(file)
+
+                    xbmc.sleep(100)
+
+                    # we need to keep the plugin alive for as long as there is playback from the plugin, or the player object closes
+                    while not player.isExit:
+                        player.saveTime()
+                        xbmc.sleep(5000)
+
         else:
 
             settings.setEncfsParameters()
@@ -1658,7 +1704,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                     elif settings.username != '' or settings.strm:
                         startPlayback = False
                         resolvedPlayback = True
-                        startPlayback = False
+
                         if not seek > 0  and package.file.cloudResume > 0 and not settings.cloudResumePrompt:
                             returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30176), str(int(float(package.file.cloudResume)/360)) + ':'+ str(int(float(package.file.cloudResume)/60)) + ':' + str(int(float(package.file.cloudResume)%60)))
                             if not returnPrompt:
@@ -1798,25 +1844,23 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
                     # use streamer if defined
                     # streamer
+                    useStreamer = False
                     if service is not None and service.settings.streamer:
-
+                        # test streamer
                         from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
                         from resources.lib import streamer
                         import urllib, urllib2
                         from SocketServer import ThreadingMixIn
                         import threading
-
-
                         try:
                             server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
                             server.setAccount(service, '')
-                            print "ENABLED STREAMER \n\n\n"
+                            #if we make it here, streamer was not already running as a service, so we need to abort and playback using normal method, otherwise we will lock
 
-                            while server.ready:
-                                server.handle_request()
-                            server.socket.close()
-                        except: pass
+                        except:
+                            useStreamer = True
 
+                    if useStreamer and service is not None and service.settings.streamer:
 
 
                         url = 'http://localhost:' + str(service.settings.streamPort) + '/playurl'
@@ -1833,6 +1877,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                         item.setPath('http://localhost:' + str(service.settings.streamPort) + '/play')
                         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
+
                     else:
                         # regular playback
                         item.setPath(mediaURL.url)
@@ -1844,6 +1889,18 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
             if player.isPlaying():
                 xbmc.sleep(100)
 
+
+            # need to seek?
+            if seek > 0:
+                player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
+            elif float(package.file.cloudResume) > 0:
+                player.PlayStream(mediaURL.url, item, package.file.cloudResume, startPlayback=startPlayback, package=package)
+            elif float(package.file.resume) > 0:
+                player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
+            else:
+                player.PlayStream(mediaURL.url, item, 0, startPlayback=startPlayback, package=package)
+
+            # must occur after playback started (resolve or startPlayback in player)
             # load captions
             if  (settings.srt or settings.cc) and service.protocol == 2:
                 while not (player.isPlaying()):
@@ -1860,19 +1917,6 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
                         player.setSubtitles(file)
 
             xbmc.sleep(100)
-
-
-            # need to seek?
-            if seek > 0:
-                player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
-            elif float(package.file.cloudResume) > 0:
-                player.PlayStream(mediaURL.url, item, package.file.cloudResume, startPlayback=startPlayback, package=package)
-            elif float(package.file.resume) > 0:
-                player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
-            else:
-                player.PlayStream(mediaURL.url, item, 0, startPlayback=startPlayback, package=package)
-
-
 
             # we need to keep the plugin alive for as long as there is playback from the plugin, or the player object closes
             while not player.isExit:
@@ -1978,3 +2022,5 @@ if 0 and service is not None and instanceName is not None and settings.strm:
                             #while not player.isExit:
                             #    player.saveTime()
                             #    xbmc.sleep(5000)
+
+
