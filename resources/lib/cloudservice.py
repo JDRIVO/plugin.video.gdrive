@@ -81,6 +81,10 @@ class cloudservice(object):
     def __init__(self): pass
 
 
+    def getInstanceSetting(self,setting):
+        return self.addon.getSetting(self.instanceName+'_'+setting)
+
+
     ##
     # perform login
     ##
