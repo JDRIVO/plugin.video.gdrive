@@ -88,6 +88,23 @@ user_agent = settings.getSetting('user_agent')
 
 instanceName = addon_parameters.PLUGIN_NAME + str(settings.getSetting('account_default', 1))
 service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
+
+localTVDB = {}
+localMOVIEDB = {}
+#load data structure containing TV and Movies from KODI
+if (settings.getSetting('local_db')):
+
+    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
+    for match in re.finditer('"episodeid":(\d+)\,"file"\:"[^\"]+"', result):#, re.S):
+        localTVDB[match.group(2)] = match.group(1)
+    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
+    for match in re.finditer('"file":"[^\"]+","label":"[^\"]+","movieid":(\d+)', result):#, re.S):
+        localMOVIEDB[match.group(1)] = match.group(2)
+
+
+
+
+
 # must load after all other (becomes blocking)
 # streamer
 if service is not None and service.settings.streamer:

@@ -106,6 +106,7 @@ class settings:
 #        self.cloudSpreadsheet = self.getSetting('library_filename', 'CLOUD_DB')
         self.tv_watch  = self.getSetting('tv_db_watch', False)
         self.movie_watch  = self.getSetting('movie_db_watch', False)
+        self.localDB = self.getSetting('local_db', False)
 
         self.seek = getParameter('seek', 0)
         self.trace = getSetting('trace', False)

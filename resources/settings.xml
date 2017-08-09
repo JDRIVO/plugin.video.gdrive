@@ -122,6 +122,8 @@
     	<!-- testing streamer -->
         <setting id="streamer" type="bool" label="30194" default="false" />
         <setting id="stream_port" type="number" subsetting="true" label="30195" default="8011" />
+        <setting id="local_db" type="bool" subsetting="true" label="30199" default="false" />
+
 
     	<!-- update watch status -->
         <setting id="tv_db_watch" type="bool" label="30197" default="false" />
