@@ -1931,6 +1931,22 @@ xbmcplugin.endOfDirectory(plugin_handle)
 # streamer
 if service is not None and service.settings.streamer:
 
+
+    localTVDB = {}
+    localMOVIEDB = {}
+    #load data structure containing TV and Movies from KODI
+    if (settings.getSetting('local_db')):
+
+        result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
+        for match in re.finditer('"episodeid":(\d+)\,"file"\:"([^\"]+)"', result):#, re.S):
+            localTVDB[match.group(2)] = match.group(1)
+        result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
+        for match in re.finditer('"file":"([^\"]+)","label":"[^\"]+","movieid":(\d+)', result):#, re.S):
+            localMOVIEDB[match.group(1)] = match.group(2)
+
+
+
+
     from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
     from resources.lib import streamer
     import urllib, urllib2
@@ -1941,6 +1957,9 @@ if service is not None and service.settings.streamer:
     try:
         server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
         server.setAccount(service, '')
+        if (settings.getSetting('local_db')):
+            server.setTVDB(localTVDB)
+            server.setTVDB(localMOVIEDB)
         print "ENABLED STREAMER \n\n\n"
 
         while server.ready:

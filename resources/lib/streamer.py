@@ -41,6 +41,8 @@ class MyHTTPServer(ThreadingMixIn,HTTPServer):
     def __init__(self, *args, **kw):
         HTTPServer.__init__(self, *args, **kw)
         self.ready = True
+        self.TVDB = None
+        self.MOVIEDB = None
 
     def setFile(self, playbackURL, chunksize, playbackFile, response, fileSize, url, service):
         self.playbackURL = playbackURL
@@ -54,9 +56,14 @@ class MyHTTPServer(ThreadingMixIn,HTTPServer):
         self.state = 0
         self.lock = 0
 
+    def setTVDB(self, TVDB):
+        self.TVDB = TVDB
+
+    def setMOVIEDB(self, MOVIEDB):
+        self.MOVIEDB = MOVIEDB
+
     def setURL(self, playbackURL):
         self.playbackURL = playbackURL
-
 
     def setAccount(self, service, domain):
         self.service = service
@@ -80,6 +87,40 @@ class myStreamer(BaseHTTPRequestHandler):
         if self.path == '/kill':
             self.server.ready = False
             return
+
+        # redirect url to output
+        elif self.path == '/fetch_tv':
+            content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
+            post_data = self.rfile.read(content_length) # <--- Gets the data itself
+            #print post_data
+
+            self.send_response(200)
+            self.end_headers()
+            for r in re.finditer('file\=([^\&]+)' ,
+                     post_data, re.DOTALL):
+                file = r.group(1)
+                print "file = " + file + "\n"
+
+                for key in self.TVDB:
+                    if file in key:
+                        return 'ID = ' + self.TVDB[key] + "\n"
+
+        # redirect url to output
+        elif self.path == '/fetch_movie':
+            content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
+            post_data = self.rfile.read(content_length) # <--- Gets the data itself
+            #print post_data
+
+            self.send_response(200)
+            self.end_headers()
+            for r in re.finditer('file\=([^\&]+)' ,
+                     post_data, re.DOTALL):
+                file = r.group(1)
+                print "file = " + file + "\n"
+
+                for key in self.MOVIEDB:
+                    if file in key:
+                        return 'ID = ' + self.MOVIEDB[key] + "\n"
 
 
         # redirect url to output

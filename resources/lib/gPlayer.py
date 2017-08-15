@@ -190,49 +190,57 @@ class gPlayer(xbmc.Player):
 
             if (self.service.settings.tv_watch or self.service.settings.movie_watch):
 
-                result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
                 #fixedTitle = re.escape(re.sub('.strm', '',self.package.file.title))
 
                 fixedTitle = re.escape(urllib.quote_plus(self.package.file.title))
 
-                #fixedTitle = re.escape(re.sub('[','',fixedTitle))
-                foundMatch=0
-                #exp = re.search('"episodeid":(\d+), "file":"[^\"]+"', result)
-                #for match in re.finditer('"episodeid":(\d+)\,"file"\:".*'+str(fixedTitle)+'\.strm"', result):#, re.S):
-                for match in re.finditer('"episodeid":(\d+)\,"file"\:"[^\"]+'+str(fixedTitle)+'.strm"', result):#, re.S):
-                #for match in re.finditer('"episodeid":(\d+)\,"file"\:"[^\"]+","label"\:"'+str(fixedTitle)+'"', result):#, re.S):
+                if (self.service.settings.local_db and self.service.settings.streamer):
 
-                    xbmc.log(self.service.addon.getAddonInfo('name') + ': found show ID '+ match.group(1), xbmc.LOGNOTICE)
                     self.package.file.TVID = match.group(1)
-                    #xbmc.executeJSONRPC('{"params": {"episodeid": '+str(match.group(1))+', "resume": {"position": '+str(self.time)+', "total":  '+str(self.package.file.duration)+'}}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
-    #                xbmc.executeJSONRPC('{"params": {"episodeid": '+str(match.group(1))+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
-                    foundMatch=1
-                    break
-                if foundMatch == 0:
-                    for match in re.finditer('"episodeid":(\d+)\,"file"\:"[^\"]+'+str(re.escape(self.package.file.title))+'.strm"', result):#, re.S):
+                    url = 'http://localhost:' + str(service.settings.streamPort) + '/fetch_tv'
+                    req = urllib2.Request(url, 'file=' + fixedTitle)
+
+                    try:
+                        response = urllib2.urlopen(req)
+                        response_data = response.read()
+                        response.close()
+                    except urllib2.URLError, e:
+                        xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+
+
+                else:
+
+                    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
+
+                    #fixedTitle = re.escape(re.sub('[','',fixedTitle))
+                    foundMatch=0
+                    #exp = re.search('"episodeid":(\d+), "file":"[^\"]+"', result)
+                    #for match in re.finditer('"episodeid":(\d+)\,"file"\:".*'+str(fixedTitle)+'\.strm"', result):#, re.S):
+                    for match in re.finditer('"episodeid":(\d+)\,"file"\:"[^\"]+'+str(fixedTitle)+'.strm"', result):#, re.S):
+                    #for match in re.finditer('"episodeid":(\d+)\,"file"\:"[^\"]+","label"\:"'+str(fixedTitle)+'"', result):#, re.S):
+
                         xbmc.log(self.service.addon.getAddonInfo('name') + ': found show ID '+ match.group(1), xbmc.LOGNOTICE)
                         self.package.file.TVID = match.group(1)
                         #xbmc.executeJSONRPC('{"params": {"episodeid": '+str(match.group(1))+', "resume": {"position": '+str(self.time)+', "total":  '+str(self.package.file.duration)+'}}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
         #                xbmc.executeJSONRPC('{"params": {"episodeid": '+str(match.group(1))+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
                         foundMatch=1
                         break
-
-
-                if self.service.settings and foundMatch==1:
-                    xbmc.log(self.service.addon.getAddonInfo('name') + ': Found local tv db  id='+str(self.package.file.TVID), xbmc.LOGNOTICE)
-
-                if foundMatch == 0:
-                    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
-                    for match in re.finditer('"file":"[^\"]+'+str(fixedTitle)+'.strm","label":"[^\"]+","movieid":(\d+)', result):#, re.S):
-
-                        xbmc.log(self.service.addon.getAddonInfo('name') + ': found movie ID '+ match.group(1), xbmc.LOGNOTICE)
-                        self.package.file.MOVIEID = match.group(1)
-
-                        #xbmc.executeJSONRPC('{"params": {"episodeid": '+str(match.group(1))+', "resume": {"position": '+str(self.time)+', "total":  '+str(self.package.file.duration)+'}}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
-                        #xbmc.executeJSONRPC('{"params": {"movieid": '+str(match.group(1))+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetMovieDetails"}')
-                        break
                     if foundMatch == 0:
-                        for match in re.finditer('"file":"[^\"]+'+str(re.escape(self.package.file.title))+'.strm","label":"[^\"]+","movieid":(\d+)', result):#, re.S):
+                        for match in re.finditer('"episodeid":(\d+)\,"file"\:"[^\"]+'+str(re.escape(self.package.file.title))+'.strm"', result):#, re.S):
+                            xbmc.log(self.service.addon.getAddonInfo('name') + ': found show ID '+ match.group(1), xbmc.LOGNOTICE)
+                            self.package.file.TVID = match.group(1)
+                            #xbmc.executeJSONRPC('{"params": {"episodeid": '+str(match.group(1))+', "resume": {"position": '+str(self.time)+', "total":  '+str(self.package.file.duration)+'}}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
+            #                xbmc.executeJSONRPC('{"params": {"episodeid": '+str(match.group(1))+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
+                            foundMatch=1
+                            break
+
+
+                    if self.service.settings and foundMatch==1:
+                        xbmc.log(self.service.addon.getAddonInfo('name') + ': Found local tv db  id='+str(self.package.file.TVID), xbmc.LOGNOTICE)
+
+                    if foundMatch == 0:
+                        result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
+                        for match in re.finditer('"file":"[^\"]+'+str(fixedTitle)+'.strm","label":"[^\"]+","movieid":(\d+)', result):#, re.S):
 
                             xbmc.log(self.service.addon.getAddonInfo('name') + ': found movie ID '+ match.group(1), xbmc.LOGNOTICE)
                             self.package.file.MOVIEID = match.group(1)
@@ -240,9 +248,18 @@ class gPlayer(xbmc.Player):
                             #xbmc.executeJSONRPC('{"params": {"episodeid": '+str(match.group(1))+', "resume": {"position": '+str(self.time)+', "total":  '+str(self.package.file.duration)+'}}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
                             #xbmc.executeJSONRPC('{"params": {"movieid": '+str(match.group(1))+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetMovieDetails"}')
                             break
+                        if foundMatch == 0:
+                            for match in re.finditer('"file":"[^\"]+'+str(re.escape(self.package.file.title))+'.strm","label":"[^\"]+","movieid":(\d+)', result):#, re.S):
 
-                    if self.service.settings and foundMatch==1:
-                        xbmc.log(self.service.addon.getAddonInfo('name') + ': Found local movie db  id='+str(self.package.file.MOVIEID), xbmc.LOGNOTICE)
+                                xbmc.log(self.service.addon.getAddonInfo('name') + ': found movie ID '+ match.group(1), xbmc.LOGNOTICE)
+                                self.package.file.MOVIEID = match.group(1)
+
+                                #xbmc.executeJSONRPC('{"params": {"episodeid": '+str(match.group(1))+', "resume": {"position": '+str(self.time)+', "total":  '+str(self.package.file.duration)+'}}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
+                                #xbmc.executeJSONRPC('{"params": {"movieid": '+str(match.group(1))+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetMovieDetails"}')
+                                break
+
+                        if self.service.settings and foundMatch==1:
+                            xbmc.log(self.service.addon.getAddonInfo('name') + ': Found local movie db  id='+str(self.package.file.MOVIEID), xbmc.LOGNOTICE)
 
         except: pass
 
