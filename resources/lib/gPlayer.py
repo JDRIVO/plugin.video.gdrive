@@ -194,15 +194,18 @@ class gPlayer(xbmc.Player):
 
                 fixedTitle = re.escape(urllib.quote_plus(self.package.file.title))
 
-                if (self.service.settings.local_db and self.service.settings.streamer):
+                if (self.service.settings.localDB and self.service.settings.streamer):
 
-                    self.package.file.TVID = match.group(1)
-                    url = 'http://localhost:' + str(service.settings.streamPort) + '/fetch_tv'
+                    url = 'http://localhost:' + str(self.service.settings.streamPort) + '/fetch_id'
                     req = urllib2.Request(url, 'file=' + fixedTitle)
 
                     try:
                         response = urllib2.urlopen(req)
                         response_data = response.read()
+
+                        for match in re.finditer('ID = (\d+)', response_data):
+                            self.package.file.TVID = match.group(1)
+
                         response.close()
                     except urllib2.URLError, e:
                         xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)

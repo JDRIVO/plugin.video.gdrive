@@ -89,7 +89,7 @@ class myStreamer(BaseHTTPRequestHandler):
             return
 
         # redirect url to output
-        elif self.path == '/fetch_tv':
+        elif self.path == '/fetch_id':
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
             #print post_data
@@ -101,26 +101,15 @@ class myStreamer(BaseHTTPRequestHandler):
                 file = r.group(1)
                 print "file = " + file + "\n"
 
-                for key in self.TVDB:
+                for key in self.server.TVDB:
                     if file in key:
-                        return 'ID = ' + self.TVDB[key] + "\n"
+                        self.wfile.write('ID = ' + self.server.TVDB[key] + "\n")
+                        return #'ID = ' + self.TVDB[key] + "\n"
 
-        # redirect url to output
-        elif self.path == '/fetch_movie':
-            content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
-            post_data = self.rfile.read(content_length) # <--- Gets the data itself
-            #print post_data
-
-            self.send_response(200)
-            self.end_headers()
-            for r in re.finditer('file\=([^\&]+)' ,
-                     post_data, re.DOTALL):
-                file = r.group(1)
-                print "file = " + file + "\n"
-
-                for key in self.MOVIEDB:
+                for key in self.server.MOVIEDB:
                     if file in key:
-                        return 'ID = ' + self.MOVIEDB[key] + "\n"
+                        self.wfile.write('ID = ' + self.server.MOVIEDB[key] + "\n")
+                        return #'ID = ' + self.MOVIEDB[key] + "\n"
 
 
         # redirect url to output
