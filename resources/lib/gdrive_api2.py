@@ -1387,14 +1387,14 @@ class gdrive(cloudservice):
             docid = package.file.id
 
             # new method of fetching original stream -- using alt=media
-            url = self.API_URL +'files/' + str(docid) + '?alt=media'
+            url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media'
             mediaURLs.append(mediaurl.mediaurl(url, 'original', 0, 9999))
 
 
             # old method of fetching original stream -- using downloadURL
             # fetch information if no thumbnail cache (we need thumbnail url) or we want to download (we need filesize)
             if self.cache.getThumbnail(self, fileID=docid) == '' or self.settings.download  or 1:
-                url = self.API_URL +'files/' + str(docid)
+                url = self.API_URL +'files/' + str(docid) + '?includeTeamDriveItems=true&supportsTeamDrives=true'
 
                 req = urllib2.Request(url, None, self.getHeadersList())
 
