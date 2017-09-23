@@ -1220,6 +1220,66 @@ class gdrive(cloudservice):
         return resourceID
 
     ##
+    # retrieve the list of team drives
+    #   parameters: none
+    #   returns: array of team drives
+    ##
+    def getTeamDrives(self):
+
+        # retrieve all items
+        url = self.API_URL +'files/root'
+
+        resourceID = ''
+        while True:
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.refreshToken()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  kodi_common.logError(e)
+                  self.crashreport.sendError('getRootID',str(e))
+                  return
+              else:
+                kodi_common.logError(e)
+                self.crashreport.sendError('getRootID',str(e))
+                return
+
+            response_data = response.read()
+            response.close()
+
+
+            for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
+                entry = r1.group(1)
+
+                for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  resourceID = r.group(1)
+                  return resourceID
+
+            # look for more pages of videos
+            nextURL = ''
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                nextURL = r.group(1)
+
+
+            # are there more pages to process?
+            if nextURL == '':
+                break
+            else:
+                url = nextURL
+
+        return resourceID
+
+
+    ##
     # retrieve the download URL for given resorce ID
     #   parameters: resource ID
     #   returns: download URL

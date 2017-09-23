@@ -51,6 +51,7 @@ from resources.lib import gSheets_api4
 from resources.lib import cloudservice
 from resources.lib import authorization
 from resources.lib import folder
+from resources.lib import teamdrive
 from resources.lib import file
 from resources.lib import offlinefile
 from resources.lib import package
