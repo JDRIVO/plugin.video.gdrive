@@ -1,3 +1,4 @@
+v0.8.54 (2017-09-23)
 - update more occurrences for team drive
 v0.8.53 (2017-09-22)
 - support for searching for files and viewing starred items on team drives
