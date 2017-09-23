@@ -33,6 +33,7 @@ from resources.lib import kodi_common
 # global variables
 import addon_parameters
 addon = addon_parameters.addon
+cloudservice3 = addon_parameters.cloudservice3
 cloudservice2 = addon_parameters.cloudservice2
 cloudservice1 = addon_parameters.cloudservice1
 
@@ -1276,7 +1277,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
                     # must occur after playback started (resolve or startPlayback in player)
                     # load captions
-                    if 0 and (settings.srt or settings.cc) and service.protocol == 2:
+                    if 0 and (settings.srt or settings.cc) and (service.protocol == 2 or service.protocol == 3):
                         while not (player.isPlaying()):
                             xbmc.sleep(1000)
 
@@ -1665,11 +1666,11 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
                # SRTURL = ''
                 srtpath = ''
-                if settings.srt and service.protocol == 2:
+                if settings.srt and  (service.protocol == 2 or service.protocol == 3):
                     cache.setSRT(service)
 
                 # download closed-captions
-                if settings.cc and service.protocol == 2:
+                if settings.cc and  (service.protocol == 2 or service.protocol == 3):
                     cache.setCC(service)
 
 
@@ -1902,7 +1903,7 @@ elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or
 
             # must occur after playback started (resolve or startPlayback in player)
             # load captions
-            if  (settings.srt or settings.cc) and service.protocol == 2:
+            if  (settings.srt or settings.cc) and  (service.protocol == 2 or service.protocol == 3):
                 while not (player.isPlaying()):
                     xbmc.sleep(1000)
 

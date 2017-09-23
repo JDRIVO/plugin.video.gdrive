@@ -21,6 +21,8 @@
 
 #from resources.lib import gdrive
 from resources.lib import gdrive_api2
+from resources.lib import gdrive_api3
+
 from resources.lib import gdrive
 
 import re
@@ -42,7 +44,7 @@ if KODI:
 
 
 
-
+cloudservice3 = gdrive_api3.gdrive
 cloudservice2 = gdrive_api2.gdrive
 cloudservice1 = gdrive.gdrive
 

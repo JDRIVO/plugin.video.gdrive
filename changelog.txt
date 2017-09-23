@@ -1,3 +1,5 @@
+v0.8.53 (2017-09-22)
+- support for searching for files and viewing starred items on team drives
 - start work on: Display movie/TV episode information #150
 v0.8.52 (2017-08-05)
 - cleanup and added further debug for watch/resume status
