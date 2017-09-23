@@ -1,3 +1,5 @@
+v0.8.55 (2017-09-23)
+- list team drives on root screen of account ([Team Drive- name])
 v0.8.54 (2017-09-23)
 - update more occurrences for team drive
 v0.8.53 (2017-09-22)

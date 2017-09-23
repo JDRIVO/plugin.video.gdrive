@@ -32,6 +32,7 @@ import unicodedata
 from cloudservice import cloudservice
 from resources.lib import authorization
 from resources.lib import folder
+from resources.lib import teamdrive
 from resources.lib import file
 from resources.lib import package
 from resources.lib import mediaurl
@@ -1227,9 +1228,9 @@ class gdrive(cloudservice):
     def getTeamDrives(self):
 
         # retrieve all items
-        url = self.API_URL +'files/root'
+        url = self.API_URL +'teamdrives'
+        drives = []
 
-        resourceID = ''
         while True:
             req = urllib2.Request(url, None, self.getHeadersList())
 
@@ -1244,24 +1245,30 @@ class gdrive(cloudservice):
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
                   kodi_common.logError(e)
-                  self.crashreport.sendError('getRootID',str(e))
+                  self.crashreport.sendError('getTeamDrives',str(e))
                   return
               else:
                 kodi_common.logError(e)
-                self.crashreport.sendError('getRootID',str(e))
+                self.crashreport.sendError('getTeamDrives',str(e))
                 return
 
             response_data = response.read()
             response.close()
 
-
-            for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' ,response_data, re.DOTALL):
+            for r1 in re.finditer('\{[^\"]+"kind": "drive#teamDrive"(.*?)\}' ,response_data, re.DOTALL):
                 entry = r1.group(1)
 
+                resourceID=''
+                name=''
                 for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   resourceID = r.group(1)
-                  return resourceID
+                for r in re.finditer('\"name\"\:\s+\"([^\"]+)\"' ,
+                             entry, re.DOTALL):
+                  name = r.group(1)
+
+                drives.append(teamdrive.teamdrive(resourceID,name));
+
 
             # look for more pages of videos
             nextURL = ''
@@ -1276,7 +1283,7 @@ class gdrive(cloudservice):
             else:
                 url = nextURL
 
-        return resourceID
+        return drives
 
 
     ##
