@@ -41,8 +41,8 @@ class MyHTTPServer(ThreadingMixIn,HTTPServer):
     def __init__(self, *args, **kw):
         HTTPServer.__init__(self, *args, **kw)
         self.ready = True
-        self.TVDB = None
-        self.MOVIEDB = None
+        #self.TVDB = None
+        #    self.MOVIEDB = None
 
     def setFile(self, playbackURL, chunksize, playbackFile, response, fileSize, url, service):
         self.playbackURL = playbackURL

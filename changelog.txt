@@ -1,3 +1,5 @@
+v0.8.56 (2017-11-09)
+- repurpose kodi_common (fix enrollment bug introduced recently)
 v0.8.55 (2017-09-23)
 - list team drives on root screen of account ([Team Drive- name])
 v0.8.54 (2017-09-23)

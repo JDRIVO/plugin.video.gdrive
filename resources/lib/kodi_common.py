@@ -80,17 +80,7 @@ def debugger():
     except :
         pass
 
-def logError(error):
 
-    xbmc.log(addon.getAddonInfo('name') + ': ' + str(error), xbmc.LOGERROR)
-
-def language(langCode):
-
-    return self.addon.getLocalizedString(langCode);
-
-def dialogOK(title,msg1,msg2=None):
-
-    xbmcgui.Dialog().ok(title,msg1,msg2);
 
 
 ##

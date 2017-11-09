@@ -50,6 +50,11 @@ if KODI:
     # cloudservice - standard XBMC modules
     import xbmc, xbmcaddon, xbmcgui, xbmcplugin, xbmcvfs
 
+else:
+    from resources.libgui import xbmcaddon
+    from resources.libgui import xbmcgui
+
+
 SERVICE_NAME = 'dmdgdrive'
 
 
@@ -130,8 +135,8 @@ class gdrive(cloudservice):
                 if self.type ==4 or self.getInstanceSetting('code'):
                     self.getToken(self.getInstanceSetting('code'))
                 else:
-                    kodi_common.dialogOK(kodi_common.language(30000), kodi_common.language(30017), kodi_common.language(30018))
-                    kodi_common.logError(str(e))
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
+                    xbmc.log(str(e))
             #***
             self.cache = cache.cache()
         else:
@@ -218,7 +223,7 @@ class gdrive(cloudservice):
                       'passcode' : self.getInstanceSetting('passcode')
                       }
                 req = urllib2.Request(url, urllib.urlencode(values), header)
-                kodi_common.dialogOK(kodi_common.language(30000), kodi_common.language(30140), kodi_common.language(30141))
+                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30140), self.addon.getLocalizedString(30141))
 
                 # try login
                 try:
@@ -226,11 +231,11 @@ class gdrive(cloudservice):
                 except urllib2.URLError, e:
                     if e.code == 403:
                         #login issue
-                        kodi_common.dialogOK(kodi_common.language(30000), kodi_common.language(30017), kodi_common.language(30118))
-                        kodi_common.logError(e)
+                        xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                        xbmc.log(e)
                     else:
-                        kodi_common.dialogOK(kodi_common.language(30000), kodi_common.language(30017), kodi_common.language(30118))
-                        kodi_common.logError(e)
+                        xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                        xbmc.log(e)
                     return
 
                 response_data = response.read()
@@ -242,9 +247,9 @@ class gdrive(cloudservice):
                              response_data, re.DOTALL):
                     code = r.group(1)
                 if code != '':
-                    kodi_common.dialogOK(kodi_common.language(30000), kodi_common.language(30143))
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30143))
                 else:
-                    kodi_common.dialogOK(kodi_common.language(30000), kodi_common.language(30144))
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30144))
                     return
 
                 url = 'https://script.google.com/macros/s/AKfycbxgFuUcvNlXLlB5GZLiEjEaZDqZLS2oMd-f4yL-4Y2K50shGoY/exec'
@@ -259,11 +264,11 @@ class gdrive(cloudservice):
             except urllib2.URLError, e:
                 if e.code == 403:
                     #login issue
-                    kodi_common.dialogOK(kodi_common.language(30000), kodi_common.language(30017), kodi_common.language(30118))
-                    kodi_common.logError(str(e))
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                    xbmc.log(str(e))
                 else:
-                    kodi_common.dialogOK(kodi_common.language(30000), kodi_common.language(30017), kodi_common.language(30118))
-                    kodi_common.logError(str(e))
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                    xbmc.log(str(e))
                 return
 
 
@@ -278,13 +283,13 @@ class gdrive(cloudservice):
                 self.authorization.setToken('auth_access_token',accessToken)
                 self.authorization.setToken('auth_refresh_token',refreshToken)
                 self.updateAuthorization(self.addon)
-                kodi_common.dialogOK(kodi_common.language(30000), kodi_common.language(30142))
+                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30142))
 
             for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"',
                              response_data, re.DOTALL):
                 errorMessage = r.group(1)
-                kodi_common.dialogOK(kodi_common.language(30000), kodi_common.language(30119), errorMessage)
-                kodi_common.logError(errorMessage)
+                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119), errorMessage)
+                xbmc.log(errorMessage)
 
             return
 
@@ -334,11 +339,11 @@ class gdrive(cloudservice):
             except urllib2.URLError, e:
                 if e.code == 403:
                     #login issue
-                    kodi_common.dialogOK(kodi_common.language(30000), kodi_common.language(30017), kodi_common.language(30118))
-                    kodi_common.logError(e)
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                    xbmc.log(e)
                 else:
-                    kodi_common.dialogOK(kodi_common.language(30000), kodi_common.language(30017), kodi_common.language(30118))
-                    kodi_common.logError(e)
+                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30118))
+                    xbmc.log(e)
                 return
 
             response_data = response.read()
@@ -354,8 +359,8 @@ class gdrive(cloudservice):
             for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"',
                              response_data, re.DOTALL):
                 errorMessage = r.group(1)
-                kodi_common.dialogOK(kodi_common.language(30000), kodi_common.language(30119), errorMessage)
-                kodi_common.logError(errorMessage)
+                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119), errorMessage)
+                xbmc.log(errorMessage)
 
             return
 
@@ -465,11 +470,11 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  kodi_common.logError(e)
+                  xbmc.log(e)
                   self.crashreport.sendError('getMediaList',str(e))
                   return
               else:
-                kodi_common.logError(e)
+                xbmc.log(e)
                 self.crashreport.sendError('getMediaList',str(e))
                 return
 
@@ -563,11 +568,11 @@ class gdrive(cloudservice):
                 except socket.timeout, e:
                     return ([],nextPageToken,changeToken)
                 except urllib2.URLError, e:
-                  kodi_common.logError(e)
+                  xbmc.log(e)
                   self.crashreport.sendError('getChangeList',str(e))
                   return
               else:
-                kodi_common.logError(e)
+                xbmc.log(e)
                 self.crashreport.sendError('getChangeList',str(e))
                 return
             except socket.timeout, e:
@@ -670,11 +675,11 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  kodi_common.logError(e)
+                  xbmc.log(e)
                   self.crashreport.sendError('getMediaList',str(e))
                   return
               else:
-                kodi_common.logError(e)
+                xbmc.log(e)
                 self.crashreport.sendError('getMediaList',str(e))
                 return
 
@@ -1088,7 +1093,7 @@ class gdrive(cloudservice):
         if len(srt) > 0:
             return srt
         elif len(srtCandidates) > 4:
-            ret = xbmcgui.Dialog().select(kodi_common.language(30183), srtCandidatesTitles)
+            ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30183), srtCandidatesTitles)
             if ret >= 0:
                 return [srtCandidates[ret]]
             else:
@@ -1127,11 +1132,11 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  kodi_common.logError(e)
+                  xbmc.log(e)
                   self.crashreport.sendError('getTTS',str(e))
                   return
               else:
-                kodi_common.logError(e)
+                xbmc.log(e)
                 self.crashreport.sendError('getTTS',str(e))
                 return
 
@@ -1185,11 +1190,11 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  kodi_common.logError(e)
+                  xbmc.log(e)
                   self.crashreport.sendError('getRootID',str(e))
                   return
               else:
-                kodi_common.logError(e)
+                xbmc.log(e)
                 self.crashreport.sendError('getRootID',str(e))
                 return
 
@@ -1244,11 +1249,11 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  kodi_common.logError(e)
+                  xbmc.log(e)
                   self.crashreport.sendError('getTeamDrives',str(e))
                   return
               else:
-                kodi_common.logError(e)
+                xbmc.log(e)
                 self.crashreport.sendError('getTeamDrives',str(e))
                 return
 
@@ -1312,11 +1317,11 @@ class gdrive(cloudservice):
                     try:
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
-                        kodi_common.logError(e)
+                        xbmc.log(e)
                         self.crashreport.sendError('getDownloadURL',str(e))
                         return
                 else:
-                    kodi_common.logError(e)
+                    xbmc.log(e)
                     self.crashreport.sendError('getDownloadURL',str(e))
                     return
 
@@ -1357,11 +1362,11 @@ class gdrive(cloudservice):
                     try:
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
-                        kodi_common.logError(e)
+                        xbmc.log(e)
                         self.crashreport.sendError('getDownloadURL',str(e))
                         return
                 else:
-                    kodi_common.logError(e)
+                    xbmc.log(e)
                     self.crashreport.sendError('getDownloadURL',str(e))
                     return
 
@@ -1431,11 +1436,11 @@ class gdrive(cloudservice):
                     try:
                         response = urllib2.urlopen(req)
                     except urllib2.URLError, e:
-                        kodi_common.logError(e)
+                        xbmc.log(e)
                         self.crashreport.sendError('getPlaybackCall-0',str(e))
                         return
                 else:
-                    kodi_common.logError(e)
+                    xbmc.log(e)
                     self.crashreport.sendError('getPlaybackCall-0',str(e))
                     return
 
@@ -1476,11 +1481,11 @@ class gdrive(cloudservice):
                         try:
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
-                            kodi_common.logError(e)
+                            xbmc.log(e)
                             self.crashreport.sendError('getPlaybackCall-1',str(e))
                             return
                     else:
-                        kodi_common.logError(e)
+                        xbmc.log(e)
                         self.crashreport.sendError('getPlaybackCall-1',str(e))
                         return
 
@@ -1526,11 +1531,11 @@ class gdrive(cloudservice):
                      try:
                          response = urllib2.urlopen(req)
                      except urllib2.URLError, e:
-                         kodi_common.logError(e)
+                         xbmc.log(e)
                          self.crashreport.sendError('getPlaybackCall-2',str(e))
                          return
                  else:
-                     kodi_common.logError(e)
+                     xbmc.log(e)
                      self.crashreport.sendError('getPlaybackCall-2',str(e))
                      return
 
@@ -1570,7 +1575,7 @@ class gdrive(cloudservice):
                         try:
                             response = urllib2.urlopen(req)
                         except urllib2.URLError, e:
-                            kodi_common.logError(e)
+                            xbmc.log(e)
                             self.crashreport.sendError('getPlaybackCall-3',str(e))
                             return
                     else:
@@ -1726,7 +1731,7 @@ class gdrive(cloudservice):
               try:
                   response = urllib2.urlopen(req)
               except urllib2.URLError, e:
-                kodi_common.logError(e)
+                xbmc.log(e)
                 self.crashreport.sendError('downloadTTS',str(e))
                 return
 
@@ -1793,11 +1798,11 @@ class gdrive(cloudservice):
               try:
                 response = urllib2.urlopen(req)
               except urllib2.URLError, e:
-                kodi_common.logError(e)
+                xbmc.log(e)
                 self.crashreport.sendError('getPublicStream',str(e))
                 return
             else:
-                kodi_common.logError(e)
+                xbmc.log(e)
                 self.crashreport.sendError('getPublicStream',str(e))
                 return
 
