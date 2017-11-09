@@ -22,7 +22,17 @@ import sys
 import re
 import urllib, urllib2
 
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+KODI = True
+if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
+    KODI = False
+
+if KODI:
+
+    import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+
+else:
+    from resources.libgui import  xbmc
+
 
 import addon_parameters
 

@@ -1,3 +1,4 @@
+- work to generalize code to work without KODI
 v0.8.56 (2017-11-09)
 - repurpose kodi_common (fix enrollment bug introduced recently)
 v0.8.55 (2017-09-23)

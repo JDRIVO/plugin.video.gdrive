@@ -23,8 +23,17 @@ import cgi
 import os
 import re
 
-# cloudservice - standard XBMC modules
-import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
+KODI = True
+if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
+    KODI = False
+
+if KODI:
+
+    # cloudservice - standard XBMC modules
+    import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
+else:
+    from resources.libgui import xbmcaddon
+    from resources.libgui import xbmcgui
 
 
 from resources.lib import settings

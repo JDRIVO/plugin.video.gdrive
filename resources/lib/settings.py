@@ -19,9 +19,18 @@
 
 import sys
 import cgi
+import re
 
-# cloudservice - standard XBMC modules
-import xbmcaddon
+KODI = True
+if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
+    KODI = False
+
+if KODI:
+
+    # cloudservice - standard XBMC modules
+    import xbmcaddon
+else:
+    from resources.libgui import xbmcaddon
 
 
 #http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
@@ -137,10 +146,10 @@ class settings:
 #            self.thumbnailResolution = 200
 
         self.streamer =  self.getSetting('streamer', True)
-        self.streamPort =  int(self.getSetting('stream_port', 8011))
+        self.streamPort =  int(self.getSettingInt('stream_port', 8011))
 
 
-        self.encfsDownloadType = int(self.getSetting('encfs_download_type', 1))
+        self.encfsDownloadType = int(self.getSettingInt('encfs_download_type', 1))
 
 
     def setVideoParameters(self):

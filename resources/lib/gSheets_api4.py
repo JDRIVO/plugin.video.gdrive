@@ -23,8 +23,17 @@ import re
 import urllib, urllib2
 import cookielib
 import json
+import sys
 
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+KODI = True
+if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
+    KODI = False
+
+if KODI:
+
+    import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+
+
 
 import authorization
 import crashreport
