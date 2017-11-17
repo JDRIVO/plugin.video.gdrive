@@ -22,6 +22,8 @@ import os
 import re
 import sys
 
+import constants
+
 KODI = True
 if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
     KODI = False
@@ -60,6 +62,9 @@ class cache:
     ##
     def setSRT(self, service):
 
+        if not constants.CONST.SRT:
+            return
+
         #load cachePath if not already loaded
         if not service.settings.cacheSRT and self.cachePath == '':
             self.cachePath = service.settings.cachePath
@@ -88,6 +93,9 @@ class cache:
     #  set the CC for the video file
     ##
     def setCC(self, service):
+
+        if not constants.CONST.CC:
+            return
 
         #load cachePath if not already loaded
         if self.cachePath == '':
@@ -132,6 +140,9 @@ class cache:
     ##
     def setThumbnail(self, service, url=''):
 
+        if not constants.CONST.CACHE:
+            return url
+
         #load cachePath if not already loaded
         if self.cachePath == '':
             self.cachePath = service.settings.cachePath
@@ -173,7 +184,7 @@ class cache:
     def getThumbnail(self,service, url='', fileID=''):
 
         # user isn't caching thumbnails
-        if not service.settings.cacheThumbnails or self.cachePath == '':
+        if not constants.CONST.CACHE or not service.settings.cacheThumbnails or self.cachePath == '':
             if url != '':
                 return url + '|' + service.getHeadersEncoded()
             elif self.package != None and self.package.file != None:
@@ -196,6 +207,9 @@ class cache:
     #  get a list of offline files for this file
     ##
     def getFiles(self,service):
+
+        if not constants.CONST.CACHE:
+            return None
 
         #load cachePath if not already loaded
         if self.cachePath == '':
