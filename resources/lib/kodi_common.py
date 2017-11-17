@@ -34,10 +34,11 @@ if KODI:
 else:
     from resources.libgui import xbmcaddon
     from resources.libgui import xbmcgui
-
+    from resources.libgui import xbmcplugin
+    from resources.libgui import xbmcvfs
 
 from resources.lib import settings
-from resources.lib import offlinefile
+#from resources.lib import offlinefile
 
 # global variables
 import addon_parameters
@@ -99,7 +100,7 @@ def debugger():
 def addMenu(url, title, img='', fanart='', total_items=0, instanceName=''):
         #    listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
         listitem = xbmcgui.ListItem(title, iconImage=img, thumbnailImage=img)
-        if not fanart:
+        if not fanart and KODI:
             fanart = addon.getAddonInfo('path') + '/fanart.jpg'
         listitem.setProperty('fanart_image', fanart)
 
@@ -165,9 +166,10 @@ def getContentType(contextType,encfs):
                 contentType = 1
             else:
                 contentType = 0
-        # cloudservice - sorting options
-        xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_EPISODE)
-        xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+        if KODI:
+            # cloudservice - sorting options
+            xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_EPISODE)
+            xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 
       elif contextType == 'audio':
         if encfs:
@@ -184,8 +186,9 @@ def getContentType(contextType,encfs):
                 contentType = 4
             else:
                 contentType = 3
-        # cloudservice - sorting options
-        xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TRACKNUM)
+        if KODI:
+            # cloudservice - sorting options
+            xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TRACKNUM)
 
       elif contextType == 'image':
         if encfs:

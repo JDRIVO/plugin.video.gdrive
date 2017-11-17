@@ -34,20 +34,24 @@ if KODI:
     # cloudservice - standard XBMC modules
     import xbmc, xbmcaddon, xbmcgui, xbmcplugin
     import xbmcvfs
+else:
+    from resources.libgui import xbmcgui
+    from resources.libgui import xbmcplugin
+
 
 from resources.lib import mediaurl
 #from resources.lib import kodi_common
 #from resources.lib import settings
 from resources.lib import streamer
 
+plugin_handle = None
+
 if KODI:
 
-    plugin_handle = None
     try:
         #global variables
         plugin_handle = int(sys.argv[1])
     except:pass
-
 
 def decode(data):
         return re.sub("&#(\d+)(;|(?=\s))", _callback, data).strip()

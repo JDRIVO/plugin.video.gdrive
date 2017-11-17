@@ -29,6 +29,10 @@ if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
 if KODI:
     # cloudservice - standard XBMC modules
     import xbmcgui, xbmcvfs
+else:
+    from resources.libgui import xbmcvfs
+
+
 
 #
 # This class handles fetching files from local when cached, rather then making calls to the web service

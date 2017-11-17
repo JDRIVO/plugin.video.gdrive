@@ -53,6 +53,7 @@ if KODI:
 else:
     from resources.libgui import xbmcaddon
     from resources.libgui import xbmcgui
+    from resources.libgui import xbmc
 
 
 SERVICE_NAME = 'dmdgdrive'
@@ -97,90 +98,62 @@ class gdrive(cloudservice):
         self.DBM = None
 
 
-        if KODI:
-            self.worksheetID = self.getInstanceSetting('spreadsheet')
+        self.worksheetID = self.getInstanceSetting('spreadsheet')
 
-            if authenticate == True:
-                self.type = int(self.getInstanceSetting('type'))
+        if authenticate == True:
+            self.type = int(self.getInstanceSetting('type'))
+            if KODI:
                 self.crashreport = crashreport.crashreport(self.addon)
 
-            try:
-                username = self.getInstanceSetting('username')
-            except:
-                username = ''
-            self.authorization = authorization.authorization(username)
-
-        else:
-            self.crashreport = None
-            username = instanceName
-            self.authorization = authorization.authorization(username)
-            import anydbm
-            self.DBM  = anydbm.open(DBM,'c')
-
-            try:
-                self.type = int(self.DBM['type'])
-            except:
-                self.type = 2
-                print "ERROR: define your settings in the DBM first"
-                return
+        try:
+            username = self.getInstanceSetting('username')
+        except:
+            username = ''
+        self.authorization = authorization.authorization(username)
 
 
         self.cookiejar = cookielib.CookieJar()
 
         self.user_agent = user_agent
 
-        if KODI:
-            # load the OAUTH2 tokens or force fetch if not set
-            if (authenticate == True and (not self.authorization.loadToken(self.instanceName,addon, 'auth_access_token') or not self.authorization.loadToken(self.instanceName,addon, 'auth_refresh_token'))):
-                if self.type ==4 or self.getInstanceSetting('code'):
-                    self.getToken(self.getInstanceSetting('code'))
-                else:
-                    xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
-                    xbmc.log(str(e))
-            #***
-            self.cache = cache.cache()
-        else:
-            # load the OAUTH2 tokens or force fetch if not set
+        # load the OAUTH2 tokens or force fetch if not set
+        if (authenticate == True and (not self.authorization.loadToken(self.instanceName,addon, 'auth_access_token') or not self.authorization.loadToken(self.instanceName,addon, 'auth_refresh_token'))):
+            if self.type ==4 or self.getInstanceSetting('code'):
+                self.getToken(self.getInstanceSetting('code'))
+            else:
+                xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
+                xbmc.log(str(e))
+        #***
+        self.cache = cache.cache()
 
 
-            if (authenticate == True and (not self.authorization.loadToken(self.instanceName,addon, 'auth_access_token') or not self.authorization.loadToken(self.instanceName,addon, 'auth_refresh_token'))):
-                if self.type ==4 or self.DBM['code']:
-                    self.getToken(None)
-                elif self.DBM['code']:
-                    self.getToken(self.DBM['code'])
-                else:
-                    print 'ERROR:' + str(e)
-            #***
-
-            self.cache = None
 
 
-        if KODI:
-            self.cloudResume = self.getInstanceSetting('resumepoint')
-            self.cloudSpreadsheet = self.getInstanceSetting('spreadsheetname')
+        self.cloudResume = self.getInstanceSetting('resumepoint')
+        self.cloudSpreadsheet = self.getInstanceSetting('spreadsheetname')
 
-            if self.cloudResume == '2':
-                if self.worksheetID == '':
+        if self.cloudResume == '2':
+            if self.worksheetID == '':
 
-                    try:
-                        self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
-
-                        spreadsheets = self.gSpreadsheet.getSpreadsheetList()
-                    except:
-                        pass
-
-                    for title in spreadsheets.iterkeys():
-                        if title == self.cloudSpreadsheet:#'CLOUD_DB':
-                            worksheets = self.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
-
-                            for worksheet in worksheets.iterkeys():
-                                if worksheet == 'db':
-                                    self.worksheetID = worksheets[worksheet]
-                                    addon.setSetting(instanceName + '_spreadsheet', self.worksheetID)
-                                    break
-                            break
-                if self.gSpreadsheet is None:
+                try:
                     self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
+
+                    spreadsheets = self.gSpreadsheet.getSpreadsheetList()
+                except:
+                    pass
+
+                for title in spreadsheets.iterkeys():
+                    if title == self.cloudSpreadsheet:#'CLOUD_DB':
+                        worksheets = self.gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+
+                        for worksheet in worksheets.iterkeys():
+                            if worksheet == 'db':
+                                self.worksheetID = worksheets[worksheet]
+                                addon.setSetting(instanceName + '_spreadsheet', self.worksheetID)
+                                break
+                        break
+            if self.gSpreadsheet is None:
+                self.gSpreadsheet = gSpreadsheets.gSpreadsheets(self,addon, user_agent)
 
 
 

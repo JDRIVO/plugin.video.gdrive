@@ -76,6 +76,8 @@ def parse_query(query):
     q['mode'] = q.get('mode', 'main')
     return q
 
+
+
 plugin_queries = None
 try:
     plugin_queries = parse_query(sys.argv[2][1:])
