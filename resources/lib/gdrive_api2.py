@@ -1787,10 +1787,10 @@ class gdrive(cloudservice):
             if cookieType == 'DRIVE_STREAM':
                 self.authorization.setToken(cookieType,cookieValue)
 
+        fmtlist = None
         for r in re.finditer('\"fmt_list\"\,\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
             fmtlist = r.group(1)
-
         title = ''
         for r in re.finditer('\"title\"\,\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
@@ -1799,110 +1799,117 @@ class gdrive(cloudservice):
 
         itagDB={}
         containerDB = {'x-flv':'flv', 'webm': 'WebM', 'mp4;+codecs="avc1.42001E,+mp4a.40.2"': 'MP4'}
-        for r in re.finditer('(\d+)/(\d+)x(\d+)/(\d+/\d+/\d+)\&?\,?' ,
-                               fmtlist, re.DOTALL):
-              (itag,resolution1,resolution2,codec) = r.groups()
+        if fmtlist is not None:
+            for r in re.finditer('(\d+)/(\d+)x(\d+)/(\d+/\d+/\d+)\&?\,?' ,
+                                   fmtlist, re.DOTALL):
+                  (itag,resolution1,resolution2,codec) = r.groups()
 
-              if codec == '9/0/115':
-                itagDB[itag] = {'resolution': resolution2, 'codec': 'h.264/aac'}
-              elif codec == '99/0/0':
-                itagDB[itag] = {'resolution': resolution2, 'codec': 'VP8/vorbis'}
-              else:
-                itagDB[itag] = {'resolution': resolution2}
+                  if codec == '9/0/115':
+                    itagDB[itag] = {'resolution': resolution2, 'codec': 'h.264/aac'}
+                  elif codec == '99/0/0':
+                    itagDB[itag] = {'resolution': resolution2, 'codec': 'VP8/vorbis'}
+                  else:
+                    itagDB[itag] = {'resolution': resolution2}
 
-        for r in re.finditer('\"url_encoded_fmt_stream_map\"\,\"([^\"]+)\"' ,
+            for r in re.finditer('\"url_encoded_fmt_stream_map\"\,\"([^\"]+)\"' ,
+                                 response_data, re.DOTALL):
+                urls = r.group(1)
+
+
+
+            urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
+            urls = re.sub('\\\\u003d', '=', urls)
+            urls = re.sub('\\\\u0026', '&', urls)
+
+
+            urls = re.sub('\&url\='+self.PROTOCOL, '\@', urls)
+
+
+
+            # fetch format type and quality for each stream
+            count=0
+            for r in re.finditer('\@([^\@]+)' ,urls):
+                    videoURL = r.group(1)
+                    for q in re.finditer('itag\=(\d+).*?type\=video\/([^\&]+)\&quality\=(\w+)' ,
+                                 videoURL, re.DOTALL):
+                        (itag,container,quality) = q.groups()
+                        count = count + 1
+                        order=0
+                        if pquality > -1 or pformat > -1 or acodec > -1:
+                            if int(itagDB[itag]['resolution']) == 1080:
+                                if pquality == 0:
+                                    order = order + 1000
+                                elif pquality == 1:
+                                    order = order + 3000
+                                elif pquality == 3:
+                                    order = order + 9000
+                            elif int(itagDB[itag]['resolution']) == 720:
+                                if pquality == 0:
+                                    order = order + 2000
+                                elif pquality == 1:
+                                    order = order + 1000
+                                elif pquality == 3:
+                                    order = order + 9000
+                            elif int(itagDB[itag]['resolution']) == 480:
+                                if pquality == 0:
+                                    order = order + 3000
+                                elif pquality == 1:
+                                    order = order + 2000
+                                elif pquality == 3:
+                                    order = order + 1000
+                            elif int(itagDB[itag]['resolution']) < 480:
+                                if pquality == 0:
+                                    order = order + 4000
+                                elif pquality == 1:
+                                    order = order + 3000
+                                elif pquality == 3:
+                                    order = order + 2000
+                        try:
+                            if itagDB[itag]['codec'] == 'VP8/vorbis':
+                                if acodec == 1:
+                                    order = order + 90000
+                                else:
+                                    order = order + 10000
+                        except :
+                            order = order + 30000
+
+                        try:
+                            if containerDB[container] == 'MP4':
+                                if pformat == 0 or pformat == 1:
+                                    order = order + 100
+                                elif pformat == 3 or pformat == 4:
+                                    order = order + 200
+                                else:
+                                    order = order + 300
+                            elif containerDB[container] == 'flv':
+                                if pformat == 2 or pformat == 3:
+                                    order = order + 100
+                                elif pformat == 1 or pformat == 5:
+                                    order = order + 200
+                                else:
+                                    order = order + 300
+                            elif containerDB[container] == 'WebM':
+                                if pformat == 4 or pformat == 5:
+                                    order = order + 100
+                                elif pformat == 0 or pformat == 1:
+                                    order = order + 200
+                                else:
+                                    order = order + 300
+                            else:
+                                order = order + 100
+                        except :
+                            pass
+
+                        try:
+                            mediaURLs.append( mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count, title=title))
+                        except KeyError:
+                            mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count, title=title))
+
+        for r in re.finditer('\"https\://drive.google.com/uc\?id\\\u003d([^\\\]+)\\\u0026export\\\u003ddownload\"' ,
                              response_data, re.DOTALL):
-            urls = r.group(1)
+            id = r.group(1)
+            mediaURLs.append(mediaurl.mediaurl('https://drive.google.com/uc?id='+str(id)+'&export=download', 'original',0,9999))
 
-
-
-        urls = urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urllib.unquote(urls)))))
-        urls = re.sub('\\\\u003d', '=', urls)
-        urls = re.sub('\\\\u0026', '&', urls)
-
-
-        urls = re.sub('\&url\='+self.PROTOCOL, '\@', urls)
-
-
-
-        # fetch format type and quality for each stream
-        count=0
-        for r in re.finditer('\@([^\@]+)' ,urls):
-                videoURL = r.group(1)
-                for q in re.finditer('itag\=(\d+).*?type\=video\/([^\&]+)\&quality\=(\w+)' ,
-                             videoURL, re.DOTALL):
-                    (itag,container,quality) = q.groups()
-                    count = count + 1
-                    order=0
-                    if pquality > -1 or pformat > -1 or acodec > -1:
-                        if int(itagDB[itag]['resolution']) == 1080:
-                            if pquality == 0:
-                                order = order + 1000
-                            elif pquality == 1:
-                                order = order + 3000
-                            elif pquality == 3:
-                                order = order + 9000
-                        elif int(itagDB[itag]['resolution']) == 720:
-                            if pquality == 0:
-                                order = order + 2000
-                            elif pquality == 1:
-                                order = order + 1000
-                            elif pquality == 3:
-                                order = order + 9000
-                        elif int(itagDB[itag]['resolution']) == 480:
-                            if pquality == 0:
-                                order = order + 3000
-                            elif pquality == 1:
-                                order = order + 2000
-                            elif pquality == 3:
-                                order = order + 1000
-                        elif int(itagDB[itag]['resolution']) < 480:
-                            if pquality == 0:
-                                order = order + 4000
-                            elif pquality == 1:
-                                order = order + 3000
-                            elif pquality == 3:
-                                order = order + 2000
-                    try:
-                        if itagDB[itag]['codec'] == 'VP8/vorbis':
-                            if acodec == 1:
-                                order = order + 90000
-                            else:
-                                order = order + 10000
-                    except :
-                        order = order + 30000
-
-                    try:
-                        if containerDB[container] == 'MP4':
-                            if pformat == 0 or pformat == 1:
-                                order = order + 100
-                            elif pformat == 3 or pformat == 4:
-                                order = order + 200
-                            else:
-                                order = order + 300
-                        elif containerDB[container] == 'flv':
-                            if pformat == 2 or pformat == 3:
-                                order = order + 100
-                            elif pformat == 1 or pformat == 5:
-                                order = order + 200
-                            else:
-                                order = order + 300
-                        elif containerDB[container] == 'WebM':
-                            if pformat == 4 or pformat == 5:
-                                order = order + 100
-                            elif pformat == 0 or pformat == 1:
-                                order = order + 200
-                            else:
-                                order = order + 300
-                        else:
-                            order = order + 100
-                    except :
-                        pass
-
-                    try:
-                        mediaURLs.append( mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count, title=title))
-                    except KeyError:
-                        mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count, title=title))
 
         return mediaURLs
 

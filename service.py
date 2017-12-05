@@ -27,14 +27,23 @@ import os
 # cloudservice - standard XBMC modules
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
 
-# common routines
-from resources.lib import kodi_common
 
-# global variables
-import addon_parameters
-addon = addon_parameters.addon
-cloudservice2 = addon_parameters.cloudservice2
-cloudservice1 = addon_parameters.cloudservice1
+KODI = True
+
+if KODI:
+    # cloudservice - standard XBMC modules
+#            import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
+    # global variables
+    import constants
+    addon = constants.addon
+    self.addon = addon
+    self.PLUGIN_URL = constants.PLUGIN_NAME
+
+self.PLUGIN_NAME = constants.PLUGIN_NAME
+
+cloudservice3 = constants.cloudservice3
+cloudservice2 = constants.cloudservice2
+
 
 
 #*** testing - gdrive
@@ -52,14 +61,14 @@ from resources.lib import cloudservice
 from resources.lib import authorization
 from resources.lib import folder
 from resources.lib import file
-#from resources.lib import offlinefile
 from resources.lib import package
 from resources.lib import mediaurl
 from resources.lib import crashreport
 from resources.lib import gPlayer
 from resources.lib import settings
 from resources.lib import cache
-from resources.lib import TMDB
+if constants.CONST.tmdb:
+    from resources.lib import TMDB
 
 
 
@@ -74,8 +83,6 @@ except: pass
 
 addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 
-
-kodi_common.debugger()
 
 
 # cloudservice - create settings module

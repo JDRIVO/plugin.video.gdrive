@@ -620,16 +620,13 @@ class contentengine(object):
             self.PLUGIN_URL = 'default.py'
         self.PLUGIN_NAME = constants.PLUGIN_NAME
 
-        #from resources.lib import gdrive_api2
-        #from resources.lib import gdrive_api3
 
         cloudservice3 = constants.cloudservice3
         cloudservice2 = constants.cloudservice2
-        #cloudservice1 = gdrive_api1.cloudservice1
 
 
         #*** testing - gdrive
-        if constants.CONSTANT.tvwindow:
+        if constants.CONST.tvwindow:
             from resources.lib import tvWindow
         from resources.lib import gSpreadsheets
         from resources.lib import gSheets_api4
@@ -643,14 +640,14 @@ class contentengine(object):
         from resources.lib import folder
         from resources.lib import teamdrive
         from resources.lib import file
-        #from resources.lib import offlinefile
         from resources.lib import package
         from resources.lib import mediaurl
         from resources.lib import crashreport
         from resources.lib import gPlayer
         from resources.lib import settings
         from resources.lib import cache
-        from resources.lib import TMDB
+        if constants.CONST.tmdb:
+            from resources.lib import TMDB
 
 
 
