@@ -48,7 +48,7 @@ cloudservice2 = gdrive_api2.gdrive
 class CONST():
 
     spreadsheet = True
-    testing_features = True
+    testing_features = False
     CACHE = True
     SRT = True
     CC = True

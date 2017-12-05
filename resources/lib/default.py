@@ -891,6 +891,170 @@ class contentengine(object):
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
             xbmcplugin.endOfDirectory(self.plugin_handle)
             return
+        #create strm files
+        elif mode == 'buildstrm2':
+
+            silent = settings.getParameter('silent', settings.getSetting('strm_silent',0))
+            if silent == '':
+                silent = 0
+
+            try:
+                path = settings.getSetting('strm_path')
+            except:
+                path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                addon.setSetting('strm_path', path)
+
+            if path == '':
+                path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                addon.setSetting('strm_path', path)
+
+            if path != '':
+                returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
+
+
+            if path != '' and returnPrompt:
+
+                if silent != 2:
+                    try:
+                        pDialog = xbmcgui.DialogProgressBG()
+                        pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
+                    except:
+                        pass
+
+                url = settings.getParameter('streamurl')
+                url = re.sub('---', '&', url)
+                title = settings.getParameter('title')
+                type = int(settings.getParameter('type', 0))
+
+                if url != '':
+
+                        filename = path + '/' + title+'.strm'
+                        strmFile = xbmcvfs.File(filename, "w")
+
+                        strmFile.write(url+'\n')
+                        strmFile.close()
+                else:
+
+                    folderID = settings.getParameter('folder')
+                    filename = settings.getParameter('filename')
+                    title = settings.getParameter('title')
+                    invokedUsername = settings.getParameter('username')
+                    encfs = settings.getParameter('encfs', False)
+
+                    encryptedPath = settings.getParameter('epath', '')
+                    dencryptedPath = settings.getParameter('dpath', '')
+
+                    if folderID != '':
+
+                        count = 1
+                        loop = True
+                        while loop:
+                            instanceName = constants.PLUGIN_NAME+str(count)
+                            try:
+                                username = settings.getSetting(instanceName+'_username')
+                                if username == invokedUsername:
+
+                                    #let's log in
+                                    #if ( settings.getSettingInt(instanceName+'_type',0)==0):
+                                        #service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings, DBM=DBM)
+                                    #else:
+                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
+
+                                    loop = False
+                            except:
+                                #service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent)
+                                break
+
+                            if count == numberOfAccounts:
+                                try:
+                                    service
+                                except NameError:
+                                    #fallback on first defined account
+                                    #if ( settings.getSettingInt(instanceName+'_type',0)==0):
+                                    #    service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
+                                    #else:
+                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
+                                break
+                            count = count + 1
+
+                        # encfs -- extract filename
+                        if encfs:
+                            extrapulatedFolderName = re.compile('([^/]+)/$')
+
+                            titleDecrypted = extrapulatedFolderName.match(dencryptedPath)
+
+                            if titleDecrypted is not None:
+                                title = titleDecrypted.group(1)
+
+
+                        if constants.CONST.spreadsheet and service.cloudResume == '2':
+                            spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
+                            service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=True)
+                            spreadsheetFile.close()
+                        else:
+                            service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=True)
+
+                    elif filename != '':
+                                    if encfs:
+                                        values = {'title': title, 'encfs': 'True', 'epath': encryptedPath, 'dpath': dencryptedPath, 'filename': filename, 'username': invokedUsername}
+                                        # encfs -- extract filename
+                                        extrapulatedFileName = re.compile('.*?/([^/]+)$')
+
+                                        titleDecrypted = extrapulatedFileName.match(dencryptedPath)
+
+                                        if titleDecrypted is not None:
+                                            title = titleDecrypted.group(1)
+
+                                    else:
+                                        values = {'title': title, 'filename': filename, 'username': invokedUsername}
+                                    if type == 1:
+                                        url = self.PLUGIN_URL+'?mode=audio&'+urllib.urlencode(values)
+                                    else:
+                                        url = self.PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)
+
+                                    filename = path + '/' + title+'.strm'
+                                    strmFile = xbmcvfs.File(filename, "w")
+                                    strmFile.write(url+'\n')
+                                    strmFile.close()
+
+                    else:
+
+                        count = 1
+                        while True:
+                            instanceName = constants.PLUGIN_NAME+str(count)
+                            username = settings.getSetting(instanceName+'_username')
+
+                            if username != '' and username == invokedUsername:
+                                #if ( settings.getSettingInt(instanceName+'_type',0)==0):
+                                #        service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
+                                #else:
+                                service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
+
+                                service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=True)
+
+                            if count == numberOfAccounts:
+                                #fallback on first defined account
+                                try:
+                                    service
+                                except NameError:
+                                    #fallback on first defined account
+                                    #if ( settings.getSettingInt(instanceName+'_type',0)==0):
+                                    #        service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings)
+                                    #else:
+                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
+                                break
+                            count = count + 1
+
+                if silent != 2:
+                    try:
+                        pDialog.update(100)
+                        pDialog.close()
+                    except:
+                        pass
+                if silent == 0:
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
+            xbmcplugin.endOfDirectory(self.plugin_handle)
+            return
 
         ###
 
@@ -1212,7 +1376,7 @@ class contentengine(object):
 
 
                 self.addMenu(self.PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
-                self.addMenu(self.PLUGIN_URL+'?mode=buildstrm2&instance='+str(service.instanceName)+'&content_type='+str(contextType),'<Testing - manual run of change tracking build STRM>')
+                self.addMenu(self.PLUGIN_URL+'?mode=buildstrm2&instance='+str(service.instanceName)+'&content_type='+str(contextType),'<'+addon.getLocalizedString(30202)+'>')
                 if constants.CONST.testing_features:
                     self.addMenu(self.PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_menu&content_type='+str(contextType),'[MOVIES]')
 
