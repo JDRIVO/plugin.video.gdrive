@@ -175,8 +175,11 @@ class cloudservice(object):
                             # nekwebdev contribution
                             pathLib = ''
 
+                            filename = str(title)
                             tv = False
-                            tv = item.file.regtv1.match(title)
+                            tv = item.file.cleantv.match(title)
+                            if not tv:
+                                tv = item.file.regtv1.match(title)
                             if not tv:
                                 tv = item.file.regtv2.match(title)
                             if not tv:
@@ -188,24 +191,34 @@ class cloudservice(object):
                                 if not show:
                                     show = tv.group(1).replace("\S{2,}\-\S{2,}", " ")
                                     show = show.rstrip("\-")
-
+                                show = show.strip('.').lower()
                                 season = tv.group(2)
+                                if len(season) < 2:
+                                    season = '0' + str(season)
                                 episode = tv.group(3)
                                 pathLib = tvPath + '/' + show
                                 if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
                                     xbmcvfs.mkdir(xbmc.translatePath(pathLib))
-                                pathLib = pathLib +  '/Season ' + season
+                                pathLib = pathLib +  '/season ' + str(season)
                                 if not xbmcvfs.exists(xbmc.translatePath(pathLib)):
                                     xbmcvfs.mkdir(xbmc.translatePath(pathLib))
+                                filename = 'S' + str(season) + 'E' + str(episode)
                             else:
-                                movie = item.file.regmovie.match(title)
+                                movie = item.file.cleanmovie.match(title)
+                                if not movie:
+                                    movie = item.file.regmovie.match(title)
                                 if movie:
+                                    title = movie.group(1)
+                                    title = title.strip('.').lower()
+                                    year = movie.group(2)
+
+                                    filename = str(title) + '(' + str(year) + ')'
                                     pathLib = moviePath
                                 else:
                                     pathLib = videoPath
 
                             if pathLib != '':
-                                filename = str(pathLib) + '/' + str(title)+'.strm'
+                                filename = str(pathLib) + '/' + str(filename)+'.strm'
                                 if item.file.deleted and xbmcvfs.exists(filename):
                                     xbmcvfs.delete(filename)
                                 elif not item.file.deleted and not xbmcvfs.exists(filename):

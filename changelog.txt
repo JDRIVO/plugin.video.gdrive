@@ -1,4 +1,5 @@
-- completed: STRM extract into tv shows/movie #153
+- implemented: Rename STRMs to a Kodi friendly format #147
+- implemented: STRM extract into tv shows/movie #153
 - fix for public streams without a proper stream map table (#152)
 - work to generalize code to work without KODI
 v0.8.56 (2017-11-09)
