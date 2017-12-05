@@ -1,3 +1,4 @@
+- remove creashreporting module
 - implemented: Rename STRMs to a Kodi friendly format #147
 - implemented: STRM extract into tv shows/movie #153
 - fix for public streams without a proper stream map table (#152)

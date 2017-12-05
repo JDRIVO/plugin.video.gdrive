@@ -63,7 +63,6 @@ from resources.lib import folder
 from resources.lib import file
 from resources.lib import package
 from resources.lib import mediaurl
-from resources.lib import crashreport
 from resources.lib import gPlayer
 from resources.lib import settings
 from resources.lib import cache

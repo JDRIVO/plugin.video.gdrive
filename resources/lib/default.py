@@ -332,6 +332,22 @@ class contentengine(object):
         elif mode == 'enroll':
 
 
+            from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+            from resources.lib import enroll_proxy
+            import urllib, urllib2
+            from SocketServer import ThreadingMixIn
+            import threading
+
+            try:
+                server = enroll_proxy.MyHTTPServer(('',  9999), enroll_proxy.enrollBrowser)
+
+                while server.ready:
+                    server.handle_request()
+                server.socket.close()
+            except: pass
+
+            if 0:
+
                 invokedUsername = settings.getParameter('username')
                 code = settings.getParameter('code', '')
 
@@ -634,7 +650,6 @@ class contentengine(object):
         ##**
 
         # cloudservice - standard modules
-        #from resources.lib import gdrive
         from resources.lib import cloudservice
         from resources.lib import authorization
         from resources.lib import folder
@@ -642,7 +657,6 @@ class contentengine(object):
         from resources.lib import file
         from resources.lib import package
         from resources.lib import mediaurl
-        from resources.lib import crashreport
         from resources.lib import gPlayer
         from resources.lib import settings
         from resources.lib import cache
@@ -725,7 +739,7 @@ class contentengine(object):
 
         if mode == 'dummy' or mode == 'delete' or mode == 'enroll':
 
-            self.accountActions(addon, constants.PLUGIN_NAME, mode, instanceName, numberOfAccounts)
+            self.accountActions(addon, mode, instanceName, numberOfAccounts)
 
         #create strm files
         elif mode == 'buildstrm':
