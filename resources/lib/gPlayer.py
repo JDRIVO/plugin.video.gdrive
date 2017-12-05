@@ -121,10 +121,8 @@ class gPlayer(xbmc.Player):
 #        self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
 #        if seek > 0 and seek !='':
 #            while not self.isPlaying(): #<== The should be    while self.isPlaying():
-#                print "LOOP"
 #                xbmc.sleep(500)
 #            xbmc.sleep(2000)
-#            print "SEEK "+str(seek)
 #            self.time = float(seek)
 #            self.seekTime(float(seek))
 
@@ -169,12 +167,11 @@ class gPlayer(xbmc.Player):
         if self.service.settings:
             xbmc.log(self.service.addon.getAddonInfo('name') + ': Exit play list', xbmc.LOGNOTICE)
 
-    def onPlayBackSeek(self,offset):
-        print "PLAYBACK SEEKED"
+#    def onPlayBackSeek(self,offset):
+
 
 
     def onPlayBackStarted(self):
-        print "PLAYBACK STARTED"
         self.playStatus = True
         #self.tag = xbmc.Player().getVideoInfoTag()
 #        if self.seek > 0:
@@ -185,10 +182,8 @@ class gPlayer(xbmc.Player):
 
         if self.seek > 0 and self.seek !='':
 #            while not self.isPlaying(): #<== The should be    while self.isPlaying():
-#                print "LOOP"
 #                xbmc.sleep(500)
 #            xbmc.sleep(2000)
-            print "SEEK "+str(self.seek)
             self.time = float(self.seek)
             self.seekTime(float(self.seek))
             self.seek = 0
@@ -474,12 +469,10 @@ class gPlayer(xbmc.Player):
         #self.current = self.current +1
         self.isExit = True
 #        if not self.isExit:
-#            print "don't exit"
         self.playStatus = False
 
 
     def onPlayBackPaused(self):
-        print "PLAYBACK Paused"
         if self.seek > 0:
             self.seekTime(self.seek)
             self.seek = 0
@@ -490,10 +483,8 @@ class gPlayer(xbmc.Player):
 #        self.tvScheduler.setVideoWatched(self.worksheet, self.content[self.current][0])
         if seek > 0 and seek !='':
             while not self.isPlaying(): #<== The should be    while self.isPlaying():
-                print "LOOP"
                 xbmc.sleep(500)
             xbmc.sleep(2000)
-            print "SEEK "+str(seek)
             self.time = float(seek)
             self.seekTime(float(seek))
             if self.service.settings:

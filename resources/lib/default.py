@@ -1153,7 +1153,8 @@ class contentengine(object):
                         if contextType == '':
                             contextType = 'video'
 
-                        tmdb= TMDB.TMDB(service,addon, user_agent)
+                        if constants.CONST.tmdb:
+                            tmdb= TMDB.TMDB(service,addon, user_agent)
 
                         if mediaItems:
                             for item in mediaItems:
@@ -1278,7 +1279,6 @@ class contentengine(object):
 
                         #create the files and folders for decrypting file/folder names
                         for item in sorted (sortedMediaItems):
-                            print "item" + str(item) + "\n"
                             item = sortedMediaItems[item]
 
                             if item.file is None:
@@ -1850,7 +1850,6 @@ class contentengine(object):
                     #(mediaURLs,package) = service.getPlaybackCall(None,title=title)
                     mediaURL = mediaURLs[0]
                     #mediaURL.url =  mediaURL.url +'|' + service.getHeadersEncoded()
-                    #print "mediaURLDD = " + mediaURL.url
 
                     # use streamer if defined
                     useStreamer = False
@@ -1858,7 +1857,6 @@ class contentengine(object):
                         item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                                         thumbnailImage=package.file.thumbnail, path=mediaURL.url+'|' + service.getHeadersEncoded())
                         item.setPath(mediaURL.url+'|' + service.getHeadersEncoded())
-                        print "URL = " +mediaURL.url + "\n"
                         xbmcplugin.setResolvedUrl(self.plugin_handle, True, item, encrypted=True)
                     elif KODI and service is not None and service.settings.streamer:
                         # test streamer
@@ -1879,7 +1877,6 @@ class contentengine(object):
 
                             url = 'http://localhost:' + str(service.settings.streamPort) + '/crypto_playurl'
                             req = urllib2.Request(url, 'url=' + mediaURL.url)
-                            print "mediaURL = "+mediaURL.url
                             try:
                                 response = urllib2.urlopen(req)
                                 response.close()
@@ -2602,7 +2599,6 @@ class contentengine(object):
                 if (settings.getSetting('local_db')):
                     server.setTVDB(localTVDB)
                     server.setTVDB(localMOVIEDB)
-                print "ENABLED STREAMER \n\n\n"
 
                 while server.ready:
                     server.handle_request()

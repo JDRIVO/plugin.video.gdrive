@@ -537,7 +537,6 @@ class cloudservice(object):
                 f = xbmcvfs.File(playbackFile, 'w')
 
 
-            #print "DEBUG url = " + mediaURL.url + ", sizeDownload = " + str(sizeDownload) + ", playback = " + str(playback) + ", playbackFile = " + str(playbackFile)
 #            if playbackURL != '':
 #                progress = xbmcgui.DialogProgress()
 #                progressBar = sizeDownload
@@ -579,7 +578,6 @@ class cloudservice(object):
                 player.PlayStream(playbackFile, item, package.file.resume, startPlayback=True, package=package)
             while not (player.isPlaying()) and not player.isExit:
                 xbmc.sleep(1000)
-                #print str(player.playStatus)
         try:
             count =1
             while True:
@@ -721,7 +719,6 @@ class cloudservice(object):
                 #player.PlayStream(playbackURL, item, package.file.resume, startPlayback=True, package=package)
 #                while not (player.isPlaying()) and not player.isExit:
 #                    xbmc.sleep(1000)
-                    #print str(player.playStatus)
 
                     # load captions
             if (self.settings.srt or self.settings.cc):
@@ -909,7 +906,6 @@ class cloudservice(object):
                 #player.PlayStream(playbackURL, item, package.file.resume, startPlayback=True, package=package)
 #                while not (player.isPlaying()) and not player.isExit:
 #                    xbmc.sleep(1000)
-                    #print str(player.playStatus)
 
                     # load captions
             if (self.settings.srt or self.settings.cc):

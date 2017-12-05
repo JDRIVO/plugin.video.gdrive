@@ -7,6 +7,13 @@ if constants.CONST.DEBUG:
     #debugging
     import hashlib
 
+if KODI:
+
+    # cloudservice - standard XBMC modules
+    import xbmc
+
+else:
+    from resources.libgui import xbmc
 
 
 try:
@@ -16,7 +23,7 @@ try:
     ENCRYPTION_ENABLE = 1
 except:
     ENCRYPTION_ENABLE = 0
-    print "python-crypto not found"
+    xbmc.log("python-crypto not found")
 
 class encryption():
 
@@ -42,7 +49,6 @@ class encryption():
 
         if password != None and password != '':
             self.key = self.generateKey(password,)
-            #print self.key
 
 
     def generateKey(self,password, iterations=NUMBER_OF_ITERATIONS):
@@ -52,7 +58,6 @@ class encryption():
         assert iterations > 0
 
         key = str(password) + str(self.salt)
-        #print "iterations " + str(iterations)
         for i in range(iterations):
             key = hashlib.sha256(key).digest()
 
@@ -141,26 +146,7 @@ class encryption():
 
                 outfile.truncate(origsize)
 
-    def decryptStreamChunk44(self,response, wfile, chunksize=24*1024):
-            if ENCRYPTION_ENABLE == 0:
-                return
-    #    with open(in_filename, 'rb') as infile:
-            origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
-            decryptor = AES.new(self.key, AES.MODE_ECB)
 
-            currentSize = origsize
-            while True:
-                chunk = response.read(chunksize)
-                currentSize = currentSize + chunksize
-
-                if len(chunk) == 0:
-                    break
-                if currentSize <= origsize:
-                    wfile.write(decryptor.decrypt(chunk))
-                else:
-                    deltaSize = currentSize - origsize
-                    fixSize = chunk - deltaSize
-                    wfile.write(decryptor.decrypt(chunk)[:])
 
     def decryptStreamChunk(self,response, wfile, adjStart, adjEnd, chunksize=16*1024):
             if ENCRYPTION_ENABLE == 0:
@@ -168,9 +154,6 @@ class encryption():
             #origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
             decryptor = AES.new(self.key, AES.MODE_ECB)
 
-
-            #print "size = " + str(len(response.read(struct.calcsize('Q')))) + "\n"
-            #return
 
             sending=0
             responseChunk = ''
@@ -192,117 +175,43 @@ class encryption():
                     wfile.write(responseChunk[adjStart:].strip())
                     if constants.CONST.DEBUG:
                         sending += len(responseChunk[adjStart:].strip())
-                        print 'x1 ' + str(sending) + ' ' + str(len(chunk)) + ' '+ str(len(responseChunk[adjStart:].strip()))
-                        print "HASH = " + str(hashlib.md5(responseChunk[adjStart:].strip()).hexdigest()) + "\n"
+                        xbmc.log('x1 ' + str(sending) + ' ' + str(len(chunk)) + ' '+ str(len(responseChunk[adjStart:].strip())))
+                        xbmc.log("HASH = " + str(hashlib.md5(responseChunk[adjStart:].strip()).hexdigest()) + "\n")
                     adjStart = 0
                 elif count == 1 and adjStart > 0:
                     wfile.write(responseChunk[adjStart:])
 
                     if constants.CONST.DEBUG:
                         sending += len(responseChunk[adjStart:])
-                        print 'x2 ' + str(sending) + ' ' + str(len(chunk)) + ' '+ str(len(responseChunk[adjStart:]))
-                        print "HASH = " + str(hashlib.md5(responseChunk[adjStart:]).hexdigest()) + "\n"
+                        xbmc.log('x2 ' + str(sending) + ' ' + str(len(chunk)) + ' '+ str(len(responseChunk[adjStart:])))
+                        xbmc.log("HASH = " + str(hashlib.md5(responseChunk[adjStart:]).hexdigest()) + "\n")
                     adjStart = 0
                 elif len(nextChunk) == 0 and adjEnd > 0:
                     wfile.write(responseChunk[:(len(responseChunk)-adjEnd)])
 
                     if constants.CONST.DEBUG:
                         sending += len(responseChunk[:(len(responseChunk)-adjEnd)])
-                        print 'z' + str(sending)
-                        print "HASH = " + str(hashlib.md5(responseChunk[:(len(responseChunk)-adjEnd)]).hexdigest()) + "\n"
+                        xbmc.log('z' + str(sending))
+                        xbmc.log("HASH = " + str(hashlib.md5(responseChunk[:(len(responseChunk)-adjEnd)]).hexdigest()) + "\n")
                     adjEnd = 0
 
                 elif len(nextChunk) == 0: #adjEnd = 0
                     wfile.write(responseChunk.strip())
                     if constants.CONST.DEBUG:
                         sending += len(responseChunk.strip())
-                        print 'y' + str(sending)
-                        print "HASH = " + str(hashlib.md5(responseChunk.strip()).hexdigest()) + "\n"
+                        xbmc.log('y' + str(sending))
+                        xbmc.log( "HASH = " + str(hashlib.md5(responseChunk.strip()).hexdigest()) + "\n")
                 else:
                     wfile.write(responseChunk)
                     if constants.CONST.DEBUG:
                         sending += len(responseChunk)
-                        print '.' + str(sending)
-                        print "HASH = " + str(hashlib.md5(responseChunk).hexdigest()) + "\n"
+                        xbmc.log('.' + str(sending))
+                        xbmc.log("HASH = " + str(hashlib.md5(responseChunk).hexdigest()) + "\n")
                 chunk = nextChunk
             if constants.CONST.DEBUG:
-                print "EXIT\n"
+                xbmc.log("EXIT\n")
 
-    def decryptStreamChunk20171201(self,response, wfile, chunksize=24*1024, startOffset=0, endOffset=0, end=0):
-            if ENCRYPTION_ENABLE == 0:
-                return
-            origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]
-            decryptor = AES.new(self.key, AES.MODE_ECB)
 
-            #debugging
-            hash_md5 = hashlib.md5()
-
-    #    with open(in_filename, 'rb') as infile:
-            if startOffset == 0 and endOffset > 0:
-                print "special case\n\n"
-
-                chunk = response.read(chunksize)
-                print "size of chunk = " + str(len(chunk)) + "\n"
-                responseChunk = decryptor.decrypt(chunk)
-                print "endOffset = "+str(endOffset)+" length = " + str(len(responseChunk[:endOffset])) + "\n"
-                hash_md5.update(responseChunk[:endOffset])
-                print "HASH = " + str(hash_md5.hexdigest()) + "\n"
-                wfile.write(responseChunk[:endOffset])
-
-                return
-
-            #remove the origsize from offset
-            #if startOffset > 0:
-            #    startOffset -= 8
-
-            sending=0
-            if startOffset > 0 and end == 0:
-                response.read(startOffset)
-                startOffset = 0
-                print "IN\n"
-            elif startOffset == 0 and endOffset > 0:
-                print "IN 2\n"
-                response.read(8)
-
-            responseChunk = ''
-            count = 0
-            chunk = response.read(chunksize)
-
-            while True:
-                nextChunk = response.read(chunksize)
-                count = count + 1
-                if len(chunk) == 0:
-                    break
-
-                responseChunk = decryptor.decrypt(chunk)
-                if count == 1 and startOffset !=0:
-                    wfile.write(responseChunk[startOffset:])
-                    sending += len(responseChunk[startOffset:])
-                    print 'x' + str(sending) + ' ' + str(len(chunk)) + ' '+ str(len(responseChunk[startOffset:]))
-                    hash_md5.update(responseChunk[startOffset:])
-                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
-                elif len(nextChunk) == 0 and end > 0:#(len(chunk)) > (len(responseChunk.strip())):
-                    #endOffset -= 5
-                    wfile.write(responseChunk[:(len(responseChunk)-end)])
-                    sending += len(responseChunk[:(len(responseChunk)-end)])
-                    print 'z' + str(sending)
-                    hash_md5.update(responseChunk[:(len(responseChunk)-end)])
-                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
-
-                elif len(nextChunk) == 0:#(len(chunk)) > (len(responseChunk.strip())):
-                    wfile.write(responseChunk.strip())
-                    sending += len(responseChunk.strip())
-                    print 'y' + str(sending)
-                    hash_md5.update(responseChunk.strip())
-                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
-                else:
-                    wfile.write(responseChunk)
-                    sending += len(responseChunk)
-                    print '.' + str(sending)
-                    hash_md5.update(responseChunk)
-                    print "HASH = " + str(hash_md5.hexdigest()) + "\n"
-                chunk = nextChunk
-            print "EXIT\n"
     def decryptCalculatePadding(self,response, chunksize=24*1024):
             if ENCRYPTION_ENABLE == 0:
                 return
@@ -316,7 +225,7 @@ class encryption():
                 count = count + 1
                 if len(chunk) == 0:
                     break
-                print "CHUNK " + str(len(chunk)) + "\n"
+
                 responseChunk = decryptor.decrypt(chunk)
                 return int(len(chunk) - len(responseChunk.strip()))
 

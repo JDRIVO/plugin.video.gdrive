@@ -585,7 +585,6 @@ class gdrive(cloudservice):
                              response_data, re.DOTALL):
                 nextPageToken = r.group(1)
 
-            print 'nextPageToken = '+ str(nextPageToken) + ' nextPageToken = ' + str(maxChangeID) + "\n"
             return (mediaFiles, nextPageToken, maxChangeID)
 
             # are there more pages to process?
@@ -1520,7 +1519,6 @@ class gdrive(cloudservice):
             for r in re.finditer('([^\=]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
                 cookieType,cookieValue = r.groups()
                 if cookieType == 'DRIVE_STREAM':
-                    print cookieValue
                     self.authorization.setToken(cookieType,cookieValue)
 
             # decode resulting player URL (URL is composed of many sub-URLs)
@@ -1787,7 +1785,6 @@ class gdrive(cloudservice):
         for r in re.finditer('([^\s]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
             cookieType,cookieValue = r.groups()
             if cookieType == 'DRIVE_STREAM':
-                print cookieValue
                 self.authorization.setToken(cookieType,cookieValue)
 
         for r in re.finditer('\"fmt_list\"\,\"([^\"]+)\"' ,
@@ -2042,7 +2039,6 @@ class gdrive(cloudservice):
                 url = nextURL
 
             #if ($$newDocuments{$resourceID}[pDrive::DBM->D->{'title'}] eq $folderName){
-            #        print STDERR "returning $resourceID\n " if (pDrive::Config->DEBUG);
             #        return $resourceID;
         return '';
 

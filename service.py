@@ -52,7 +52,7 @@ from resources.lib import cloudservice
 from resources.lib import authorization
 from resources.lib import folder
 from resources.lib import file
-from resources.lib import offlinefile
+#from resources.lib import offlinefile
 from resources.lib import package
 from resources.lib import mediaurl
 from resources.lib import crashreport
@@ -125,7 +125,6 @@ if service is not None and service.settings.streamer:
         if (settings.getSetting('local_db')):
             server.setTVDB(localTVDB)
             server.setTVDB(localMOVIEDB)
-        print "ENABLED STREAMER \n\n\n"
 
         while server.ready:
             server.handle_request()

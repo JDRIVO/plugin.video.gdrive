@@ -53,6 +53,7 @@ if KODI:
 else:
     from resources.libgui import xbmcaddon
     from resources.libgui import xbmcgui
+    from resources.libgui import xbmc
 
 
 SERVICE_NAME = 'dmdgdrive'
@@ -121,7 +122,6 @@ class gdrive(cloudservice):
                 self.type = int(self.DBM['type'])
             except:
                 self.type = 2
-                print "ERROR: define your settings in the DBM first"
                 return
 
 
@@ -149,7 +149,7 @@ class gdrive(cloudservice):
                 elif self.DBM['code']:
                     self.getToken(self.DBM['code'])
                 else:
-                    print 'ERROR:' + str(e)
+                    xbmc.log('ERROR:' + str(e))
             #***
 
             self.cache = None
@@ -611,7 +611,6 @@ class gdrive(cloudservice):
                              response_data, re.DOTALL):
                 nextPageToken = r.group(1)
 
-            print 'nextPageToken = '+ str(nextPageToken) + ' nextPageToken = ' + str(maxChangeID) + "\n"
             return (mediaFiles, nextPageToken, maxChangeID)
 
             # are there more pages to process?
@@ -1546,7 +1545,6 @@ class gdrive(cloudservice):
             for r in re.finditer('([^\=]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
                 cookieType,cookieValue = r.groups()
                 if cookieType == 'DRIVE_STREAM':
-                    print cookieValue
                     self.authorization.setToken(cookieType,cookieValue)
 
             # decode resulting player URL (URL is composed of many sub-URLs)
@@ -1813,7 +1811,6 @@ class gdrive(cloudservice):
         for r in re.finditer('([^\s]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
             cookieType,cookieValue = r.groups()
             if cookieType == 'DRIVE_STREAM':
-                print cookieValue
                 self.authorization.setToken(cookieType,cookieValue)
 
         for r in re.finditer('\"fmt_list\"\,\"([^\"]+)\"' ,
