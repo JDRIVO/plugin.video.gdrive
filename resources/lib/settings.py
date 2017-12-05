@@ -69,7 +69,10 @@ def getSetting(key,default=''):
         return default
 
 def parse_query(query):
-    queries = cgi.parse_qs(query)
+    queries = {}
+    try:
+        queries = cgi.parse_qs(query)
+    except:pass
     q = {}
     for key, value in queries.items():
         q[key] = value[0]
@@ -84,8 +87,8 @@ try:
 except:pass
 
 # global variables
-import addon_parameters
-addon = addon_parameters.addon
+import constants
+addon = constants.addon
 
 #addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
 #addon = xbmcaddon.Addon(id='plugin.video.gdrive')

@@ -86,7 +86,8 @@ class gdrive(cloudservice):
     ##
     # initialize (save addon, instance name, user agent)
     ##
-    def __init__(self, PLUGIN_URL, addon, instanceName, user_agent, settings, authenticate=True, gSpreadsheet=None, DBM=None):
+    def __init__(self, plugin_handle, PLUGIN_URL, addon, instanceName, user_agent, settings, authenticate=True, gSpreadsheet=None, DBM=None):
+        self.plugin_handle = plugin_handle
         self.integratedPlayer = False
         self.PLUGIN_URL = PLUGIN_URL
         self.addon = addon
@@ -1967,4 +1968,82 @@ class gdrive(cloudservice):
 
         response_data = response.read()
         response.close()
+
+
+    # not used
+    def getSubFolderID(self,folderName, parentID):
+
+
+        URL = 'https://www.googleapis.com/drive/v2/files?includeTeamDriveItems=true&supportsTeamDrives=true&q=\''+parentID+'\'+in+parents+and+trashed%3Dfalse&fields=nextLink%2Citems(kind%2Cid%2CmimeType%2Ctitle%2CfileSize%2CmodifiedDate%2CcreatedDate%2CdownloadUrl%2Cparents/parentLink%2Cmd5Checksum)';
+
+        while True:
+            req = urllib2.Request(url, None, self.getHeadersList())
+
+            # if action fails, validate login
+            try:
+              response = urllib2.urlopen(req)
+            except urllib2.URLError, e:
+              if e.code == 403 or e.code == 401:
+                self.refreshToken()
+                req = urllib2.Request(url, None, self.getHeadersList())
+                try:
+                  response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                  xbmc.log(e)
+                  self.crashreport.sendError('getMediaList',str(e))
+                  return
+              else:
+                xbmc.log(e)
+                self.crashreport.sendError('getMediaList',str(e))
+                return
+
+            response_data = response.read()
+            response.close()
+
+            # parsing page for folders
+            for r2 in re.finditer('\"items\"\:\s+\[[^\{]+(\{.*?)\}\s+\]\s+\}' ,response_data, re.DOTALL):
+                entryS = r2.group(1)
+                folderFanart = ''
+                folderIcon = ''
+                for r1 in re.finditer('\{(.*?)\"appDataContents\"\:' , entryS, re.DOTALL):
+                    entry = r1.group(1)
+
+                    if 'fanart' in entry:
+                        fanart = self.getMediaInfo(entry, folderName=folderName)
+                        if fanart != '':
+#                            fanart = re.sub('\&gd\=true', '', fanart)
+                            #need to cache
+                            folderFanart = fanart + '|' + self.getHeadersEncoded()
+                    elif 'folder' in entry:
+                        foldericon = self.getMediaInfo(entry, folderName=folderName)
+                        if foldericon != '':
+#                            foldericon = re.sub('\&gd\=true', '', foldericon)
+                            #need to cache
+                            folderIcon = foldericon + '|' + self.getHeadersEncoded()
+
+
+                for r1 in re.finditer('\{(.*?)\"spaces\"\:' , entryS, re.DOTALL):
+                    entry = r1.group(1)
+                    media = self.getMediaPackage(entry, folderName=folderName, contentType=contentType, fanart=folderFanart, icon=folderIcon)
+                    if media is not None:
+                        mediaFiles.append(media)
+
+            # look for more pages of videos
+            nextURL = ''
+            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                nextURL = r.group(1)
+
+
+            # are there more pages to process?
+            if nextURL == '':
+                break
+            else:
+                url = nextURL
+
+            #if ($$newDocuments{$resourceID}[pDrive::DBM->D->{'title'}] eq $folderName){
+            #        print STDERR "returning $resourceID\n " if (pDrive::Config->DEBUG);
+            #        return $resourceID;
+        return '';
+
 

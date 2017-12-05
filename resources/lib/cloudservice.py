@@ -40,18 +40,9 @@ else:
 
 
 from resources.lib import mediaurl
-#from resources.lib import kodi_common
 #from resources.lib import settings
 from resources.lib import streamer
 
-plugin_handle = None
-
-if KODI:
-
-    try:
-        #global variables
-        plugin_handle = int(sys.argv[1])
-    except:pass
 
 def decode(data):
         return re.sub("&#(\d+)(;|(?=\s))", _callback, data).strip()
@@ -1116,7 +1107,7 @@ class cloudservice(object):
             listitem = xbmcgui.ListItem('[Decrypted Folder]')
             #        listitem.addContextMenuItems(cm, False)
             listitem.setProperty('fanart_image', fanart)
-            xbmcplugin.addDirectoryItem(plugin_handle, localPath, listitem,
+            xbmcplugin.addDirectoryItem(self.plugin_handle, localPath, listitem,
                                 isFolder=True, totalItems=0)
         else:
 
@@ -1126,7 +1117,7 @@ class cloudservice(object):
 
                 url = self.PLUGIN_URL+'?mode=search&content_type='+contextType + '&' + urllib.urlencode(values)
 
-                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
                                 isFolder=True, totalItems=0)
             elif folder.id == 'CLOUD_DB_GENRE':
                 listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
@@ -1134,7 +1125,7 @@ class cloudservice(object):
 
                 url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=genre&content_type='+contextType + '&' + urllib.urlencode(values)
 
-                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
                                 isFolder=True, totalItems=0)
             elif folder.id == 'CLOUD_DB_TITLE':
                 listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
@@ -1142,7 +1133,7 @@ class cloudservice(object):
 
                 url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=title&content_type='+contextType + '&' + urllib.urlencode(values)
 
-                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
                                 isFolder=True, totalItems=0)
             elif folder.id == 'CLOUD_DB_RESOLUTION':
                 listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
@@ -1150,7 +1141,7 @@ class cloudservice(object):
 
                 url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=resolution&content_type='+contextType + '&' + urllib.urlencode(values)
 
-                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
                                 isFolder=True, totalItems=0)
             elif folder.id == 'CLOUD_DB_YEAR':
                 listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
@@ -1158,7 +1149,7 @@ class cloudservice(object):
 
                 url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=year&content_type='+contextType + '&' + urllib.urlencode(values)
 
-                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
                                 isFolder=True, totalItems=0)
             elif folder.id == 'CLOUD_DB_COUNTRY':
                 listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
@@ -1166,7 +1157,7 @@ class cloudservice(object):
 
                 url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=country&content_type='+contextType + '&' + urllib.urlencode(values)
 
-                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
                                 isFolder=True, totalItems=0)
             elif folder.id == 'CLOUD_DB_DIRECTOR':
                 listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
@@ -1174,7 +1165,7 @@ class cloudservice(object):
 
                 url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=director&content_type='+contextType + '&' + urllib.urlencode(values)
 
-                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
                                 isFolder=True, totalItems=0)
             elif folder.id == 'CLOUD_DB_STUDIO':
                 listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
@@ -1182,7 +1173,7 @@ class cloudservice(object):
 
                 url = self.PLUGIN_URL+'?mode=cloud_dbtest&action=studio&content_type='+contextType + '&' + urllib.urlencode(values)
 
-                xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+                xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
                                 isFolder=True, totalItems=0)
             else:
                 listitem = xbmcgui.ListItem(decode(folder.displayTitle()), iconImage=decode(folder.thumb), thumbnailImage=decode(folder.thumb))
@@ -1254,7 +1245,7 @@ class cloudservice(object):
                 listitem.addContextMenuItems(cm, False)
                 listitem.setProperty('fanart_image',  folder.fanart)
 
-                xbmcplugin.addDirectoryItem(plugin_handle, self.getDirectoryCall(folder, contextType, encfs=encfs, dpath=dpath, epath=epath), listitem,
+                xbmcplugin.addDirectoryItem(self.plugin_handle, self.getDirectoryCall(folder, contextType, encfs=encfs, dpath=dpath, epath=epath), listitem,
                                 isFolder=True, totalItems=0)
 
 
@@ -1365,7 +1356,7 @@ class cloudservice(object):
                 url = package.mediaurl.url +'|' + self.getHeadersEncoded()
             else:
                 url = package.file.download+'|' + self.getHeadersEncoded()
-            xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+            xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
                                 isFolder=False, totalItems=0)
             return url
         # otherwise, assume video
@@ -1469,7 +1460,7 @@ class cloudservice(object):
         else:
             listitem.addContextMenuItems(cm, False)
 
-        xbmcplugin.addDirectoryItem(plugin_handle, url, listitem,
+        xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
                                 isFolder=False, totalItems=0)
         return url
 

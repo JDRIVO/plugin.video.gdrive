@@ -38,7 +38,8 @@ cloudservice1 = addon_parameters.cloudservice1
 
 
 #*** testing - gdrive
-from resources.lib import tvWindow
+if constants.CONSTANT.tvwindow:
+    from resources.lib import tvWindow
 from resources.lib import gSpreadsheets
 from resources.lib import gSheets_api4
 
