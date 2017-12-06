@@ -338,14 +338,12 @@ class contentengine(object):
             from SocketServer import ThreadingMixIn
             import threading
 
-            try:
-                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                server = enroll_proxy.MyHTTPServer(('',  9999), enroll_proxy.enrollBrowser)
+            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), '')
+            server = enroll_proxy.MyHTTPServer(('',  9999), enroll_proxy.enrollBrowser)
 
-                while server.ready:
-                    server.handle_request()
-                server.socket.close()
-            except: pass
+            while server.ready:
+                server.handle_request()
+            server.socket.close()
 
             if 0:
 
