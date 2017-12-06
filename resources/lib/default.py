@@ -339,6 +339,7 @@ class contentengine(object):
             import threading
 
             try:
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
                 server = enroll_proxy.MyHTTPServer(('',  9999), enroll_proxy.enrollBrowser)
 
                 while server.ready:

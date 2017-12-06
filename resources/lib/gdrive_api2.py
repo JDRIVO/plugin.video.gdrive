@@ -180,12 +180,12 @@ class gdrive(cloudservice):
 
                 req = urllib2.Request(url, 'code='+str(code)+'&client_id='+str(clientID)+'&client_secret='+str(clientSecret)+'&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code', header)
 
-            elif (self.type ==1):
-                url = 'http://dmdsoftware.net/api/gdrive.php'
-                values = {
-                      'code' : code
-                      }
-                req = urllib2.Request(url, urllib.urlencode(values), header)
+            #elif (self.type ==1):
+            #    url = 'http://dmdsoftware.net/api/gdrive.php'
+            #    values = {
+            #          'code' : code
+            #          }
+            #    req = urllib2.Request(url, urllib.urlencode(values), header)
 
             else:
                 url = 'https://script.google.com/macros/s/AKfycbw8fdhaq-WRVJXfOSMK5TZdVnzHvY4u41O1BfW9C8uAghMzNhM/exec'
@@ -289,14 +289,15 @@ class gdrive(cloudservice):
 
                 req = urllib2.Request(url, 'client_id='+clientID+'&client_secret='+clientSecret+'&refresh_token='+self.authorization.getToken('auth_refresh_token')+'&grant_type=refresh_token', header)
 
-            elif (self.type ==1):
-                url = 'http://dmdsoftware.net/api/gdrive.php'
-                values = {
-                      'refresh_token' : self.authorization.getToken('auth_refresh_token')
-                      }
-                req = urllib2.Request(url, urllib.urlencode(values), header)
+            #elif (self.type ==1):
+            #    url = 'http://dmdsoftware.net/api/gdrive.php'
+            #    values = {
+            #          'refresh_token' : self.authorization.getToken('auth_refresh_token')
+            #          }
+            #    req = urllib2.Request(url, urllib.urlencode(values), header)
 
             else:
+
                 url = 'https://script.google.com/macros/s/AKfycbxgFuUcvNlXLlB5GZLiEjEaZDqZLS2oMd-f4yL-4Y2K50shGoY/exec'
                 values = {
                       'refresh_token' : self.authorization.getToken('auth_refresh_token')

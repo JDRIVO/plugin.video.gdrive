@@ -1,3 +1,4 @@
+- replacement enrollment method
 - remove creashreporting module
 - implemented: Rename STRMs to a Kodi friendly format #147
 - implemented: STRM extract into tv shows/movie #153
