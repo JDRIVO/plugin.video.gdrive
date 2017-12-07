@@ -1,11 +1,17 @@
 #http://stackoverflow.com/questions/6425131/encrpyt-decrypt-data-in-python-with-salt
 import os, random, struct, string, re
+import sys
 
 import constants
 
 if constants.CONST.DEBUG:
     #debugging
     import hashlib
+
+KODI = True
+if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
+    KODI = False
+
 
 if KODI:
 

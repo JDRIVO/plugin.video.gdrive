@@ -87,53 +87,78 @@ class enrollBrowser(BaseHTTPRequestHandler):
             for r in re.finditer('account\=([^\&]+)\&code=([^\&]+)\&\client_id\=([^\&]+)\&\client_secret\=([^\&]+)' ,
                      post_data, re.DOTALL):
                 account = r.group(1)
-                client_id = r.group(2)
-                client_secret = r.group(3)
-                code = r.group(4)
+                client_id = r.group(3)
+                client_secret = r.group(4)
+                code = r.group(2)
+                code = code.replace('%2F','/')
 
-                self.wfile.write('<html><body>account = '+ str(account) + " " + str(client_id) + " " + str(client_secret) + " " + str(code))
+                #self.wfile.write('<html><body>account = '+ str(account) + " " + str(client_id) + " " + str(client_secret) + " " + str(code))
 
                 count = 1
                 loop = True
                 while loop:
                     instanceName = constants.PLUGIN_NAME +str(count)
                     try:
-                        username = settings.getSetting(instanceName+'_username')
-                        if username == invokedUsername:
-                            addon.setSetting(instanceName + '_type', str(3))
-                            addon.setSetting(instanceName + '_code', str(code))
-                            addon.setSetting(instanceName + '_client_id', str(client_id))
-                            addon.setSetting(instanceName + '_client_secret', str(client_secret))
-                            addon.setSetting(instanceName + '_code', str(code))
-
-                            addon.setSetting(instanceName + '_username', str(account))
-                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
-                            loop = False
-                        elif username == '':
-                            addon.setSetting(instanceName + '_type', str(3))
-                            addon.setSetting(instanceName + '_code', str(code))
-                            addon.setSetting(instanceName + '_client_id', str(client_id))
-                            addon.setSetting(instanceName + '_client_secret', str(client_secret))
-                            addon.setSetting(instanceName + '_username', str(account))
-                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
-                            loop = False
-
+                        username = constants.addon.settings.getSetting(instanceName+'_username')
                     except:
-                        pass
+                        username = ''
 
-                    if count ==  default.numberOfAccounts(constants.PLUGIN_NAME):
-
-                        #fallback on first defined account
-                        addon.setSetting(instanceName + '_type', str(3))
-                        addon.setSetting(instanceName + '_code', code)
-                        addon.setSetting(instanceName + '_client_id', str(client_id))
-                        addon.setSetting(instanceName + '_client_secret', str(client_secret))
-                        addon.setSetting(instanceName + '_username', str(account))
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), account)
+                    if username == account or username == '':
+                        constants.addon.setSetting(instanceName + '_type', str(3))
+                        constants.addon.setSetting(instanceName + '_code', str(code))
+                        constants.addon.setSetting(instanceName + '_client_id', str(client_id))
+                        constants.addon.setSetting(instanceName + '_client_secret', str(client_secret))
+                        constants.addon.setSetting(instanceName + '_username', str(account))
                         loop = False
+
                     count = count + 1
 
-                self.server.ready = False
+
+
+                url = 'https://accounts.google.com/o/oauth2/token'
+                header = { 'User-Agent' : constants.addon.getSetting('user_agent')  , 'Content-Type': 'application/x-www-form-urlencoded'}
+
+                req = urllib2.Request(url, 'code='+str(code)+'&client_id='+str(client_id)+'&client_secret='+str(client_secret)+'&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code', header)
+
+
+                # try login
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    if e.code == 403:
+                        #login issue
+                        self.send_response(200)
+                        self.end_headers()
+                        self.wfile.write(str(e))
+                        return
+                    else:
+                        self.send_response(200)
+                        self.end_headers()
+                        self.wfile.write(str(e))
+                    return
+
+
+                response_data = response.read()
+                response.close()
+
+                # retrieve authorization token
+                for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?' +
+                                 '\"refresh_token\"\s?\:\s?\"([^\"]+)\".+?' ,
+                                 response_data, re.DOTALL):
+                    accessToken,refreshToken = r.groups()
+                    constants.addon.setSetting(instanceName + '_auth_access_token', str(accessToken))
+                    constants.addon.setSetting(instanceName + '_auth_refresh_token', str(refreshToken))
+
+                    self.wfile.write('Successfully enrolled account.')
+                    self.server.ready = False
+
+
+                for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"',
+                                 response_data, re.DOTALL):
+                    errorMessage = r.group(1)
+                    self.wfile.write(errorMessage)
+
+
                 return
 
 
@@ -178,7 +203,7 @@ class enrollBrowser(BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
 
-            self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="/enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><form action="/enroll" method="post">Client ID:<br /><input type="hidden" name="client_id" value="value"><br />Client Secret:<br /><input type="hidden" name="client_secret" value="value"><br /><br /></br /> <input type="submit" value="Submit"></form></body></html>')
+            self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="/enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><form action="/enroll" method="post">Client ID:<br /><input type="hidden" name="client_id" value="772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com"><br />Client Secret:<br /><input type="hidden" name="client_secret" value="PgteSoD4uagqHA1_nLERLDx9"><br /><br /></br /> <input type="submit" value="Submit"></form></body></html>')
             return
         elif self.path == '/enroll':
 
