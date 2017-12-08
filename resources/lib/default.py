@@ -26,9 +26,8 @@ if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
 if KODI:
 
     # cloudservice - standard XBMC modules
-    import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
+    import xbmc, xbmcgui, xbmcplugin, xbmcvfs
 else:
-    from resources.libgui import xbmcaddon
     from resources.libgui import xbmcgui
     from resources.libgui import xbmcplugin
     from resources.libgui import xbmcvfs
@@ -555,12 +554,11 @@ class contentengine(object):
         #if constants.CONST.tvwindow:
         #    from resources.lib import tvWindow
         from resources.lib import gSpreadsheets
-        from resources.lib import gSheets_api4
+        #from resources.lib import gSheets_api4
 
         ##**
 
         # cloudservice - standard modules
-        from resources.lib import authorization
         from resources.lib import folder
         #from resources.lib import teamdrive
         from resources.lib import file

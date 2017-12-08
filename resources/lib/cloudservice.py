@@ -809,8 +809,6 @@ class cloudservice(object):
         if CHUNK < 1024:
             CHUNK = 131072
 
-        count = 0
-
 
         path = re.sub(r'\/[^\/]+$', r'', folderName)
         if folderName == path:
@@ -822,8 +820,6 @@ class cloudservice(object):
 
         playbackFile = folderName
 
-
-        downloadedBytes = 0
 
         #seek to end of file for append
         # - must use python for append (xbmcvfs not supported)
@@ -981,8 +977,6 @@ class cloudservice(object):
 
         if CHUNK < 1024:
             CHUNK = 131072
-
-        count = 0
 
 
         if encfs:

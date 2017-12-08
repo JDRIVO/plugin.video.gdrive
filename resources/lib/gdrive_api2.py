@@ -46,12 +46,12 @@ if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
 if KODI:
 
     # cloudservice - standard XBMC modules
-    import xbmc, xbmcaddon, xbmcgui, xbmcvfs
+    import xbmc, xbmcgui, xbmcvfs
 
 else:
-    from resources.libgui import xbmcaddon
     from resources.libgui import xbmcgui
     from resources.libgui import xbmc
+    from resources.libgui import xbmcvfs
 
 
 SERVICE_NAME = 'dmdgdrive'

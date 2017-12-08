@@ -23,7 +23,7 @@ import sys
 import re
 
 # cloudservice - standard XBMC modules
-import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
+import xbmc
 
 
 KODI = True
@@ -49,11 +49,7 @@ from resources.lib import gSheets_api4
 ##**
 
 # cloudservice - standard modules
-from resources.lib import file
-from resources.lib import package
-from resources.lib import mediaurl
 from resources.lib import settings
-from resources.lib import cache
 #if constants.CONST.tmdb:
 #    from resources.lib import TMDB
 
