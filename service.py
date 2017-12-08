@@ -122,8 +122,11 @@ if service is not None and service.settings.streamer:
             server.setTVDB(localTVDB)
             server.setTVDB(localMOVIEDB)
 
-        while server.ready:
-            server.handle_request()
-        server.socket.close()
-    except: break
+        doLoop = True
 
+    except:
+        doLoop = False
+
+    while doLoop and server.ready:
+        server.handle_request()
+    server.socket.close()
