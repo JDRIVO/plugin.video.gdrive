@@ -20,7 +20,6 @@
 
 # cloudservice - required python modules
 import sys
-import urllib
 import re
 
 # cloudservice - standard XBMC modules
@@ -40,29 +39,19 @@ if KODI:
 
 self.PLUGIN_NAME = constants.PLUGIN_NAME
 
-cloudservice3 = constants.cloudservice3
 cloudservice2 = constants.cloudservice2
 
 
 
 #*** testing - gdrive
-if constants.CONSTANT.tvwindow:
-    from resources.lib import tvWindow
-from resources.lib import gSpreadsheets
 from resources.lib import gSheets_api4
 
 ##**
 
 # cloudservice - standard modules
-#from resources.lib import gdrive
-#from resources.lib import gdrive_api2
-from resources.lib import cloudservice
-from resources.lib import authorization
-from resources.lib import folder
 from resources.lib import file
 from resources.lib import package
 from resources.lib import mediaurl
-from resources.lib import gPlayer
 from resources.lib import settings
 from resources.lib import cache
 #if constants.CONST.tmdb:
@@ -122,7 +111,6 @@ if service is not None and service.settings.streamer:
 
     from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
     from resources.lib import streamer
-    import urllib
     from SocketServer import ThreadingMixIn
     import threading
 

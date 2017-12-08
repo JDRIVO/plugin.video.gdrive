@@ -20,7 +20,6 @@
 
 import re
 import urllib, urllib2
-import json
 import sys
 
 KODI = True

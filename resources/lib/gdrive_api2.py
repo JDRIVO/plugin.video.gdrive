@@ -582,10 +582,10 @@ class gdrive(cloudservice):
             return (mediaFiles, nextPageToken, maxChangeID)
 
             # are there more pages to process?
-            if nextURL == '':
-                break
-            else:
-                url = nextURL
+            #if nextURL == '':
+            #    break
+            #else:
+            #    url = nextURL
 
         return (mediaFiles, nextPageToken, maxChangeID)
 
@@ -997,7 +997,6 @@ class gdrive(cloudservice):
                 entry = r1.group(1)
 
                 resourceID = 0
-                resourceType = ''
                 title = ''
                 url = ''
                 fileExtension = ''
@@ -1926,7 +1925,7 @@ class gdrive(cloudservice):
               else:
                   return
 
-        response_data = response.read()
+        response.read()
         response.close()
 
 

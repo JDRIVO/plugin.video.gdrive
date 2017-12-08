@@ -27,7 +27,7 @@ if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
     KODI = False
 
 if KODI:
-    import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+    import xbmc, xbmcgui
 else:
     from resources.libgui import xbmc
 

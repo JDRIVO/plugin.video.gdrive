@@ -44,7 +44,7 @@ class gPlayer(xbmc.Player):
         # stdoutToServer and stderrToServer redirect stdout and stderr to eclipse console
         pydevd.settrace('localhost', stdoutToServer=True, stderrToServer=True)
     except :
-        pass
+        pydevd = ''
 
     def __init__( self, *args, **kwargs ):
         xbmc.Player.__init__( self )

@@ -275,20 +275,7 @@ class contentengine(object):
     def numberOfAccounts(self,accountType):
 
         return 9
-        count = 1
-        max_count = int(settings.getSetting(accountType+'_numaccounts',9))
 
-        actualCount = 0
-        while True:
-            try:
-                if settings.getSetting(accountType+str(count)+'_username') != '':
-                    actualCount = actualCount + 1
-            except:
-                break
-            if count == max_count:
-                break
-            count = count + 1
-        return actualCount
 
 
 
@@ -581,6 +568,7 @@ class contentengine(object):
         from resources.lib import mediaurl
         from resources.lib import gPlayer
         from resources.lib import settings
+
         from resources.lib import cache
 #        if constants.CONST.tmdb:
 #            from resources.lib import TMDB
