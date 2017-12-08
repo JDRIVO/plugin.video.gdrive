@@ -325,7 +325,7 @@ class contentengine(object):
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30158))
                 except:
                     #error: instance doesn't exist
-                    pass
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30158))
             xbmc.executebuiltin("XBMC.Container.Refresh")
 
 
@@ -348,88 +348,7 @@ class contentengine(object):
                     server.handle_request()
                 server.socket.close()
 
-            if 0:
 
-                invokedUsername = settings.getParameter('username')
-                code = settings.getParameter('code', '')
-
-
-                if code == '':
-                    options = []
-                    options.append('Google Apps')
-                    ret = xbmcgui.Dialog().select('select type', options)
-
-                    invokedUsername = ''
-                    if ret == 0:
-                        try:
-                            dialog = xbmcgui.Dialog()
-                            invokedUsername = dialog.input('username', type=xbmcgui.INPUT_ALPHANUM)
-                            passcode = dialog.input('passcode', type=xbmcgui.INPUT_ALPHANUM)
-                        except:
-                            pass
-
-                    count = 1
-                    loop = True
-                    while loop:
-                        instanceName = self.PLUGIN_NAME+str(count)
-                        try:
-                            username = settings.getSetting(instanceName+'_username')
-                            if username == invokedUsername:
-                                addon.setSetting(instanceName + '_type', str(4))
-                                addon.setSetting(instanceName + '_username', str(invokedUsername))
-                                addon.setSetting(instanceName + '_passcode', str(passcode))
-                                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                                loop = False
-                            elif username == '':
-                                addon.setSetting(instanceName + '_type', str(4))
-                                addon.setSetting(instanceName + '_username', str(invokedUsername))
-                                addon.setSetting(instanceName + '_passcode', str(passcode))
-                                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                                loop = False
-
-                        except:
-                            pass
-
-                        if count == numberOfAccounts:
-                            #fallback on first defined account
-                            addon.setSetting(instanceName + '_type', str(4))
-                            addon.setSetting(instanceName + '_username', invokedUsername)
-                            addon.setSetting(instanceName + '_passcode', str(passcode))
-                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                            loop = False
-                        count = count + 1
-
-                else:
-                    count = 1
-                    loop = True
-                    while loop:
-                        instanceName = self.PLUGIN_NAME+str(count)
-                        try:
-                            username = settings.getSetting(instanceName+'_username')
-                            if username == invokedUsername:
-                                addon.setSetting(instanceName + '_type', str(1))
-                                addon.setSetting(instanceName + '_code', str(code))
-                                addon.setSetting(instanceName + '_username', str(invokedUsername))
-                                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                                loop = False
-                            elif username == '':
-                                addon.setSetting(instanceName + '_type', str(1))
-                                addon.setSetting(instanceName + '_code', str(code))
-                                addon.setSetting(instanceName + '_username', str(invokedUsername))
-                                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                                loop = False
-
-                        except:
-                            pass
-
-                        if count == numberOfAccounts:
-                            #fallback on first defined account
-                            addon.setSetting(instanceName + '_type', str(1))
-                            addon.setSetting(instanceName + '_code', code)
-                            addon.setSetting(instanceName + '_username', invokedUsername)
-                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30118), invokedUsername)
-                            loop = False
-                        count = count + 1
 
     ##
     # Delete an account, enroll an account or refresh the current listings
@@ -475,7 +394,7 @@ class contentengine(object):
                             self.addMenu(self.PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
 
                     except:
-                        pass
+                        username = ''
                     if count == numberOfAccounts:
                         break
                     count = count + 1
@@ -707,7 +626,7 @@ class contentengine(object):
         try:
             instanceName = (plugin_queries['instance']).lower()
         except:
-            pass
+            instanceName = ''
         # cloudservice - content type
         contextType = settings.getParameter('content_type')
 
@@ -762,7 +681,7 @@ class contentengine(object):
                         pDialog = xbmcgui.DialogProgressBG()
                         pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
                     except:
-                        pass
+                        pDialog = None
 
                 url = settings.getParameter('streamurl')
                 url = re.sub('---', '&', url)
@@ -893,7 +812,7 @@ class contentengine(object):
                         pDialog.update(100)
                         pDialog.close()
                     except:
-                        pass
+                        pDialog = None
                 if silent == 0:
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
             xbmcplugin.endOfDirectory(self.plugin_handle)
@@ -926,7 +845,7 @@ class contentengine(object):
                         pDialog = xbmcgui.DialogProgressBG()
                         pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
                     except:
-                        pass
+                        pDialog = None
 
                 url = settings.getParameter('streamurl')
                 url = re.sub('---', '&', url)
@@ -1045,7 +964,7 @@ class contentengine(object):
                         pDialog.update(100)
                         pDialog.close()
                     except:
-                        pass
+                        pDialog = None
                 if silent == 0:
                     xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
             xbmcplugin.endOfDirectory(self.plugin_handle)
@@ -1087,7 +1006,7 @@ class contentengine(object):
             try:
                 path = settings.getSetting('strm_path')
             except:
-                pass
+                path = ''
 
 
             if path != '':
@@ -1096,7 +1015,7 @@ class contentengine(object):
                     pDialog = xbmcgui.DialogProgressBG()
                     pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
                 except:
-                    pass
+                    pDialog = None
 
 
                 #service = gdrive_api2.gdrive(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
@@ -1111,7 +1030,7 @@ class contentengine(object):
                     pDialog.update(100)
                     pDialog.close()
                 except:
-                    pass
+                    pDialog = None
 
             xbmcplugin.endOfDirectory(self.plugin_handle)
             return
@@ -1168,7 +1087,8 @@ class contentengine(object):
 
                         spreadsheets = service.gSpreadsheet.getSpreadsheetList()
                     except:
-                        pass
+                        service.gSpreadsheet = None
+                        spreadsheets = None
 
                     for title in spreadsheets.iterkeys():
                         if title == 'CLOUD_DB':
@@ -1250,7 +1170,8 @@ class contentengine(object):
 
                             spreadsheets = service.gSpreadsheet.getSpreadsheetList()
                         except:
-                            pass
+                            service.gSpreadsheet = None
+                            spreadsheets = None
 
                         for t in spreadsheets.iterkeys():
                             if t == 'Movie2':
@@ -1442,7 +1363,8 @@ class contentengine(object):
                                 try:
                                     item.folder.displaytitle =  encrypt.decryptString(str(item.folder.title))
                                     service.addDirectory(item.folder, contextType=contextType, encfs=True )
-                                except: pass
+                                except:
+                                    item.folder.displaytitle = str(item.folder.title)
                             else:
                                 try:
                                     item.file.displaytitle = encrypt.decryptString(str(item.file.title))
@@ -1450,7 +1372,7 @@ class contentengine(object):
                                     if contentType < 9 or media_re.search(str(item.file.title)):
                                         service.addMediaFile(item, contextType=contextType,  encfs=True)
                                 except:
-                                    pass
+                                    item.file.displaytitle = str(item.file.title)
 
                 else:
 
@@ -1926,7 +1848,8 @@ class contentengine(object):
 
                     spreadsheets = service.gSpreadsheet.getSpreadsheetList()
                 except:
-                    pass
+                    service.gSpreadsheet = None
+                    spreadsheets = None
 
                 spreadsheet = None
                 for t in spreadsheets.iterkeys():
@@ -2078,7 +2001,7 @@ class contentengine(object):
                                             #file = file.decode('unicode-escape')
                                             file = file.encode('utf-8')
                                         except:
-                                            pass
+                                            file = str(file)
                                         player.setSubtitles(file)
 
                             if KODI:
@@ -2399,7 +2322,8 @@ class contentengine(object):
 
                                     spreadsheets = service.gSpreadsheet.getSpreadsheetList()
                                 except:
-                                    pass
+                                    service.gSpreadsheet = None
+                                    spreadsheets = None
 
                                 for title in spreadsheets.iterkeys():
                                     if title == 'CLOUD_DB':
@@ -2702,7 +2626,7 @@ class contentengine(object):
                                     #file = file.decode('unicode-escape')
                                     file = file.encode('utf-8')
                                 except:
-                                    pass
+                                    file = str(file)
                                 player.setSubtitles(file)
 
                     if KODI:
