@@ -32,9 +32,10 @@ if re.search(re.compile('.py', re.IGNORECASE),PLUGIN_URL) is not None:
 
 if KODI:
     # cloudservice - standard XBMC modules
-    import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+    import xbmc, xbmcgui, xbmcplugin
     import xbmcvfs
 else:
+    from resources.libgui import xbmc
     from resources.libgui import xbmcgui
     from resources.libgui import xbmcplugin
 

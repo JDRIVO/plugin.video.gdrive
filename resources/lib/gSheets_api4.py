@@ -29,7 +29,7 @@ if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
 
 if KODI:
 
-    import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+    import xbmc, xbmcgui
 
 
 
@@ -1223,7 +1223,6 @@ class gSheets_api4:
 
             response_data = response.read()
 
-            append = True
             for r in re.finditer('<entry>(.*?)</entry>' ,
                              response_data, re.DOTALL):
 

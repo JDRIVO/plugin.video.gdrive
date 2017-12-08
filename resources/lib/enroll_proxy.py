@@ -23,7 +23,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 from SocketServer import ThreadingMixIn
 import threading
 import re
-import urllib, urllib2
+import urllib2
 import sys
 
 import constants

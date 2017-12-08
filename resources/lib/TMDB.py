@@ -20,7 +20,6 @@
 
 import re
 import urllib2
-import cookielib
 import sys
 
 KODI = True
@@ -59,8 +58,6 @@ class TMDB:
         title = re.sub(' ', '%20', title)
         url = 'https://api.themoviedb.org/3/search/movie?api_key='+self.API_KEY+'&language=en-US&query='+title+'&year='+year
 
-        mediaList = []
-
         req = urllib2.Request(url, None, self.service.getHeadersList())
 
         try:
@@ -92,7 +89,6 @@ class TMDB:
 
         url = 'https://api.themoviedb.org/3/movie/'+movieID+'?api_key='+self.API_KEY + '&language=en-US'
 
-        mediaList = []
 
         req = urllib2.Request(url, None, self.service.getHeadersList())
 

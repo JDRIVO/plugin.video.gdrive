@@ -1078,7 +1078,6 @@ class gSpreadsheets:
 
             response_data = response.read()
 
-            previous = ''
             append = True
             for r in re.finditer('<entry>(.*?)</entry>' ,
                              response_data, re.DOTALL):
@@ -1183,7 +1182,6 @@ class gSpreadsheets:
 
             response_data = response.read()
 
-            previous = ''
             append = True
             for r in re.finditer('<entry>(.*?)</entry>' ,
                              response_data, re.DOTALL):

@@ -61,7 +61,8 @@ class encryption():
 
         if ENCRYPTION_ENABLE == 0:
             return
-        assert iterations > 0
+        if not iterations > 0:
+            return
 
         key = str(password) + str(self.salt)
         for i in range(iterations):

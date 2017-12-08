@@ -26,7 +26,6 @@ import urllib, urllib2
 import socket
 
 import cookielib
-import unicodedata
 
 # cloudservice - standard modules
 from cloudservice import cloudservice
@@ -138,7 +137,8 @@ class gdrive(cloudservice):
 
                     spreadsheets = self.gSpreadsheet.getSpreadsheetList()
                 except:
-                    pass
+                    self.gSpreadsheet = None
+                    spreadsheets = None
 
                 for title in spreadsheets.iterkeys():
                     if title == self.cloudSpreadsheet:#'CLOUD_DB':
@@ -902,7 +902,6 @@ class gdrive(cloudservice):
                 resourceType = ''
                 title = ''
                 fileSize = 0
-                fileExtension = ''
 
                 for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
@@ -916,10 +915,10 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                   title = r.group(1)
                   break
-                for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  fileExtension = r.group(1)
-                  break
+                #for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
+                #             entry, re.DOTALL):
+                #  fileExtension = r.group(1)
+                #  break
 
                 # entry is a photo
                 if ('fanart' in title and (resourceType == 'application/vnd.google-apps.photo' or 'image' in resourceType)):

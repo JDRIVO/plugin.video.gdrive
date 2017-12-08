@@ -646,8 +646,8 @@ class contentengine(object):
 
 
         #*** testing - gdrive
-        if constants.CONST.tvwindow:
-            from resources.lib import tvWindow
+        #if constants.CONST.tvwindow:
+        #    from resources.lib import tvWindow
         from resources.lib import gSpreadsheets
         from resources.lib import gSheets_api4
 
@@ -1424,13 +1424,15 @@ class contentengine(object):
                                 try:
                                     item.folder.displaytitle =  encrypt.decryptString(str(item.folder.title))
                                     sortedMediaItems[str(item.folder.displaytitle) + '_' + str(item.folder.title)] = item
-                                except: pass
+                                except:
+                                    item.folder.displaytitle = item.folder.title
+
                             else:
                                 try:
                                     item.file.displaytitle = encrypt.decryptString(str(item.file.title))
                                     sortedMediaItems[str(item.file.displaytitle) + '_' + str(item.file.title)] = item
                                 except:
-                                    pass
+                                    item.file.displaytitle = item.file.title
 
                         #create the files and folders for decrypting file/folder names
                         for item in sorted (sortedMediaItems):
@@ -2446,7 +2448,6 @@ class contentengine(object):
 
 
 
-                    originalURL = ''
                     if mode != 'audio':
                         cache = cache.cache(package)
                         service.cache = cache
@@ -2716,120 +2717,3 @@ class contentengine(object):
         return
 
 
-
-        # must load after all other (becomes blocking)
-        # streamer
-        if service is not None and service.settings.streamer:
-
-
-            localTVDB = {}
-            localMOVIEDB = {}
-            #load data structure containing TV and Movies from KODI
-            if (settings.getSetting('local_db')):
-
-                result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
-                for match in re.finditer('"episodeid":(\d+)\,"file"\:"([^\"]+)"', result):#, re.S):
-                    localTVDB[match.group(2)] = match.group(1)
-                result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
-                for match in re.finditer('"file":"([^\"]+)","label":"[^\"]+","movieid":(\d+)', result):#, re.S):
-                    localMOVIEDB[match.group(1)] = match.group(2)
-
-
-
-
-            from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-            from resources.lib import streamer
-            import urllib, urllib2
-            from SocketServer import ThreadingMixIn
-            import threading
-
-
-            try:
-                server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
-                server.setAccount(service, '')
-                if (settings.getSetting('local_db')):
-                    server.setTVDB(localTVDB)
-                    server.setTVDB(localMOVIEDB)
-
-                while server.ready:
-                    server.handle_request()
-                server.socket.close()
-            except: pass
-
-
-        #automation - create strm files
-        if 0 and service is not None and instanceName is not None and settings.strm:
-
-
-            import time
-            currentDate = time.strftime("%Y%m%d")
-
-            if addon.getSetting(instanceName+'_changedate') == '' or int(addon.getSetting(instanceName+'_changedate')) < int(currentDate):
-
-
-                try:
-                    path = settings.getSetting('strm_path')
-                except:
-                    pass
-
-
-                if path != '':
-
-                    try:
-                        pDialog = xbmcgui.DialogProgressBG()
-                        pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
-                    except:
-                        pass
-
-
-                    #service = gdrive_api2.gdrive(PLUGIN_URL,addon,instanceName, user_agent, settings)
-
-                    try:
-                        addon.setSetting(instanceName + '_changedate', currentDate)
-                        service.buildSTRM2(path, contentType=contentType, pDialog=pDialog)
-                    except:
-                        pass
-
-                    try:
-                        pDialog.update(100)
-                        pDialog.close()
-                    except:
-                        pass
-
-
-
-        #                player = gPlayer.gPlayer()
-        #                player.play(playbackURL+'|' + service.getHeadersEncoded(), item)
-        #                while not (player.isPlaying()):
-        #                    xbmc.sleep(1)
-
-        #                player.seekTime(1000)
-        #                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
-        #                w.setPlayer(player)
-        #                w.doModal()
-
-        #                player.seekTime(1000)
-        #                w = tvWindow.tvWindow("tvWindow.xml",addon.getAddonInfo('path'),"Default")
-        #                w.setPlayer(player)
-        #                w.doModal()
-
-        #                xbmc.executebuiltin("XBMC.PlayMedia("+str(playbackPath)+'|' + service.getHeadersEncoded()+")")
-
-                    #media = gSpreadsheet.setMediaStatus(worksheets[worksheet], package, watched=2, resume=2)
-                                    #item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
-                                    #                        thumbnailImage=package.file.thumbnail)
-
-                                    #item.setInfo( type="Video", infoLabels={ "Title": package.file.title , "Plot" : package.file.title } )
-                                    #player = gPlayer.gPlayer()
-                                    #player.setService(service)
-                                    #player.setWorksheet(worksheets['db'])
-                                    #if len(media) == 0:
-                                    #    player.PlayStream(mediaURL.url, item, 0, package)
-                                    #else:
-                                    #    player.PlayStream(mediaURL.url, item,media[0][7],package)
-                                    #while not player.isExit:
-                                    #    player.saveTime()
-                                    #    xbmc.sleep(5000)
-
-
-        return outputBuffer
