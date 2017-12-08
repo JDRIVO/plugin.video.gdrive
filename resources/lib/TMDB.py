@@ -32,9 +32,7 @@ if KODI:
 else:
     from resources.libgui import xbmc
 
-from resources.lib import package
 from resources.lib import file
-from resources.lib import folder
 
 
 class TMDB:

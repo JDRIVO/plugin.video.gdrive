@@ -16,8 +16,6 @@
 
 
 '''
-import urllib
-import re
 import file
 
 

@@ -21,7 +21,6 @@
 import os
 import re
 import urllib, urllib2
-import cookielib
 import sys
 
 KODI = True
@@ -31,7 +30,6 @@ if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
 if KODI:
     import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
-import authorization
 from resources.lib import package
 from resources.lib import file
 from resources.lib import folder

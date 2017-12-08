@@ -29,12 +29,7 @@ import sys
 import constants
 
 
-KODI = True
-if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
-    KODI = False
 
-if KODI:
-    import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""

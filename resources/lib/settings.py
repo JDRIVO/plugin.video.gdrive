@@ -21,16 +21,8 @@ import sys
 import cgi
 import re
 
-KODI = True
-if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
-    KODI = False
 
-if KODI:
 
-    # cloudservice - standard XBMC modules
-    import xbmcaddon
-else:
-    from resources.libgui import xbmcaddon
 
 
 #http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
@@ -90,8 +82,6 @@ except:pass
 import constants
 addon = constants.addon
 
-#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
-#addon = xbmcaddon.Addon(id='plugin.video.gdrive')
 
 #
 #

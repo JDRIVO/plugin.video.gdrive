@@ -1269,7 +1269,7 @@ class cloudservice(object):
     #   parameters: package, context type, whether file is encfs, encfs:decryption path, encfs:encryption path
     ##
     def addMediaFile(self, package, contextType='video', encfs=False, dpath='', epath=''):
-        thumbnail = self.cache.getThumbnail(self, package.file.thumbnail,package.file.id)
+        #thumbnail = self.cache.getThumbnail(self, package.file.thumbnail,package.file.id)
         listitem = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                                 thumbnailImage=package.file.thumbnail)
 

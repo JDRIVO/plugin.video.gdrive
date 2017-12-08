@@ -30,7 +30,7 @@ PLUGIN_NAME = 'gdrive'
 
 if KODI:
     # cloudservice - standard XBMC modules
-    import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
+    import xbmcaddon
 
     # global variables
     #addon = xbmcaddon.Addon(id='plugin.video.gdrive')

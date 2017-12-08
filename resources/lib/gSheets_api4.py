@@ -1415,9 +1415,9 @@ class gSheets_api4:
         response.close()
 
         editURL=''
-        for r in re.finditer('<link rel=\'(edit)\' type=\'application/atom\+xml\' href=\'([^\']+)\'/>' ,
+        for r in re.finditer('<link rel=\'edit\' type=\'application/atom\+xml\' href=\'([^\']+)\'/>' ,
                              response_data, re.DOTALL):
-            (x,editURL) = r.groups(1)
+            editURL = r.group(1)
 
         for r in re.finditer('<link rel=\'edit\' [^\>]+>(.*?</entry>)' ,
                              response_data, re.DOTALL):

@@ -22,7 +22,6 @@
 import sys
 import urllib
 import re
-import os
 
 # cloudservice - standard XBMC modules
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
@@ -120,7 +119,7 @@ if service is not None and service.settings.streamer:
 
     from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
     from resources.lib import streamer
-    import urllib, urllib2
+    import urllib
     from SocketServer import ThreadingMixIn
     import threading
 

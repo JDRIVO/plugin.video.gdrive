@@ -614,10 +614,7 @@ class contentengine(object):
         #return
 #class run():
         # cloudservice - required python modules
-        import sys
         import urllib
-        import re
-        import os
 
         KODI = True
         if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
@@ -666,8 +663,8 @@ class contentengine(object):
         from resources.lib import gPlayer
         from resources.lib import settings
         from resources.lib import cache
-        if constants.CONST.tmdb:
-            from resources.lib import TMDB
+#        if constants.CONST.tmdb:
+#            from resources.lib import TMDB
 
 
 
@@ -1585,10 +1582,10 @@ class contentengine(object):
                     spreadsheets = service.getSpreadsheetList()
 
 
-                    channels = []
-                    for title in spreadsheets.iterkeys():
-                        if title == 'TVShows':
-                          worksheets = gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
+                    #channels = []
+                    #for title in spreadsheets.iterkeys():
+                    #    if title == 'TVShows':
+                    #      worksheets = gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
 
                           #if 0:
                           #  import time
@@ -1989,7 +1986,6 @@ class contentengine(object):
             player.setService(service)
             resolvedPlayback = True
             startPlayback = False
-            toExit = False
             #package = None
 
             if encfs:
@@ -2382,7 +2378,6 @@ class contentengine(object):
                             player.setMedia(mediaItems)
                             player.playList(service)
                             resolvedPlayback = False
-                            toExit = True
 
                 # title provided
                 else:
