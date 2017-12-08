@@ -2,7 +2,6 @@ from resources.lib import  encryption
 #from subprocess import call
 
 import sys
-import os
 
 saltFile = str(sys.argv[1])
 password = str(sys.argv[2])

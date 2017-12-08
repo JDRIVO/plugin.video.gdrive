@@ -64,7 +64,8 @@ def parse_query(query):
     queries = {}
     try:
         queries = cgi.parse_qs(query)
-    except:pass
+    except:
+        return
     q = {}
     for key, value in queries.items():
         q[key] = value[0]
@@ -76,7 +77,9 @@ def parse_query(query):
 plugin_queries = None
 try:
     plugin_queries = parse_query(sys.argv[2][1:])
-except:pass
+except:
+    plugin_queries = None
+
 
 # global variables
 import constants

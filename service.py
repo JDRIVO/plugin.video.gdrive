@@ -65,8 +65,8 @@ from resources.lib import mediaurl
 from resources.lib import gPlayer
 from resources.lib import settings
 from resources.lib import cache
-if constants.CONST.tmdb:
-    from resources.lib import TMDB
+#if constants.CONST.tmdb:
+#    from resources.lib import TMDB
 
 
 
@@ -77,7 +77,10 @@ plugin_queries = None
 try:
     plugin_handle = int(sys.argv[1])
     plugin_queries = settings.parse_query(sys.argv[2][1:])
-except: pass
+except:
+    plugin_handle = None
+    plugin_queries = None
+
 
 addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 
@@ -134,5 +137,5 @@ if service is not None and service.settings.streamer:
         while server.ready:
             server.handle_request()
         server.socket.close()
-    except: pass
+    except: return
 

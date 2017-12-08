@@ -83,7 +83,7 @@ class contentengine(object):
             xbmc.log(self.addon.getLocalizedString(30016), xbmc.LOGERROR)
             sys.exit(1)
         except :
-            pass
+            return
 
 
 

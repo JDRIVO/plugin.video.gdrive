@@ -835,7 +835,7 @@ class gdrive(cloudservice):
                                 mediaFile.playcount = mediaFile.playcount + 1
 
 
-                    except: pass
+                    except: return media
                     return media
 
 

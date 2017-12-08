@@ -27,10 +27,11 @@ if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
 
 if KODI:
 
-    import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+    import xbmc, xbmcgui
 
 else:
     from resources.libgui import  xbmc
+    from resources.libgui import  xbmcgui
 
 
 import constants
@@ -99,7 +100,7 @@ class gPlayer(xbmc.Player):
             if newTime > self.seek:
                 self.time = newTime
         except:
-            pass
+            return
 
     def PlayStream(self, url, item, seek, startPlayback=True, package=None):
 
@@ -267,7 +268,7 @@ class gPlayer(xbmc.Player):
                         if self.service.settings and foundMatch==1:
                             xbmc.log(self.service.addon.getAddonInfo('name') + ': Found local movie db  id='+str(self.package.file.MOVIEID), xbmc.LOGNOTICE)
 
-        except: pass
+        except: return
 
 
     def onPlayBackEnded(self):
@@ -304,7 +305,7 @@ class gPlayer(xbmc.Player):
 #                xbmc.executeJSONRPC('{"params": {"episodeid": '+str(episodeID)+', "playcount": '+str(self.package.file.playcount+1)+'}, "jsonrpc": "2.0", "id": "setResumePoint", "method": "VideoLibrary.SetEpisodeDetails"}')
 
 
-            except: pass
+            except: return
 
             try:
 
@@ -352,7 +353,7 @@ class gPlayer(xbmc.Player):
                             if self.service.settings and foundMatch==1:
                                 xbmc.log(self.service.addon.getAddonInfo('name') + ': 2 Updated local movie db id='+str(self.package.file.MOVIEID) + ' playcount='+ str(int(self.package.file.playcount)+1), xbmc.LOGNOTICE)
 
-            except: pass
+            except: return
 
             #try:
 
@@ -391,7 +392,7 @@ class gPlayer(xbmc.Player):
                 #result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"], "limits":{"end":3}}, "id": "1"}')
 
 
-            except: pass
+            except: return
 
         try:
 
@@ -461,7 +462,7 @@ class gPlayer(xbmc.Player):
                                         xbmc.log(self.service.addon.getAddonInfo('name') + ': 3 Updated local movie db playcount='+ str(int(self.package.file.playcount)) + ' time=' +self.time+' duration='+self.package.file.duration , xbmc.LOGNOTICE)
 
 
-        except: pass
+        except: return
 
 
         #self.current = self.current +1
