@@ -86,7 +86,7 @@ class gSheets_api4:
             return False
 
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -212,7 +212,7 @@ class gSheets_api4:
             return False
 
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -1120,8 +1120,6 @@ class gSheets_api4:
 
             response_data = response.read()
 
-            previous = ''
-            append = True
             for r in re.finditer('<entry>(.*?)</entry>' ,
                              response_data, re.DOTALL):
 
@@ -1225,7 +1223,6 @@ class gSheets_api4:
 
             response_data = response.read()
 
-            previous = ''
             append = True
             for r in re.finditer('<entry>(.*?)</entry>' ,
                              response_data, re.DOTALL):
@@ -1463,7 +1460,7 @@ class gSheets_api4:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e.read()), xbmc.LOGERROR)
 
 
-        response_data = response.read()
+        response.read()
 
         response.close()
 
@@ -1538,7 +1535,7 @@ class gSheets_api4:
                 xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e.read()), xbmc.LOGERROR)
 
 
-            response_data = response.read()
+            response.read()
             response.close()
         else:
             if resume != '' and watched != '':

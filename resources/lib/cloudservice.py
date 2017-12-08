@@ -653,8 +653,6 @@ class cloudservice(object):
         if CHUNK < 1024:
             CHUNK = 131072
 
-        count = 0
-
 
         path = re.sub(r'\/[^\/]+$', r'', folderName)
         if folderName == path:
@@ -1498,13 +1496,13 @@ class cloudservice(object):
                 if mediaURL.qualityDesc == 'original':
                     options.append(mediaURL.qualityDesc)
                     newMediaURLs.append(mediaURL)
-                    originalURL = mediaURL.url
+                    #originalURL = mediaURL.url
         else:
             for mediaURL in mediaURLs:
                 options.append(mediaURL.qualityDesc)
                 newMediaURLs.append(mediaURL)
-                if mediaURL.qualityDesc == 'original':
-                    originalURL = mediaURL.url
+                #if mediaURL.qualityDesc == 'original':
+                    #originalURL = mediaURL.url
 
         mediaURL = ''
 #        if self.settings.download or  self.settings.cache:

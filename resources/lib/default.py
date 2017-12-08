@@ -337,7 +337,7 @@ class contentengine(object):
                 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
                 from resources.lib import enroll_proxy
                 import urllib, urllib2
-                from SocketServer import ThreadingMixIn
+
                 import threading
 
                 server = enroll_proxy.MyHTTPServer(('',  9999), enroll_proxy.enrollBrowser)
@@ -645,7 +645,6 @@ class contentengine(object):
         self.PLUGIN_NAME = constants.PLUGIN_NAME
 
 
-        cloudservice3 = constants.cloudservice3
         cloudservice2 = constants.cloudservice2
 
 
@@ -658,10 +657,9 @@ class contentengine(object):
         ##**
 
         # cloudservice - standard modules
-        from resources.lib import cloudservice
         from resources.lib import authorization
         from resources.lib import folder
-        from resources.lib import teamdrive
+        #from resources.lib import teamdrive
         from resources.lib import file
         from resources.lib import package
         from resources.lib import mediaurl
@@ -967,14 +965,11 @@ class contentengine(object):
                                 if username == invokedUsername:
 
                                     #let's log in
-                                    #if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                        #service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings, DBM=DBM)
-                                    #else:
                                     service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
                                     loop = False
                             except:
-                                #service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent)
+
                                 break
 
                             if count == numberOfAccounts:
@@ -982,9 +977,6 @@ class contentengine(object):
                                     service
                                 except NameError:
                                     #fallback on first defined account
-                                    #if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                    #    service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
-                                    #else:
                                     service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
                                 break
                             count = count + 1
@@ -1037,9 +1029,6 @@ class contentengine(object):
                             username = settings.getSetting(instanceName+'_username')
 
                             if username != '' and username == invokedUsername:
-                                #if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                #        service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
-                                #else:
                                 service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
                                 service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=True)
@@ -1050,9 +1039,6 @@ class contentengine(object):
                                     service
                                 except NameError:
                                     #fallback on first defined account
-                                    #if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                    #        service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings)
-                                    #else:
                                     service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
                                 break
                             count = count + 1
@@ -1088,8 +1074,6 @@ class contentengine(object):
             service = None
         elif instanceName is None:
             service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,'', user_agent, settings, authenticate=False,DBM=DBM)
-        #elif settings.getSettingInt(instanceName+'_type',0)==0 :
-        #    service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
         else:
             service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
@@ -1327,8 +1311,8 @@ class contentengine(object):
                         if contextType == '':
                             contextType = 'video'
 
-                        if constants.CONST.tmdb:
-                            tmdb= TMDB.TMDB(service,addon, user_agent)
+                        #if constants.CONST.tmdb:
+                        #    tmdb= TMDB.TMDB(service,addon, user_agent)
 
                         if mediaItems:
                             for item in mediaItems:
@@ -1606,48 +1590,48 @@ class contentengine(object):
                         if title == 'TVShows':
                           worksheets = gSpreadsheet.getSpreadsheetWorksheets(spreadsheets[title])
 
-                          if 0:
-                            import time
-                            hour = time.strftime("%H")
-                            minute = time.strftime("%M")
-                            weekDay = time.strftime("%w")
-                            month = time.strftime("%m")
-                            day = time.strftime("%d")
+                          #if 0:
+                          #  import time
+                          #  hour = time.strftime("%H")
+                          #  minute = time.strftime("%M")
+                          #  weekDay = time.strftime("%w")
+                          #  month = time.strftime("%m")
+                          #  day = time.strftime("%d")
 
 
-                            for worksheet in worksheets.iterkeys():
-                                 if worksheet == 'schedule':
-                                     channels = gSpreadsheet.getChannels(worksheets[worksheet])
-                                     ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), channels)
-                                     shows = gSpreadsheet.getShows(worksheets[worksheet] ,channels[ret])
-                                     showList = []
-                                     for show in shows:
-                                         showList.append(shows[show][6])
-                                     ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), showList)
+                          #  for worksheet in worksheets.iterkeys():
+                          #       if worksheet == 'schedule':
+                          #           channels = gSpreadsheet.getChannels(worksheets[worksheet])
+                          #           ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), channels)
+                          #           shows = gSpreadsheet.getShows(worksheets[worksheet] ,channels[ret])
+                          #           showList = []
+                          #           for show in shows:
+                          #               showList.append(shows[show][6])
+                          #           ret = xbmcgui.Dialog().select(addon.getLocalizedString(30112), showList)
 
-                            for worksheet in worksheets.iterkeys():
-                                if worksheet == 'data':
-                                    episodes = gSpreadsheet.getVideo(worksheets[worksheet] ,showList[ret])
-                                    #player = gPlayer.gPlayer()
-                                    #player.setService(service)
-                                    player.setContent(episodes)
-                                    player.setWorksheet(worksheets['data'])
-                                    player.next()
-                                    while KODI and not player.isExit:
-                                        xbmc.sleep(5000)
-                          else:
-                            for worksheet in worksheets.iterkeys():
-                                if worksheet == 'db':
-                                    episodes = gSpreadsheet.getMedia(worksheets[worksheet], service.getRootID())
-                                    #player = gPlayer.gPlayer()
-                                    #player.setService(service)
-        #                            player.setContent(episodes)
-                                    player.setWorksheet(worksheets['db'])
-                                    player.PlayStream('plugin://plugin.video.'+constants.PLUGIN_NAME+'-testing/?mode=video&instance='+str(service.instanceName)+'&title='+episodes[0][3], None,episodes[0][7],episodes[0][2])
-                                    #player.next()
-                                    while KODI and not player.isExit:
-                                        player.saveTime()
-                                        xbmc.sleep(5000)
+                          #  for worksheet in worksheets.iterkeys():
+                          #      if worksheet == 'data':
+                          #          episodes = gSpreadsheet.getVideo(worksheets[worksheet] ,showList[ret])
+                          #          #player = gPlayer.gPlayer()
+                          #          #player.setService(service)
+                          #          player.setContent(episodes)
+                          #          player.setWorksheet(worksheets['data'])
+                          #          player.next()
+                          #          while KODI and not player.isExit:
+                          #              xbmc.sleep(5000)
+                          #else:
+                          #  for worksheet in worksheets.iterkeys():
+                          #      if worksheet == 'db':
+                          #          episodes = gSpreadsheet.getMedia(worksheets[worksheet], service.getRootID())
+                          #          #player = gPlayer.gPlayer()
+                          #          #player.setService(service)
+        #                 #           player.setContent(episodes)
+                          #          player.setWorksheet(worksheets['db'])
+                          #          player.PlayStream('plugin://plugin.video.'+constants.PLUGIN_NAME+'-testing/?mode=video&instance='+str(service.instanceName)+'&title='+episodes[0][3], None,episodes[0][7],episodes[0][2])
+                          #          #player.next()
+                          #          while KODI and not player.isExit:
+                          #              player.saveTime()
+                          #              xbmc.sleep(5000)
 
         ##** not in use
         elif mode == 'photo':

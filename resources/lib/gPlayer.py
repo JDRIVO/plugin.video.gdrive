@@ -138,7 +138,6 @@ class gPlayer(xbmc.Player):
 
             playbackURL = ''
             playbackQuality = ''
-            playbackPath = ''
             if service.settings.promptQuality:
                 if len(options) > 1:
                     ret = xbmcgui.Dialog().select(service.addon.getLocalizedString(30033), options)
