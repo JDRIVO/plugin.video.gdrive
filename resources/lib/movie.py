@@ -40,8 +40,7 @@ class movie(file):
         self.authors = authors
 
     def __repr__(self):
-        return '{}: {} {}'.format(self.__class__.__name__,
-                                  self.title)
+        return '{}: {} {}'.format(self.__class__.__name__,self.title)
 
     def __cmp__(self, other):
         if hasattr(other, 'title'):

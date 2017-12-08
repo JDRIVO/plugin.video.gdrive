@@ -265,50 +265,6 @@ class gSpreadsheets:
 
         return True
 
-    #
-    # returns a list of worksheets with a link to their listfeeds
-    #
-    def getSpreadsheetWorksheets(self,url):
-
-        worksheets = {}
-        while True:
-            req = urllib2.Request(url, None, self.service.getHeadersList())
-
-            try:
-                response = urllib2.urlopen(req)
-            except urllib2.URLError, e:
-              if e.code == 403 or e.code == 401:
-                self.service.refreshToken()
-                req = urllib2.Request(url, None, self.service.getHeadersList())
-                try:
-                    response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
-                    xbmc.log(self.addon.getAddonInfo('getSpreadsheetWorksheets') + ': ' + str(e), xbmc.LOGERROR)
-              else:
-                xbmc.log(self.addon.getAddonInfo('getSpreadsheetWorksheets') + ': ' + str(e), xbmc.LOGERROR)
-
-            response_data = response.read()
-            response.close()
-
-
-            for r in re.finditer('<title[^>]+\>([^<]+)</title><content[^>]+\>[^<]+</content><link rel=\'[^\#]+\#listfeed\' type=\'application/atom\+xml\' href=\'([^\']+)\'' ,
-                             response_data, re.DOTALL):
-                title,url = r.groups()
-                worksheets[title] = url
-
-            nextURL = ''
-            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
-                             response_data, re.DOTALL):
-                nextURL = r.groups()
-
-
-            if nextURL == '':
-                break
-            else:
-                url = nextURL[0]
-
-
-        return worksheets
 
 
 

@@ -155,7 +155,7 @@ class encryption():
 
 
 
-    def decryptStreamChunk(self,response, wfile, adjStart, adjEnd, chunksize=16*1024):
+    def decryptStreamChunk(self,response, wfile, adjStart=0, adjEnd=0, chunksize=16*1024):
             if ENCRYPTION_ENABLE == 0:
                 return
             #origsize = struct.unpack('<Q', response.read(struct.calcsize('Q')))[0]

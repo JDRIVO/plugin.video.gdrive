@@ -308,7 +308,7 @@ class myStreamer(BaseHTTPRequestHandler):
                 decrypt = encryption.encryption(self.server.service.settings.cryptoSalt,self.server.service.settings.cryptoPassword)
 
                 CHUNK = 16 * 1024
-                decrypt.decryptStreamChunk(response,self.wfile, startOffset=startOffset)
+                decrypt.decryptStreamChunk(response,self.wfile, adjStart=startOffset)
 
             else:
                 CHUNK = 16 * 1024
@@ -378,7 +378,7 @@ class myStreamer(BaseHTTPRequestHandler):
                 decrypt = encryption.encryption(self.server.service.settings.cryptoSalt,self.server.service.settings.cryptoPassword)
 
                 CHUNK = 16 * 1024
-                decrypt.decryptStreamChunk(response,self.wfile, 16)
+                decrypt.decryptStreamChunk(response,self.wfile, CHUNK)
 
             else:
                 CHUNK = 16 * 1024

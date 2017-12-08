@@ -98,7 +98,7 @@ class cloudservice(object):
     # return the appropriate "headers" for requests that include 1) user agent, 2) any authorization cookies/tokens
     #   returns: list containing the header
     ##
-    def getHeadersList(self):
+    def getHeadersList(self, isPOST=False, additionalHeader=None, additionalValue=None, isJSON=False):
         return { 'User-Agent' : self.user_agent }
 
     ##

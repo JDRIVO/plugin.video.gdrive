@@ -125,5 +125,5 @@ if service is not None and service.settings.streamer:
         while server.ready:
             server.handle_request()
         server.socket.close()
-    except: return
+    except: break
 
