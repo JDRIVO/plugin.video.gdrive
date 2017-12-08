@@ -18,10 +18,8 @@
 
 '''
 
-import os
 import re
 import urllib, urllib2
-import cookielib
 import json
 import sys
 
@@ -35,7 +33,6 @@ if KODI:
 
 
 
-import authorization
 from resources.lib import package
 from resources.lib import file
 from resources.lib import folder
@@ -126,7 +123,7 @@ class gSheets_api4:
             return False
 
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -248,7 +245,7 @@ class gSheets_api4:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -290,7 +287,7 @@ class gSheets_api4:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -323,7 +320,7 @@ class gSheets_api4:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -732,7 +729,6 @@ class gSheets_api4:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -793,7 +789,6 @@ class gSheets_api4:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:(\d+)' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -839,7 +834,6 @@ class gSheets_api4:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
                          response_data, re.DOTALL):
             item = r.group(1)

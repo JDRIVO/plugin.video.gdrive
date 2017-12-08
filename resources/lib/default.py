@@ -360,7 +360,6 @@ class contentengine(object):
                     ret = xbmcgui.Dialog().select('select type', options)
 
                     invokedUsername = ''
-                    password = ''
                     if ret == 0:
                         try:
                             dialog = xbmcgui.Dialog()
@@ -679,7 +678,6 @@ class contentengine(object):
             self.PLUGIN_URL = sys.argv[0]
             self.plugin_handle = int(sys.argv[1])
             plugin_queries = settings.parse_query(sys.argv[2][1:])
-            addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 
         else:
             self.PLUGIN_URL = 'default.py'
@@ -688,7 +686,6 @@ class contentengine(object):
 
             plugin_queries = settings.parse_query(query)
             settings.plugin_queries = plugin_queries
-            addon_dir = ''
 
 
         self.debugger()
@@ -709,15 +706,6 @@ class contentengine(object):
 
         # make mode case-insensitive
         mode = mode.lower()
-
-
-        #*** old - gdrive
-        # allow for playback of public videos without authentication
-        if (mode == 'streamurl'):
-          authenticate = False
-        else:
-          authenticate = True
-        ##**
 
 
         instanceName = ''
@@ -2485,8 +2473,6 @@ class contentengine(object):
                         service.cache = cache
                         package.file.thumbnail = cache.setThumbnail(service)
 
-                       # SRTURL = ''
-                        srtpath = ''
                         if settings.srt and  (service.protocol == 2 or service.protocol == 3):
                             cache.setSRT(service)
 
@@ -2691,7 +2677,7 @@ class contentengine(object):
 
                                 try:
                                     response = urllib2.urlopen(req)
-                                    response_data = response.read()
+                                    response.read()
                                     response.close()
                                 except urllib2.URLError, e:
                                     xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)

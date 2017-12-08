@@ -902,10 +902,8 @@ class gdrive(cloudservice):
                 resourceType = ''
                 title = ''
                 fileSize = 0
-                thumbnail = ''
                 fileExtension = ''
 
-                url = ''
                 for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   resourceID = r.group(1)
@@ -918,9 +916,6 @@ class gdrive(cloudservice):
                              entry, re.DOTALL):
                   title = r.group(1)
                   break
-                for r in re.finditer('\"thumbnailLink\"\:\s+\"([^\"]+)\"' ,
-                             entry, re.DOTALL):
-                  thumbnail = r.group(1)
                 for r in re.finditer('\"fileExtension\"\:\s+\"([^\"]+)\"' ,
                              entry, re.DOTALL):
                   fileExtension = r.group(1)
@@ -1940,7 +1935,7 @@ class gdrive(cloudservice):
     def getSubFolderID(self,folderName, parentID):
 
 
-        URL = 'https://www.googleapis.com/drive/v2/files?includeTeamDriveItems=true&supportsTeamDrives=true&q=\''+parentID+'\'+in+parents+and+trashed%3Dfalse&fields=nextLink%2Citems(kind%2Cid%2CmimeType%2Ctitle%2CfileSize%2CmodifiedDate%2CcreatedDate%2CdownloadUrl%2Cparents/parentLink%2Cmd5Checksum)';
+        url = 'https://www.googleapis.com/drive/v2/files?includeTeamDriveItems=true&supportsTeamDrives=true&q=\''+parentID+'\'+in+parents+and+trashed%3Dfalse&fields=nextLink%2Citems(kind%2Cid%2CmimeType%2Ctitle%2CfileSize%2CmodifiedDate%2CcreatedDate%2CdownloadUrl%2Cparents/parentLink%2Cmd5Checksum)';
 
         while True:
             req = urllib2.Request(url, None, self.getHeadersList())

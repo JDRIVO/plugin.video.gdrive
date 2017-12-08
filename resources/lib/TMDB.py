@@ -19,7 +19,7 @@
 '''
 
 import re
-import urllib, urllib2
+import urllib2
 import cookielib
 import sys
 
