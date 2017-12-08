@@ -18,7 +18,6 @@
 
 '''
 
-import os
 import re
 import urllib, urllib2
 import cookielib
@@ -33,7 +32,6 @@ if KODI:
 else:
     from resources.libgui import xbmc
 
-import authorization
 from resources.lib import package
 from resources.lib import file
 from resources.lib import folder

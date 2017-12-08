@@ -120,7 +120,7 @@ class gdrive(cloudservice):
                 self.getToken(self.getInstanceSetting('code'))
             else:
                 xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017), self.addon.getLocalizedString(30018))
-                xbmc.log(str(e))
+
         #***
         self.cache = cache.cache()
 
