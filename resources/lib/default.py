@@ -147,7 +147,7 @@ class contentengine(object):
           if contextType == 'video':
 
             if encfs:
-                contentTypeDecider =  int(settings.getSetting('context_evideo',0))
+                contentTypeDecider =  int(settings.getSettingInt('context_evideo',0))
 
                 if contentTypeDecider == 1:
                     contentType = 8
@@ -155,7 +155,7 @@ class contentengine(object):
                     contentType = 9
 
             else:
-                contentTypeDecider = int(settings.getSetting('context_video',0))
+                contentTypeDecider = int(settings.getSettingInt('context_video',0))
 
                 if contentTypeDecider == 2:
                     contentType = 2
@@ -170,14 +170,14 @@ class contentengine(object):
 
           elif contextType == 'audio':
             if encfs:
-                contentTypeDecider =  int(settings.getSetting('context_emusic',0))
+                contentTypeDecider =  int(settings.getSettingInt('context_emusic',0))
                 if contentTypeDecider == 1:
                     contentType = 8
                 else:
                     contentType = 10
             else:
 
-                contentTypeDecider = int(settings.getSetting('context_music', 0))
+                contentTypeDecider = int(settings.getSettingInt('context_music', 0))
 
                 if contentTypeDecider == 1:
                     contentType = 4
@@ -189,13 +189,13 @@ class contentengine(object):
 
           elif contextType == 'image':
             if encfs:
-                contentTypeDecider =  int(settings.getSetting('context_ephoto',0))
+                contentTypeDecider =  int(settings.getSettingInt('context_ephoto',0))
                 if contentTypeDecider == 1:
                     contentType = 8
                 else:
                     contentType = 11
             else:
-                contentTypeDecider = int(settings.getSetting('context_photo', 0))
+                contentTypeDecider = int(settings.getSettingInt('context_photo', 0))
 
                 if contentTypeDecider == 2:
                     contentType = 7
@@ -674,7 +674,7 @@ class contentengine(object):
                 url = settings.getParameter('streamurl')
                 url = re.sub('---', '&', url)
                 title = settings.getParameter('title')
-                type = int(settings.getParameter('type', 0))
+                type = int(settings.getParameterInt('type', 0))
 
                 if url != '':
 
@@ -838,7 +838,7 @@ class contentengine(object):
                 url = settings.getParameter('streamurl')
                 url = re.sub('---', '&', url)
                 title = settings.getParameter('title')
-                type = int(settings.getParameter('type', 0))
+                type = int(settings.getParameterInt('type', 0))
 
                 if url != '':
 

@@ -46,7 +46,7 @@ if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
 if KODI:
 
     # cloudservice - standard XBMC modules
-    import xbmc, xbmcaddon, xbmcgui, xbmcplugin, xbmcvfs
+    import xbmc, xbmcaddon, xbmcgui, xbmcvfs
 
 else:
     from resources.libgui import xbmcaddon
@@ -442,10 +442,10 @@ class gdrive(cloudservice):
                 try:
                   response = urllib2.urlopen(req)
                 except urllib2.URLError, e:
-                  xbmc.log('getMediaList ' + e)
+                  xbmc.log('getMediaList ' + str(e))
                   return
               else:
-                xbmc.log('getMediaList ' + e)
+                xbmc.log('getMediaList ' + str(e))
                 return
 
             response_data = response.read()
@@ -564,10 +564,6 @@ class gdrive(cloudservice):
                     if media is not None:
                         mediaFiles.append(media)
 
-            # look for more pages of videos
-            for r in re.finditer('\"largestChangeId\"\:\s+\"(\d)\"' ,
-                             response_data, re.DOTALL):
-                largestChangeId = r.group(1)
 
             # look for more pages of videos
             for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
@@ -1098,8 +1094,8 @@ class gdrive(cloudservice):
             # parsing page for videos
             # video-entry
             count=0
-            for r in re.finditer('\<track id\=\"\d+\" .*? lang_code\=\"([^\"]+)\" .*? lang_translated\=\"([^\"]+)\" [^\>]+\>' ,response_data, re.DOTALL):
-                lang,language = r.groups()
+            for r in re.finditer('\<track id\=\"\d+\" .*? lang_code\=\"([^\"]+)\" .*? lang_translated\=\"[^\"]+\" [^\>]+\>' ,response_data, re.DOTALL):
+                lang = r.group(1)
                 cc.append([ '.'+str(count) + '.'+ str(lang) + '.srt',baseURL+'&type=track&lang='+str(lang)+'&name&kind&fmt=1'])
 
             # look for more pages of videos
@@ -1455,7 +1451,6 @@ class gdrive(cloudservice):
         # fetch streams (video)
         if docid != '':
             # player using docid
-            params = urllib.urlencode({'docid': docid})
             url = self.PROTOCOL+ 'drive.google.com/get_video_info?docid=' + str(docid)
 
 

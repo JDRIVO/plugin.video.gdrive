@@ -24,7 +24,6 @@ from SocketServer import ThreadingMixIn
 import threading
 import re
 import urllib2
-import sys
 
 import constants
 

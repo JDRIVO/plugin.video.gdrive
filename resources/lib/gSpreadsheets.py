@@ -18,7 +18,6 @@
 
 '''
 
-import os
 import re
 import urllib, urllib2
 import sys
@@ -28,7 +27,11 @@ if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
     KODI = False
 
 if KODI:
-    import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+    import xbmc, xbmcgui
+else:
+    from resources.libgui import xbmc
+    from resources.libgui import xbmcgui
+
 
 from resources.lib import package
 from resources.lib import file

@@ -60,6 +60,20 @@ def getSetting(key,default=''):
     except:
         return default
 
+def getSettingInt(key,default=0):
+    try:
+        value = addon.getSetting(key)
+        if value == '':
+            return default
+        if value == 'true':
+            return True
+        elif value == 'false':
+            return False
+        else:
+            return value
+    except:
+        return default
+
 def parse_query(query):
     queries = {}
     try:
