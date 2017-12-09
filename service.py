@@ -43,10 +43,6 @@ cloudservice2 = constants.cloudservice2
 
 
 
-#*** testing - gdrive
-from resources.lib import gSheets_api4
-
-##**
 
 # cloudservice - standard modules
 from resources.lib import settings

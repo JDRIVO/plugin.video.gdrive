@@ -19,6 +19,8 @@
 import re
 import sys
 import os
+import urllib, urllib2
+
 KODI = True
 if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
     KODI = False
@@ -322,7 +324,6 @@ class contentengine(object):
             if KODI:
                 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
                 from resources.lib import enroll_proxy
-                import urllib, urllib2
 
                 import threading
 
@@ -519,7 +520,6 @@ class contentengine(object):
         #return
 #class run():
         # cloudservice - required python modules
-        import urllib
 
         KODI = True
         if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
@@ -1244,7 +1244,7 @@ class contentengine(object):
             #** gdrive specific
             if mode == 'main':
 
-                self.addMenu(self.PLUGIN_URL+'?mode=index&instance='+str(service.instanceName)+'&content_type=image','[switch to photo view]')
+                #self.addMenu(self.PLUGIN_URL+'?mode=index&instance='+str(service.instanceName)+'&content_type=image','[switch to photo view]')
 
                 if ('gdrive' in constants.PLUGIN_NAME):
 
@@ -1277,17 +1277,17 @@ class contentengine(object):
 
 
                 self.addMenu(self.PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
-                self.addMenu(self.PLUGIN_URL+'?mode=buildstrm2&instance='+str(service.instanceName)+'&content_type='+str(contextType),'<'+addon.getLocalizedString(30202)+'>')
+                self.addMenu(self.PLUGIN_URL+'?mode=buildstrm2&instance='+str(service.instanceName)+'&content_type='+str(contextType),'<'+addon.getLocalizedString(30211)+'>')
                 if constants.CONST.testing_features:
-                    self.addMenu(self.PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_menu&content_type='+str(contextType),'[MOVIES]')
+                    self.addMenu(self.PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_menu&content_type='+str(contextType),'['+addon.getLocalizedString(30212)+']')
 
 
                 #CLOUD_DB
                 if 'gdrive' in constants.PLUGIN_NAME and service.gSpreadsheet is not None:
-                        self.addMenu(self.PLUGIN_URL+'?mode=cloud_db&action=recentstarted&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' recently started]')
-                        self.addMenu(self.PLUGIN_URL+'?mode=cloud_db&action=recentwatched&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' recently watched]')
-                        self.addMenu(self.PLUGIN_URL+'?mode=cloud_db&action=library&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' library]')
-                        self.addMenu(self.PLUGIN_URL+'?mode=cloud_db&action=queued&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' queued]')
+                        self.addMenu(self.PLUGIN_URL+'?mode=cloud_db&action=recentstarted&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' '+addon.getLocalizedString(30213)+']')
+                        self.addMenu(self.PLUGIN_URL+'?mode=cloud_db&action=recentwatched&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' '+addon.getLocalizedString(30214)+']')
+                        self.addMenu(self.PLUGIN_URL+'?mode=cloud_db&action=library&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' '+addon.getLocalizedString(30215)+']')
+                        self.addMenu(self.PLUGIN_URL+'?mode=cloud_db&action=queued&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30177)+' '+addon.getLocalizedString(30216)+']')
             ##**
 
 
