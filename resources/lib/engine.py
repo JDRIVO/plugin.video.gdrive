@@ -2026,7 +2026,7 @@ class contentengine(object):
                             # we need to keep the plugin alive for as long as there is playback from the plugin, or the player object closes
                             while KODI and not player.isExit:
                                 player.saveTime()
-                                xbmc.sleep(5000)
+                                xbmc.sleep(1000)
 
                 else:
 
@@ -2232,7 +2232,7 @@ class contentengine(object):
                     #loop until finished
                     while KODI and not player.isExit:
                         player.saveTime()
-                        xbmc.sleep(5000)
+                        xbmc.sleep(1000)
 
             elif mode == 'search' and contextType != '':
 
@@ -2484,7 +2484,7 @@ class contentengine(object):
                                                         player.PlayStream(mediaURL.url, item,media[0][7],package)
                                                     while KODI and not player.isExit:
                                                         player.saveTime()
-                                                        xbmc.sleep(5000)
+                                                        xbmc.sleep(1000)
 
                             #offline
                             elif mediaURL.offline:
@@ -2651,7 +2651,7 @@ class contentengine(object):
                     # we need to keep the plugin alive for as long as there is playback from the plugin, or the player object closes
                     while KODI and not player.isExit:
                         player.saveTime()
-                        xbmc.sleep(5000)
+                        xbmc.sleep(1000)
 
         xbmcplugin.endOfDirectory(self.plugin_handle)
         return

@@ -140,9 +140,6 @@
 	<!-- video properties -->
     <category label="30025">
 
-    	<!-- testing streamer -->
-        <setting id="streamer" type="bool" label="30194" default="false" />
-        <setting id="stream_port" type="number" subsetting="true" label="30195" default="8011" />
 
         <setting id="video_skip" type="slider" label="30161" default="98" option="percent" range="0,1,100" />
         <setting label="30037" type="lsep"/>

@@ -1,3 +1,5 @@
+v0.8.57 (2017-12-16)
+- sync with videostream
 - replacement enrollment method
 - remove creashreporting module
 - implemented: Rename STRMs to a Kodi friendly format #147

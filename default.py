@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-from resources.lib import default
+from resources.lib import engine
 
 
-mediaEngine = default.contentengine()
+mediaEngine = engine.contentengine()
 mediaEngine.run()

@@ -302,8 +302,6 @@ class myStreamer(BaseHTTPRequestHandler):
             self.send_header('Content-type','video/mp4')
             self.send_header('Accept-Ranges','bytes')
 
-            #self.send_header('ETag',response.info().getheader('ETag'))
-            #self.send_header('Server',response.info().getheader('Server'))
             self.end_headers()
 
             ## may want to add more granular control over chunk fetches
@@ -327,7 +325,6 @@ class myStreamer(BaseHTTPRequestHandler):
                         break
                     self.wfile.write(chunk)
 
-            #response_data = response.read()
             response.close()
 
 
