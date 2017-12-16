@@ -860,7 +860,11 @@ class gdrive(cloudservice):
                     photoURL = url
                     #*** downsize photo
                     if width > self.settings.photoResolution:
-                        photoURL = re.sub('=s\d\d\d', '=s'+ str(self.settings.photoResolution), thumbnail)
+                        # original, remove =s, otherwise substitute with resize
+                        if self.settings.photoResolution == 99999:
+                            photoURL = re.sub('=s\d\d\d', '', thumbnail)
+                        else:
+                            photoURL = re.sub('=s\d\d\d', '=s'+ str(self.settings.photoResolution), thumbnail)
 
 
                     media = package.package(mediaFile,folder.folder(folderName,''))

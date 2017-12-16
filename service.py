@@ -34,10 +34,10 @@ if KODI:
     # global variables
     import constants
     addon = constants.addon
-    self.addon = addon
-    self.PLUGIN_URL = constants.PLUGIN_NAME
 
-self.PLUGIN_NAME = constants.PLUGIN_NAME
+    PLUGIN_URL = constants.PLUGIN_NAME
+
+PLUGIN_NAME = constants.PLUGIN_NAME
 
 cloudservice2 = constants.cloudservice2
 
@@ -76,8 +76,8 @@ user_agent = settings.getSetting('user_agent')
 #if user_agent == 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)':
 #    addon.setSetting('user_agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0')
 
-instanceName = addon_parameters.PLUGIN_NAME + str(settings.getSetting('account_default', 1))
-service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
+instanceName = PLUGIN_NAME + str(settings.getSetting('account_default', 1))
+service = cloudservice2(plugin_handle,PLUGIN_URL,addon,instanceName, user_agent, settings)
 
 
 
@@ -107,18 +107,29 @@ if service is not None and service.settings.streamer:
     import threading
 
 
-    try:
-        server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
-        server.setAccount(service, '')
-        if (settings.getSetting('local_db')):
-            server.setTVDB(localTVDB)
-            server.setTVDB(localMOVIEDB)
 
-        doLoop = True
+    server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
+    server.setAccount(service, '')
+    if (settings.getSetting('local_db')):
+        server.setTVDB(localTVDB)
+        server.setTVDB(localMOVIEDB)
 
-    except:
-        doLoop = False
+    doLoop = True
 
-    while doLoop and server.ready:
-        server.handle_request()
-    server.socket.close()
+    #except:
+    #    doLoop = False
+
+    monitor = xbmc.Monitor()
+
+    thread = threading.Thread(None, server.run)
+    thread.start()
+
+    while not monitor.abortRequested() and doLoop:
+        if monitor.waitForAbort(10):
+            break
+    server.shutdown()
+    thread.join()
+
+    #while not monitor.abortRequested() and doLoop and server.ready:
+    #    server.handle_request()
+    #server.socket.close()

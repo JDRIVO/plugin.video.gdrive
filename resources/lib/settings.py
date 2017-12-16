@@ -48,6 +48,22 @@ def getParameter(key,default=''):
     except:
         return default
 
+def getParameterInt(key,default=0):
+    try:
+        value = plugin_queries[key]
+        if value == '':
+            return default
+        elif value == 'true':
+            return True
+        elif value == 'false':
+            return False
+        elif value is None:
+            return default
+        else:
+            return value
+    except:
+        return default
+
 def getSetting(key,default=''):
     try:
         value = addon.getSetting(key)
@@ -65,10 +81,12 @@ def getSettingInt(key,default=0):
         value = addon.getSetting(key)
         if value == '':
             return default
-        if value == 'true':
+        elif value == 'true':
             return True
         elif value == 'false':
             return False
+        elif value is None:
+            return default
         else:
             return value
     except:
@@ -216,6 +234,19 @@ class settings:
         except:
             return default
 
+
+    def getParameterInt(self, key, default=0):
+        try:
+            value = plugin_queries[key]
+            if value == 'true':
+                return True
+            elif value == 'false':
+                return False
+            else:
+                return value
+        except:
+            return default
+
     def getSetting(self, key, default=''):
         try:
             value = self.addon.getSetting(key)
@@ -223,6 +254,8 @@ class settings:
                 return True
             elif value == 'false':
                 return False
+            elif value is None:
+                return default
             else:
                 return value
         except:

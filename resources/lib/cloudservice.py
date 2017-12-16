@@ -38,6 +38,7 @@ else:
     from resources.libgui import xbmc
     from resources.libgui import xbmcgui
     from resources.libgui import xbmcplugin
+    from resources.libgui import xbmcvfs
 
 
 from resources.lib import mediaurl
@@ -115,7 +116,7 @@ class cloudservice(object):
     ##
     def buildSTRM(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None, catalog=False, musicPath=None, moviePath=None,tvPath=None,videoPath=None):
 
-
+        count = 0
         if catalog:
             if musicPath is None:
                 musicPath = path + '/music'
@@ -125,13 +126,11 @@ class cloudservice(object):
                 tvPath = path + '/tv'
             if videoPath is None:
                 videoPath = path + '/video-other'
-            import xbmcvfs
             xbmcvfs.mkdir(musicPath)
             xbmcvfs.mkdir(tvPath)
             xbmcvfs.mkdir(videoPath)
             xbmcvfs.mkdir(moviePath)
         else:
-            import xbmcvfs
             xbmcvfs.mkdir(path)
 
 
@@ -144,9 +143,9 @@ class cloudservice(object):
                 url = 0
                 if item.file is None:
                     if catalog:
-                        self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath)
+                        count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile, catalog=catalog, musicPath=musicPath, moviePath=moviePath,tvPath=tvPath,videoPath=videoPath)
                     else:
-                        self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile)
+                        count += self.buildSTRM(path + '/'+str(item.folder.title), item.folder.id, pDialog=pDialog, spreadsheetFile=spreadsheetFile)
                 else:
                     #'content_type': 'video',
                     values = { 'username': self.authorization.username, 'title': item.file.title, 'filename': item.file.id}
@@ -171,6 +170,7 @@ class cloudservice(object):
 
                             strmFile.write(url+'\n')
                             strmFile.close()
+                            count += 1
                         else:
                             episode = ''
                             # nekwebdev contribution
@@ -226,6 +226,7 @@ class cloudservice(object):
                                     strmFile = xbmcvfs.File(filename, "w")
                                     strmFile.write(url+'\n')
                                     strmFile.close()
+                                    count += 1
 
                         if spreadsheetFile is not None:
                             spreadsheetFile.write(str(item.folder.id) + '\t' + str(item.folder.title) + '\t'+str(item.file.id) + '\t'+str(item.file.title) + '\t'+str(episode)+'\t\t\t\t'+str(item.file.checksum) + '\t\t' + "\n")
@@ -353,7 +354,7 @@ class cloudservice(object):
 
                             strmFile.write(url+'\n')
                             strmFile.close()
-
+        return count
     ##
     # build STRM files to a given path for a given folder ID
     #   parameters: path, folder id, content type, dialog object (optional)
@@ -361,7 +362,6 @@ class cloudservice(object):
    # def buildSTRM2(self, path, contentType=1, pDialog=None, spreadsheetFile=None):
     def buildSTRM2(self, path, folderID='', contentType=1, pDialog=None, epath='', dpath='', encfs=False, spreadsheetFile=None):
 
-        import xbmcvfs
         xbmcvfs.mkdir(path)
 
         musicPath = path + '/music'
@@ -1180,7 +1180,7 @@ class cloudservice(object):
 
                         cm.append(( self.addon.getLocalizedString(30042), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=buildstrm&'+ urllib.urlencode(values)+')', ))
 
-                    elif contextType == 'image':
+                    elif KODI and contextType == 'image':
                         # slideshow
                         if encfs:
                             values = {'encfs': 'true', 'username': self.authorization.username, 'title': folder.title, 'folder': folder.id}
@@ -1189,16 +1189,16 @@ class cloudservice(object):
                         #cm.append(( self.addon.getLocalizedString(30126), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=slideshow&'+urllib.urlencode(values)+')', ))
 
                     if (self.protocol == 2):
-                        if contextType != 'image':
+                        if KODI and contextType != 'image':
                             #download folder
                             values = {'instance': self.instanceName, 'title': folder.title, 'folder': folder.id}
                             cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&'+urllib.urlencode(values)+')', ))
 
-                        if contextType == 'audio' and not encfs:
+                        if KODI and contextType == 'audio' and not encfs:
                             #playback entire folder
                             values = {'instance': self.instanceName, 'folder': folder.id}
                             cm.append(( self.addon.getLocalizedString(30162), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=audio&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
-                        elif contextType == 'video' and not encfs:
+                        elif KODI and contextType == 'video' and not encfs:
                             #playback entire folder
                             values = {'instance': self.instanceName, 'folder': folder.id}
                             cm.append(( self.addon.getLocalizedString(30162), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=video&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
@@ -1208,17 +1208,19 @@ class cloudservice(object):
                         if not encfs:
                             cm.append((  self.addon.getLocalizedString(30192), 'XBMC.Container.Update('+self.PLUGIN_URL+'?mode=index&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
                         cm.append((  self.addon.getLocalizedString(30193), 'XBMC.Container.Update('+self.PLUGIN_URL+'?mode=index&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
+
                         #if within encfs and pictures, disable right-click default photo options; add download-folder
-                        if encfs and contextType == 'image':
+                        if KODI and encfs and contextType == 'image':
                             values = {'instance': self.instanceName, 'epath': epath, 'foldername': folder.title, 'folder': folder.id}
 
                             cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&encfs=true&'+urllib.urlencode(values)+')', ))
                             listitem.addContextMenuItems(cm, True)
-                        elif contextType == 'image':
+                        elif KODI and contextType == 'image':
                             cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=downloadfolder&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
 
 
-                    cm.append(( self.addon.getLocalizedString(30163), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=scan&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
+                    if KODI:
+                        cm.append(( self.addon.getLocalizedString(30163), 'XBMC.RunPlugin('+self.PLUGIN_URL+'?mode=scan&content_type='+contextType+'&'+urllib.urlencode(values)+')', ))
 
                 else:
 
@@ -1340,7 +1342,8 @@ class cloudservice(object):
 #            listitem.setProperty('IsPlayable', 'false')
             listitem.setProperty('IsPlayable', 'true')
             if package.mediaurl.url != '':
-                url = package.mediaurl.url +'|' + self.getHeadersEncoded()
+                # resized photos do not need authentication
+                url = package.mediaurl.url# +'|' + self.getHeadersEncoded()
             else:
                 url = package.file.download+'|' + self.getHeadersEncoded()
             xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
@@ -1398,7 +1401,7 @@ class cloudservice(object):
 
             if (self.protocol == 2):
                 # play-original for video only
-                if (contextType == 'video'):
+                if (KODI and contextType == 'video'):
                     if (package.file.type != package.file.AUDIO and self.settings.promptQuality) and not encfs:
                         cm.append(( self.addon.getLocalizedString(30123), 'XBMC.RunPlugin('+url + '&strm=false&original=true'+')', ))
                     else:
@@ -1416,7 +1419,7 @@ class cloudservice(object):
 #                    folderurl = self.PLUGIN_URL+ str(playbackURL)+ '&' + urllib.urlencode(values)
 #                    cm.append(( 'folder', 'XBMC.RunPlugin('+folderurl+')', ))
 
-                if contextType != 'image':
+                if KODI and contextType != 'image':
                     # download
                     cm.append(( self.addon.getLocalizedString(30113), 'XBMC.RunPlugin('+url + '&download=true'+')', ))
 
@@ -1426,7 +1429,7 @@ class cloudservice(object):
 
 
 
-        elif package.file.type ==  package.file.PICTURE: #contextType == 'image':
+        elif KODI and package.file.type ==  package.file.PICTURE: #contextType == 'image':
 
                 cm.append(( self.addon.getLocalizedString(30126), 'XBMC.SlideShow('+self.PLUGIN_URL+ '?mode=index&' + urllib.urlencode(values)+')', ))
 

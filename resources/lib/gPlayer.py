@@ -58,8 +58,11 @@ class gPlayer(xbmc.Player):
         self.currentURL = ''
 
 
+
+
     def setService(self,service):
         self.service = service
+
 
     def setWorksheet(self,worksheet):
         self.worksheet = worksheet
@@ -274,6 +277,20 @@ class gPlayer(xbmc.Player):
     def onPlayBackEnded(self):
         xbmc.log(self.service.addon.getAddonInfo('name') + ': PLAYBACK ENDED', xbmc.LOGNOTICE)
 #        self.next()
+
+        #shutdown streamer if running
+        if self.service.settings.streamer:
+            url = 'http://localhost:' + str(self.service.settings.streamPort) + '/kill'
+            req = urllib2.Request(url, None)
+
+            try:
+                response = urllib2.urlopen(req)
+                response.close()
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
+
+
+
         if self.package is not None:
             try:
                 if constants.CONST.spreadsheet and self.service.cloudResume == '1' and  self.service.protocol == 2 and self.time > self.package.file.resume:
@@ -366,6 +383,18 @@ class gPlayer(xbmc.Player):
 
     def onPlayBackStopped(self):
         xbmc.log(self.service.addon.getAddonInfo('name') + ': PLAYBACK STOPPED', xbmc.LOGNOTICE)
+
+
+        #shutdown streamer if running
+        if self.service.settings.streamer:
+            url = 'http://localhost:' + str(self.service.settings.streamPort) + '/kill'
+            req = urllib2.Request(url, None)
+
+            try:
+                response = urllib2.urlopen(req)
+                response.close()
+            except urllib2.URLError, e:
+                xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
 
         if self.package is not None:
             try:

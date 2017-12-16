@@ -38,6 +38,15 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 class MyHTTPServer(ThreadingMixIn,HTTPServer):
 
+    def run(self):
+        try:
+            self.serve_forever()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            # Clean-up server (close socket, etc.)
+            self.server_close()
+
     def __init__(self, *args, **kw):
         HTTPServer.__init__(self, *args, **kw)
         self.ready = True
@@ -308,7 +317,7 @@ class myStreamer(BaseHTTPRequestHandler):
                 decrypt = encryption.encryption(self.server.service.settings.cryptoSalt,self.server.service.settings.cryptoPassword)
 
                 CHUNK = 16 * 1024
-                decrypt.decryptStreamChunk(response,self.wfile, adjStart=startOffset)
+                decrypt.decryptStreamChunkOld(response,self.wfile, startOffset=startOffset)
 
             else:
                 CHUNK = 16 * 1024
@@ -378,7 +387,7 @@ class myStreamer(BaseHTTPRequestHandler):
                 decrypt = encryption.encryption(self.server.service.settings.cryptoSalt,self.server.service.settings.cryptoPassword)
 
                 CHUNK = 16 * 1024
-                decrypt.decryptStreamChunk(response,self.wfile, CHUNK)
+                decrypt.decryptStreamChunkOld(response,self.wfile, CHUNK)
 
             else:
                 CHUNK = 16 * 1024
