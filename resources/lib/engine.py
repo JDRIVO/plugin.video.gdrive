@@ -2111,7 +2111,7 @@ class contentengine(object):
                     # right-click or integrated player (no opening stream dialog...)
                     if contextType == '':
                         # for STRM (force resolve) -- resolve-only
-                        if settings.username != '' and username is not None:
+                        if settings.username != '' and settings.username is not None:
                             resolvedPlayback = True
                             startPlayback = False
                         else:
@@ -2486,7 +2486,7 @@ class contentengine(object):
                                 resolvedPlayback = False
 
                             # STRM (force resolve) -- resolve-only
-                            elif settings.username != '' and username is not None or settings.strm:
+                            elif settings.username != '' and settings.username is not None or settings.strm:
                                 startPlayback = False
                                 resolvedPlayback = True
 
@@ -2581,7 +2581,7 @@ class contentengine(object):
                                 resolvedPlayback = False
 
                             # for STRM (force resolve) -- resolve-only
-                            elif settings.username != '' and username is not None:
+                            elif settings.username != '' and settings.username is not None:
                                 startPlayback = False
 
                             #download & playback

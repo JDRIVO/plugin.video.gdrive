@@ -1496,7 +1496,7 @@ class cloudservice(object):
         totalList = localFiles + newMediaURLs
         mediaCount = len(localFiles)
 
-        if self.settings.promptQuality:
+        if KODI and self.settings.promptQuality:
             ret = xbmcgui.Dialog().select(self.addon.getLocalizedString(30033), localResolutions + options)
             if ret >= mediaCount:
                 mediaURL = totalList[ret]
