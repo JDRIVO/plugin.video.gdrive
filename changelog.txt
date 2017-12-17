@@ -1,3 +1,6 @@
+v0.8.58 (2017-12-17)
+- fix: search containing an apostrophe https://github.com/ddurdle/GDrive-for-KODI/issues/158 #159
+- enrollment bug fix
 v0.8.57 (2017-12-16)
 - sync with videostream
 - replacement enrollment method
