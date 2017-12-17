@@ -166,7 +166,6 @@ class encryption():
                 count = count + 1
                 if len(chunk) == 0:
                     break
-
                 responseChunk = decryptor.decrypt(chunk)
                 if count == 1 and startOffset !=0:
                     wfile.write(responseChunk[startOffset:])

@@ -151,7 +151,7 @@ class contentengine(object):
             if encfs:
                 contentTypeDecider =  int(settings.getSettingInt('context_evideo',0))
 
-                if contentTypeDecider == 1:
+                if contentTypeDecider == 1 or contentTypeDecider == 2 :
                     contentType = 8
                 else:
                     contentType = 9
@@ -360,16 +360,16 @@ class contentengine(object):
 
                 if contextType != 'image':
                     path = settings.getSetting('cache_folder')
-                    if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
+                    if path != '' and  path is not None and (xbmcvfs.exists(path) or os.path.exists(path)):
                         self.addMenu(self.PLUGIN_URL+'?mode=offline&content_type='+str(contextType),'<'+str(addon.getLocalizedString(30208))+'>')
 
                 if contextType == 'image':
                     path = settings.getSetting('photo_folder')
-                    if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
+                    if path != '' and  path is not None and (xbmcvfs.exists(path) or os.path.exists(path)):
                         self.addMenu(path,'<offline photos>')
 
                 path = settings.getSetting('encfs_target')
-                if path != '' and  (xbmcvfs.exists(path) or os.path.exists(path)):
+                if path != '' and path is not None and (xbmcvfs.exists(path) or os.path.exists(path)):
                     self.addMenu(path,'<offline encfs>')
 
 
@@ -379,11 +379,12 @@ class contentengine(object):
                     instanceName = self.PLUGIN_NAME+str(count)
                     try:
                         username = settings.getSetting(instanceName+'_username')
-                        if username != '':
+                        if username is not None and username != '':
                             self.addMenu(self.PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
 
                     except:
-                        username = ''
+                        username = None
+
                     if count == numberOfAccounts:
                         break
                     count = count + 1
@@ -405,11 +406,11 @@ class contentengine(object):
                     instanceName = self.PLUGIN_NAME+str(count)
                     try:
                         username = settings.getSetting(instanceName+'_username')
-                        if username != '':
+                        if username != '' and username is not None:
                             options.append(username)
                             accounts.append(instanceName)
 
-                        if username != '':
+                        if username != '' and username is not None:
 
                             return instanceName
                     except:
@@ -432,7 +433,7 @@ class contentengine(object):
                 try:
                     username = settings.getSetting('username')
 
-                    if username != '':
+                    if username != '' and username is not None:
                         addon.setSetting(self.PLUGIN_NAME+'1_username', username)
                         addon.setSetting(self.PLUGIN_NAME+'1_password', settings,getSetting('password'))
                         addon.setSetting(self.PLUGIN_NAME+'1_auth_writely', settings.getSetting('auth_writely'))
@@ -465,7 +466,7 @@ class contentengine(object):
                     instanceName = self.PLUGIN_NAME+str(count)
                     try:
                         username = settings.getSetting(instanceName+'_username')
-                        if username != '':
+                        if username != '' and username is not None:
                             options.append(username)
                             accounts.append(instanceName)
 
@@ -494,7 +495,7 @@ class contentengine(object):
                     instanceName = self.PLUGIN_NAME+str(count)
                     try:
                         username = settings.getSetting(instanceName+'_username',10)
-                        if username != '':
+                        if username != '' and username is not None:
                             options.append(username)
                             accounts.append(instanceName)
                     except:
@@ -661,15 +662,15 @@ class contentengine(object):
                 path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
                 addon.setSetting('strm_path', path)
 
-            if path == '':
+            if path == '' or path is None:
                 path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
                 addon.setSetting('strm_path', path)
 
-            if path != '':
+            if path != '' and path is not None:
                 returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
 
 
-            if path != '' and (not KODI or returnPrompt):
+            if path != '' and path is not None and (not KODI or returnPrompt):
 
                 if silent != 2:
                     try:
@@ -800,7 +801,7 @@ class contentengine(object):
                             instanceName = constants.PLUGIN_NAME+str(count)
                             username = settings.getSetting(instanceName+'_username')
 
-                            if username != '' and username == invokedUsername:
+                            if username != '' and username is not None and username == invokedUsername:
                                 #if ( settings.getSettingInt(instanceName+'_type',0)==0):
                                 #        service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
                                 #else:
@@ -844,15 +845,15 @@ class contentengine(object):
                 path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
                 addon.setSetting('strm_path', path)
 
-            if path == '':
+            if path == '' or path is None:
                 path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
                 addon.setSetting('strm_path', path)
 
-            if path != '':
+            if path != '' and path is not None:
                 returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
 
 
-            if path != '' and  (not KODI or returnPrompt):
+            if path != '' and path is not None and (not KODI or returnPrompt):
 
                 if silent != 2:
                     try:
@@ -958,7 +959,7 @@ class contentengine(object):
                             instanceName = constants.PLUGIN_NAME+str(count)
                             username = settings.getSetting(instanceName+'_username')
 
-                            if username != '' and username == invokedUsername:
+                            if username != '' and username is not None and username == invokedUsername:
                                 service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
 
                                 service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=True)
@@ -1023,7 +1024,7 @@ class contentengine(object):
                 path = ''
 
 
-            if path != '':
+            if path != '' and path is not None:
 
                 try:
                     pDialog = xbmcgui.DialogProgressBG()
@@ -1354,6 +1355,8 @@ class contentengine(object):
                         else:# contentType == 11:
                             mediaList = ['.jpg', '.png']
                         media_re = re.compile("|".join(mediaList), re.I)
+                        photoList = ['.jpg', '.png']
+                        photos_re = re.compile("|".join(mediaList), re.I)
 
                         #sort encrypted items by title:
                         sortedMediaItems = {}
@@ -1384,10 +1387,18 @@ class contentengine(object):
                                     item.folder.displaytitle = str(item.folder.title)
                             else:
                                 try:
+
                                     item.file.displaytitle = encrypt.decryptString(str(item.file.title))
+                                    print "file = " + str(item.file.title) + str(item.file.displaytitle ) + str(contentType) + "\n"
                                     item.file.title =  item.file.displaytitle
-                                    if contentType < 9 or media_re.search(str(item.file.title)):
+                                    # is it a encrypted photo?
+                                    if  photos_re.search(str(item.file.title)):
+                                        #change contextType = image
+                                        service.addMediaFile(item, contextType='image',  encfs=True)
+
+                                    elif contentType < 9 or media_re.search(str(item.file.title)):
                                         service.addMediaFile(item, contextType=contextType,  encfs=True)
+
                                 except:
                                     item.file.displaytitle = str(item.file.title)
 
@@ -1571,7 +1582,6 @@ class contentengine(object):
                           #              player.saveTime()
                           #              xbmc.sleep(5000)
 
-        ##** not in use
         elif mode == 'photo':
 
             title = settings.getParameter('title',0)
@@ -1584,24 +1594,71 @@ class contentengine(object):
 
             if encfs:
 
-                settings.setEncfsParameters()
+                #temporarly force crypto with encfs
+                settings.setCryptoParameters()
+                if settings.cryptoPassword != "":
 
-                encryptedPath = settings.getParameter('epath', '')
-                dencryptedPath = settings.getParameter('dpath', '')
-
-                encfs_source = settings.encfsSource
-                encfs_target = settings.encfsTarget
-                encfs_inode = settings.encfsInode
-
-
-                # don't redownload if present already
-                if (not xbmcvfs.exists(str(encfs_source) + str(encryptedPath) +str(title))):
                     url = service.getDownloadURL(docid)
-                    service.downloadGeneralFile(url, str(encfs_source) + str(encryptedPath) +str(title))
+                    req = urllib2.Request(url,  None,service.getHeadersList())
 
-                xbmc.executebuiltin("XBMC.ShowPicture(\""+str(encfs_target) + str(dencryptedPath)+"\")")
-                #item = xbmcgui.ListItem(path=str(encfs_target) + str(dencryptedPath))
-                #xbmcplugin.setResolvedUrl(self.plugin_handle, True, item)
+
+                    try:
+                        response = urllib2.urlopen(req)
+
+                    except urllib2.URLError, e:
+                        if e.code == 403 or e.code == 401:
+                            service.refreshToken()
+                            req = urllib2.Request(url, None, service.getHeadersList())
+                            try:
+                                response = urllib2.urlopen(req)
+                            except urllib2.URLError, e:
+                                print "HEREX \n"
+                                return
+                    #length = response.info().getheader('Content-Length')
+
+                    self.plugin_handle.send_response(200)
+                    #self.plugin_handle.send_header('Content-Length',int(length)-100)
+
+                    self.plugin_handle.send_header('Cache-Control',response.info().getheader('Cache-Control'))
+                    self.plugin_handle.send_header('Date',response.info().getheader('Date'))
+                    self.plugin_handle.send_header('Content-type','image/jpeg')
+                    self.plugin_handle.end_headers()
+
+                    from resources.lib import  encryption
+                    decrypt = encryption.encryption(settings.cryptoSalt,settings.cryptoPassword)
+
+
+                    CHUNK = 16 * 1024
+                    decrypt.decryptStreamChunkOld(response,writer.wfile,chunksize=CHUNK)
+
+
+                    #response_data = response.read()
+                    response.close()
+
+
+
+
+                else:
+
+
+                    settings.setEncfsParameters()
+
+                    encryptedPath = settings.getParameter('epath', '')
+                    dencryptedPath = settings.getParameter('dpath', '')
+
+                    encfs_source = settings.encfsSource
+                    encfs_target = settings.encfsTarget
+                    encfs_inode = settings.encfsInode
+
+
+                    # don't redownload if present already
+                    if (not xbmcvfs.exists(str(encfs_source) + str(encryptedPath) +str(title))):
+                        url = service.getDownloadURL(docid)
+                        service.downloadGeneralFile(url, str(encfs_source) + str(encryptedPath) +str(title))
+
+                    xbmc.executebuiltin("XBMC.ShowPicture(\""+str(encfs_target) + str(dencryptedPath)+"\")")
+                    #item = xbmcgui.ListItem(path=str(encfs_target) + str(dencryptedPath))
+                    #xbmcplugin.setResolvedUrl(self.plugin_handle, True, item)
 
             else:
                 path = settings.getSetting('photo_folder')
@@ -2054,7 +2111,7 @@ class contentengine(object):
                     # right-click or integrated player (no opening stream dialog...)
                     if contextType == '':
                         # for STRM (force resolve) -- resolve-only
-                        if settings.username != '':
+                        if settings.username != '' and username is not None:
                             resolvedPlayback = True
                             startPlayback = False
                         else:
@@ -2429,7 +2486,7 @@ class contentengine(object):
                                 resolvedPlayback = False
 
                             # STRM (force resolve) -- resolve-only
-                            elif settings.username != '' or settings.strm:
+                            elif settings.username != '' and username is not None or settings.strm:
                                 startPlayback = False
                                 resolvedPlayback = True
 
@@ -2524,7 +2581,7 @@ class contentengine(object):
                                 resolvedPlayback = False
 
                             # for STRM (force resolve) -- resolve-only
-                            elif settings.username != '':
+                            elif settings.username != '' and username is not None:
                                 startPlayback = False
 
                             #download & playback
