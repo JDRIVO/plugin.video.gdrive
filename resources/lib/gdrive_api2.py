@@ -406,6 +406,13 @@ class gdrive(cloudservice):
         # search for title
         elif title != False or folderName == 'SAVED SEARCH':
             encodedTitle = re.sub(' ', '+', title)
+            encodedTitle = re.sub('\'', '\\\'', encodedTitle)
+            encodedTitle = re.sub('&', '\\\&', encodedTitle)
+            #encodedTitle = re.sub('?', '\\\?', encodedTitle)
+            #encodedTitle = re.sub('#', '\\\#', encodedTitle)
+            #encodedTitle = re.sub('(', '\\\(', encodedTitle)
+            #encodedTitle = re.sub(')', '\\\)', encodedTitle)
+            #encodedTitle = re.sub('$', '\\\$', encodedTitle)
             url = url + "q=title+contains+'" + str(encodedTitle) + "'" + "+and+not+title+contains+'SAVED+SEARCH'"
 
         # show all starred items
