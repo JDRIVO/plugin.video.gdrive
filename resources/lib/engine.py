@@ -321,9 +321,7 @@ class contentengine(object):
         # enroll a new account
         elif mode == 'enroll':
 
-
             if KODI:
-
                 import socket
                 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 s.connect(("8.8.8.8", 80))
@@ -331,7 +329,7 @@ class contentengine(object):
                 s.close()
 
                 xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210) + ' ' + str(IP) + ':9978/enroll' + ' ' + addon.getLocalizedString(30218), '')
-
+                mode = 'main'
 
 
 
