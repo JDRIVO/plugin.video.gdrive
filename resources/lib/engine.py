@@ -323,18 +323,15 @@ class contentengine(object):
 
 
             if KODI:
-                from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-                from resources.lib import enroll_proxy
 
-                import threading
+                import socket
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                IP = s.getsockname()[0]
+                s.close()
 
-                server = enroll_proxy.MyHTTPServer(('',  9978), enroll_proxy.enrollBrowser)
-                server.handle_request()
-                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210), '')
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210) + ' ' + str(IP) + ':9978/enroll' + ' ' + addon.getLocalizedString(30218), '')
 
-                while server.ready:
-                    server.handle_request()
-                server.socket.close()
 
 
 
@@ -1762,50 +1759,305 @@ class contentengine(object):
 
             if encfs:
 
-                settings.setEncfsParameters()
 
-                encfs_source = settings.encfsSource
-                encfs_target = settings.encfsTarget
-                encfs_inode = settings.encfsInode
+                if not KODI:
 
-                if (not xbmcvfs.exists(str(encfs_target) + '/'+str(folder) + '/')):
-                    xbmcvfs.mkdir(str(encfs_target) + '/'+str(folder))
+                    #temporarly force crypto with encfs
+                    settings.setCryptoParameters()
+                    if settings.cryptoPassword != "":
 
-                folderINode = ''
-                if encfs_inode == 0:
-                    folderINode = str(xbmcvfs.Stat(encfs_target + '/' + str(folder)).st_ino())
-                else:
-                    folderINode = str(xbmcvfs.Stat(encfs_target + '/' + str(folder)).st_ctime())
+                        folderID = settings.getParameter('folder', False)
+                        folderName = settings.getParameter('foldername', False)
 
-                mediaItems = service.getMediaList(folderName=folder, contentType=8)
+                        #<meta name="viewport" content="width=device-width, initial-scale=1">
+                        startHTML = """
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                        <meta name="viewport" >
+                        <style>
+                        * {box-sizing:border-box}
+                        body {font-family: Verdana,sans-serif;margin:0}
+                        .mySlides {display:none}
 
-                if mediaItems:
+                        /* Slideshow container */
+                        .slideshow-container {
+                          max-width: 1000px;
+                          position: relative;
+                          mmargin: auto;
+                        }
 
-                    dirs, filesx = xbmcvfs.listdir(encfs_source)
-                    for dir in dirs:
-                        index = ''
-                        if encfs_inode == 0:
-                            index = str(xbmcvfs.Stat(encfs_source + '/' + dir).st_ino())
-                        else:
-                            index = str(xbmcvfs.Stat(encfs_source + '/' + dir).st_ctime())
+                        /* Next & previous buttons */
+                        .prev, .next {
+                          cursor: pointer;
+                          position: absolute;
+                          top: 50%;
+                          /*top: 200;*/
+                          width: auto;
+                          padding: 16px;
+                          margin-top: -22px;
+                          color: yellow;
+                          font-weight: bold;
+                          font-size: 18px;
+                          transition: 0.6s ease;
+                          border-radius: 0 3px 3px 0;
+                        }
 
-                        if index == folderINode:
+                        /* Position the "next button" to the right */
+                        .next {
+                          right: 0;
+                          border-radius: 3px 0 0 3px;
+                        }
 
-                            progress = xbmcgui.DialogProgressBG()
-                            progress.create(addon.getLocalizedString(30035), 'Preparing list...')
-                            count=0
+                        /* On hover, add a black background color with a little bit see-through */
+                        .prev:hover, .next:hover {
+                          background-color: rgba(0,0,0,0.8);
+                        }
+
+                        /* Next & previous buttons */
+                        .buttons {
+                          cursor: pointer;
+                          position: relative;
+                          font-weight: bold;
+                          color: red;
+                          font-size: 18px;
+                          transition: 0.6s ease;
+                          border-radius: 0 6px 6px 0;
+                        }
+                        /* Caption text */
+                        .text {
+                          color: #f2f2f2;
+                          font-size: 15px;
+                          padding: 8px 12px;
+                          position: absolute;
+                          bottom: 8px;
+                          width: 100%;
+                          text-align: center;
+                        }
+
+                        /* Number text (1/3 etc) */
+                        .numbertext {
+                          color: yellow;
+                          font-size: 12px;
+                          padding: 8px 12px;
+                          position: absolute;
+                          top: 50;
+                        }
+
+                        .fav {
+                          color: red;
+                          font-size: 48x;
+                          text-decoration: none;
+                          position: absolute;
+                          padding: 8px 12px;
+                          top: 30;
+                        }
+
+                        /* The dots/bullets/indicators */
+                        .dot {
+                          cursor: pointer;
+                          height: 15px;
+                          width: 15px;
+                          margin: 0 2px;
+                          background-color: #bbb;
+                          border-radius: 50%;
+                          display: inline-block;
+                          transition: background-color 0.6s ease;
+                        }
+
+                        .active, .dot:hover {
+                          background-color: #717171;
+                        }
+
+                        /* Fading animation */
+                        .fade {
+                          -webkit-animation-name: fade;
+                          -webkit-animation-duration: 1.5s;
+                          animation-name: fade;
+                          animation-duration: 1.5s;
+                        }
+
+                        @-webkit-keyframes fade {
+                          from {opacity: .4}
+                          to {opacity: 1}
+                        }
+
+                        @keyframes fade {
+                          from {opacity: .4}
+                          to {opacity: 1}
+                        }
+
+                        /* On smaller screens, decrease text size */
+                        @media only screen and (max-width: 300px) {
+                          .prev, .next,.text {font-size: 11px}
+                        }
+                        img {
+
+                            max-height: 100vh;
+                            height: auto;
+                        }
+
+                        </style>
+                        </head>
+                        <body>
+
+                        <div class="slideshow-container">
+                        <div style="text-align:center">
+                          <a class="buttons" onclick="plusSlides(-1)">&#10094;</a>&nbsp;&nbsp;&nbsp;&nbsp;
+
+                        """
+                        #max-width: 100%;
+
+                        mediaItems = service.getMediaList(folderID,contentType=8)
+
+                        if mediaItems:
+
+                            from resources.lib import  encryption
+                            encrypt = encryption.encryption(settings.cryptoSalt,settings.cryptoPassword)
+                            mediaList = ['.jpg', '.png']
+                            media_re = re.compile("|".join(mediaList), re.I)
+                            photos_re = re.compile("|".join(mediaList), re.I)
+
+                            #sort encrypted items by title:
+                            sortedMediaItems = {}
+                            total = 0
                             for item in mediaItems:
                                 if item.file is not None:
-                                    count = count + 1;
-                                    progress.update((int)(float(count)/len(mediaItems)*100),addon.getLocalizedString(30035), item.file.title)
-                                    if (not xbmcvfs.exists(str(encfs_source) + '/'+str(dir)+'/'+str(item.file.title))):
-                                        service.downloadGeneralFile(item.mediaurl.url,str(encfs_source) + '/'+str(dir)+ '/'+str(item.file.title))
-                                        if KODI and encfs_inode > 0:
-                                            xbmc.sleep(100)
+                                    try:
+                                        item.file.displaytitle = encrypt.decryptString(str(item.file.title))
+                                        sortedMediaItems[str(item.file.displaytitle) + '_' + str(item.file.title)] = item
+                                        if photos_re.search(str(item.file.displaytitle)):
+                                            total += 1
+
+                                    except:
+                                        item.file.displaytitle = item.file.title
+
+                            xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output + str(startHTML)
+
+                            count = 0
+                            while count < total:
+                                count += 1
+                                xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output  + '<span class="dot" onclick="currentSlide('+str(count)+')"></span>'
+
+                            xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output + '&nbsp;&nbsp;&nbsp;&nbsp;<a class="buttons" onclick="plusSlides(1)">&#10095;</a></div>'
+
+                            count = 0
+                            #create the files and folders for decrypting file/folder names
+                            for item in sorted (sortedMediaItems):
+                                item = sortedMediaItems[item]
+
+                                if item.file is not None:
+                                    try:
+                                        item.file.displaytitle = encrypt.decryptString(str(item.file.title))
+                                        item.file.title =  item.file.displaytitle
+                                        # is it a encrypted photo?
+                                        if  photos_re.search(str(item.file.title)):
+                                            count += 1
+                                            #change contextType = image
+                                            url = service.addMediaFile(item, contextType='image',  encfs=True, isMock=True)
+                                            xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output  + '    <div class="mySlides fade"><div class="numbertext">'+str(count)+' / '+str(total)+' </div><div class="fav"><a href="" class="fav">&hearts;</a></div><a href="'+str(url)+'"><img src="'+str(url)+'" widdth="'+str(settings.photoResolution)+'"></a></div>'
+
+                                    except:
+                                        item.file.displaytitle = str(item.file.title)
+
+                        #<div style="text-align:center">
+                        #  <span class="dot" onclick="currentSlide(1)"></span>
+                        #  <span class="dot" onclick="currentSlide(2)"></span>
+                        #  <span class="dot" onclick="currentSlide(3)"></span>
+                        #</div>
 
 
-                            progress.close()
-                            xbmc.executebuiltin("XBMC.SlideShow(\""+str(encfs_target) + '/'+str(folder)+"/\")")
+
+
+
+                        endHTML = """
+                        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+                        </div>
+                        <br>
+
+                        <script>
+                        var slideIndex = 1;
+                        showSlides(slideIndex);
+
+                        function plusSlides(n) {
+                          showSlides(slideIndex += n);
+                        }
+
+                        function currentSlide(n) {
+                          showSlides(slideIndex = n);
+                        }
+
+                        function showSlides(n) {
+                          var i;
+                          var slides = document.getElementsByClassName("mySlides");
+                          var dots = document.getElementsByClassName("dot");
+                          if (n > slides.length) {slideIndex = 1}
+                          if (n < 1) {slideIndex = slides.length}
+                          for (i = 0; i < slides.length; i++) {
+                              slides[i].style.display = "none";
+                          }
+                          for (i = 0; i < dots.length; i++) {
+                              dots[i].className = dots[i].className.replace(" active", "");
+                          }
+                          slides[slideIndex-1].style.display = "block";
+                          dots[slideIndex-1].className += " active";
+                        }
+
+
+                        </script>
+
+                        </body>
+                        </html>
+                        """
+                        xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output + endHTML
+                else:
+
+                    settings.setEncfsParameters()
+
+                    encfs_source = settings.encfsSource
+                    encfs_target = settings.encfsTarget
+                    encfs_inode = settings.encfsInode
+
+                    if (not xbmcvfs.exists(str(encfs_target) + '/'+str(folder) + '/')):
+                        xbmcvfs.mkdir(str(encfs_target) + '/'+str(folder))
+
+                    folderINode = ''
+                    if encfs_inode == 0:
+                        folderINode = str(xbmcvfs.Stat(encfs_target + '/' + str(folder)).st_ino())
+                    else:
+                        folderINode = str(xbmcvfs.Stat(encfs_target + '/' + str(folder)).st_ctime())
+
+                    mediaItems = service.getMediaList(folderName=folder, contentType=8)
+
+                    if mediaItems:
+
+                        dirs, filesx = xbmcvfs.listdir(encfs_source)
+                        for dir in dirs:
+                            index = ''
+                            if encfs_inode == 0:
+                                index = str(xbmcvfs.Stat(encfs_source + '/' + dir).st_ino())
+                            else:
+                                index = str(xbmcvfs.Stat(encfs_source + '/' + dir).st_ctime())
+
+                            if index == folderINode:
+
+                                progress = xbmcgui.DialogProgressBG()
+                                progress.create(addon.getLocalizedString(30035), 'Preparing list...')
+                                count=0
+                                for item in mediaItems:
+                                    if item.file is not None:
+                                        count = count + 1;
+                                        progress.update((int)(float(count)/len(mediaItems)*100),addon.getLocalizedString(30035), item.file.title)
+                                        if (not xbmcvfs.exists(str(encfs_source) + '/'+str(dir)+'/'+str(item.file.title))):
+                                            service.downloadGeneralFile(item.mediaurl.url,str(encfs_source) + '/'+str(dir)+ '/'+str(item.file.title))
+                                            if KODI and encfs_inode > 0:
+                                                xbmc.sleep(100)
+
+
+                                progress.close()
+                                xbmc.executebuiltin("XBMC.SlideShow(\""+str(encfs_target) + '/'+str(folder)+"/\")")
 
             elif 0:
                 path = settings.getSetting('photo_folder')

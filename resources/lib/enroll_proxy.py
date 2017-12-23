@@ -39,6 +39,14 @@ class MyHTTPServer(ThreadingMixIn,HTTPServer):
         HTTPServer.__init__(self, *args, **kw)
         self.ready = True
 
+    def run(self):
+        try:
+            self.serve_forever()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            # Clean-up server (close socket, etc.)
+            self.server_close()
 
 
 class enrollBrowser(BaseHTTPRequestHandler):

@@ -1242,7 +1242,7 @@ class cloudservice(object):
     # Add a media file to a directory listing screen
     #   parameters: package, context type, whether file is encfs, encfs:decryption path, encfs:encryption path
     ##
-    def addMediaFile(self, package, contextType='video', encfs=False, dpath='', epath=''):
+    def addMediaFile(self, package, contextType='video', encfs=False, dpath='', epath='', isMock=False):
         #thumbnail = self.cache.getThumbnail(self, package.file.thumbnail,package.file.id)
         listitem = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                                 thumbnailImage=package.file.thumbnail)
@@ -1451,7 +1451,8 @@ class cloudservice(object):
         else:
             listitem.addContextMenuItems(cm, False)
 
-        xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
+        if not isMock:
+            xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
                                 isFolder=False, totalItems=0)
         return url
 

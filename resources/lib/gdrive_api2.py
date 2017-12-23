@@ -188,6 +188,8 @@ class gdrive(cloudservice):
             #    req = urllib2.Request(url, urllib.urlencode(values), header)
 
             else:
+                if self.authorization.username == '' or self.authorization.username is None:
+                    return
                 url = 'https://script.google.com/macros/s/AKfycbw8fdhaq-WRVJXfOSMK5TZdVnzHvY4u41O1BfW9C8uAghMzNhM/exec'
                 values = {
                       'username' : self.authorization.username,
@@ -534,7 +536,7 @@ class gdrive(cloudservice):
             # if action fails, validate login
             try:
               response = urllib2.urlopen(req)
-              xbmc.sleep(5000)
+              xbmc.sleep(1000)
             except urllib2.URLError, e:
 
               if e.code == 403 or e.code == 401:

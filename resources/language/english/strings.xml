@@ -52,9 +52,9 @@
 	<string id="30207">enroll account</string>
 	<string id="30208">offline media</string>
 	<string id="30209">Successfully enrolled account.</string>
-    <string id="30210">Enrollment needs to be completed from a device with a web browser.  In a web browser on a computer or mobile device on the same network as this device, navigate to http://IP:9978 and follow the two steps to complete the enrollment process. Click OK before opening in the browser.</string>
-
-	<string id="30212">MOVIES</string>
+    <string id="30210">Enrollment needs to be completed from a device with a web browser.  On a computer or mobile device, navigate to</string>
+    <string id="30218">and follow the two steps to complete the enrollment process. Click OK after completing the process.</string>
+   	<string id="30212">MOVIES</string>
 	<string id="30213">recently started</string>
 	<string id="30214">recently watched</string>
 	<string id="30215">library</string>
