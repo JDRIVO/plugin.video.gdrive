@@ -149,6 +149,7 @@ class myStreamer(BaseHTTPRequestHandler):
                 self.server.playbackURL = url
                 self.server.drive_stream = drive_stream
                 self.server.service.authorization.setToken('DRIVE_STREAM',drive_stream)
+                self.server.crypto = False
 
             self.send_response(200)
             self.end_headers()
