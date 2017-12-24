@@ -328,7 +328,7 @@ class contentengine(object):
                 IP = s.getsockname()[0]
                 s.close()
 
-                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210) + ' ' + str(IP) + ':9978/enroll' + ' ' + addon.getLocalizedString(30218), '')
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210) + ' http://' + str(IP) + ':'+str(settings.getSettingInt('stream_port', 8011))+'/enroll' + ' ' + addon.getLocalizedString(30218), '')
                 mode = 'main'
 
 
@@ -594,7 +594,7 @@ class contentengine(object):
         if not KODI:
             protocol = settings.getSetting('protocol', 'http://')
             hostname = settings.getSetting('hostname', 'localhost')
-            port = settings.getSetting('port', '9988')
+            port = int(settings.getSettingInt('stream_port', 8011))
             self.PLUGIN_URL = str(protocol) + str(hostname) + ':' + str(port)  + '/' +  'default.py'
 
 
@@ -2278,7 +2278,7 @@ class contentengine(object):
                         if useStreamer:
 
                             url = 'http://localhost:' + str(service.settings.streamPort) + '/crypto_playurl'
-                            req = urllib2.Request(url, 'url=' + mediaURL.url)
+                            req = urllib2.Request(url, 'instance='+str(service.instanceName)+'&url=' + mediaURL.url)
                             try:
                                 response = urllib2.urlopen(req)
                                 response.close()
@@ -2900,7 +2900,7 @@ class contentengine(object):
 
 
                                 url = 'http://localhost:' + str(service.settings.streamPort) + '/playurl'
-                                req = urllib2.Request(url, 'url=' + mediaURL.url)
+                                req = urllib2.Request(url, 'instance='+str(service.instanceName)+'&url=' + mediaURL.url)
 
                                 try:
                                     response = urllib2.urlopen(req)

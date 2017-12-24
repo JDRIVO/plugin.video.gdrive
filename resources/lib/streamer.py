@@ -26,6 +26,8 @@ import re
 import urllib, urllib2
 import sys
 
+import constants
+
 KODI = True
 if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
     KODI = False
@@ -81,6 +83,17 @@ class MyHTTPServer(ThreadingMixIn,HTTPServer):
         self.crypto = False
         self.ready = True
 
+    def setDetails(self,plugin_handle,PLUGIN_NAME,PLUGIN_URL,addon,user_agent, settings):
+        self.plugin_handle = plugin_handle
+        self.PLUGIN_NAME = PLUGIN_NAME
+        self.PLUGIN_URL = PLUGIN_URL
+        self.addon = addon
+        self.user_agent = user_agent
+        self.settings = settings
+        #self.domain = domain
+        self.playbackURL = ''
+        self.crypto = False
+        self.ready = True
 
 class myStreamer(BaseHTTPRequestHandler):
 
@@ -123,12 +136,15 @@ class myStreamer(BaseHTTPRequestHandler):
         elif self.path == '/playurl':
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
-            for r in re.finditer('url\=([^\|]+)\|Cookie\=DRIVE_STREAM\%3D([^\&]+)' ,
+            for r in re.finditer('instance\=([^\&]+)\&url\=([^\|]+)\|Cookie\=DRIVE_STREAM\%3D([^\&]+)' ,
                      post_data, re.DOTALL):
-                url = r.group(1)
-                drive_stream = r.group(2)
+                instanceName = r.group(1)
+                url = r.group(2)
+                drive_stream = r.group(3)
                 xbmc.log("drive_stream = " + drive_stream + "\n")
                 xbmc.log("url = " + url + "\n")
+                cloudservice2 = constants.cloudservice2
+                self.server.service = cloudservice2(self.server.plugin_handle,self.server.PLUGIN_URL,self.server.addon,instanceName, self.server.user_agent, self.server.settings)
 
                 self.server.playbackURL = url
                 self.server.drive_stream = drive_stream
@@ -139,12 +155,15 @@ class myStreamer(BaseHTTPRequestHandler):
         elif self.path == '/crypto_playurl':
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
-            for r in re.finditer('url\=([^\|]+)' ,
+            for r in re.finditer('instance\=([^\&]+)\&url\=([^\|]+)' ,
                      post_data, re.DOTALL):
-                url = r.group(1)
+                instanceName = r.group(1)
+                url = r.group(2)
                 drive_stream = ''
                 xbmc.log("drive_stream = " + drive_stream + "\n")
                 xbmc.log("url = " + url + "\n")
+                cloudservice2 = constants.cloudservice2
+                self.server.service = cloudservice2(self.server.plugin_handle,self.server.PLUGIN_URL,self.server.addon,instanceName, self.server.user_agent, self.server.settings)
 
                 self.server.crypto = True
                 self.server.playbackURL = url
@@ -152,6 +171,108 @@ class myStreamer(BaseHTTPRequestHandler):
 
             self.send_response(200)
             self.end_headers()
+
+
+        # redirect url to output
+        elif self.path == '/enroll?default=false':
+            content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
+            post_data = self.rfile.read(content_length) # <--- Gets the data itself
+            self.send_response(200)
+            self.end_headers()
+
+            for r in re.finditer('client_id\=([^\&]+)\&\client_secret\=([^\&]+)' ,
+                     post_data, re.DOTALL):
+                client_id = r.group(1)
+                client_secret = r.group(2)
+
+
+                self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id='+str(client_id)+'" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="/enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><form action="/enroll" method="post">Client ID:<br /><input type="text" name="client_id" value="'+str(client_id)+'"><br />Client Secret:<br /><input type="text" name="client_secret" value="'+str(client_secret)+'"><br /><br /> <input type="submit" value="Submit"></form></body></html>')
+
+
+        # redirect url to output
+        elif self.path == '/enroll':
+            content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
+            post_data = self.rfile.read(content_length) # <--- Gets the data itself
+            self.send_response(200)
+            self.end_headers()
+            for r in re.finditer('account\=([^\&]+)\&code=([^\&]+)\&\client_id\=([^\&]+)\&\client_secret\=([^\&]+)' ,
+                     post_data, re.DOTALL):
+                account = r.group(1)
+                client_id = r.group(3)
+                client_secret = r.group(4)
+                code = r.group(2)
+                code = code.replace('%2F','/')
+
+                #self.wfile.write('<html><body>account = '+ str(account) + " " + str(client_id) + " " + str(client_secret) + " " + str(code))
+
+                count = 1
+                loop = True
+                while loop:
+                    instanceName = self.server.PLUGIN_NAME +str(count)
+                    try:
+                        username = self.settings.getSetting(instanceName+'_username')
+                    except:
+                        username = ''
+
+                    if username == account or username == '':
+                        self.server.addon.setSetting(instanceName + '_type', str(3))
+                        self.server.addon.setSetting(instanceName + '_code', str(code))
+                        self.server.addon.setSetting(instanceName + '_client_id', str(client_id))
+                        self.server.addon.setSetting(instanceName + '_client_secret', str(client_secret))
+                        self.server.addon.setSetting(instanceName + '_username', str(account))
+                        loop = False
+
+                    count = count + 1
+
+
+
+                url = 'https://accounts.google.com/o/oauth2/token'
+                header = { 'User-Agent' : self.server.user_agent  , 'Content-Type': 'application/x-www-form-urlencoded'}
+
+                req = urllib2.Request(url, 'code='+str(code)+'&client_id='+str(client_id)+'&client_secret='+str(client_secret)+'&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code', header)
+
+
+                # try login
+                try:
+                    response = urllib2.urlopen(req)
+                except urllib2.URLError, e:
+                    if e.code == 403:
+                        #login issue
+                        self.send_response(200)
+                        self.end_headers()
+                        self.wfile.write(str(e))
+                        return
+                    else:
+                        self.send_response(200)
+                        self.end_headers()
+                        self.wfile.write(str(e))
+                    return
+
+
+                response_data = response.read()
+                response.close()
+
+                # retrieve authorization token
+                for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?' +
+                                 '\"refresh_token\"\s?\:\s?\"([^\"]+)\".+?' ,
+                                 response_data, re.DOTALL):
+                    accessToken,refreshToken = r.groups()
+                    self.server.addon.setSetting(instanceName + '_auth_access_token', str(accessToken))
+                    self.server.addon.setSetting(instanceName + '_auth_refresh_token', str(refreshToken))
+
+                    self.wfile.write('Successfully enrolled account.')
+                    self.server.ready = False
+
+
+                for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"',
+                                 response_data, re.DOTALL):
+                    errorMessage = r.group(1)
+                    self.wfile.write(errorMessage)
+
+
+                return
+
+
 
     def do_HEAD(self):
 
@@ -209,9 +330,9 @@ class myStreamer(BaseHTTPRequestHandler):
             self.server.length = response.info().getheader('Content-Length')
 
         # redirect url to output
-        else:
-            url =  str(self.server.domain) + str(self.path)
-            xbmc.log('GET ' + url + "\n")
+        #else:
+        #    #url =  str(self.server.domain) + str(self.path)
+        #    xbmc.log('GET ' + url + "\n")
 
 
 
@@ -309,10 +430,10 @@ class myStreamer(BaseHTTPRequestHandler):
 
             if (self.server.crypto):
 
-                self.server.service.settings.setCryptoParameters()
+                self.server.settings.setCryptoParameters()
 
                 from resources.lib import  encryption
-                decrypt = encryption.encryption(self.server.service.settings.cryptoSalt,self.server.service.settings.cryptoPassword)
+                decrypt = encryption.encryption(self.server.settings.cryptoSalt,self.server.settings.cryptoPassword)
 
                 CHUNK = 16 * 1024
                 decrypt.decryptStreamChunkOld(response,self.wfile, startOffset=startOffset)
@@ -378,10 +499,10 @@ class myStreamer(BaseHTTPRequestHandler):
 
             if (self.server.crypto):
 
-                self.server.service.settings.setCryptoParameters()
+                self.server.settings.setCryptoParameters()
 
                 from resources.lib import  encryption
-                decrypt = encryption.encryption(self.server.service.settings.cryptoSalt,self.server.service.settings.cryptoPassword)
+                decrypt = encryption.encryption(self.server.settings.cryptoSalt,self.server.settings.cryptoPassword)
 
                 CHUNK = 16 * 1024
                 decrypt.decryptStreamChunkOld(response,self.wfile, CHUNK)
@@ -397,8 +518,36 @@ class myStreamer(BaseHTTPRequestHandler):
             #response_data = response.read()
             response.close()
 
+
+
         # redirect url to output
-        else:
-            url =  str(self.server.domain) + str(self.path)
-            xbmc.log('GET ' + url + "\n")
+        elif self.path == '/enroll':
+
+            self.send_response(200)
+            self.end_headers()
+
+            self.wfile.write('<html><body>Do you want to use a default client id / client secret or your own client id / client secret?  If you don\'t know what this means, select DEFAULT.<br /> <a href="/enroll?default=true">use default client id / client secret (DEFAULT)</a> <br /><br />OR use your own client id / client secret<br /><br /><form action="/enroll?default=false" method="post">Client ID:<br /><input type="text" name="client_id" value=""><br />Client Secret:<br /><input type="text" name="client_secret" value=""> <br/><input type="submit" value="Submit"></form></body></html>')
+            return
+
+        # redirect url to output
+        elif self.path == '/enroll?default=true' or self.path == '/enroll':
+
+            self.send_response(200)
+            self.end_headers()
+
+            self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="/enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><form action="/enroll" method="post">Client ID:<br /><input type="hidden" name="client_id" value="772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com"><br />Client Secret:<br /><input type="hidden" name="client_secret" value="PgteSoD4uagqHA1_nLERLDx9"><br /><br /></br /> <input type="submit" value="Submit"></form></body></html>')
+            return
+        elif self.path == '/enroll?default=false':
+
+            self.send_response(200)
+            self.end_headers()
+
+            self.wfile.write('<html><body>Two steps away.<br/><br/>  1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=772521706521-bi11ru1d9h40h1lipvbmp3oddtcgro14.apps.googleusercontent.com" target="new">Google Authentication</a><br /><br />2) Return back to this tab and provide a nickname and the application code provided in step 1. <form action="/enroll" method="post">Nickname for account:<br /><input type="text" name="account"><br />Code (copy and paste from step 1):<br /><input type="text" name="code"><br /><br /> <input type="submit" value="Submit"></form></body></html>')
+            return
+
+
+        # redirect url to output
+        #else:
+            #url =  str(self.server.domain) + str(self.path)
+        #    xbmc.log('GET ' + url + "\n")
 

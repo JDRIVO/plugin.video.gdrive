@@ -79,84 +79,84 @@ user_agent = settings.getSetting('user_agent')
 #instanceName = PLUGIN_NAME + str(settings.getSetting('account_default', 1))
 #service = cloudservice2(plugin_handle,PLUGIN_URL,addon,instanceName, user_agent, settings)
 
+if 0:
+    from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+    from resources.lib import enroll_proxy
 
-from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-from resources.lib import enroll_proxy
+    import threading
 
-import threading
-
-try:
-    server = enroll_proxy.MyHTTPServer(('',  9978), enroll_proxy.enrollBrowser)
+    try:
+        server = enroll_proxy.MyHTTPServer(('',  9978), enroll_proxy.enrollBrowser)
 
 
-    doLoop = True
+        doLoop = True
 
-    #except:
-    #    doLoop = False
+        #except:
+        #    doLoop = False
 
-    monitor = xbmc.Monitor()
+        monitor = xbmc.Monitor()
 
-    thread = threading.Thread(None, server.run)
-    thread.start()
+        thread = threading.Thread(None, server.run)
+        thread.start()
 
-    while not monitor.abortRequested() and doLoop:
-        if monitor.waitForAbort(10):
-            break
-    server.shutdown()
-    thread.join()
+        while not monitor.abortRequested() and doLoop:
+            if monitor.waitForAbort(10):
+                break
+        server.shutdown()
+        thread.join()
 
-except:
-    pass
+    except:
+        pass
 
 
 # must load after all other (becomes blocking)
 # streamer
-if 0 and  service is not None and service.settings.streamer:
 
 
-    localTVDB = {}
-    localMOVIEDB = {}
-    #load data structure containing TV and Movies from KODI
-    if (settings.getSetting('local_db')):
+localTVDB = {}
+localMOVIEDB = {}
+#load data structure containing TV and Movies from KODI
+if (settings.getSetting('local_db')):
 
-        result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
-        for match in re.finditer('"episodeid":(\d+)\,"file"\:"[^\"]+"', result):#, re.S):
-            localTVDB[match.group(2)] = match.group(1)
-        result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
-        for match in re.finditer('"file":"[^\"]+","label":"[^\"]+","movieid":(\d+)', result):#, re.S):
-            localMOVIEDB[match.group(1)] = match.group(2)
-
-
-
-    from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-    from resources.lib import streamer
-    from SocketServer import ThreadingMixIn
-    import threading
+    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
+    for match in re.finditer('"episodeid":(\d+)\,"file"\:"[^\"]+"', result):#, re.S):
+        localTVDB[match.group(2)] = match.group(1)
+    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
+    for match in re.finditer('"file":"[^\"]+","label":"[^\"]+","movieid":(\d+)', result):#, re.S):
+        localMOVIEDB[match.group(1)] = match.group(2)
 
 
 
-    server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
-    server.setAccount(service, '')
-    if (settings.getSetting('local_db')):
-        server.setTVDB(localTVDB)
-        server.setTVDB(localMOVIEDB)
+from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+from resources.lib import streamer
+from SocketServer import ThreadingMixIn
+import threading
 
-    doLoop = True
 
-    #except:
-    #    doLoop = False
+port = int(settings.getSettingInt('stream_port', 8011))
+server = streamer.MyHTTPServer(('',  port), streamer.myStreamer)
+server.setDetails(plugin_handle,PLUGIN_NAME,PLUGIN_URL,addon,user_agent, settings)
+#server.setAccount(service, '')
+if (settings.getSetting('local_db')):
+    server.setTVDB(localTVDB)
+    server.setTVDB(localMOVIEDB)
 
-    monitor = xbmc.Monitor()
+doLoop = True
 
-    thread = threading.Thread(None, server.run)
-    thread.start()
+#except:
+#    doLoop = False
 
-    while not monitor.abortRequested() and doLoop:
-        if monitor.waitForAbort(10):
-            break
-    server.shutdown()
-    thread.join()
+monitor = xbmc.Monitor()
 
-    #while not monitor.abortRequested() and doLoop and server.ready:
-    #    server.handle_request()
-    #server.socket.close()
+thread = threading.Thread(None, server.run)
+thread.start()
+
+while not monitor.abortRequested() and doLoop:
+    if monitor.waitForAbort(10):
+        break
+server.shutdown()
+thread.join()
+
+#while not monitor.abortRequested() and doLoop and server.ready:
+#    server.handle_request()
+#server.socket.close()
