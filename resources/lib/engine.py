@@ -1351,7 +1351,7 @@ class contentengine(object):
                             mediaList = ['.jpg', '.png']
                         media_re = re.compile("|".join(mediaList), re.I)
                         photoList = ['.jpg', '.png']
-                        photos_re = re.compile("|".join(mediaList), re.I)
+                        photos_re = re.compile("|".join(photoList), re.I)
 
                         #sort encrypted items by title:
                         sortedMediaItems = {}

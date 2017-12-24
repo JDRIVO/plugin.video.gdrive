@@ -1,3 +1,4 @@
+- fixes for streamer crypto playback
 - fixes for streamer playback
 v0.8.60 (2017-12-23)
 - minor fixes for enrollment
