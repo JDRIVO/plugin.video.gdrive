@@ -642,6 +642,7 @@ class contentengine(object):
         if mode == 'dummy' or mode == 'delete' or mode == 'enroll':
 
             self.accountActions(addon, mode, instanceName, numberOfAccounts)
+            settings = settings.__init__(addon)
             mode = 'main'
             instanceName = ''
         #create strm files

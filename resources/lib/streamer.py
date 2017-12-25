@@ -211,7 +211,7 @@ class myStreamer(BaseHTTPRequestHandler):
                 while loop:
                     instanceName = self.server.PLUGIN_NAME +str(count)
                     try:
-                        username = self.settings.getSetting(instanceName+'_username')
+                        username = self.server.settings.getSetting(instanceName+'_username')
                     except:
                         username = ''
 
