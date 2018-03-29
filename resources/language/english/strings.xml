@@ -71,7 +71,8 @@
 	<string id="30226">Type of job</string>
 	<string id="30227">Delete job</string>
 	<string id="30228">Play Google Transcode - </string>
-
+	<string id="30229">Catalog into Movies/TV/Other?</string>
+	<string id="30230">Frequency to run the scheduled task (in minutes)?</string>
 
     <string id="30043">Options</string>
 

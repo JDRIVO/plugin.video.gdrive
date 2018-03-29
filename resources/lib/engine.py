@@ -747,7 +747,6 @@ class contentengine(object):
         elif mode == 'new_task' or mode == 'buildstrm' or mode == 'buildstrmscheduler':
 
 
-
             hostTemp = settingsModule.getParameter('host', host)
             #if hostTemp == '':
             #    host = hostTemp
@@ -971,6 +970,17 @@ class contentengine(object):
 
 
                     else:
+
+                        if KODI:
+                            silent = settingsModule.getParameter('silent', settingsModule.getSetting('strm_silent',0))
+                            if silent == '':
+                                silent = 0
+
+
+                            if not silent:
+                                returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30229))
+                                if returnPrompt:
+                                    catalog = True
 
 
 
