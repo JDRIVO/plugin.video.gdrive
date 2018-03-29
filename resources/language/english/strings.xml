@@ -61,6 +61,16 @@
 	<string id="30216">queued</string>
 	<string id="30216">MOVIES</string>
 	<string id="30217">Settings</string>
+	<string id="30219">Make default</string>
+	<string id="30220">Enroll write token</string>
+	<string id="30221">Scheduled Tasks</string>
+	<string id="30222">Create new scheduled task</string>
+	<string id="30223">Select an account to export STRM files</string>
+	<string id="30224">Google Drive folder to export STRM files</string>
+	<string id="30225">Frequency of exporting</string>
+	<string id="30226">Type of job</string>
+	<string id="30227">Delete job</string>
+	<string id="30228">Play Google Transcode - </string>
 
 
     <string id="30043">Options</string>
@@ -155,6 +165,7 @@
     <string id="30203">OAUTH2 client secret</string>
     <string id="30204">OAUTH2 URL</string>
     <string id="30205">Visit www.dmdsoftware.net for help setting up OAUTH2</string>
+
 
     <string id="30152">Something went wrong with login setup.</string>
 

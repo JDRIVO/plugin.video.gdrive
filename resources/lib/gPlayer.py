@@ -32,6 +32,7 @@ if KODI:
 else:
     from resources.libgui import  xbmc
     from resources.libgui import  xbmcgui
+    from resources.libgui import  xbmcplugin
 
 
 import constants
@@ -110,6 +111,7 @@ class gPlayer(xbmc.Player):
         self.currentURL = url
         if startPlayback:
             self.play(url, item)
+
             if self.service.settings:
                 xbmc.log(self.service.addon.getAddonInfo('name') + ': Playback url ' + str(url), xbmc.LOGNOTICE)
 

@@ -36,26 +36,26 @@ def _callback(matches):
 def decode(data):
     return re.sub("&#(\d+)(;|(?=\s))", _callback, data).strip()
 
-def getParameter(key,default=''):
+def getParameter0(key,default=''):
     try:
         value = plugin_queries[key]
-        if value == 'true':
+        if value == 'true' or value == 'True':
             return True
-        elif value == 'false':
+        elif value == 'false' or value == 'False':
             return False
         else:
             return value
     except:
         return default
 
-def getParameterInt(key,default=0):
+def getParameterInt0(key,default=0):
     try:
         value = plugin_queries[key]
         if value == '':
             return default
-        elif value == 'true':
+        elif value == 'true' or value == 'True':
             return True
-        elif value == 'false':
+        elif value == 'false' or value == 'False':
             return False
         elif value is None:
             return default
@@ -64,26 +64,26 @@ def getParameterInt(key,default=0):
     except:
         return default
 
-def getSetting(key,default=''):
+def getSetting0(key,default=''):
     try:
         value = addon.getSetting(key)
-        if value == 'true':
+        if value == 'true' or value == 'True':
             return True
-        elif value == 'false':
+        elif value == 'false' or value == 'False':
             return False
         else:
             return value
     except:
         return default
 
-def getSettingInt(key,default=0):
+def getSettingInt0(key,default=0):
     try:
         value = addon.getSetting(key)
         if value == '':
             return default
-        elif value == 'true':
+        elif value == 'true' or value == 'True':
             return True
-        elif value == 'false':
+        elif value == 'false' or value == 'False':
             return False
         elif value is None:
             return default
@@ -114,8 +114,8 @@ except:
 
 
 # global variables
-import constants
-addon = constants.addon
+#import constants
+#addon = constants.addon
 
 
 #
@@ -126,17 +126,17 @@ class settings:
 
     ##
     ##
-    def __init__(self, addon):
-        self.addon = addon
+    def __init__(self, addons):
+        self.addon = addons
+ #       addon = addons
         #self.integratedPlayer = self.getSetting('integrated_player', False)
-        self.cc = getParameter('cc', self.getSetting('cc', True))
-        self.srt = getParameter('srt', self.getSetting('srt', True))
+        self.cc = self.getParameter('cc', self.getSetting('cc', True))
+        self.srt = self.getParameter('srt', self.getSetting('srt', True))
         #self.srt_folder = getParameter('srt_folder', self.getSetting('srt_folder', False))
-        self.strm = getParameter('strm', True) ## force to TRUE, set to false manually
-
-        self.username = getParameter('username', '')
+        self.strm = self.getParameter('strm', False)
+        self.username = self.getParameter('username', '')
         self.setCacheParameters()
-        self.promptQuality = getParameter('promptquality', self.getSetting('prompt_quality', True))
+        self.promptQuality = self.getParameter('promptquality', self.getSetting('prompt_quality', True))
         self.parseTV = self.getSetting('parse_tv', True)
         self.parseMusic = self.getSetting('parse_music', True)
         self.skipResume = self.getSetting('video_skip', 0.98)
@@ -147,8 +147,8 @@ class settings:
         self.movie_watch  = self.getSetting('movie_db_watch', False)
         self.localDB = self.getSetting('local_db', False)
 
-        self.seek = getParameter('seek', 0)
-        self.trace = getSetting('trace', False)
+        self.seek = self.getParameter('seek', 0)
+        self.trace = self.getSetting('trace', False)
 
         self.photoResolution = int(self.getSettingInt('photo_resolution', 0))
         if self.photoResolution == 0:
@@ -183,16 +183,16 @@ class settings:
 
 
     def setVideoParameters(self):
-        self.resume = getParameter('resume', False)
+        self.resume = self.getParameter('resume', False)
 
-        self.playOriginal = getParameter('original', self.getSetting('never_stream', False))
+        self.playOriginal = self.getParameter('original', self.getSetting('never_stream', False))
 
 
     def setCacheParameters(self):
-        self.cache = getParameter('cache', False)
+        self.cache = self.getParameter('cache', False)
 #        self.download = self.getSetting('always_cache', getParameter('download', False))
-        self.download = getParameter('download', getSetting('always_cache', False))
-        self.play = getParameter('play', getSetting('always_cache', False))
+        self.download = self.getParameter('download', self.getSetting('always_cache', False))
+        self.play = self.getParameter('play', self.getSetting('always_cache', False))
         self.cachePath = self.getSetting('cache_folder')
         self.cacheSingle = self.getSetting('cache_single')
         self.cachePercent = self.getSetting('cache_percent', 10)
@@ -225,9 +225,9 @@ class settings:
     def getParameter(self, key, default=''):
         try:
             value = plugin_queries[key]
-            if value == 'true':
+            if value == 'true' or value == 'True':
                 return True
-            elif value == 'false':
+            elif value == 'false' or value == 'False':
                 return False
             else:
                 return value
@@ -238,21 +238,21 @@ class settings:
     def getParameterInt(self, key, default=0):
         try:
             value = plugin_queries[key]
-            if value == 'true':
+            if value == 'true' or value == 'True':
                 return True
-            elif value == 'false':
+            elif value == 'false' or value == 'False':
                 return False
             else:
                 return value
         except:
             return default
 
-    def getSetting(self, key, default=''):
+    def getSetting(self, key, default='', forceSync=False):
         try:
             value = self.addon.getSetting(key)
-            if value == 'true':
+            if value == 'true' or value == 'True':
                 return True
-            elif value == 'false':
+            elif value == 'false' or value == 'False':
                 return False
             elif value is None:
                 return default

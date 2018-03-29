@@ -71,8 +71,8 @@ class contentengine(object):
     def debugger(self):
         try:
 
-            remote_debugger = settings.getSetting('remote_debugger')
-            remote_debugger_host = settings.getSetting('remote_debugger_host')
+            remote_debugger = settingsModule.getSetting('remote_debugger')
+            remote_debugger_host = settingsModule.getSetting('remote_debugger_host')
 
             # append pydev remote debugger
             if remote_debugger == 'true':
@@ -94,7 +94,7 @@ class contentengine(object):
     # add a menu to a directory screen
     #   parameters: url to resolve, title to display, optional: icon, fanart, total_items, instance name
     ##
-    def addMenu(self, url, title, img='', fanart='', total_items=0, instanceName=''):
+    def addMenu(self, url, title, img='', fanart='', total_items=0, instanceName=None, job=None):
             #    listitem = xbmcgui.ListItem(decode(title), iconImage=img, thumbnailImage=img)
             listitem = xbmcgui.ListItem(title, iconImage=img, thumbnailImage=img)
             if not fanart and KODI:
@@ -105,13 +105,21 @@ class contentengine(object):
             listitem.setProperty('IsPlayable', 'false')
 
 
-            if instanceName != '':
+            if instanceName is not None:
                 cm=[]
 
                 cm.append(( self.addon.getLocalizedString(30159), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=delete&instance='+instanceName+')' ))
+                cm.append(( self.addon.getLocalizedString(30219), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=makedefault&instance='+instanceName+')' ))
+                cm.append(( self.addon.getLocalizedString(30220), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=enroll_rw&instance='+instanceName+')' ))
 
                 listitem.addContextMenuItems(cm, True)
 
+            if job is not None:
+                cm=[]
+
+                cm.append(( self.addon.getLocalizedString(30227), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=delete_task&job='+str(job)+')' ))
+
+                listitem.addContextMenuItems(cm, True)
 
 
             xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem,
@@ -120,10 +128,32 @@ class contentengine(object):
 
 
     ##
+    # add a menu to a directory screen
+    #   parameters: url to resolve, title to display, optional: icon, fanart, total_items, instance name
+    ##
+    def addStatusText(self, title, job=None):
+            listitem = xbmcgui.ListItem(title)
+
+            # disallow play controls on menus
+            listitem.setProperty('IsPlayable', 'false')
+
+            if job is not None:
+                cm=[]
+
+                cm.append(( self.addon.getLocalizedString(30227), 'XBMC.RunPlugin('+self.PLUGIN_URL+ '?mode=delete_task&job='+str(job)+')' ))
+
+                listitem.addContextMenuItems(cm, True)
+
+
+            xbmcplugin.addDirectoryItem(self.plugin_handle, '', listitem,
+                                    isFolder=True, totalItems=1)
+
+
+    ##
     # Providing a context type, return what content to display based on user's preferences
     #   parameters: current context type plugin was invoked in (audio, video, photos)
     ##
-    def getContentType(self,contextType,encfs):
+    def getContentType(self,settings,contextType,encfs):
 
         #contentType
         #video context
@@ -290,6 +320,11 @@ class contentengine(object):
         if mode == 'dummy':
             xbmc.executebuiltin("XBMC.Container.Refresh")
 
+        elif mode == 'makedefault':
+            addon.setSetting('default', instanceName)
+            #addon.setSetting('account_default', instanceName)
+
+
         # delete the configuration for the specified account
         elif mode == 'delete':
 
@@ -328,9 +363,20 @@ class contentengine(object):
                 IP = s.getsockname()[0]
                 s.close()
 
-                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210) + ' http://' + str(IP) + ':'+str(settings.getSettingInt('stream_port', 8011))+'/enroll' + ' ' + addon.getLocalizedString(30218), '')
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210) + ' http://' + str(IP) + ':'+str(settingsModule.getSettingInt('stream_port', 8011))+'/enroll' + ' ' + addon.getLocalizedString(30218), '')
                 mode = 'main'
 
+        elif mode == 'enroll_rw':
+
+            if KODI:
+                import socket
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                IP = s.getsockname()[0]
+                s.close()
+
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210) + ' http://' + str(IP) + ':'+str(settingsModule.getSettingInt('stream_port', 8011))+'/write' + ' ' + addon.getLocalizedString(30218), '')
+                mode = 'main'
 
 
     ##
@@ -338,32 +384,34 @@ class contentengine(object):
     #   parameters: addon, plugin name, mode, instance name, user provided username, number of accounts, current context
     #   returns: selected instance name
     ##
-    def getInstanceName(self,addon, mode, instanceName, invokedUsername, numberOfAccounts, contextType):
+    def getInstanceName(self,addon, mode, instanceName, invokedUsername, numberOfAccounts, contextType, settingsModule):
 
         # show list of services
-        if mode == 'delete' or mode == 'dummy':
+        if mode == 'delete' or mode == 'makedefault' or mode == 'dummy':
                     count = 1
 
         elif numberOfAccounts > 1 and instanceName == '' and invokedUsername == '' and mode == 'main':
 
                 if KODI:
                     self.addMenu(self.PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'['+str(addon.getLocalizedString(30207))+']')
+                    self.addMenu(self.PLUGIN_URL+'?mode=scheduler&content_type='+str(contextType),'['+str(addon.getLocalizedString(30221))+']')
                 else:
                     self.addMenu('/settings?','['+str(addon.getLocalizedString(30217))+']')
+                    self.addMenu(self.PLUGIN_URL+'?mode=scheduler&content_type='+str(contextType),'['+str(addon.getLocalizedString(30221))+']')
                     self.addMenu(self.PLUGIN_URL+'?mode=enroll&content_type='+str(contextType),'['+str(addon.getLocalizedString(30207))+']')
 #                    self.addMenu(self.PLUGIN_URL+'?mode=enroll','['+str(addon.getLocalizedString(30207))+']')
 
                 if contextType != 'image':
-                    path = settings.getSetting('cache_folder')
+                    path = settingsModule.getSetting('cache_folder')
                     if path != '' and  path is not None and (xbmcvfs.exists(path) or os.path.exists(path)):
                         self.addMenu(self.PLUGIN_URL+'?mode=offline&content_type='+str(contextType),'<'+str(addon.getLocalizedString(30208))+'>')
 
                 if contextType == 'image':
-                    path = settings.getSetting('photo_folder')
+                    path = settingsModule.getSetting('photo_folder')
                     if path != '' and  path is not None and (xbmcvfs.exists(path) or os.path.exists(path)):
                         self.addMenu(path,'<offline photos>')
 
-                path = settings.getSetting('encfs_target')
+                path = settingsModule.getSetting('encfs_target')
                 if path != '' and path is not None and (xbmcvfs.exists(path) or os.path.exists(path)):
                     self.addMenu(path,'<offline encfs>')
 
@@ -372,18 +420,15 @@ class contentengine(object):
                 count = 1
                 while True:
                     instanceName = self.PLUGIN_NAME+str(count)
-                    try:
-                        username = settings.getSetting(instanceName+'_username')
-                        if username is not None and username != '':
-                            self.addMenu(self.PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
+                    username = settingsModule.getSetting(instanceName+'_username', None)
+                    if username is not None and username != '':
+                        self.addMenu(self.PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
 
-                    except:
-                        username = None
-
-                    if count == numberOfAccounts:
+                    if username is None or username == '':
                         break
                     count = count + 1
                 return None
+
 
         #        spreadshetModule = getSetting('library', False)
         #        libraryAccount = getSetting('library_account')
@@ -400,7 +445,7 @@ class contentengine(object):
                 for count in range (1, numberOfAccounts+1):
                     instanceName = self.PLUGIN_NAME+str(count)
                     try:
-                        username = settings.getSetting(instanceName+'_username')
+                        username = settingsModule.getSetting(instanceName+'_username')
                         if username != '' and username is not None:
                             options.append(username)
                             accounts.append(instanceName)
@@ -426,13 +471,13 @@ class contentengine(object):
 
                 #legacy account conversion
                 try:
-                    username = settings.getSetting('username')
+                    username = settingsModule.getSetting('username')
 
                     if username != '' and username is not None:
                         addon.setSetting(self.PLUGIN_NAME+'1_username', username)
-                        addon.setSetting(self.PLUGIN_NAME+'1_password', settings,getSetting('password'))
-                        addon.setSetting(self.PLUGIN_NAME+'1_auth_writely', settings.getSetting('auth_writely'))
-                        addon.setSetting(self.PLUGIN_NAME+'1_auth_wise', settings.getSetting('auth_wise'))
+                        addon.setSetting(self.PLUGIN_NAME+'1_password', settingsModule.getSetting('password'))
+                        addon.setSetting(self.PLUGIN_NAME+'1_auth_writely', settingsModule.getSetting('auth_writely'))
+                        addon.setSetting(self.PLUGIN_NAME+'1_auth_wise', settingsModule.getSetting('auth_wise'))
                         addon.setSetting('username', '')
                         addon.setSetting('password', '')
                         addon.setSetting('auth_writely', '')
@@ -460,7 +505,7 @@ class contentengine(object):
                 for count in range (1, numberOfAccounts+1):
                     instanceName = self.PLUGIN_NAME+str(count)
                     try:
-                        username = settings.getSetting(instanceName+'_username')
+                        username = settingsModule.getSetting(instanceName+'_username')
                         if username != '' and username is not None:
                             options.append(username)
                             accounts.append(instanceName)
@@ -489,7 +534,7 @@ class contentengine(object):
                 for count in range (1, numberOfAccounts+1):
                     instanceName = self.PLUGIN_NAME+str(count)
                     try:
-                        username = settings.getSetting(instanceName+'_username',10)
+                        username = settingsModule.getSetting(instanceName+'_username',10)
                         if username != '' and username is not None:
                             options.append(username)
                             accounts.append(instanceName)
@@ -514,7 +559,7 @@ class contentengine(object):
 
 
 
-    def run(self,writer=None, query=None,DBM=None, addon=None):
+    def run(self,writer=None, query=None,DBM=None, addon=None, host=None):
         #return
 #class run():
         # cloudservice - required python modules
@@ -564,12 +609,11 @@ class contentengine(object):
         from resources.lib import mediaurl
         from resources.lib import gPlayer
         from resources.lib import settings
+        from resources.lib import scheduler
 
         from resources.lib import cache
 #        if constants.CONST.tmdb:
 #            from resources.lib import TMDB
-
-
 
 
         if KODI:
@@ -589,25 +633,24 @@ class contentengine(object):
         self.debugger()
 
         # cloudservice - create settings module
-        settings = settings.settings(addon)
+        settingsModule = settings.settings(addon)
 
         if not KODI:
-            protocol = settings.getSetting('protocol', 'http://')
-            hostname = settings.getSetting('hostname', 'localhost')
-            port = int(settings.getSettingInt('stream_port', 8011))
-            self.PLUGIN_URL = str(protocol) + str(hostname) + ':' + str(port)  + '/' +  'default.py'
+            #protocol = settingsModule.getSetting('protocol', 'http://')
+            #hostname = settingsModule.getSetting('hostname', 'localhost')
+            #port = int(settingsModule.getSettingInt('port', 9988))
+            self.PLUGIN_URL = 'default.py'#str(protocol) + str(hostname) + ':' + str(port)  + '/' +  'default.py'
 
 
         # retrieve settings
-        user_agent = settings.getSetting('user_agent')
+        user_agent = settingsModule.getSetting('user_agent')
         #obsolete, replace, revents audio from streaming
         #if user_agent == 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)':
         #    addon.setSetting('user_agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0')
 
 
 
-
-        mode = settings.getParameter('mode','main')
+        mode = settingsModule.getParameter('mode','main')
 
         # make mode case-insensitive
         mode = mode.lower()
@@ -619,432 +662,494 @@ class contentengine(object):
         except:
             instanceName = ''
         # cloudservice - content type
-        contextType = settings.getParameter('content_type')
+        contextType = settingsModule.getParameter('content_type')
 
         #support encfs?
-        encfs = settings.getParameter('encfs', False)
+        encfs = settingsModule.getParameter('encfs', False)
 
-        contentType = self.getContentType(contextType,encfs)
+        contentType = self.getContentType(settingsModule,contextType,encfs)
 
 
         if KODI:
             xbmcplugin.addSortMethod(self.plugin_handle, xbmcplugin.SORT_METHOD_LABEL)
-            #    xbmcplugin.addSortMethod(plugin_handle, xbmcplugin.SORT_METHOD_TRACKNUM)
+            #    xbmcplugin.addSortMethod(self.plugin_handle, xbmcplugin.SORT_METHOD_TRACKNUM)
             xbmcplugin.addSortMethod(self.plugin_handle, xbmcplugin.SORT_METHOD_SIZE)
 
         numberOfAccounts = self.numberOfAccounts(constants.PLUGIN_NAME)
-        invokedUsername = settings.getParameter('username')
+        invokedUsername = settingsModule.getParameter('username')
 
 
         # cloudservice - utilities
         ###
 
-        if mode == 'dummy' or mode == 'delete' or mode == 'enroll':
+        if mode == 'scheduler':
+            #tasks = scheduler.scheduler('./test.db')
+            tasks = scheduler.scheduler(settings=addon)
+            #tasks.setScheduleTask('gdrive2', 60, '/', 0)
+            self.addMenu(self.PLUGIN_URL+'?mode=new_task&content_type='+str(contextType),'['+str(addon.getLocalizedString(30222))+']')
+
+            i = 0
+            count = tasks.countScheduledTask()
+            while (i <= count):
+                task = tasks.getScheduledTask(i)
+                if task[0] != '':
+                    #j=0
+                    #while (j < len(task)):
+                        #print str(task[j]) + ','
+                        #j = j + 1
+                    #print "\n"
+
+                    #    TASK_INSTANCE = 0
+                    #    TASK_FREQUENCY = 1
+                    #    TASK_FOLDER = 2
+                    #    TASK_TYPE = 3
+                    #    TASK_RUNTIME = 4
+                    #    TASK_CMD = 5
+                    #    TASK_STATUSDETAIL = 6
+                    #    TASK_STATUS = 7
+                    status = ''
+                    # running?, multi-run
+                    if task[tasks.TASK_STATUS] == str(tasks.TYPE_STOPPED) and task[tasks.TASK_TYPE] == '0' and task[tasks.TASK_RUNTIME] != '0':
+                        status += 'one time -- last run : '+  str(task[tasks.TASK_STATUSDETAIL])
+                    elif task[tasks.TASK_STATUS] == str(tasks.TYPE_STOPPED) and task[tasks.TASK_TYPE] in ['2','1'] and task[tasks.TASK_RUNTIME]  != '0':
+                        status += 'every '+str(task[tasks.TASK_FREQUENCY])+' mins looking for changes -- last run status: ' +  str(task[tasks.TASK_STATUSDETAIL])
+                    elif task[tasks.TASK_STATUS] == str(tasks.TYPE_RUNNING) and task[tasks.TASK_TYPE] == '0':
+                        status += 'one time -- running'
+                    elif task[tasks.TASK_STATUS] == str(tasks.TYPE_RUNNING) and task[tasks.TASK_TYPE] in ['2','1']:
+                        status += 'every '+str(task[tasks.TASK_FREQUENCY])+' mins looking for changes -- running'
+                    elif task[tasks.TASK_STATUS] == str(tasks.TYPE_STOPPED) and task[tasks.TASK_TYPE] == '0' and task[tasks.TASK_RUNTIME] == '0':
+                        status += 'one time -- never ran'
+                    elif task[tasks.TASK_STATUS] == str(tasks.TYPE_STOPPED) and task[tasks.TASK_TYPE] in ['2','1'] and task[tasks.TASK_RUNTIME] == '0':
+                        status += 'every '+str(task[tasks.TASK_FREQUENCY])+' mins looking for changes -- never ran'
+                    #elif task[4] == 0 and task[7] == 0  and task[6] == 1:
+                    #    status += 'one time -- never ran'
+                    else:
+                    #    status += 'every '+str(task[1])+' mins looking for changes -- never ran'
+                        status = str(task[tasks.TASK_STATUS]) + ' ' + str(task[tasks.TASK_TYPE]) + ' ' + str(task[tasks.TASK_RUNTIME]) +'??'
+
+                    results = re.search(r'\&filename=([^\&]+).*\&username=([^\&]+)\&', str(task[tasks.TASK_CMD]))
+                    self.addStatusText('job #' + str(i) + ' username=' +str(results.group(2)) +' folder='+ str(results.group(1)) +' '+ str(status), job=i)
+                i += 1
+
+        elif mode == 'delete_task':
+            job = settingsModule.getParameter('job',None)
+
+            if job is not None:
+                addon.setSetting(job + '_instance', '')
+
+        elif mode == 'run_task':
+            job = settingsModule.getParameter('job',None)
+
+            #if job is not None:
+
+
+
+        elif mode == 'new_task' or mode == 'buildstrm' or mode == 'buildstrmscheduler':
+
+
+
+            hostTemp = settingsModule.getParameter('host', host)
+            #if hostTemp == '':
+            #    host = hostTemp
+
+            if hostTemp is not None and not bool(re.match('^http', hostTemp, re.I)):
+                hostTemp = 'http://' + str(hostTemp)
+
+
+            force = settingsModule.getParameter('force', False)
+
+            logfile = settingsModule.getParameter('logfile', None)
+
+            LOGGING = None
+            if mode == 'buildstrm'  and logfile is not None and logfile != '':
+                LOGGING = open(logfile, 'w')
+                print >>LOGGING, "folder id\tfolder title\tfile id\tfile title\tshow title (tv)\tseason (tv)\tepisode (tv)\ttitle (movie)\tyear (movie)\tvideo resolution\tfile checksum\t\n"
+
+            #for scheduled jbos
+            #instance = settingsModule.getParameter('instance',None)
+            frequency = settingsModule.getParameter('frequency',None)
+            type = settingsModule.getParameter('type',None)
+
+            #for all STRM creation
+            catalog = settingsModule.getParameter('catalog', False)
+            resolution = settingsModule.getParameter('resolution', False)
+            removeExt = settingsModule.getParameter('remove_ext', False)
+            folderID = settingsModule.getParameter('folder')
+            filename = settingsModule.getParameter('filename', None)
+            title = settingsModule.getParameter('title')
+            invokedUsername = settingsModule.getParameter('username')
+            encfs = settingsModule.getParameter('encfs', False)
+            encryptedPath = settingsModule.getParameter('epath', '')
+            dencryptedPath = settingsModule.getParameter('dpath', '')
+            changeTracking = settingsModule.getParameter('changes', False)
+            changeToken = settingsModule.getParameter('change_token', '')
+            skip0Res = settingsModule.getParameter('skip', False)
+            original = settingsModule.getParameter('original', True)
+            transcode = settingsModule.getParameter('transcode', True)
+            append = settingsModule.getParameter('append', '')
+            if append != '':
+                append += ' '
+
+            if type == '1' or type == '2':
+                changeTracking = True
+            elif type == '0':
+                changeTracking = False
+
+            params = re.search(r'^([^\|]+)\|(.*)$', str(folderID))
+            if params:
+                folderID = params.group(1)
+                filename = params.group(2)
+
+            #instance = settingsModule.getParameter('instance',None)
+            #frequency = settingsModule.getParameter('frequency',None)
+            #folder = settingsModule.getParameter('folder',None)
+            #type = settingsModule.getParameter('type',None)
+
+            if instanceName == '':
+                instanceName= None
+
+            if mode == 'new_task' and instanceName is None:
+                if not KODI:
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=new_task&content_type='+contextType)
+
+
+                instances = []
+                instances_values = []
+                count = 1
+                while True:
+                    instanceName = constants.PLUGIN_NAME+str(count)
+                    username = settingsModule.getSetting(instanceName+'_username', None)
+                    if username is None or username == '':
+                        instanceName = ''
+                        break
+                    if username != '':
+                        if KODI:
+                            instances.append(username)
+                            instances_values.append(instanceName)
+                        else:
+                            instances.append([instanceName,username])
+                    count = count + 1
+
+                if KODI:
+                    returnValue = xbmcgui.Dialog().select(addon.getLocalizedString(30223), list=instances)
+                    instanceName = instances_values[returnValue]
+
+                else:
+                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30223), 'instance', list=instances)
+
+                    xbmcgui.Dialog().endForm()
+
+            if mode == 'new_task' and instanceName != '' and instanceName is not None and (frequency is None or folderID is None or type is None):
+                service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
+                drives = service.getTeamDrives()
+
+                if not KODI:
+                    xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode=buildstrmscheduler&instance='+str(instanceName)+'&username='+str(service.authorization.username)+'&content_type='+contextType)
+
+                list = []
+                list_values = []
+                if not KODI:
+                    list.append(['root|root','root'])
+                    for drive in drives:
+                        list.append([str(drive.id) + '|' + str(drive.title),drive.title])
+                    print list
+                else:
+                    list.append('root')
+                    list_values.append('root')
+                    for drive in drives:
+                        list.append(str(drive.title))
+                        list_values.append(str(drive.id))
+
+                if KODI:
+                    returnValue = xbmcgui.Dialog().select(addon.getLocalizedString(30224),list)
+                    folderID = list_values[returnValue]
+                    filename = list[returnValue]
+                    frequency = xbmcgui.Dialog().input(addon.getLocalizedString(30224), '60', type=xbmcgui.INPUT_NUMERIC)
+                    type = xbmcgui.Dialog().select(addon.getLocalizedString(30224),['full syncs only', 'start change tracking', 'full sync then ongoing tracking'])
+
+                else:
+                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30224), 'folder',list)
+                    xbmcgui.Dialog().textField(addon.getLocalizedString(30225), 'frequency', format='in minutes')
+                    xbmcgui.Dialog().selectField(addon.getLocalizedString(30226), 'type', [[2,'full sync then ongoing tracking'],[1,'start change tracking'],[0,'full syncs only']])
+
+                    xbmcgui.Dialog().endForm()
+
+
+            if mode == 'buildstrmscheduler' or  mode == 'buildstrm':
+
+
+                if KODI:
+                    silent = settingsModule.getParameter('silent', settingsModule.getSetting('strm_silent',0))
+                    if silent == '':
+                        silent = 0
+
+                    try:
+                        path = settingsModule.getSetting('strm_path')
+                    except:
+                        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                        addon.setSetting('strm_path', path)
+
+                    if path == '' or path is None:
+                        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                        addon.setSetting('strm_path', path)
+
+                    if path != '' and path is not None:
+                        returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
+
+                # path not defined, prompt
+                elif not KODI:
+                    try:
+                        path = settingsModule.getParameter('strm_path', '')
+                        path = path.replace('%2F','/')
+                    except:
+                        path = None
+
+                    if path is None or path == '':
+
+                        if frequency is not None and type is not None:
+                            xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&frequency='+str(frequency)+'&type='+str(type)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
+                        else:
+                            xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
+                        xbmcgui.Dialog().textField(addon.getLocalizedString(30026), 'strm_path', settingsModule.getSetting('strm_path',''))
+                        xbmcgui.Dialog().booleanSelector('catalog STRMs into folders according to movie/tv/other?','catalog')
+                        xbmcgui.Dialog().booleanSelector('append resolution to STRM filename? (- ###p)','resolution')
+                        xbmcgui.Dialog().textField('append the following to the resolution (- APPEND ###p)','append',isOptional=True)
+                        xbmcgui.Dialog().booleanSelector('remove media extension from filename?','remove_ext')
+                        xbmcgui.Dialog().booleanSelector('force overwrite existing STRM?','force', False)
+                        xbmcgui.Dialog().booleanSelector('skip creating STRM for undetectable videos?','skip', True)
+                        xbmcgui.Dialog().booleanSelector('create original quality STRM files?','original', True)
+                        xbmcgui.Dialog().booleanSelector('create google transcode quality STRM files?','transcode', True)
+                        xbmcgui.Dialog().textField('override the url path with the following','host',isOptional=True,format='http://hostname:port', default=host)
+                        xbmcgui.Dialog().textField('log STRM build process to this log file','logfile',isOptional=True)
+
+                        xbmcgui.Dialog().endForm()
+                    elif mode == 'buildstrmscheduler' and frequency is not None and type is not None:
+                        tasks = scheduler.scheduler(settings=addon)
+                        #cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode='+str(mode)+'&logfile='+str(logfile)+'&host='+str(host)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&append='+str(append)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename)+'&original='+str(original) + '&transcode='+str(transcode)+'&skip=' + str(skip0Res)  +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
+                        cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode=buildstrm&logfile='+str(logfile)+'&host='+str(hostTemp)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&append='+str(append)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename)+'&original='+str(original) + '&transcode='+str(transcode)+'&skip=' + str(skip0Res)  +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
+                        tasks.setScheduleTask(instanceName, frequency, folderID, type, cmd)
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'STRM generation job scheduled -- it will start executing within the next 60 seconds.')
+
+
+
+                if mode == 'buildstrm' and path != '' and path is not None and (not KODI or returnPrompt):
+
+                    if KODI and silent != 2:
+                        try:
+                            pDialog = xbmcgui.DialogProgressBG()
+                            pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
+                        except:
+                            pDialog = None
+                    else:
+                        pDialog = None
+
+                    url = settingsModule.getParameter('streamurl')
+                    url = re.sub('---', '&', url)
+                    title = settingsModule.getParameter('title')
+                    type = int(settingsModule.getParameterInt('type', 0))
+
+                    if url != '':
+
+                            filename = path + '/' + title+'.strm'
+                            strmFile = xbmcvfs.File(filename, "w")
+
+                            if not KODI:
+                                if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                    params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
+
+                                    if params and plugin_handle.server.hide:
+                                        base = str(params.group(1))
+                                        extended = str(params.group(1))
+                                        url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
+                                    else:
+                                        url = str(url)
+
+
+                            strmFile.write(host + '/' + url+'\n')
+                            strmFile.close()
+                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file. (changetoken = '+ str(changeToken) + ')')
+
+
+                    else:
+
+
+
+                        if folderID != '':
+
+                            count = 1
+                            loop = True
+                            while loop:
+                                instanceName = constants.PLUGIN_NAME+str(count)
+                                username = settingsModule.getSetting(instanceName+'_username', None)
+                                if username == invokedUsername:
+
+                                    #let's log in
+                                    #if ( settingsModule.getSettingInt(instanceName+'_type',0)==0):
+                                        #service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings, DBM=DBM)
+                                    #else:
+                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
+
+                                    loop = False
+
+                                if username is None:
+                                    try:
+                                        service
+                                    except NameError:
+                                        #fallback on first defined account
+                                        #if ( settingsModule.getSettingInt(instanceName+'_type',0)==0):
+                                        #    service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
+                                        #else:
+                                        service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settingsModule,DBM=DBM)
+                                    break
+                                count = count + 1
+
+                            # encfs -- extract filename
+                            if encfs:
+                                extrapulatedFolderName = re.compile('([^/]+)/$')
+
+                                titleDecrypted = extrapulatedFolderName.match(dencryptedPath)
+
+                                if titleDecrypted is not None:
+                                    title = titleDecrypted.group(1)
+
+
+                            #changeToken = settingsModule.getSetting(str(instanceName)+'_' + str(folderID) + '_changetoken', '', forceSync=True)
+                            xbmc.log(str(instanceName)+'_' + str(folderID) + '_changetoken = ' + str(changeToken), xbmc.LOGDEBUG)
+
+                            count = 0
+                            newcount=0
+                            if constants.CONST.spreadsheet and service.cloudResume == '2':
+                                spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
+                                if catalog:
+                                    (newcount, changeToken) = service.buildSTRM(self.plugin_handle, path ,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=hostTemp, LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt)
+                                else:
+                                    (newcount,changeToken) = service.buildSTRM(self.plugin_handle, path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=hostTemp,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append,removeExt=removeExt)
+                                spreadsheetFile.close()
+                            else:
+
+                                if catalog:
+                                    (newcount,changeToken) = service.buildSTRM(self.plugin_handle, path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking, resolution=resolution, force=force, host=hostTemp,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append,removeExt=removeExt)
+                                else:
+                                    (newcount,changeToken) = service.buildSTRM(self.plugin_handle, path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=catalog, fetchChangeID=changeTracking,resolution=resolution, force=force, host=hostTemp,LOGGING=LOGGING, changeTracking=changeTracking, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt)
+                            count += newcount
+                            #count
+
+                            xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created '+str(count)+' STRM file(s). (changetoken = '+ str(changeToken) + ')')
+
+                        elif filename != '':
+                                        if encfs:
+                                            values = {'title': title, 'encfs': 'True', 'epath': encryptedPath, 'dpath': dencryptedPath, 'filename': filename, 'username': invokedUsername}
+                                            # encfs -- extract filename
+                                            extrapulatedFileName = re.compile('.*?/([^/]+)$')
+
+                                            titleDecrypted = extrapulatedFileName.match(dencryptedPath)
+
+                                            if titleDecrypted is not None:
+                                                title = titleDecrypted.group(1)
+
+                                        else:
+                                            values = {'title': title, 'filename': filename, 'username': invokedUsername}
+                                        if type == 1:
+                                            url = self.PLUGIN_URL+'?mode=audio&'+urllib.urlencode(values)
+                                        else:
+                                            url = self.PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)
+
+                                        filename = path + '/' + title+'.strm'
+                                        strmFile = xbmcvfs.File(filename, "w")
+                                        if KODI:
+                                            strmFile.write(url + '\n')
+                                        else:
+                                            strmFile.write(host + '/' + url + '\n')
+
+                                        strmFile.close()
+                                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file. (changetoken = '+ str(changeToken) + ')')
+
+                        else:
+
+                            if instanceName != '':
+                                #changeToken = settingsModule.getSetting(str(instanceName)+'_' + str(folderID) + '_changetoken', '')
+                                xbmc.log(str(instanceName)+'_' + str(folderID) + '_changetoken = ' + str(changeToken), xbmc.LOGDEBUG)
+
+                                service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
+                                service.buildSTRM(self.plugin_handle, path, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, force=force, host=hostTemp,LOGGING=LOGGING, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt)
+
+                            else:
+                                count = 1
+                                while True:
+                                    instanceName = constants.PLUGIN_NAME+str(count)
+                                    username = settingsModule.getSetting(instanceName+'_username', None)
+                                    if username != '' and username is not None and username == invokedUsername:
+                                        #if ( settingsModule.getSettingInt(instanceName+'_type',0)==0):
+                                        #        service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
+                                        #else:
+                                        service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
+
+                                        #changeToken = settingsModule.getSetting(str(instanceName)+'_' + str(folderID) + '_changetoken', '')
+                                        xbmc.log(str(instanceName)+'_' + str(folderID) + '_changetoken = ' + str(changeToken), xbmc.LOGDEBUG)
+
+                                        service.buildSTRM(self.plugin_handle, path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, changeTracking=changeTracking, fetchChangeID=changeTracking, resolution=resolution, host=hostTemp,LOGGING=LOGGING, changeToken=changeToken,  skip0Res=skip0Res, original=original, transcode=transcode, append=append, removeExt=removeExt)
+                                        break
+                                    if username is None:
+                                        #fallback on first defined account
+                                        try:
+                                            service
+                                        except NameError:
+                                            #fallback on first defined account
+                                            #if ( settingsModule.getSettingInt(instanceName+'_type',0)==0):
+                                            #        service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings)
+                                            #else:
+                                            service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settingsModule,DBM=DBM)
+                                        break
+                                    count = count + 1
+
+                    if KODI and silent != 2:
+                        try:
+                            pDialog.update(100)
+                            pDialog.close()
+                        except:
+                            pDialog = None
+                    if KODI and silent == 0:
+                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
+                xbmcplugin.endOfDirectory(self.plugin_handle)
+
+
+                if mode == 'buildstrm' and logfile is not None and logfile != '':
+                    LOGGING.close()
+
+                return
+
+
+        elif mode == 'dummy' or mode == 'delete' or mode == 'makedefault' or mode == 'enroll' or mode == 'scheduler' or mode == 'enroll_rw':
 
             self.accountActions(addon, mode, instanceName, numberOfAccounts)
-            settings = settings.__init__(addon)
+            settings = settingsModule.__init__(addon)
             mode = 'main'
             instanceName = ''
         #create strm files
-        elif mode == 'buildstrm':
 
-            silent = settings.getParameter('silent', settings.getSetting('strm_silent',0))
-            if silent == '':
-                silent = 0
 
-            try:
-                path = settings.getSetting('strm_path')
-            except:
-                path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
-                addon.setSetting('strm_path', path)
-
-            if path == '' or path is None:
-                path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
-                addon.setSetting('strm_path', path)
-
-            if path != '' and path is not None:
-                returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
-
-
-            if path != '' and path is not None and (not KODI or returnPrompt):
-
-                if silent != 2:
-                    try:
-                        pDialog = xbmcgui.DialogProgressBG()
-                        pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
-                    except:
-                        pDialog = None
-
-                url = settings.getParameter('streamurl')
-                url = re.sub('---', '&', url)
-                title = settings.getParameter('title')
-                type = int(settings.getParameterInt('type', 0))
-
-                if url != '':
-
-                        filename = path + '/' + title+'.strm'
-                        strmFile = xbmcvfs.File(filename, "w")
-
-                        if not KODI:
-                            if plugin_handle.server.keyvalue or plugin_handle.server.hide:
-                                params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
-
-                                if params and plugin_handle.server.hide:
-                                    base = str(params.group(1))
-                                    extended = str(params.group(1))
-                                    url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
-                                else:
-                                    url = str(url) + '&kv=' +plugin_handle.server.encrypt.encryptString(url)
-
-
-                        strmFile.write(url+'\n')
-                        strmFile.close()
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file.')
-
-
-                else:
-
-                    folderID = settings.getParameter('folder')
-                    filename = settings.getParameter('filename')
-                    title = settings.getParameter('title')
-                    invokedUsername = settings.getParameter('username')
-                    encfs = settings.getParameter('encfs', False)
-
-                    encryptedPath = settings.getParameter('epath', '')
-                    dencryptedPath = settings.getParameter('dpath', '')
-
-                    if folderID != '':
-
-                        count = 1
-                        loop = True
-                        while loop:
-                            instanceName = constants.PLUGIN_NAME+str(count)
-                            try:
-                                username = settings.getSetting(instanceName+'_username')
-                                if username == invokedUsername:
-
-                                    #let's log in
-                                    #if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                        #service = cloudservice1(PLUGIN_URL,addon,instanceName, user_agent, settings, DBM=DBM)
-                                    #else:
-                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
-
-                                    loop = False
-                            except:
-                                #service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent)
-                                break
-
-                            if count == numberOfAccounts:
-                                try:
-                                    service
-                                except NameError:
-                                    #fallback on first defined account
-                                    #if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                    #    service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
-                                    #else:
-                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
-                                break
-                            count = count + 1
-
-                        # encfs -- extract filename
-                        if encfs:
-                            extrapulatedFolderName = re.compile('([^/]+)/$')
-
-                            titleDecrypted = extrapulatedFolderName.match(dencryptedPath)
-
-                            if titleDecrypted is not None:
-                                title = titleDecrypted.group(1)
-
-                        count = 0
-                        if constants.CONST.spreadsheet and service.cloudResume == '2':
-                            spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
-                            count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile)
-                            spreadsheetFile.close()
-                        else:
-                            count += service.buildSTRM(path + '/'+title,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
-                        #count
-
-                        xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created '+str(count)+'STRM file(s).')
-
-                    elif filename != '':
-                                    if encfs:
-                                        values = {'title': title, 'encfs': 'True', 'epath': encryptedPath, 'dpath': dencryptedPath, 'filename': filename, 'username': invokedUsername}
-                                        # encfs -- extract filename
-                                        extrapulatedFileName = re.compile('.*?/([^/]+)$')
-
-                                        titleDecrypted = extrapulatedFileName.match(dencryptedPath)
-
-                                        if titleDecrypted is not None:
-                                            title = titleDecrypted.group(1)
-
-                                    else:
-                                        values = {'title': title, 'filename': filename, 'username': invokedUsername}
-                                    if type == 1:
-                                        url = self.PLUGIN_URL+'?mode=audio&'+urllib.urlencode(values)
-                                    else:
-                                        url = self.PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)
-
-                                    filename = path + '/' + title+'.strm'
-                                    strmFile = xbmcvfs.File(filename, "w")
-                                    strmFile.write(url+'\n')
-                                    strmFile.close()
-                                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'Created 1 STRM file.')
-
-                    else:
-
-                        count = 1
-                        while True:
-                            instanceName = constants.PLUGIN_NAME+str(count)
-                            username = settings.getSetting(instanceName+'_username')
-
-                            if username != '' and username is not None and username == invokedUsername:
-                                #if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                #        service = cloudservice1(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
-                                #else:
-                                service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
-
-                                service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs)
-
-                            if count == numberOfAccounts:
-                                #fallback on first defined account
-                                try:
-                                    service
-                                except NameError:
-                                    #fallback on first defined account
-                                    #if ( settings.getSettingInt(instanceName+'_type',0)==0):
-                                    #        service = cloudservice1(self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings)
-                                    #else:
-                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
-                                break
-                            count = count + 1
-
-                if silent != 2:
-                    try:
-                        pDialog.update(100)
-                        pDialog.close()
-                    except:
-                        pDialog = None
-                if silent == 0:
-                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
-            xbmcplugin.endOfDirectory(self.plugin_handle)
-            return
-        #create strm files
-        elif mode == 'buildstrm2':
-
-            silent = settings.getParameter('silent', settings.getSetting('strm_silent',0))
-            if silent == '':
-                silent = 0
-
-            try:
-                path = settings.getSetting('strm_path')
-            except:
-                path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
-                addon.setSetting('strm_path', path)
-
-            if path == '' or path is None:
-                path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
-                addon.setSetting('strm_path', path)
-
-            if path != '' and path is not None:
-                returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
-
-
-            if path != '' and path is not None and (not KODI or returnPrompt):
-
-                if silent != 2:
-                    try:
-                        pDialog = xbmcgui.DialogProgressBG()
-                        pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
-                    except:
-                        pDialog = None
-
-                url = settings.getParameter('streamurl')
-                url = re.sub('---', '&', url)
-                title = settings.getParameter('title')
-                type = int(settings.getParameterInt('type', 0))
-
-                if url != '':
-
-                        filename = path + '/' + title+'.strm'
-                        strmFile = xbmcvfs.File(filename, "w")
-
-                        strmFile.write(url+'\n')
-                        strmFile.close()
-                else:
-
-                    folderID = settings.getParameter('folder')
-                    filename = settings.getParameter('filename')
-                    title = settings.getParameter('title')
-                    invokedUsername = settings.getParameter('username')
-                    encfs = settings.getParameter('encfs', False)
-
-                    encryptedPath = settings.getParameter('epath', '')
-                    dencryptedPath = settings.getParameter('dpath', '')
-
-                    if folderID != '':
-
-                        count = 1
-                        loop = True
-                        while loop:
-                            instanceName = constants.PLUGIN_NAME+str(count)
-                            try:
-                                username = settings.getSetting(instanceName+'_username')
-                                if username == invokedUsername:
-
-                                    #let's log in
-                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
-
-                                    loop = False
-                            except:
-
-                                break
-
-                            if count == numberOfAccounts:
-                                try:
-                                    service
-                                except NameError:
-                                    #fallback on first defined account
-                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
-                                break
-                            count = count + 1
-
-                        # encfs -- extract filename
-                        if encfs:
-                            extrapulatedFolderName = re.compile('([^/]+)/$')
-
-                            titleDecrypted = extrapulatedFolderName.match(dencryptedPath)
-
-                            if titleDecrypted is not None:
-                                title = titleDecrypted.group(1)
-
-
-                        if constants.CONST.spreadsheet and service.cloudResume == '2':
-                            spreadsheetFile = xbmcvfs.File(path + '/spreadsheet.tab', "w")
-                            service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, spreadsheetFile=spreadsheetFile, catalog=True)
-                            spreadsheetFile.close()
-                        else:
-                            service.buildSTRM(path,folderID, contentType=contentType, pDialog=pDialog, epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=True)
-
-                    elif filename != '':
-                                    if encfs:
-                                        values = {'title': title, 'encfs': 'True', 'epath': encryptedPath, 'dpath': dencryptedPath, 'filename': filename, 'username': invokedUsername}
-                                        # encfs -- extract filename
-                                        extrapulatedFileName = re.compile('.*?/([^/]+)$')
-
-                                        titleDecrypted = extrapulatedFileName.match(dencryptedPath)
-
-                                        if titleDecrypted is not None:
-                                            title = titleDecrypted.group(1)
-
-                                    else:
-                                        values = {'title': title, 'filename': filename, 'username': invokedUsername}
-                                    if type == 1:
-                                        url = self.PLUGIN_URL+'?mode=audio&'+urllib.urlencode(values)
-                                    else:
-                                        url = self.PLUGIN_URL+'?mode=video&'+urllib.urlencode(values)
-
-                                    filename = path + '/' + title+'.strm'
-                                    strmFile = xbmcvfs.File(filename, "w")
-                                    strmFile.write(url+'\n')
-                                    strmFile.close()
-
-                    else:
-
-                        count = 1
-                        while True:
-                            instanceName = constants.PLUGIN_NAME+str(count)
-                            username = settings.getSetting(instanceName+'_username')
-
-                            if username != '' and username is not None and username == invokedUsername:
-                                service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
-
-                                service.buildSTRM(path + '/'+username, contentType=contentType, pDialog=pDialog,  epath=encryptedPath, dpath=dencryptedPath, encfs=encfs, catalog=True)
-
-                            if count == numberOfAccounts:
-                                #fallback on first defined account
-                                try:
-                                    service
-                                except NameError:
-                                    #fallback on first defined account
-                                    service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,constants.PLUGIN_NAME+'1', user_agent, settings,DBM=DBM)
-                                break
-                            count = count + 1
-
-                if silent != 2:
-                    try:
-                        pDialog.update(100)
-                        pDialog.close()
-                    except:
-                        pDialog = None
-                if silent == 0:
-                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30028))
-            xbmcplugin.endOfDirectory(self.plugin_handle)
-            return
-
-        ###
-
-
-
-        ###
 
 
 
         #STRM playback without instance name; use default
         if invokedUsername == '' and instanceName == '' and (mode == 'video' or mode == 'audio'):
-            instanceName = constants.PLUGIN_NAME + str(settings.getSetting('account_default', 1))
+            instanceName = constants.PLUGIN_NAME + str(settingsModule.getSetting('account_default', 1))
 
 
-        instanceName = self.getInstanceName(addon, mode, instanceName, invokedUsername, numberOfAccounts, contextType)
+        ###should we skip this screen selection?
+        if mode != 'scheduler' and mode != 'new_task':
+            instanceName = self.getInstanceName(addon, mode, instanceName, invokedUsername, numberOfAccounts, contextType, settingsModule)
 
         service = None
-        if instanceName is None and (mode == 'index' or mode == 'main' or mode == 'offline'):
+        if instanceName is None and (mode == 'index' or mode == 'main' or mode == 'offline' or mode == 'scheduler'):
             service = None
-        elif instanceName is None:
-            service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,'', user_agent, settings, authenticate=False,DBM=DBM)
+        elif instanceName is None or instanceName == '':
+            service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,'', user_agent, settingsModule, authenticate=False,DBM=DBM)
         else:
-            service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settings,DBM=DBM)
+            service = cloudservice2(self.plugin_handle,self.PLUGIN_URL,addon,instanceName, user_agent, settingsModule,DBM=DBM)
 
 
 
-                #create strm files
-        if mode == 'buildf2':
-
-
-            import time
-            currentDate = time.strftime("%Y%m%d")
-
-
-            try:
-                path = settings.getSetting('strm_path')
-            except:
-                path = ''
-
-
-            if path != '' and path is not None:
-
-                try:
-                    pDialog = xbmcgui.DialogProgressBG()
-                    pDialog.create(addon.getLocalizedString(30000), 'Building STRMs...')
-                except:
-                    pDialog = None
-
-
-                #service = gdrive_api2.gdrive(self.PLUGIN_URL,addon,instanceName, user_agent, settings)
-
-        #        try:
-                addon.setSetting(instanceName + '_changedate', currentDate)
-                service.buildSTRM2(path, contentType=contentType, pDialog=pDialog)
-        #        except:
-        #            pass
-
-                try:
-                    pDialog.update(100)
-                    pDialog.close()
-                except:
-                    pDialog = None
-
-            xbmcplugin.endOfDirectory(self.plugin_handle)
-            return
 
 
 
@@ -1054,12 +1159,12 @@ class contentengine(object):
 
         if mode == 'offline':
 
-            title = settings.getParameter('title')
-            folderID = settings.getParameter('folder')
-            folderName = settings.getParameter('foldername')
+            title = settingsModule.getParameter('title')
+            folderID = settingsModule.getParameter('folder')
+            folderName = settingsModule.getParameter('foldername')
 
 
-            mediaItems = self.getOfflineFileList(settings.getSetting('cache_folder'))
+            mediaItems = self.getOfflineFileList(settingsModule.getSetting('cache_folder'))
 
 
             if mediaItems:
@@ -1078,12 +1183,12 @@ class contentengine(object):
         #cloud_db actions
         elif mode == 'cloud_db':
 
-            title = settings.getParameter('title')
-            folderID = settings.getParameter('folder')
-            folderName = settings.getParameter('foldername')
-            filename = settings.getParameter('filename')
+            title = settingsModule.getParameter('title')
+            folderID = settingsModule.getParameter('folder')
+            folderName = settingsModule.getParameter('foldername')
+            filename = settingsModule.getParameter('filename')
 
-            action = settings.getParameter('action')
+            action = settingsModule.getParameter('action')
 
             mediaFile = file.file(filename, title, '', 0, '','')
             mediaFolder = folder.folder(folderID,folderName)
@@ -1145,12 +1250,12 @@ class contentengine(object):
         #cloud_db actions
         elif mode == 'cloud_dbtest':
 
-            title = settings.getParameter('title')
-            folderID = settings.getParameter('folder')
-            folderName = settings.getParameter('foldername')
-            filename = settings.getParameter('filename')
+            title = settingsModule.getParameter('title')
+            folderID = settingsModule.getParameter('folder')
+            folderName = settingsModule.getParameter('foldername')
+            filename = settingsModule.getParameter('filename')
 
-            action = settings.getParameter('action')
+            action = settingsModule.getParameter('action')
 
 
         #    s = gSheets_api4.gSheets_api4(service,addon, user_agent)
@@ -1258,8 +1363,8 @@ class contentengine(object):
         #dump a list of videos available to play
         elif mode == 'main' or mode == 'index':
 
-            folderID = settings.getParameter('folder', False)
-            folderName = settings.getParameter('foldername', False)
+            folderID = settingsModule.getParameter('folder', False)
+            folderName = settingsModule.getParameter('foldername', False)
 
             #ensure that folder view playback
             if contextType == '':
@@ -1297,15 +1402,16 @@ class contentengine(object):
 
                     teamdrives = service.getTeamDrives();
                     for drive in teamdrives:
-                        self.addMenu(self.PLUGIN_URL+'?mode=index&folder='+str(drive.id)+'&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']')
+                        #self.addMenu(self.PLUGIN_URL+'?mode=index&folder='+str(drive.id)+'&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']')
+                        service.addDirectory(folder.folder(drive.id,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']', isRoot=True), contextType=contextType, encfs=False )
 
+                        #folder.folder(folderID,'') ***
 
 
                 if KODI:
                     self.addMenu(self.PLUGIN_URL+'?mode=search&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30111)+']')
                 else:
                     xbmcgui.Dialog().inputText('title', 'search', self.PLUGIN_URL+'?', 'mode=search&instance='+str(service.instanceName)+'&content_type='+contextType)
-                self.addMenu(self.PLUGIN_URL+'?mode=buildstrm2&instance='+str(service.instanceName)+'&content_type='+str(contextType),'<'+addon.getLocalizedString(30211)+'>')
                 if constants.CONST.testing_features:
                     self.addMenu(self.PLUGIN_URL+'?mode=cloud_dbtest&instance='+str(service.instanceName)+'&action=library_menu&content_type='+str(contextType),'['+addon.getLocalizedString(30212)+']')
 
@@ -1333,8 +1439,8 @@ class contentengine(object):
             if encfs:
 
                 #temporarly force crypto with encfs
-                settings.setCryptoParameters()
-                if settings.cryptoPassword != "":
+                settingsModule.setCryptoParameters()
+                if settingsModule.cryptoPassword != "":
 
                     mediaItems = service.getMediaList(folderID,contentType=8)
 
@@ -1342,7 +1448,7 @@ class contentengine(object):
                     if mediaItems:
 
                         from resources.lib import  encryption
-                        encrypt = encryption.encryption(settings.cryptoSalt,settings.cryptoPassword)
+                        encrypt = encryption.encryption(settingsModule.cryptoSalt,settingsModule.cryptoPassword)
 
                         if contentType == 9:
                             mediaList = ['.mp4', '.flv', '.mov', '.webm', '.avi', '.ogg', '.mkv']
@@ -1385,7 +1491,6 @@ class contentengine(object):
                                 try:
 
                                     item.file.displaytitle = encrypt.decryptString(str(item.file.title))
-                                    print "file = " + str(item.file.title) + str(item.file.displaytitle ) + str(contentType) + "\n"
                                     item.file.title =  item.file.displaytitle
                                     # is it a encrypted photo?
                                     if  photos_re.search(str(item.file.title)):
@@ -1401,16 +1506,16 @@ class contentengine(object):
                 else:
 
 
-                    settings.setEncfsParameters()
+                    settingsModule.setEncfsParameters()
 
-                    encryptedPath = settings.getParameter('epath', '')
-                    dencryptedPath = settings.getParameter('dpath', '')
+                    encryptedPath = settingsModule.getParameter('epath', '')
+                    dencryptedPath = settingsModule.getParameter('dpath', '')
 
-                    encfs_source = settings.encfsSource
-                    encfs_target = settings.encfsTarget
-                    encfs_inode = settings.encfsInode
+                    encfs_source = settingsModule.encfsSource
+                    encfs_target = settingsModule.encfsTarget
+                    encfs_inode = settingsModule.encfsInode
 
-                    mediaItems = service.getMediaList(folderID,contentType=8)
+                    mediaItems = settingsModule.getMediaList(folderID,contentType=8)
 
                     if mediaItems:
                         dirListINodes = {}
@@ -1489,7 +1594,7 @@ class contentengine(object):
 
 
             else:
-                path = settings.getParameter('epath', '')
+                path = settingsModule.getParameter('epath', '')
 
                 # real folder
                 if folderID != '':
@@ -1521,7 +1626,7 @@ class contentengine(object):
         #** testing - gdrive
         elif mode == 'kiosk':
 
-            spreadshetModule = settings.getSetting('library', False)
+            spreadshetModule = settingsModule.getSetting('library', False)
 
 
             if spreadshetModule:
@@ -1580,19 +1685,19 @@ class contentengine(object):
 
         elif mode == 'photo':
 
-            title = settings.getParameter('title',0)
+            title = settingsModule.getParameter('title',0)
             title = re.sub('/', '_', title) #remap / from titles (google photos)
 
-            docid = settings.getParameter('filename')
-            folder = settings.getParameter('folder',0)
+            docid = settingsModule.getParameter('filename')
+            folder = settingsModule.getParameter('folder',0)
 
-            encfs = settings.getParameter('encfs', False)
+            encfs = settingsModule.getParameter('encfs', False)
 
             if encfs:
 
                 #temporarly force crypto with encfs
-                settings.setCryptoParameters()
-                if settings.cryptoPassword != "":
+                settingsModule.setCryptoParameters()
+                if settingsModule.cryptoPassword != "":
 
                     url = service.getDownloadURL(docid)
                     req = urllib2.Request(url,  None,service.getHeadersList())
@@ -1608,7 +1713,6 @@ class contentengine(object):
                             try:
                                 response = urllib2.urlopen(req)
                             except urllib2.URLError, e:
-                                print "HEREX \n"
                                 return
                     #length = response.info().getheader('Content-Length')
 
@@ -1621,7 +1725,7 @@ class contentengine(object):
                     self.plugin_handle.end_headers()
 
                     from resources.lib import  encryption
-                    decrypt = encryption.encryption(settings.cryptoSalt,settings.cryptoPassword)
+                    decrypt = encryption.encryption(settingsModule.cryptoSalt,settingsModule.cryptoPassword)
 
 
                     CHUNK = 16 * 1024
@@ -1637,14 +1741,14 @@ class contentengine(object):
                 else:
 
 
-                    settings.setEncfsParameters()
+                    settingsModule.setEncfsParameters()
 
-                    encryptedPath = settings.getParameter('epath', '')
-                    dencryptedPath = settings.getParameter('dpath', '')
+                    encryptedPath = settingsModule.getParameter('epath', '')
+                    dencryptedPath = settingsModule.getParameter('dpath', '')
 
-                    encfs_source = settings.encfsSource
-                    encfs_target = settings.encfsTarget
-                    encfs_inode = settings.encfsInode
+                    encfs_source = settingsModule.encfsSource
+                    encfs_target = settingsModule.encfsTarget
+                    encfs_inode = settingsModule.encfsInode
 
 
                     # don't redownload if present already
@@ -1657,7 +1761,7 @@ class contentengine(object):
                     #xbmcplugin.setResolvedUrl(self.plugin_handle, True, item)
 
             else:
-                path = settings.getSetting('photo_folder')
+                path = settingsModule.getSetting('photo_folder')
 
                 #workaround for this issue: https://github.com/xbmc/xbmc/pull/8531
                 if not xbmcvfs.exists(path) and not os.path.exists(path):
@@ -1691,10 +1795,10 @@ class contentengine(object):
 
         elif mode == 'downloadfolder':
 
-            title = settings.getParameter('title')
-            folderID = settings.getParameter('folder')
-            folderName = settings.getParameter('foldername')
-            encfs = settings.getParameter('encfs', False)
+            title = settingsModule.getParameter('title')
+            folderID = settingsModule.getParameter('folder')
+            folderName = settingsModule.getParameter('foldername')
+            encfs = settingsModule.getParameter('encfs', False)
 
             try:
                 service
@@ -1706,23 +1810,23 @@ class contentengine(object):
 
             if encfs:
 
-                settings.setEncfsParameters()
+                settingsModule.setEncfsParameters()
 
-                encryptedPath = settings.getParameter('epath', '')
-                dencryptedPath = settings.getParameter('dpath', '')
+                encryptedPath = settingsModule.getParameter('epath', '')
+                dencryptedPath = settingsModule.getParameter('dpath', '')
 
-                encfs_source = settings.encfsSource
-                encfs_target = settings.encfsTarget
-                encfs_inode = settings.encfsInode
+                encfs_source = settingsModule.encfsSource
+                encfs_target = settingsModule.encfsTarget
+                encfs_inode = settingsModule.encfsInode
             else:
-                path = settings.getParameter('epath', '/')
+                path = settingsModule.getParameter('epath', '/')
 
             if encfs:
                 mediaItems = service.getMediaList(folderName=folderID, contentType=8)
                 path = str(encfs_source) + str(encryptedPath)
             else:
                 mediaItems = service.getMediaList(folderName=folderID, contentType=contentType)
-                path = str(settings.getSetting('photo_folder')) + str(path)
+                path = str(settingsModule.getSetting('photo_folder')) + str(path)
 
             if mediaItems:
                 progress = xbmcgui.DialogProgressBG()
@@ -1750,11 +1854,11 @@ class contentengine(object):
 
         elif mode == 'slideshow':
 
-            folder = settings.getParameter('folder',0)
-            title = settings.getParameter('title',0)
+            folder = settingsModule.getParameter('folder',0)
+            title = settingsModule.getParameter('title',0)
 
 
-            encfs = settings.getParameter('encfs', False)
+            encfs = settingsModule.getParameter('encfs', False)
 
             if encfs:
 
@@ -1762,11 +1866,11 @@ class contentengine(object):
                 if not KODI:
 
                     #temporarly force crypto with encfs
-                    settings.setCryptoParameters()
-                    if settings.cryptoPassword != "":
+                    settingsModule.setCryptoParameters()
+                    if settingsModule.cryptoPassword != "":
 
-                        folderID = settings.getParameter('folder', False)
-                        folderName = settings.getParameter('foldername', False)
+                        folderID = settingsModule.getParameter('folder', False)
+                        folderName = settingsModule.getParameter('foldername', False)
 
                         #<meta name="viewport" content="width=device-width, initial-scale=1">
                         startHTML = """
@@ -1912,7 +2016,7 @@ class contentengine(object):
                         if mediaItems:
 
                             from resources.lib import  encryption
-                            encrypt = encryption.encryption(settings.cryptoSalt,settings.cryptoPassword)
+                            encrypt = encryption.encryption(settingsModule.cryptoSalt,settingsModule.cryptoPassword)
                             mediaList = ['.jpg', '.png']
                             media_re = re.compile("|".join(mediaList), re.I)
                             photos_re = re.compile("|".join(mediaList), re.I)
@@ -1954,7 +2058,7 @@ class contentengine(object):
                                             count += 1
                                             #change contextType = image
                                             url = service.addMediaFile(item, contextType='image',  encfs=True, isMock=True)
-                                            xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output  + '    <div class="mySlides fade"><div class="numbertext">'+str(count)+' / '+str(total)+' </div><div class="fav"><a href="" class="fav">&hearts;</a></div><a href="'+str(url)+'"><img src="'+str(url)+'" widdth="'+str(settings.photoResolution)+'"></a></div>'
+                                            xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output  + '    <div class="mySlides fade"><div class="numbertext">'+str(count)+' / '+str(total)+' </div><div class="fav"><a href="" class="fav">&hearts;</a></div><a href="'+str(url)+'"><img src="'+str(url)+'" widdth="'+str(settingsModule.photoResolution)+'"></a></div>'
 
                                     except:
                                         item.file.displaytitle = str(item.file.title)
@@ -1977,6 +2081,7 @@ class contentengine(object):
                         <br>
 
                         <script>
+
                         var slideIndex = 1;
                         showSlides(slideIndex);
 
@@ -2004,7 +2109,28 @@ class contentengine(object):
                           dots[slideIndex-1].className += " active";
                         }
 
+                        document.onkeydown = checkKey;
 
+                        function checkKey(e) {
+
+                            e = e || window.event;
+
+                            if (e.keyCode == '38') {
+                                // up arrow
+                            }
+                            else if (e.keyCode == '40') {
+                                // down arrow
+                            }
+                            else if (e.keyCode == '37') {
+                               // left arrow
+                               plusSlides(-1)
+                            }
+                            else if (e.keyCode == '39') {
+                               // right arrow
+                               plusSlides(1)
+                            }
+
+                        }
                         </script>
 
                         </body>
@@ -2013,11 +2139,11 @@ class contentengine(object):
                         xbmcplugin.outputBuffer.output =xbmcplugin.outputBuffer.output + endHTML
                 else:
 
-                    settings.setEncfsParameters()
+                    settingsModule.setEncfsParameters()
 
-                    encfs_source = settings.encfsSource
-                    encfs_target = settings.encfsTarget
-                    encfs_inode = settings.encfsInode
+                    encfs_source = settingsModule.encfsSource
+                    encfs_target = settingsModule.encfsTarget
+                    encfs_inode = settingsModule.encfsInode
 
                     if (not xbmcvfs.exists(str(encfs_target) + '/'+str(folder) + '/')):
                         xbmcvfs.mkdir(str(encfs_target) + '/'+str(folder))
@@ -2059,7 +2185,7 @@ class contentengine(object):
                                 xbmc.executebuiltin("XBMC.SlideShow(\""+str(encfs_target) + '/'+str(folder)+"/\")")
 
             elif 0:
-                path = settings.getSetting('photo_folder')
+                path = settingsModule.getSetting('photo_folder')
 
                 #workaround for this issue: https://github.com/xbmc/xbmc/pull/8531
                 if not xbmcvfs.exists(path) and not os.path.exists(path):
@@ -2104,11 +2230,11 @@ class contentengine(object):
         ###
         elif mode == 'streamurl':
 
-            url = settings.getParameter('url',0)
-            title = settings.getParameter('title')
+            url = settingsModule.getParameter('url',0)
+            title = settingsModule.getParameter('title')
 
 
-            promptQuality = settings.getSetting('prompt_quality', True)
+            promptQuality = settingsModule.getSetting('prompt_quality', True)
 
             mediaURLs = service.getPublicStream(url)
             options = []
@@ -2152,15 +2278,15 @@ class contentengine(object):
         # legacy (depreicated) - streamvideo [given title]
         elif mode == 'audio' or mode == 'video' or mode == 'search' or mode == 'play' or mode == 'memorycachevideo' or mode == 'playvideo' or mode == 'streamvideo':
 
-            title = settings.getParameter('title') #file title
-            filename = settings.getParameter('filename') #file ID
-            folderID = settings.getParameter('folder') #folder ID
+            title = settingsModule.getParameter('title') #file title
+            filename = settingsModule.getParameter('filename') #file ID
+            folderID = settingsModule.getParameter('folder') #folder ID
 
 
-            spreadsheetSTRM = settings.getParameter('spreadsheet')
-            sheetSTRM = settings.getParameter('sheet')
+            spreadsheetSTRM = settingsModule.getParameter('spreadsheet')
+            sheetSTRM = settingsModule.getParameter('sheet')
 
-            year = settings.getParameter('year')
+            year = settingsModule.getParameter('year')
 
             if sheetSTRM != None and sheetSTRM != '':
 
@@ -2196,10 +2322,10 @@ class contentengine(object):
                     folderID = 'SEARCH'
 
             if mode != 'audio':
-                settings.setVideoParameters()
+                settingsModule.setVideoParameters()
 
             seek = 0
-            if settings.seek:
+            if settingsModule.seek:
                 dialog = xbmcgui.Dialog()
                 seek = dialog.numeric(2, 'Time to seek to', '00:00')
                 for r in re.finditer('(\d+)\:(\d+)' ,seek, re.DOTALL):
@@ -2214,22 +2340,22 @@ class contentengine(object):
                 xbmcplugin.endOfDirectory(self.plugin_handle)
                 return
 
-            #settings.setCacheParameters()
+            #settingsModule.setCacheParameters()
 
             if mode == 'memorycachevideo':
-                settings.play = True
-                settings.download = True
+                settingsModule.play = True
+                settingsModule.download = True
             elif mode == 'playvideo':
-                settings.play = False
-                settings.download = False
-                settings.playOriginal = True
+                settingsModule.play = False
+                settingsModule.download = False
+                settingsModule.playOriginal = True
 
-            if settings.cache:
-                settings.download = False
-                settings.play = False
+            if settingsModule.cache:
+                settingsModule.download = False
+                settingsModule.play = False
 
 
-            encfs = settings.getParameter('encfs', False)
+            encfs = settingsModule.getParameter('encfs', False)
 
             #testing
             player = gPlayer.gPlayer()
@@ -2243,8 +2369,8 @@ class contentengine(object):
 
 
                 #temporarly force crypto with encfs
-                settings.setCryptoParameters()
-                if settings.cryptoPassword != "":
+                settingsModule.setCryptoParameters()
+                if settingsModule.cryptoPassword != "":
 
                     mediaFile = file.file(filename, title, '', 0, '','')
                     mediaFolder = folder.folder(folderID,'')
@@ -2314,7 +2440,7 @@ class contentengine(object):
 
                             # must occur after playback started (resolve or startPlayback in player)
                             # load captions
-                            if 0 and (settings.srt or settings.cc) and (service.protocol == 2 or service.protocol == 3):
+                            if 0 and (settingsModule.srt or settingsModule.cc) and (service.protocol == 2 or service.protocol == 3):
                                 while not (KODI and player.isPlaying()):
                                     xbmc.sleep(1000)
 
@@ -2338,14 +2464,14 @@ class contentengine(object):
 
                 else:
 
-                    settings.setEncfsParameters()
+                    settingsModule.setEncfsParameters()
 
-                    encryptedPath = settings.getParameter('epath', '')
-                    dencryptedPath = settings.getParameter('dpath', '')
+                    encryptedPath = settingsModule.getParameter('epath', '')
+                    dencryptedPath = settingsModule.getParameter('dpath', '')
 
-                    encfs_source = settings.encfsSource
-                    encfs_target = settings.encfsTarget
-                    encfs_inode = settings.encfsInode
+                    encfs_source = settingsModule.encfsSource
+                    encfs_target = settingsModule.encfsTarget
+                    encfs_inode = settingsModule.encfsInode
                     mediaFile = file.file(filename, title, '', 0, '','')
                     mediaFolder = folder.folder(folderID,'')
                     (mediaURLs,package) = service.getPlaybackCall(package=package.package(mediaFile,mediaFolder), title=title, contentType=8)
@@ -2362,7 +2488,7 @@ class contentengine(object):
                     # right-click or integrated player (no opening stream dialog...)
                     if contextType == '':
                         # for STRM (force resolve) -- resolve-only
-                        if settings.username != '' and settings.username is not None:
+                        if settingsModule.username != '' and settingsModule.username is not None:
                             resolvedPlayback = True
                             startPlayback = False
                         else:
@@ -2461,7 +2587,7 @@ class contentengine(object):
                                     encfsSubTitles.append(str(encfs_target) +  str(dencryptedPathWithoutFilename) + str(fileListINodes[index].file.decryptedTitle))
 
 
-                    if  settings.encfsStream or settings.encfsCacheSingle:
+                    if  settingsModule.encfsStream or settingsModule.encfsCacheSingle:
                         ## calculate the decrypted name of the file cache.mp4
                         #creating a cache.mp4 file
                         fileListINodes = {}
@@ -2487,7 +2613,7 @@ class contentengine(object):
                                 xbmcvfs.rmdir(encfs_source + str(dir))
                                 addon.setSetting('encfs_last', str(encryptedPath) +str(title))
 
-                                if settings.encfsExp:
+                                if settingsModule.encfsExp:
                                     service.downloadEncfsFile2(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', folderName=str(encfs_source) + str(dir), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
                                 else:
                                     service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', folderName=str(encfs_source) + str(dir), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
@@ -2502,8 +2628,8 @@ class contentengine(object):
                             #we found a file
                             if index in fileListINodes.keys():
                                 #resume
-                                if settings.encfsLast == str(encryptedPath) +str(title):
-                                    if settings.encfsExp:
+                                if settingsModule.encfsLast == str(encryptedPath) +str(title):
+                                    if settingsModule.encfsExp:
                                         service.downloadEncfsFile2(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=False,folderName=str(encfs_source) + str(file), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
                                     else:
                                         service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=False,folderName=str(encfs_source) + str(file), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
@@ -2511,7 +2637,7 @@ class contentengine(object):
                                 else:
                                     addon.setSetting('encfs_last', str(encryptedPath) +str(title))
 
-                                    if settings.encfsExp:
+                                    if settingsModule.encfsExp:
                                         service.downloadEncfsFile2(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=True, folderName=str(encfs_source) + str(file), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
                                     else:
                                         service.downloadEncfsFile(mediaURL, package, playbackURL=encfs_target + 'encfs.mp4', force=True, folderName=str(encfs_source) + str(file), playback=resolvedPlayback,item=item, player=player, srt=encfsSubTitles)
@@ -2636,7 +2762,7 @@ class contentengine(object):
                 if package is not None:
 
                     # right-click - download (download only + force)
-                    if not seek > 0 and not (settings.download and not settings.play):
+                    if not seek > 0 and not (settingsModule.download and not settingsModule.play):
                             # TESTING
                         if constants.CONST.spreadsheet and service.cloudResume == '2':
                             if service.worksheetID == '':
@@ -2680,14 +2806,14 @@ class contentengine(object):
                                 package.file.resume =  cmd.group(2)
                             elif cmd.group(1) == 'original':
                                 if  cmd.group(2).lower() == 'true':
-                                    settings.playOriginal =  True
+                                    settingsModule.playOriginal =  True
                                 else:
-                                    settings.playOriginal =  False
+                                    settingsModule.playOriginal =  False
                             elif cmd.group(1) == 'promptquality':
                                 if  cmd.group(2).lower() == 'true':
-                                    settings.promptQuality =  True
+                                    settingsModule.promptQuality =  True
                                 else:
-                                    settings.promptQuality =  False
+                                    settingsModule.promptQuality =  False
 
                     item = xbmcgui.ListItem(package.file.displayTitle(), iconImage=package.file.thumbnail,
                                 thumbnailImage=package.file.thumbnail)
@@ -2701,18 +2827,18 @@ class contentengine(object):
                         service.cache = cache
                         package.file.thumbnail = cache.setThumbnail(service)
 
-                        if settings.srt and  (service.protocol == 2 or service.protocol == 3):
+                        if settingsModule.srt and  (service.protocol == 2 or service.protocol == 3):
                             cache.setSRT(service)
 
                         # download closed-captions
-                        if settings.cc and  (service.protocol == 2 or service.protocol == 3):
+                        if settingsModule.cc and  (service.protocol == 2 or service.protocol == 3):
                             cache.setCC(service)
 
 
                         mediaURL = service.getMediaSelection(mediaURLs, folderID, filename)
                         #mediaURL.url = mediaURL.url +'|' + service.getHeadersEncoded()
 
-        #                if not seek > 0  and package.file.resume > 0 and not settings.cloudResumePrompt:
+        #                if not seek > 0  and package.file.resume > 0 and not settingsModule.cloudResumePrompt:
         #                    returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30176), str(int(float(package.file.resume)/360)) + ':'+ str(int(float(package.file.resume)/60)) + ':' + str(int(float(package.file.resume)%60)))
         #                    if not returnPrompt:
         #                        package.file.resume = 0
@@ -2724,24 +2850,24 @@ class contentengine(object):
                         if contextType == '':
 
                             # right-click - download (download only + force)
-                            if not mediaURL.offline and settings.download and not settings.play:
+                            if not mediaURL.offline and settingsModule.download and not settingsModule.play:
                 #                service.downloadMediaFile('',playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize, force=True)
                                 service.downloadMediaFile(mediaURL, item, package, force=True, playback=service.PLAYBACK_NONE)
                                 resolvedPlayback = False
                                 startPlayback = False
 
                             # right-click - play + cache (download and play)
-                            elif not mediaURL.offline and settings.download and settings.play:
+                            elif not mediaURL.offline and settingsModule.download and settingsModule.play:
                     #            service.downloadMediaFile(self.plugin_handle, playbackPath, str(title)+'.'+ str(playbackQuality), folderID, filename, fileSize)
                                 service.downloadMediaFile(mediaURL, item, package, playback=service.PLAYBACK_PLAYER, player=player)
                                 resolvedPlayback = False
 
                             # STRM (force resolve) -- resolve-only
-                            elif settings.username != '' and settings.username is not None or settings.strm:
+                            elif settingsModule.username != '' and settingsModule.username is not None:
                                 startPlayback = False
                                 resolvedPlayback = True
 
-                                if not seek > 0  and package.file.cloudResume > 0 and not settings.cloudResumePrompt:
+                                if not seek > 0  and package.file.cloudResume > 0 and not settingsModule.cloudResumePrompt:
                                     returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30176), str(int(float(package.file.cloudResume)/360)) + ':'+ str(int(float(package.file.cloudResume)/60)) + ':' + str(int(float(package.file.cloudResume)%60)))
                                     if not returnPrompt:
                                         package.file.resume = 0
@@ -2753,16 +2879,16 @@ class contentengine(object):
 
 
                             # right-click - play original / SRT / CC / Start At
-                            elif settings.playOriginal or settings.srt or settings.cc or settings.seek:
+                            elif settingsModule.playOriginal or settingsModule.srt or settingsModule.cc or settingsModule.seek:
                                 startPlayback = True
                                 resolvedPlayback = False
 
 
                             #### not in use
-                            elif 0 and settings.resume:
+                            elif 0 and settingsModule.resume:
 
-                                spreadshetModule = settings.getSetting('library', False)
-                                spreadshetName = settings.getSetting('library_filename', 'TVShows')
+                                spreadshetModule = settingsModule.getSetting('library', False)
+                                spreadshetName = settingsModule.getSetting('library_filename', 'TVShows')
 
                                 media = {}
                                 if spreadshetModule:
@@ -2799,7 +2925,7 @@ class contentengine(object):
                                 resolvedPlayback = True
 
                         # left-click - always cache (download and play)
-                        elif not mediaURL.offline and settings.download and settings.play:
+                        elif not mediaURL.offline and settingsModule.download and settingsModule.play:
                             service.downloadMediaFile(mediaURL, item, package, player=player)
                             resolvedPlayback = False
                         else:
@@ -2816,7 +2942,7 @@ class contentengine(object):
                             mediaURL.offline = True
                         else:
                             mediaURL = mediaURLs[0]
-                            if not settings.download:
+                            if not settingsModule.download:
                                 mediaURL.url =  mediaURL.url +'|' + service.getHeadersEncoded()
 
                         resolvedPlayback = True
@@ -2827,16 +2953,16 @@ class contentengine(object):
                         if contextType == '':
 
                             #download - only, no playback
-                            if  not mediaURL.offline and settings.download and not settings.play:
+                            if  not mediaURL.offline and settingsModule.download and not settingsModule.play:
                                 service.downloadMediaFile(mediaURL, item, package, force=True, playback=service.PLAYBACK_NONE)
                                 resolvedPlayback = False
 
                             # for STRM (force resolve) -- resolve-only
-                            elif settings.username != '' and settings.username is not None:
+                            elif settingsModule.username != '' and settingsModule.username is not None:
                                 startPlayback = False
 
                             #download & playback
-                            elif not mediaURL.offline and settings.download and settings.play:
+                            elif not mediaURL.offline and settingsModule.download and settingsModule.play:
                                 service.downloadMediaFile(mediaURL, item, package,  playback=service.PLAYBACK_PLAYER, player=player)
                                 resolvedPlayback = False
 
@@ -2846,7 +2972,7 @@ class contentengine(object):
 
                         # from within pictures mode, music won't be playable, force
                         #direct playback from within plugin
-                        elif contextType == 'image' and settings.cache:
+                        elif contextType == 'image' and settingsModule.cache:
                                 item = xbmcgui.ListItem(path=str(playbackPath))
                                 # local, not remote. "Music" is ok
                                 item.setInfo( type="Music", infoLabels={ "Title": title } )
@@ -2864,7 +2990,7 @@ class contentengine(object):
                             player.play(mediaURL.url, item)
                             resolvedPlayback = False
                         #download and play
-                        elif settings.download and settings.play:
+                        elif settingsModule.download and settingsModule.play:
                             service.downloadMediaFile(mediaURL, item, package, player=player)
                             resolvedPlayback = False
 
@@ -2927,19 +3053,24 @@ class contentengine(object):
                         xbmc.sleep(100)
 
 
-                    # need to seek?
-                    if seek > 0:
-                        player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
-                    elif float(package.file.cloudResume) > 0:
-                        player.PlayStream(mediaURL.url, item, package.file.cloudResume, startPlayback=startPlayback, package=package)
-                    elif float(package.file.resume) > 0:
-                        player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
+                    if KODI:
+                        # need to seek?
+                        if seek > 0:
+                            player.PlayStream(mediaURL.url, item, seek, startPlayback=startPlayback, package=package)
+                        elif float(package.file.cloudResume) > 0:
+                            player.PlayStream(mediaURL.url, item, package.file.cloudResume, startPlayback=startPlayback, package=package)
+                        elif float(package.file.resume) > 0:
+                            player.PlayStream(mediaURL.url, item, package.file.resume, startPlayback=startPlayback, package=package)
+                        else:
+                            player.PlayStream(mediaURL.url, item, 0, startPlayback=startPlayback, package=package)
                     else:
-                        player.PlayStream(mediaURL.url, item, 0, startPlayback=startPlayback, package=package)
+                            item.setPath(mediaURL.url)
+                            xbmcplugin.setResolvedUrl(self.plugin_handle, True, item)
+
 
                     # must occur after playback started (resolve or startPlayback in player)
                     # load captions
-                    if  (settings.srt or settings.cc) and  (service.protocol == 2 or service.protocol == 3):
+                    if  (settingsModule.srt or settingsModule.cc) and  (service.protocol == 2 or service.protocol == 3):
                         while KODI and not player.isPlaying():
                             xbmc.sleep(1000)
 

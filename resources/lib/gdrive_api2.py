@@ -100,10 +100,11 @@ class gdrive(cloudservice):
         self.worksheetID = self.getInstanceSetting('spreadsheet')
 
         if authenticate == True:
-            self.type = int(self.getInstanceSetting('type'))
+            self.type = int(self.getInstanceSetting('type',default=0))
 
         try:
             username = self.getInstanceSetting('username')
+            #username = self.getInstanceSetting(str(instanceName) + '_username')
         except:
             username = ''
         self.authorization = authorization.authorization(username)
@@ -510,7 +511,7 @@ class gdrive(cloudservice):
     #   parameters: prompt for video quality (optional)
     #   returns: list of packages (file, folder)
     ##
-    def getChangeList(self, contentType=7, nextPageToken='', changeToken=''):
+    def getChangeList(self, folderID, contentType=7, nextPageToken='', changeToken=''):
 
 
         url = ''
@@ -519,13 +520,17 @@ class gdrive(cloudservice):
         url = self.API_URL +'changes'
 
 #            url = url + "?includeDeleted=false&includeSubscribed=false&maxResults=1000"
-        url = url + "?includeDeleted=true&includeSubscribed=false&maxResults=300"
-        if (changeToken != ''):
+
+        if folderID == 'root':
+            url = url + "?includeTeamDriveItems=false&supportsTeamDrives=false&includeDeleted=true&includeSubscribed=false&maxResults=300"
+        else:
+            url = url + "?teamDriveId="+str(folderID)+"&includeTeamDriveItems=true&supportsTeamDrives=true&includeDeleted=true&includeSubscribed=false&maxResults=300"
+        if (nextPageToken == '' and changeToken != ''):
             url = url + '&startChangeId=' + str(changeToken)
         if (nextPageToken != ''):
             url = url + '&pageToken=' + str(nextPageToken)
 
-
+        xbmc.log("URL = "+ str(url), xbmc.LOGDEBUG)
         nextURL = ''
         nextPageToken = ''
         while True:
@@ -536,7 +541,8 @@ class gdrive(cloudservice):
             # if action fails, validate login
             try:
               response = urllib2.urlopen(req)
-              xbmc.sleep(1000)
+              #xbmc.sleep(1000)
+
             except urllib2.URLError, e:
 
               if e.code == 403 or e.code == 401:
@@ -547,15 +553,18 @@ class gdrive(cloudservice):
                 except socket.timeout, e:
                     return ([],nextPageToken,changeToken)
                 except urllib2.URLError, e:
-                  xbmc.log('getChangeList '+str(e))
+                  xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
                   return
               else:
-                xbmc.log('getChangeList '+str(e))
-                return
+                xbmc.log('getChangeList '+str(url)+ ' ' +str(e))
+                return ([],nextPageToken,changeToken)
             except socket.timeout, e:
                 return ([],nextPageToken,changeToken)
+
             response_data = response.read()
             response.close()
+            #xbmc.log(response_data, xbmc.LOGDEBUG)
+
 
             # parsing page for videos
             # video-entry
@@ -578,6 +587,11 @@ class gdrive(cloudservice):
             for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
                 nextURL = r.group(1)
+
+            # max change ID
+            for r in re.finditer('\"largestChangeId\"\:\s+\"([^\"]+)\"' ,
+                             response_data, re.DOTALL):
+                maxChangeID = r.group(1)
 
             ## look for more pages of videos
             for r in re.finditer('\"nextPageToken\"\:\s+\"([^\"]+)\"' ,
@@ -1192,7 +1206,7 @@ class gdrive(cloudservice):
     def getTeamDrives(self):
 
         # retrieve all items
-        url = self.API_URL +'teamdrives'
+        url = self.API_URL +'teamdrives?pageSize=100'
         drives = []
 
         while True:
@@ -1233,17 +1247,17 @@ class gdrive(cloudservice):
 
 
             # look for more pages of videos
-            nextURL = ''
-            for r in re.finditer('\"nextLink\"\:\s+\"([^\"]+)\"' ,
+            nextPageToken = ''
+            for r in re.finditer('\"nextPageToken\"\:\s+\"([^\"]+)\"' ,
                              response_data, re.DOTALL):
-                nextURL = r.group(1)
+                nextPageToken = r.group(1)
 
 
             # are there more pages to process?
-            if nextURL == '':
+            if nextPageToken == '':
                 break
             else:
-                url = nextURL
+                url = self.API_URL +'teamdrives?pageSize=100&pageToken=' + str(nextPageToken)
 
         return drives
 
@@ -1344,10 +1358,14 @@ class gdrive(cloudservice):
     def getPlaybackCall(self, package=None, title='', isExact=True, contentType=None):
 
         try:
-            pquality = int(self.addon.getSetting('preferred_quality'))
-            pformat = int(self.addon.getSetting('preferred_format'))
-            acodec = int(self.addon.getSetting('avoid_codec'))
-            aformat = int(self.addon.getSetting('avoid_format'))
+            pquality = int(self.settings.getParameter('preferred_quality', self.settings.getSetting('preferred_quality')))
+            pformat = int(self.settings.getParameter('preferred_format', self.settings.getSetting('preferred_format')))
+            acodec = int(self.settings.getParameter('avoid_codec', self.settings.getSetting('avoid_codec')))
+            aformat = int(self.settings.getParameter('avoid_format', self.settings.getSetting('avoid_format')))
+            #pquality = int(self.addon.getSetting('preferred_quality'))
+            #pformat = int(self.addon.getSetting('preferred_format'))
+            #acodec = int(self.addon.getSetting('avoid_codec'))
+            #aformat = int(self.addon.getSetting('avoid_format'))
         except :
             pquality=-1
             pformat=-1
@@ -1487,6 +1505,8 @@ class gdrive(cloudservice):
 
             response_data = response.read()
             response.close()
+            xbmc.log("preferred quality = " + str(pquality), xbmc.LOGDEBUG)
+            #xbmc.log("response data = " + str(response_data), xbmc.LOGDEBUG)
 
 
             for r in re.finditer('([^\=]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
@@ -1644,8 +1664,10 @@ class gdrive(cloudservice):
 
                     try:
                         mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec'], str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count))
+                        xbmc.log(itagDB[itag]['resolution'] + ' - ' + containerDB[container] + ' - ' + itagDB[itag]['codec']+ str(itagDB[itag]['resolution'])+ '_' + str(order+count), xbmc.LOGDEBUG)
                     except KeyError:
                         mediaURLs.append(mediaurl.mediaurl(self.PROTOCOL + videoURL, itagDB[itag]['resolution'] + ' - ' + container, str(itagDB[itag]['resolution'])+ '_' + str(order+count), order+count))
+
 
         return (mediaURLs, package)
 
@@ -1747,7 +1769,6 @@ class gdrive(cloudservice):
 
         response_data = response.read()
         response.close()
-
 
         for r in re.finditer('([^\s]+)\=([^\;]+)\;', str(response.headers['set-cookie']), re.DOTALL):
             cookieType,cookieValue = r.groups()

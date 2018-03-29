@@ -43,7 +43,7 @@ class encryption():
     # the size multiple required for AES
     AES_MULTIPLE = 16
 
-    def __init__(self, saltFile, password):
+    def __init__(self, saltFile, saltpassword):
 
         try:
             with open(saltFile, 'rb') as saltfile:
@@ -53,8 +53,8 @@ class encryption():
                 self.salt = self.generateSalt()
                 saltfile.write(self.salt)
 
-        if password != None and password != '':
-            self.key = self.generateKey(password,)
+        if saltpassword != None and saltpassword != '':
+            self.key = self.generateKey(saltpassword,)
 
 
     def generateKey(self,password, iterations=NUMBER_OF_ITERATIONS):
