@@ -216,12 +216,12 @@ class cloudservice(object):
                             skip = False
                             extraFiles = []
                             if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
-                                extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&pquality=2'])
+                                extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&preferred_quality=2'])
 
                                 if int(item.file.resolution[0]) > 480:
-                                    extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&pquality=1'])
+                                    extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&preferred_quality=1'])
                                 if int(item.file.resolution[0]) > 720:
-                                    extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&pquality=0'])
+                                    extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&preferred_quality=0'])
 
 
                                 strmFileName += ' - original ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
@@ -244,9 +244,9 @@ class cloudservice(object):
                                         if params and plugin_handle.server.hide:
                                             base = str(params.group(1))
                                             extended = str(params.group(1))
-                                            url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(str(url) + '&pquality=0')
+                                            url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(str(url) + '&original=true')
                                         else:
-                                            url = str(url) + '&pquality=0'
+                                            url = str(url) + '&original=true'
 
                                 strmFile.write(url+'\n')
                                 strmFile.close()
@@ -329,12 +329,12 @@ class cloudservice(object):
                                 extraFiles = []
                                 if resolution and item.file is not None and item.file.resolution is not None and item.file.resolution[0] != 0:
 
-                                    extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&pquality=2'])
+                                    extraFiles.append([strmFileName + ' - '+str(append)+'420p.strm', str(url) + '&preferred_quality=2'])
 
                                     if int(item.file.resolution[0]) > 480:
-                                        extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&pquality=1'])
+                                        extraFiles.append([strmFileName + ' - '+str(append)+'720p.strm', str(url) + '&preferred_quality=1'])
                                     if int(item.file.resolution[0]) > 720:
-                                        extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&pquality=0'])
+                                        extraFiles.append([strmFileName + ' - '+str(append)+'1080p.strm', str(url) + '&preferred_quality=0'])
 
 
                                     strmFileName += ' - original ' + str(append)+ str(item.file.resolution[0]) + 'p.strm'
@@ -359,9 +359,9 @@ class cloudservice(object):
                                                 if params and plugin_handle.server.hide:
                                                     base = str(params.group(1))
                                                     extended = str(params.group(1))
-                                                    url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(str(url) + '&pquality=0')
+                                                    url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(str(url) + '&original=true')
                                                 else:
-                                                    url = str(url) + '&pquality=0'
+                                                    url = str(url) + '&original=true'
                                         strmFile.write(url +'\n')
                                         strmFile.close()
 

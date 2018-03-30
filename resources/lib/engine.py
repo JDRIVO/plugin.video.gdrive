@@ -851,7 +851,6 @@ class contentengine(object):
                     list.append(['root|root','root'])
                     for drive in drives:
                         list.append([str(drive.id) + '|' + str(drive.title),drive.title])
-                    print list
                 else:
                     list.append('root')
                     list_values.append('root')
@@ -860,11 +859,33 @@ class contentengine(object):
                         list_values.append(str(drive.id))
 
                 if KODI:
+                    try:
+                        path = settingsModule.getSetting('strm_path')
+                    except:
+                        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                        addon.setSetting('strm_path', path)
+
+                    if path == '' or path is None:
+                        path = xbmcgui.Dialog().browse(0,addon.getLocalizedString(30026), 'files','',False,False,'')
+                        addon.setSetting('strm_path', path)
+
+                    if path != '' and path is not None:
+                        returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30027) + '\n'+path +  '?')
+
                     returnValue = xbmcgui.Dialog().select(addon.getLocalizedString(30224),list)
                     folderID = list_values[returnValue]
                     filename = list[returnValue]
-                    frequency = xbmcgui.Dialog().input(addon.getLocalizedString(30224), '60', type=xbmcgui.INPUT_NUMERIC)
-                    type = xbmcgui.Dialog().select(addon.getLocalizedString(30224),['full syncs only', 'start change tracking', 'full sync then ongoing tracking'])
+                    frequency = xbmcgui.Dialog().input(addon.getLocalizedString(30225), '60', type=xbmcgui.INPUT_NUMERIC)
+                    type = xbmcgui.Dialog().select(addon.getLocalizedString(30226),['full syncs only', 'start change tracking', 'full sync then ongoing tracking'])
+                    returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30229))
+                    if returnPrompt:
+                        catalog = True
+
+                    tasks = scheduler.scheduler(settings=addon)
+                    #cmd = host + '/' + str(self.PLUGIN_URL)+'?'+ 'mode='+str(mode)+'&logfile='+str(logfile)+'&host='+str(host)+'&force='+str(force)+'&remove_ext='+str(removeExt)+'&resolution='+str(resolution)+'&append='+str(append)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename)+'&original='+str(original) + '&transcode='+str(transcode)+'&skip=' + str(skip0Res)  +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
+                    cmd = str(self.PLUGIN_URL)+'?'+ 'mode=buildstrm&remove_ext='+str(removeExt)+'&catalog='+str(catalog)+'&strm_path='+str(path)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename)+'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath)
+                    tasks.setScheduleTask(instanceName, frequency, folderID, type, cmd)
+                    xbmcgui.Dialog().ok(addon.getLocalizedString(30000),'STRM generation job scheduled -- it will start executing within the next 60 seconds.')
 
                 else:
                     xbmcgui.Dialog().selectField(addon.getLocalizedString(30224), 'folder',list)
@@ -910,11 +931,12 @@ class contentengine(object):
                         else:
                             xbmcgui.Dialog().startForm(self.PLUGIN_URL+'?', 'mode='+mode+'&instance='+str(instanceName)+'&content_type='+contextType + '&folder=' + str(folderID)+ '&filename=' + str(filename) +'&title=' + str(title) + '&username=' + str(invokedUsername) + '&encfs=' + str(encfs) +  '&epath=' + str(encryptedPath) + '&dpath=' + str(dencryptedPath))
                         xbmcgui.Dialog().textField(addon.getLocalizedString(30026), 'strm_path', settingsModule.getSetting('strm_path',''))
-                        xbmcgui.Dialog().booleanSelector('catalog STRMs into folders according to movie/tv/other?','catalog')
+                        xbmcgui.Dialog().booleanSelector('force overwrite existing STRM?','force', False)
+                        xbmcgui.Dialog().booleanSelector('catalog STRMs into folders according to movie/tv/other?','catalog', disable=['remove_ext', 'true', 'false'])
+                        xbmcgui.Dialog().booleanSelector('remove media extension from filename?','remove_ext')
+
                         xbmcgui.Dialog().booleanSelector('append resolution to STRM filename? (- ###p)','resolution')
                         xbmcgui.Dialog().textField('append the following to the resolution (- APPEND ###p)','append',isOptional=True)
-                        xbmcgui.Dialog().booleanSelector('remove media extension from filename?','remove_ext')
-                        xbmcgui.Dialog().booleanSelector('force overwrite existing STRM?','force', False)
                         xbmcgui.Dialog().booleanSelector('skip creating STRM for undetectable videos?','skip', True)
                         xbmcgui.Dialog().booleanSelector('create original quality STRM files?','original', True)
                         xbmcgui.Dialog().booleanSelector('create google transcode quality STRM files?','transcode', True)
@@ -971,20 +993,21 @@ class contentengine(object):
 
                     else:
 
-                        if KODI:
-                            silent = settingsModule.getParameter('silent', settingsModule.getSetting('strm_silent',0))
-                            if silent == '':
-                                silent = 0
-
-
-                            if not silent:
-                                returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30229))
-                                if returnPrompt:
-                                    catalog = True
 
 
 
                         if folderID != '':
+
+                            if KODI:
+                                silent = settingsModule.getParameter('silent', settingsModule.getSetting('strm_silent',0))
+                                if silent == '':
+                                    silent = 0
+
+
+                                if not silent:
+                                    returnPrompt = xbmcgui.Dialog().yesno(addon.getLocalizedString(30000), addon.getLocalizedString(30229))
+                                    if returnPrompt:
+                                        catalog = True
 
                             count = 1
                             loop = True
