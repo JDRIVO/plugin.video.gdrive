@@ -145,8 +145,8 @@ class contentengine(object):
                 listitem.addContextMenuItems(cm, True)
 
 
-            xbmcplugin.addDirectoryItem(self.plugin_handle, '', listitem,
-                                    isFolder=True, totalItems=1)
+            xbmcplugin.addDirectoryItem(self.plugin_handle, title, listitem,
+                                    isFolder=False, totalItems=1)
 
 
     ##
@@ -726,8 +726,8 @@ class contentengine(object):
                     else:
                     #    status += 'every '+str(task[1])+' mins looking for changes -- never ran'
                         status = str(task[tasks.TASK_STATUS]) + ' ' + str(task[tasks.TASK_TYPE]) + ' ' + str(task[tasks.TASK_RUNTIME]) +'??'
-
-                    results = re.search(r'\&filename=([^\&]+).*\&username=([^\&]+)\&', str(task[tasks.TASK_CMD]))
+                    cmd = re.sub('\&amp\;', '\&', task[tasks.TASK_CMD])
+                    results = re.search(r'\&filename=([^\&]+).*\&username=([^\&]+)\&', str(cmd))
                     self.addStatusText('job #' + str(i) + ' username=' +str(results.group(2)) +' folder='+ str(results.group(1)) +' '+ str(status), job=i)
                 i += 1
 
@@ -832,6 +832,7 @@ class contentengine(object):
                 if KODI:
                     returnValue = xbmcgui.Dialog().select(addon.getLocalizedString(30223), list=instances)
                     instanceName = instances_values[returnValue]
+                    invokedUsername = instances[returnValue]
 
                 else:
                     xbmcgui.Dialog().selectField(addon.getLocalizedString(30223), 'instance', list=instances)
