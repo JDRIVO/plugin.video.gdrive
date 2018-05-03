@@ -21,22 +21,18 @@ import urllib
 #
 #
 #
-class folder:
-    # CloudService v0.2.4
-    # - add fanart [2016/06/19]h
+class teamdrive:
+    # CloudService v0.2.5
 
     ##
     ##
-    def __init__(self, id, title, fanart='', thumb='', isRoot=False):
+    def __init__(self, id, title):
         self.id = id
         self.title = title
-        self.fanart = fanart
-        self.thumb = thumb
-        self.displaytitle = title
-        self.isRoot = isRoot
+
 
     def displayTitle(self):
-        return urllib.unquote(self.displaytitle)
+        return urllib.unquote(self.title)
 
 
 #    def __repr__(self):

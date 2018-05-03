@@ -20,45 +20,34 @@
 
 # cloudservice - required python modules
 import sys
-import urllib
 import re
-import os
 
 # cloudservice - standard XBMC modules
-import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
-
-# common routines
-from resources.lib import kodi_common
-
-# global variables
-import addon_parameters
-addon = addon_parameters.addon
-cloudservice2 = addon_parameters.cloudservice2
-cloudservice1 = addon_parameters.cloudservice1
+import xbmc
 
 
-#*** testing - gdrive
-from resources.lib import tvWindow
-from resources.lib import gSpreadsheets
-from resources.lib import gSheets_api4
+KODI = True
 
-##**
+if KODI:
+    # cloudservice - standard XBMC modules
+#            import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
+    # global variables
+    import constants
+    addon = constants.addon
+
+    PLUGIN_URL = constants.PLUGIN_NAME
+
+PLUGIN_NAME = constants.PLUGIN_NAME
+
+cloudservice2 = constants.cloudservice2
+
+
+
 
 # cloudservice - standard modules
-#from resources.lib import gdrive
-#from resources.lib import gdrive_api2
-from resources.lib import cloudservice
-from resources.lib import authorization
-from resources.lib import folder
-from resources.lib import file
-from resources.lib import offlinefile
-from resources.lib import package
-from resources.lib import mediaurl
-from resources.lib import crashreport
-from resources.lib import gPlayer
 from resources.lib import settings
-from resources.lib import cache
-from resources.lib import TMDB
+#if constants.CONST.tmdb:
+#    from resources.lib import TMDB
 
 
 
@@ -69,12 +58,13 @@ plugin_queries = None
 try:
     plugin_handle = int(sys.argv[1])
     plugin_queries = settings.parse_query(sys.argv[2][1:])
-except: pass
+except:
+    plugin_handle = None
+    plugin_queries = None
+
 
 addon_dir = xbmc.translatePath( addon.getAddonInfo('path') )
 
-
-kodi_common.debugger()
 
 
 # cloudservice - create settings module
@@ -86,26 +76,87 @@ user_agent = settings.getSetting('user_agent')
 #if user_agent == 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)':
 #    addon.setSetting('user_agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0')
 
-instanceName = addon_parameters.PLUGIN_NAME + str(settings.getSetting('account_default', 1))
-service = cloudservice2(PLUGIN_URL,addon,instanceName, user_agent, settings)
-# must load after all other (becomes blocking)
-# streamer
-if service is not None and service.settings.streamer:
+#instanceName = PLUGIN_NAME + str(settings.getSetting('account_default', 1))
+#service = cloudservice2(plugin_handle,PLUGIN_URL,addon,instanceName, user_agent, settings)
 
+if 0:
     from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-    from resources.lib import streamer
-    import urllib, urllib2
-    from SocketServer import ThreadingMixIn
+    from resources.lib import enroll_proxy
+
     import threading
 
-
     try:
-        server = streamer.MyHTTPServer(('',  service.settings.streamPort), streamer.myStreamer)
-        server.setAccount(service, '')
-        print "ENABLED STREAMER \n\n\n"
+        server = enroll_proxy.MyHTTPServer(('',  9978), enroll_proxy.enrollBrowser)
 
-        while server.ready:
-            server.handle_request()
-        server.socket.close()
-    except: pass
 
+        doLoop = True
+
+        #except:
+        #    doLoop = False
+
+        monitor = xbmc.Monitor()
+
+        thread = threading.Thread(None, server.run)
+        thread.start()
+
+        while not monitor.abortRequested() and doLoop:
+            if monitor.waitForAbort(10):
+                break
+        server.shutdown()
+        thread.join()
+
+    except:
+        pass
+
+
+# must load after all other (becomes blocking)
+# streamer
+
+
+localTVDB = {}
+localMOVIEDB = {}
+#load data structure containing TV and Movies from KODI
+if (settings.getSetting('local_db')):
+
+    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
+    for match in re.finditer('"episodeid":(\d+)\,"file"\:"[^\"]+"', result):#, re.S):
+        localTVDB[match.group(2)] = match.group(1)
+    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {  "sort": {"method":"lastplayed"}, "filter": {"field": "title", "operator": "isnot", "value":"1"}, "properties": [  "file"]}, "id": "1"}')
+    for match in re.finditer('"file":"[^\"]+","label":"[^\"]+","movieid":(\d+)', result):#, re.S):
+        localMOVIEDB[match.group(1)] = match.group(2)
+
+
+
+from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+from resources.lib import streamer
+from SocketServer import ThreadingMixIn
+import threading
+
+
+port = int(settings.getSettingInt('stream_port', 8011))
+server = streamer.MyHTTPServer(('',  port), streamer.myStreamer)
+server.setDetails(plugin_handle,PLUGIN_NAME,PLUGIN_URL,addon,user_agent, settings)
+#server.setAccount(service, '')
+if (settings.getSetting('local_db')):
+    server.setTVDB(localTVDB)
+    server.setTVDB(localMOVIEDB)
+
+doLoop = True
+
+#except:
+#    doLoop = False
+
+monitor = xbmc.Monitor()
+
+thread = threading.Thread(None, server.run)
+thread.start()
+
+while not monitor.abortRequested() and doLoop:
+    if monitor.waitForAbort(10):
+        break
+server.shutdown()
+thread.join()
+
+#while not monitor.abortRequested() and doLoop and server.ready:
+#    server.handle_request()
+#server.socket.close()

@@ -18,23 +18,38 @@
 
 '''
 
-# cloudservice - standard XBMC modules
-import xbmc, xbmcgui, xbmcplugin, xbmcaddon, xbmcvfs
+import re
+import sys
+KODI = True
+if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
+    KODI = False
 
-#from resources.lib import gdrive
 from resources.lib import gdrive_api2
-from resources.lib import gdrive
 
-
-
-# global variables
 PLUGIN_NAME = 'gdrive'
-addon = xbmcaddon.Addon(id='plugin.video.gdrive')
-#addon = xbmcaddon.Addon(id='plugin.video.gdrive-testing')
+
+if KODI:
+    # cloudservice - standard XBMC modules
+    import xbmcaddon
+
+    # global variables
+    #addon = xbmcaddon.Addon(id='plugin.video.gdrive')
+    addon = xbmcaddon.Addon(id='plugin.video.gdrive')
+
+else:
+    from resources.libgui import xbmcaddon
+    addon = xbmcaddon.xbmcaddon()
 
 cloudservice2 = gdrive_api2.gdrive
-cloudservice1 = gdrive.gdrive
 
-spreadsheet = True
-testing_features = False
 
+class CONST():
+
+    spreadsheet = True
+    testing_features = False
+    CACHE = True
+    SRT = True
+    CC = True
+    DEBUG = False
+    tvwindow = False
+    tmdb = False

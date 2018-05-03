@@ -18,15 +18,21 @@
 
 '''
 
-import os
 import re
 import urllib, urllib2
-import cookielib
+import sys
 
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+KODI = True
+if re.search(re.compile('.py', re.IGNORECASE), sys.argv[0]) is not None:
+    KODI = False
 
-import authorization
-import crashreport
+if KODI:
+    import xbmc, xbmcgui
+else:
+    from resources.libgui import xbmc
+    from resources.libgui import xbmcgui
+
+
 from resources.lib import package
 from resources.lib import file
 from resources.lib import folder
@@ -57,8 +63,6 @@ class gSpreadsheets:
     def __init__(self, service, addon, user_agent):
         self.addon = addon
         self.service = service
-#        self.crashreport = crashreport
-#        self.crashreport.sendError('test','test')
 
         self.user_agent = user_agent
 
@@ -89,12 +93,10 @@ class gSpreadsheets:
                     if e.msg != '':
                         xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), e.msg)
                         xbmc.log(self.addon.getAddonInfo('getSpreadsheetList') + ': ' + str(e), xbmc.LOGERROR)
-                        self.crashreport.sendError('getSpreadsheetList',str(e))
               else:
                 if e.msg != '':
                     xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), e.msg)
                     xbmc.log(self.addon.getAddonInfo('getSpreadsheetList') + ': ' + str(e), xbmc.LOGERROR)
-                    self.crashreport.sendError('getSpreadsheetList',str(e))
 
             response_data = response.read()
             response.close()
@@ -150,7 +152,7 @@ class gSpreadsheets:
             return False
 
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -183,7 +185,7 @@ class gSpreadsheets:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -225,7 +227,7 @@ class gSpreadsheets:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
@@ -258,55 +260,11 @@ class gSpreadsheets:
             xbmc.log(self.addon.getAddonInfo('name') + ': ' + str(e), xbmc.LOGERROR)
             return False
 
-        response_data = response.read()
+        response.read()
         response.close()
 
         return True
 
-    #
-    # returns a list of worksheets with a link to their listfeeds
-    #
-    def getSpreadsheetWorksheets(self,url):
-
-        worksheets = {}
-        while True:
-            req = urllib2.Request(url, None, self.service.getHeadersList())
-
-            try:
-                response = urllib2.urlopen(req)
-            except urllib2.URLError, e:
-              if e.code == 403 or e.code == 401:
-                self.service.refreshToken()
-                req = urllib2.Request(url, None, self.service.getHeadersList())
-                try:
-                    response = urllib2.urlopen(req)
-                except urllib2.URLError, e:
-                    xbmc.log(self.addon.getAddonInfo('getSpreadsheetWorksheets') + ': ' + str(e), xbmc.LOGERROR)
-              else:
-                xbmc.log(self.addon.getAddonInfo('getSpreadsheetWorksheets') + ': ' + str(e), xbmc.LOGERROR)
-
-            response_data = response.read()
-            response.close()
-
-
-            for r in re.finditer('<title[^>]+\>([^<]+)</title><content[^>]+\>[^<]+</content><link rel=\'[^\#]+\#listfeed\' type=\'application/atom\+xml\' href=\'([^\']+)\'' ,
-                             response_data, re.DOTALL):
-                title,url = r.groups()
-                worksheets[title] = url
-
-            nextURL = ''
-            for r in re.finditer('<link rel=\'next\' type=\'[^\']+\' href=\'([^\']+)\'' ,
-                             response_data, re.DOTALL):
-                nextURL = r.groups()
-
-
-            if nextURL == '':
-                break
-            else:
-                url = nextURL[0]
-
-
-        return worksheets
 
 
 
@@ -574,7 +532,6 @@ class gSpreadsheets:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -621,7 +578,6 @@ class gSpreadsheets:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -667,7 +623,6 @@ class gSpreadsheets:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -751,7 +706,6 @@ class gSpreadsheets:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:(\d+)' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -797,7 +751,6 @@ class gSpreadsheets:
         response_data = response.read()
         response.close()
 
-        count=0;
         for r in re.finditer('"c"\:\[\{"v"\:"([^\"]+)"\}' ,
                          response_data, re.DOTALL):
             item = r.group(1)
@@ -1084,7 +1037,6 @@ class gSpreadsheets:
 
             response_data = response.read()
 
-            previous = ''
             append = True
             for r in re.finditer('<entry>(.*?)</entry>' ,
                              response_data, re.DOTALL):
@@ -1189,7 +1141,6 @@ class gSpreadsheets:
 
             response_data = response.read()
 
-            previous = ''
             append = True
             for r in re.finditer('<entry>(.*?)</entry>' ,
                              response_data, re.DOTALL):
@@ -1382,9 +1333,9 @@ class gSpreadsheets:
         response.close()
 
         editURL=''
-        for r in re.finditer('<link rel=\'(edit)\' type=\'application/atom\+xml\' href=\'([^\']+)\'/>' ,
+        for r in re.finditer('<link rel=\'edit\' type=\'application/atom\+xml\' href=\'([^\']+)\'/>' ,
                              response_data, re.DOTALL):
-            (x,editURL) = r.groups(1)
+            editURL = r.group(1)
 
         for r in re.finditer('<link rel=\'edit\' [^\>]+>(.*?</entry>)' ,
                              response_data, re.DOTALL):

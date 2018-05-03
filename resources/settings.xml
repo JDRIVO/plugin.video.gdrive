@@ -122,6 +122,8 @@
     	<!-- testing streamer -->
         <setting id="streamer" type="bool" label="30194" default="false" />
         <setting id="stream_port" type="number" subsetting="true" label="30195" default="8011" />
+        <setting id="local_db" type="bool" subsetting="true" label="30199" default="false" />
+
 
     	<!-- update watch status -->
         <setting id="tv_db_watch" type="bool" label="30197" default="false" />
@@ -138,9 +140,6 @@
 	<!-- video properties -->
     <category label="30025">
 
-    	<!-- testing streamer -->
-        <setting id="streamer" type="bool" label="30194" default="false" />
-        <setting id="stream_port" type="number" subsetting="true" label="30195" default="8011" />
 
         <setting id="video_skip" type="slider" label="30161" default="98" option="percent" range="0,1,100" />
         <setting label="30037" type="lsep"/>
@@ -231,15 +230,4 @@
 
 
  	<!-- troubleshooting properties -->
-    <category label="30074">
-        <setting id="trace"  type="bool" label="30184" default="false" />
-        <setting id="crashreport_enable" type="bool" label="30075" default="false"/>
-        <setting id="crashreport_email" type="text" label="30076" default=""/>
-        <setting id="crashreport_os" type="enum" label="30078" values="Other|Windows|Linux|Raspberry PI|Android|iOS|Mac OS|Apple TV"/>
-        <setting id="crashreport_version"  type="enum" label="30079" values="Other|XBMC 12|XBMC 13|XBMC 13.2|KODI 14|KODI 14 alpha1|KODI alpha2|KODI 14 beta"/>
-        <setting label="30077" type="lsep"/>
-        <setting label="30071" type="lsep"/>
-        <setting label="30072" type="lsep"/>
-        <setting id="crashreport_ident"  type="text" label="30080" />
-    </category>
 </settings>

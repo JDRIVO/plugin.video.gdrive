@@ -1,3 +1,35 @@
+v0.8.64 (2018-04-02)
+- sync with latest code base
+v0.8.62 (2017-12-25)
+- fix for enrolling multiple accounts
+- minor change when using streamer and switching between encrypted and non-encrypted playback
+v0.8.61 (2017-12-24)
+- fixes for streamer crypto playback
+- fixes for streamer playback
+v0.8.60 (2017-12-23)
+- minor fixes for enrollment
+v0.8.59 (2017-12-17)
+- minor fixes
+v0.8.58 (2017-12-17)
+- fix: search containing an apostrophe https://github.com/ddurdle/GDrive-for-KODI/issues/158 #159
+- enrollment bug fix
+v0.8.57 (2017-12-16)
+- sync with videostream
+- replacement enrollment method
+- remove creashreporting module
+- implemented: Rename STRMs to a Kodi friendly format #147
+- implemented: STRM extract into tv shows/movie #153
+- fix for public streams without a proper stream map table (#152)
+- work to generalize code to work without KODI
+v0.8.56 (2017-11-09)
+- repurpose kodi_common (fix enrollment bug introduced recently)
+v0.8.55 (2017-09-23)
+- list team drives on root screen of account ([Team Drive- name])
+v0.8.54 (2017-09-23)
+- update more occurrences for team drive
+v0.8.53 (2017-09-22)
+- support for searching for files and viewing starred items on team drives
+- start work on: Display movie/TV episode information #150
 v0.8.52 (2017-08-05)
 - cleanup and added further debug for watch/resume status
 v0.8.51 (2017-08-05)

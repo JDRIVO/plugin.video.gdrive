@@ -79,6 +79,12 @@ class file:
         self.MOVIEID = None
 
 
+        self.cleantv = re.compile('(.+?)'
+                                       '[ .]?[ \-]?\s*S(\d\d?)E(\d\d?)'
+                                       '.*', re.IGNORECASE)
+        self.cleanmovie = re.compile('(.*?)'
+                                       ' (\d{4}) '
+                                       '.*', re.IGNORECASE)
         # nekwebdev contribution
         self.regtv1 = re.compile('(.+?)'
                                        '[ .]?[ \-]?\s*S(\d\d?)E(\d\d?)'
@@ -96,7 +102,8 @@ class file:
                                        '(?:[ .](\d{3}\d?p)|\Z)?'
                                        '\..*', re.IGNORECASE)
 
-        self.regmovie = re.compile('(.*?[ \(]?[ .]?[ \-]?\d{4}[ \)]?[ .]?[ \-]?)'
+        self.regmovie = re.compile('(.*?)'
+                          '[ \(]?[ .]?[ \-]?(\d{4})[ \)]?[ .]?[ \-]?'
                           '.*?'
                           '(?:(\d{3}\d?p)|\Z)?')
 
@@ -139,9 +146,8 @@ class file:
         else:
             return urllib.unquote(self.title)
 
-    def __repr__(self):
-        return '{}: {} {}'.format(self.__class__.__name__,
-                                  self.title)
+ #   def __repr__(self):
+ #       return '{}: {} {}'.format(self.__class__.__name__,self.title)
 
     def __cmp__(self, other):
         if hasattr(other, 'title'):
