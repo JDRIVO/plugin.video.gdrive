@@ -185,8 +185,10 @@ class settings:
     def setVideoParameters(self):
         self.resume = self.getParameter('resume', False)
 
-        self.playOriginal = self.getParameter('original', self.getSetting('never_stream', False))
-
+        if not self.getParameter('override', False):
+            self.playOriginal = self.getParameter('original', self.getSetting('never_stream', False))
+        else:
+            self.playOriginal = False
 
     def setCacheParameters(self):
         self.cache = self.getParameter('cache', False)

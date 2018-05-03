@@ -56,6 +56,8 @@ class encryption():
         if saltpassword != None and saltpassword != '':
             self.key = self.generateKey(saltpassword,)
 
+        self.ENCRYPTION_ENABLE = ENCRYPTION_ENABLE
+
 
     def generateKey(self,password, iterations=NUMBER_OF_ITERATIONS):
 

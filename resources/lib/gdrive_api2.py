@@ -1367,11 +1367,12 @@ class gdrive(cloudservice):
             #acodec = int(self.addon.getSetting('avoid_codec'))
             #aformat = int(self.addon.getSetting('avoid_format'))
         except :
-            pquality=-1
-            pformat=-1
-            acodec=-1
-            aformat=-1
+            pquality=0
+            pformat=0
+            acodec=0
+            aformat=0
 
+        print  "PREFER " + str(pquality) + "\n"
 
         mediaURLs = []
 

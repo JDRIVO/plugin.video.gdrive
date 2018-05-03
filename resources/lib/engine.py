@@ -421,10 +421,11 @@ class contentengine(object):
                 while True:
                     instanceName = self.PLUGIN_NAME+str(count)
                     username = settingsModule.getSetting(instanceName+'_username', None)
+                    type = settingsModule.getSetting(instanceName+'_type', None)
                     if username is not None and username != '':
                         self.addMenu(self.PLUGIN_URL+'?mode=main&content_type='+str(contextType)+'&instance='+str(instanceName),username, instanceName=instanceName)
 
-                    if username is None or username == '':
+                    if (username is None or username == '') and (type is None or type == ''):
                         break
                     count = count + 1
                 return None
@@ -976,7 +977,7 @@ class contentengine(object):
                             strmFile = xbmcvfs.File(filename, "w")
 
                             if not KODI:
-                                if plugin_handle.server.keyvalue or plugin_handle.server.hide:
+                                if (plugin_handle.server.keyvalue or plugin_handle.server.hide) and  plugin_handle.server.encrypt is not None and plugin_handle.server.encrypt.ENCRYPTION_ENABLE == 1:
                                     params = re.search(r'^([^\?]+)\?([^\?]+)$', str(url))
 
                                     if params and plugin_handle.server.hide:
@@ -984,7 +985,7 @@ class contentengine(object):
                                         extended = str(params.group(1))
                                         url = str(base) + '?kv=' +plugin_handle.server.encrypt.encryptString(url)
                                     else:
-                                        url = str(url)
+                                        url = str(url) + '&kv=' +plugin_handle.server.encrypt.encryptString(url)
 
 
                             strmFile.write(host + '/' + url+'\n')
@@ -1435,11 +1436,12 @@ class contentengine(object):
                     self.addMenu(self.PLUGIN_URL+'?mode=index&folder=STARRED-FILESFOLDERS&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30018)+  ' '+addon.getLocalizedString(30097)+']')
 
                     teamdrives = service.getTeamDrives();
-                    for drive in teamdrives:
-                        #self.addMenu(self.PLUGIN_URL+'?mode=index&folder='+str(drive.id)+'&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']')
-                        service.addDirectory(folder.folder(drive.id,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']', isRoot=True), contextType=contextType, encfs=False )
+                    if teamdrives is not None:
+                        for drive in teamdrives:
+                            #self.addMenu(self.PLUGIN_URL+'?mode=index&folder='+str(drive.id)+'&instance='+str(service.instanceName)+'&content_type='+contextType,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']')
+                            service.addDirectory(folder.folder(drive.id,'['+addon.getLocalizedString(30200) + ' - ' + str(drive.title)+']', isRoot=True), contextType=contextType, encfs=False )
 
-                        #folder.folder(folderID,'') ***
+                            #folder.folder(folderID,'') ***
 
 
                 if KODI:
