@@ -1,4 +1,7 @@
-v0.8.64 (2018-04-03)
+v0.8.66 (2018-04-08)
+- fix enrollment bug
+- fix: Enroll account error #168
+v0.8.65 (2018-04-03)
 - add missing scheduler
 v0.8.64 (2018-04-02)
 - sync with latest code base

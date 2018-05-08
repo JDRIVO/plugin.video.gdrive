@@ -363,7 +363,7 @@ class contentengine(object):
                 IP = s.getsockname()[0]
                 s.close()
 
-                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210) + ' http://' + str(IP) + ':'+str(settingsModule.getSettingInt('stream_port', 8011))+'/enroll' + ' ' + addon.getLocalizedString(30218), '')
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210) + ' http://' + str(IP) + ':8011/enroll' + ' ' + addon.getLocalizedString(30218), '')
                 mode = 'main'
 
         elif mode == 'enroll_rw':
@@ -375,7 +375,7 @@ class contentengine(object):
                 IP = s.getsockname()[0]
                 s.close()
 
-                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210) + ' http://' + str(IP) + ':'+str(settingsModule.getSettingInt('stream_port', 8011))+'/write' + ' ' + addon.getLocalizedString(30218), '')
+                xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30210) + ' http://' + str(IP) + ':8011/write' + ' ' + addon.getLocalizedString(30218), '')
                 mode = 'main'
 
 
