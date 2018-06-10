@@ -23,10 +23,16 @@ else:
 
 
 try:
-    import Crypto.Random
-    from Crypto.Cipher import AES
-    import hashlib
-    ENCRYPTION_ENABLE = 1
+    try:
+        import Crypto.Random
+        from Crypto.Cipher import AES
+        import hashlib
+        ENCRYPTION_ENABLE = 1
+    except:
+        import Cryptodome.Random
+        from Cryptodome.Cipher import AES
+        import hashlib
+        ENCRYPTION_ENABLE = 1
 except:
     ENCRYPTION_ENABLE = 0
     xbmc.log("python-crypto not found")
