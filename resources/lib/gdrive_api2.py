@@ -79,39 +79,39 @@ class gdrive(cloudservice.cloudservice):
 	#	returns: none
 	##
 	def getToken(self, code):
-			url = 'https://accounts.google.com/o/oauth2/token'
-			clientID = self.getInstanceSetting('client_id')
-			clientSecret = self.getInstanceSetting('client_secret')
-			header = {'User-Agent' : self.user_agent, 'Content-Type': 'application/x-www-form-urlencoded'}
-			data = 'code=' + str(code) + '&client_id=' + str(clientID + '&client_secret=' + str(clientSecret) + '&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code')
-			data = data.encode('utf-8')
-			req = urllib.request.Request(url, data, header)
+		url = 'https://accounts.google.com/o/oauth2/token'
+		clientID = self.getInstanceSetting('client_id')
+		clientSecret = self.getInstanceSetting('client_secret')
+		header = {'User-Agent' : self.user_agent, 'Content-Type': 'application/x-www-form-urlencoded'}
+		data = 'code=' + str(code) + '&client_id=' + str(clientID + '&client_secret=' + str(clientSecret) + '&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code')
+		data = data.encode('utf-8')
+		req = urllib.request.Request(url, data, header)
 
-			# try login
-			try:
-				response = urllib.request.urlopen(req)
-			except urllib.error.URLError as e:
-				xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017) )
-				xbmc.log(str(e) )
-				return
-
-			response_data = response.read().decode('utf-8')
-			response.close()
-
-			# retrieve authorization token
-			for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?' + '\"refresh_token\"\s?\:\s?\"([^\"]+)\".+?', response_data, re.DOTALL):
-				accessToken, refreshToken = r.groups()
-				self.authorization.setToken('auth_access_token', accessToken)
-				self.authorization.setToken('auth_refresh_token', refreshToken)
-				self.updateAuthorization(self.addon)
-				xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30142) )
-
-			for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"', response_data, re.DOTALL):
-				errorMessage = r.group(1)
-				xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119) + errorMessage)
-				xbmc.log(errorMessage)
-
+		# try login
+		try:
+			response = urllib.request.urlopen(req)
+		except urllib.error.URLError as e:
+			xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017) )
+			xbmc.log(str(e) )
 			return
+
+		response_data = response.read().decode('utf-8')
+		response.close()
+
+		# retrieve authorization token
+		for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?' + '\"refresh_token\"\s?\:\s?\"([^\"]+)\".+?', response_data, re.DOTALL):
+			accessToken, refreshToken = r.groups()
+			self.authorization.setToken('auth_access_token', accessToken)
+			self.authorization.setToken('auth_refresh_token', refreshToken)
+			self.updateAuthorization(self.addon)
+			xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30142) )
+
+		for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"', response_data, re.DOTALL):
+			errorMessage = r.group(1)
+			xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119) + errorMessage)
+			xbmc.log(errorMessage)
+
+		return
 
 	##
 	# refresh OAUTH2 access given refresh token
@@ -119,37 +119,37 @@ class gdrive(cloudservice.cloudservice):
 	#	returns: none
 	##
 	def refreshToken(self):
-			url = 'https://accounts.google.com/o/oauth2/token'
-			clientID = self.getInstanceSetting('client_id')
-			clientSecret = self.getInstanceSetting('client_secret')
-			header = {'User-Agent' : self.user_agent, 'Content-Type': 'application/x-www-form-urlencoded'}
-			data = 'client_id=' + clientID + '&client_secret=' + clientSecret + '&refresh_token=' + self.authorization.getToken('auth_refresh_token') + '&grant_type=refresh_token'
-			data = data.encode('utf-8')
-			req = urllib.request.Request(url, data, header)
+		url = 'https://accounts.google.com/o/oauth2/token'
+		clientID = self.getInstanceSetting('client_id')
+		clientSecret = self.getInstanceSetting('client_secret')
+		header = {'User-Agent' : self.user_agent, 'Content-Type': 'application/x-www-form-urlencoded'}
+		data = 'client_id=' + clientID + '&client_secret=' + clientSecret + '&refresh_token=' + self.authorization.getToken('auth_refresh_token') + '&grant_type=refresh_token'
+		data = data.encode('utf-8')
+		req = urllib.request.Request(url, data, header)
 
-			# try login
-			try:
-				response = urllib.request.urlopen(req)
-			except urllib.error.URLError as e:
-				xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017) )
-				xbmc.log(str(e) )
-				return
-
-			response_data = response.read().decode('utf-8')
-			response.close()
-
-			# retrieve authorization token
-			for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?', response_data, re.DOTALL):
-				accessToken = r.group(1)
-				self.authorization.setToken('auth_access_token', accessToken)
-				self.updateAuthorization(self.addon)
-
-			for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"', response_data, re.DOTALL):
-				errorMessage = r.group(1)
-				xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119) + errorMessage)
-				xbmc.log(errorMessage)
-
+		# try login
+		try:
+			response = urllib.request.urlopen(req)
+		except urllib.error.URLError as e:
+			xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017) )
+			xbmc.log(str(e) )
 			return
+
+		response_data = response.read().decode('utf-8')
+		response.close()
+
+		# retrieve authorization token
+		for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?', response_data, re.DOTALL):
+			accessToken = r.group(1)
+			self.authorization.setToken('auth_access_token', accessToken)
+			self.updateAuthorization(self.addon)
+
+		for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"', response_data, re.DOTALL):
+			errorMessage = r.group(1)
+			xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119) + errorMessage)
+			xbmc.log(errorMessage)
+
+		return
 
 	##
 	# return the appropriate "headers" for Google Drive requests that include 1) user agent, 2) authorization token
@@ -190,65 +190,3 @@ class gdrive(cloudservice.cloudservice):
 	def getHeadersEncoded(self):
 
 		return urllib.parse.urlencode(self.getHeadersList() )
-
-	##
-	# retrieve the list of team drives
-	#	parameters: none
-	#	returns: array of team drives
-	##
-	def getTeamDrives(self):
-		# retrieve all items
-		url = self.API_URL + 'teamdrives?pageSize=100'
-		drives = []
-
-		while True:
-			req = urllib.request.Request(url, None, self.getHeadersList() )
-
-			# if action fails, validate login
-			try:
-				response = urllib.request.urlopen(req)
-			except urllib.error.URLError as e:
-
-				if e.code == 403 or e.code == 401:
-					self.refreshToken()
-					req = urllib.request.Request(url, None, self.getHeadersList() )
-
-					try:
-						response = urllib.request.urlopen(req)
-					except urllib.error.URLError as e:
-						xbmc.log('getTeamDrives ' + str(e) )
-						return
-
-				else:
-					xbmc.log('getTeamDrives ' + str(e) )
-					return
-
-			response_data = response.read().decode('utf-8')
-			response.close()
-
-			for r1 in re.finditer('\{[^\"]+"kind": "drive#teamDrive"(.*?)\}', response_data, re.DOTALL):
-				entry = r1.group(1)
-				resourceID = ''
-				name = ''
-
-				for r in re.finditer('\"id\"\:\s+\"([^\"]+)\"', entry, re.DOTALL):
-					resourceID = r.group(1)
-
-				for r in re.finditer('\"name\"\:\s+\"([^\"]+)\"', entry, re.DOTALL):
-					name = r.group(1)
-
-				drives.append(teamdrive.teamdrive(resourceID, name) );
-
-			# look for more pages of videos
-			nextPageToken = ''
-
-			for r in re.finditer('\"nextPageToken\"\:\s+\"([^\"]+)\"', response_data, re.DOTALL):
-				nextPageToken = r.group(1)
-
-			# are there more pages to process?
-			if nextPageToken == '':
-				break
-			else:
-				url = self.API_URL + 'teamdrives?pageSize=100&pageToken=' + str(nextPageToken)
-
-		return drives
