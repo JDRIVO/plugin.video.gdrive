@@ -444,7 +444,7 @@ class contentengine(object):
 					# pickle.dump(videoData, dic)
 
 				# del videoData
-
+				xbmc.sleep(100)
 				monitor = xbmc.Monitor()
 
 				while not monitor.abortRequested() and not player.isExit:
