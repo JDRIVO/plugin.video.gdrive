@@ -33,7 +33,7 @@ from resources.lib import cloudservice
 from resources.lib import authorization
 
 # cloudservice - standard XBMC modules
-import xbmc, xbmcgui, xbmcvfs
+import xbmc, xbmcgui
 
 SERVICE_NAME = 'dmdgdrive'
 
@@ -48,7 +48,7 @@ class gdrive(cloudservice.cloudservice):
 	##
 	# initialize (save addon, instance name, user agent)
 	##
-	def __init__(self, plugin_handle, PLUGIN_URL, addon, instanceName, user_agent, settings, authenticate=True, DBM=None):
+	def __init__(self, plugin_handle, PLUGIN_URL, addon, instanceName, user_agent, settings, authenticate=True):
 		self.plugin_handle = plugin_handle
 		self.PLUGIN_URL = PLUGIN_URL
 		self.addon = addon
