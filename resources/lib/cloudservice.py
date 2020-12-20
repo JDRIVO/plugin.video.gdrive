@@ -73,7 +73,6 @@ class cloudservice(object):
 	# if we don't have an authorization token set for the plugin, set it with the recent login.
 	#   auth_token will permit "quicker" login in future executions by reusing the existing login session (less HTTPS calls = quicker video transitions between clips)
 	##
-
 	def updateAuthorization(self, addon):
 
 		if self.authorization.isUpdated: #and addon.getSetting(self.instanceName+'_save_auth_token') == 'true':
