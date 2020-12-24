@@ -36,7 +36,7 @@ audioChannels = str(ffprobeOutput['streams'][1]['channels'])
 cmd = 'rclone lsf --format i'
 args = shlex.split(cmd)
 args.append(encryptedFilePath)
-fileID = subprocess.check_output(args).strip()
+fileID = subprocess.check_output(args).strip().decode()
 
 with open(strmPath, "w+") as strm:
 	strm.write("plugin://plugin.video.gdrive/?mode=video&encfs=True&title=%s&video_codec=%s&video_width=%s&video_height=%s&video_duration=%s&aspect_ratio=%s&audio_codec=%s&audio_channels=%s&filename=%s" % ( videoName, videoCodec, videoWidth, videoHeight, videoDuration, aspectRatio, audioCodec, audioChannels, fileID) )
