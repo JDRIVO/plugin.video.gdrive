@@ -135,6 +135,7 @@ class gdrive(cloudservice.cloudservice):
 			response = urllib.request.urlopen(req)
 		except urllib.error.URLError as e:
 			#xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017) )
+			self.failed = True
 			xbmc.log(str(e) )
 			return
 
