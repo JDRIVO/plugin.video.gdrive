@@ -122,7 +122,71 @@ class myStreamer(BaseHTTPRequestHandler):
 			for r in re.finditer('client_id=([^&]+)&client_secret=([^&]+)', post_data, re.DOTALL):
 				client_id = r.group(1)
 				client_secret = r.group(2)
-				data = '<html><head><meta name="viewport" content="width=device-width, initial-scale=1"></head><body>Two steps away.<br/><br/>1) Visit this site and then paste the application code in the below form: <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=' + str(client_id) + '" target="new">Google Authentication</a><br/><br/>2) Return back to this tab and provide a nickname and the application code provided in step 1.<br/><br/><form action="/enroll" method="post">Nickname for account:<br/><input type="text" name="account"><br/>Code (copy and paste from step 1):<br/><input type="text" name="code"><br/><form action="/enroll" method="post">Client ID:<br/><input type="text" name="client_id" value="' + str(client_id) + '"><br/>Client Secret:<br/><input type="text" name="client_secret" value="' + str(client_secret) + '"><br/><br/> <input type="submit" value="Submit"></form></body></html>'
+				data = '''
+				<html>
+				<head>
+				<meta name="viewport" content="width=device-width, initial-scale=1">
+				<style>
+				.container {
+								background-color: #080808;
+								margin: auto;
+								width: 200px;
+								height: 200px;
+				}
+				.input {
+								width: 200px;
+								height: 26px;
+								border: 1px solid #333333;
+								background-color: #333333;
+				}
+				.button {
+								width: 200px;
+								height: 26px;
+								border: 1px solid black;
+								background-color: #1D1D1D;
+				}
+				.text {
+								background-color: #080808;
+								padding-top: 50px;
+				}
+				a:link {
+								color: #0088FC;
+				}
+				a:visited {
+								color: #0088FC;
+				}
+				body {
+								background-color: #080808;
+				}
+				</style>
+				</head>
+				<body>
+				<div class="container">
+				<div class="text">
+				<a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=%s" target="new">Click here and paste the code in the form below.<br>Then provide an account name and press submit.</a>
+				<br/>
+				<br/>
+				</div>
+				<form action="/enroll" method="post">
+				<br/>
+				<input div class="input" style="color:white" type="text" name="account" placeholder="Account name">
+				<br/>
+				<br/>
+				<input div class="input" style="color:white" type="text" name="code" placeholder="Google code">
+				<br/>
+				<form action="/enroll" method="post">
+				<br/>
+				<input div class="input" style="color:white" type="text" name="client_id" value="%s" placeholder="Client ID">
+				<br/>
+				<br/>
+				<input div class="input" style="color:white" type="text" name="client_secret" value="%s" placeholder="Client secret">
+				<br/>
+				<br/>
+				<input div class="button" style="color:white" type="submit" value="Submit">
+				</form>
+				</div>
+				</body>
+				</html>''' % (client_id, client_id, client_secret)
 				self.wfile.write(data.encode('utf-8') )
 
 		# redirect url to output
@@ -423,35 +487,33 @@ class myStreamer(BaseHTTPRequestHandler):
 							-moz-transform: translateX(-50%) translateY(-50%);
 							-webkit-transform: translateX(-50%) translateY(-50%);
 							transform: translateX(-50%) translateY(-50%);
-							background-color: black;
-
+							background-color: #080808;
 			}
 			.input {
 							width: 200px;
 							height: 26px;
-							border: 1px solid white;
-							background-color: #f6f6f6;
+							border: 1px solid #333333;
+							background-color: #333333;
 			}
 			.button {
 							width: 200px;
 							height: 26px;
 							margin-top: 20px;
-							text-align: center;
 							border: 1px solid black;
-							background-color: #29292A;
+							background-color: #1D1D1D;
 			}
 			body {
-							background-color: black;
+							background-color: #080808;
 			}
 			</style>
 			</head>
 			<body>
 			<div class="container">
 			<form action="/enroll?default=false" method="post">
-			<input div class="input" type="text" name="client_id" placeholder="Client ID">
+			<input div class="input" style="color:white" type="text" name="client_id" placeholder="Client ID">
 			<br/>
 			<br/>
-			<input div class="input" type="text" name="client_secret" placeholder="Client Secret">
+			<input div class="input" style="color:white" type="text" name="client_secret" placeholder="Client Secret">
 			<br/>
 			<input div class="button" style="color:white" type="submit" value="Submit">
 			</form>
