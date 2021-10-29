@@ -13,7 +13,6 @@ class gPlayer(xbmc.Player):
 		xbmc.Player.__init__(self)
 		self.dbID = kwargs["dbID"]
 		self.dbType = kwargs["dbType"]
-		self.monitor = xbmc.Monitor()
 		self.isExit = False
 		self.videoDuration = None
 
