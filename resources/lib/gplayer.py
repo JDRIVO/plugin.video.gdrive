@@ -1,4 +1,3 @@
-import time
 import xbmc
 import constants
 from threading import Thread
@@ -35,18 +34,9 @@ class gPlayer(xbmc.Player):
 
 			xbmc.sleep(100)
 
-		t = Thread(target=self.saveTime)
-		t.setDaemon(True)
-		t.start()
 		t = Thread(target=self.saveProgress)
 		t.setDaemon(True)
 		t.start()
-
-	def saveTime(self):
-
-		while self.isPlaying():
-			self.time = self.getTime()
-			xbmc.sleep(100)
 
 	def saveProgress(self):
 
@@ -57,6 +47,7 @@ class gPlayer(xbmc.Player):
 	def updateProgress(self):
 
 		try:
+			self.time = self.getTime()
 			videoProgress = self.time / self.videoDuration * 100
 		except:
 			return
