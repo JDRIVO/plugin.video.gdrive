@@ -4,8 +4,8 @@ import constants
 from threading import Thread
 from resources.lib import settings
 
-addon = constants.addon
-settingsModule = settings.settings(addon)
+settingsModule = settings.settings(constants.addon)
+
 
 class gPlayer(xbmc.Player):
 
@@ -51,10 +51,10 @@ class gPlayer(xbmc.Player):
 	def saveProgress(self):
 
 		while self.isPlaying():
-			self.updateVideoStats()
+			self.updateProgress()
 			xbmc.sleep(1000)
 
-	def updateVideoStats(self):
+	def updateProgress(self):
 
 		try:
 			videoProgress = self.time / self.videoDuration * 100
@@ -67,13 +67,11 @@ class gPlayer(xbmc.Player):
 			self.markVideoWatched()
 
 	def onPlayBackStopped(self):
-		self.updateVideoStats()
-		xbmc.executebuiltin("ReloadSkin")
+		self.updateProgress()
 		self.isExit = True
 
 	def onPlayBackEnded(self):
-		self.updateVideoStats()
-		xbmc.executebuiltin("ReloadSkin")
+		self.updateProgress()
 		self.isExit = True
 
 	def updateResumePoint(self):
