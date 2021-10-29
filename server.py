@@ -6,32 +6,27 @@ from resources.lib import settings
 from resources.lib import streamer
 
 try:
-	plugin_handle = int(sys.argv[1])
-	plugin_queries = settings.parse_query(sys.argv[2][1:])
+	pluginHandle = int(sys.argv[1])
+	pluginQueries = settings.parse_query(sys.argv[2][1:])
 except:
-	plugin_handle = None
-	plugin_queries = None
+	pluginHandle = None
+	pluginQueries = None
 
 def run():
 	addon = constants.addon
+	pluginName = constants.PLUGIN_NAME
 	settings_ = settings.settings(addon)
-	user_agent = settings_.getSetting('user_agent')
-	PLUGIN_URL = constants.PLUGIN_NAME
-	PLUGIN_NAME = constants.PLUGIN_NAME
-
+	userAgent = settings_.getSetting('user_agent')
 	port = settings_.getSettingInt('server_port', 8011)
-	server = streamer.MyHTTPServer( ('', port), streamer.myStreamer)
-	server.setDetails(plugin_handle, PLUGIN_NAME, PLUGIN_URL, addon, user_agent, settings_)
 
-	monitor = xbmc.Monitor()
-
+	server = streamer.MyHTTPServer(('', port), streamer.myStreamer)
+	server.setDetails(pluginHandle, pluginName, pluginName, addon, userAgent, settings_)
 	thread = threading.Thread(None, server.run)
 	thread.start()
+	monitor = xbmc.Monitor()
 
 	while not monitor.abortRequested():
-
-		if monitor.waitForAbort(1):
-			break
+		xbmc.sleep(100)
 
 	server.socket.close()
 	server.shutdown()

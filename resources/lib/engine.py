@@ -520,12 +520,8 @@ class contentengine(object):
 
 				# del videoData
 
-				xbmc.sleep(100)
-				monitor = xbmc.Monitor()
-
-				while not monitor.abortRequested() and not player.isExit:
-					player.sleep()
-					player.saveTime()
+				while not player.isExit:
+					xbmc.sleep(100)
 
 				# with open(resumeDB, 'rb') as dic:
 					# videoData = pickle.load(dic)

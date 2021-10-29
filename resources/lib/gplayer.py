@@ -1,7 +1,8 @@
 import time
 import xbmc
-from resources.lib import settings
 import constants
+from threading import Thread
+from resources.lib import settings
 
 addon = constants.addon
 settingsModule = settings.settings(addon)
@@ -12,17 +13,16 @@ class gPlayer(xbmc.Player):
 		xbmc.Player.__init__(self)
 		self.dbID = kwargs["dbID"]
 		self.dbType = kwargs["dbType"]
-		self.movieWatchTime = settingsModule.movieWatchTime
-		self.tvWatchTime = settingsModule.tvWatchTime
+		self.monitor = xbmc.Monitor()
 		self.isExit = False
 		self.videoDuration = None
 
 		if self.dbType == "movie":
 			self.isMovie = True
-			self.markedWatched = self.movieWatchTime
+			self.markedWatchedPoint = float(settingsModule.movieWatchTime)
 		else:
 			self.isMovie = False
-			self.markedWatched = self.tvWatchTime
+			self.markedWatchedPoint = float(settingsModule.tvWatchTime)
 
 	def onPlayBackStarted(self):
 
@@ -36,102 +36,57 @@ class gPlayer(xbmc.Player):
 
 			xbmc.sleep(100)
 
-	def onPlayBackStopped(self):
-
-		try:
-			videoProgress = self.time / self.videoDuration * 100
-
-			if videoProgress < float(self.markedWatched):
-
-				if self.isMovie:
-
-					timeEnd = time.time() + 1
-
-					while time.time() < timeEnd:
-						xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "resume": {"position": %d, "total": %d} } }' % (self.dbID, self.time, self.videoDuration ) )
-				else:
-
-					timeEnd = time.time() + 1
-
-					while time.time() < timeEnd:
-						xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "resume": {"position": %d, "total": %d} } }' % (self.dbID, self.time, self.videoDuration) )
-			else:
-
-				if self.isMovie:
-					timeEnd = time.time() + 1
-
-					while time.time() < timeEnd:
-						xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "playcount": 1 , "resume": {"position": 0} } }' % self.dbID)
-
-				else:
-					timeEnd = time.time() + 1
-
-					while time.time() < timeEnd:
-						xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "playcount": 1 , "resume": {"position": 0} } }' % self.dbID)
-
-				xbmc.executebuiltin("ReloadSkin")
-
-			self.isExit = True
-		except:
-			self.isExit = True
-
-	def onPlayBackEnded(self):
-
-		try:
-			videoProgress = self.time / self.videoDuration * 100
-
-			if videoProgress < float(self.markedWatched):
-
-				if self.isMovie:
-
-					timeEnd = time.time() + 1
-
-					while time.time() < timeEnd:
-						xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "resume": {"position": %d, "total": %d} } }' % (self.dbID, self.time, self.videoDuration ) )
-				else:
-
-					timeEnd = time.time() + 1
-
-					while time.time() < timeEnd:
-						xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "resume": {"position": %d, "total": %d} } }' % (self.dbID, self.time, self.videoDuration) )
-			else:
-
-				if self.isMovie:
-					timeEnd = time.time() + 1
-
-					while time.time() < timeEnd:
-						xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "playcount": 1 , "resume": {"position": 0} } }' % self.dbID)
-
-				else:
-					timeEnd = time.time() + 1
-
-					while time.time() < timeEnd:
-						xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "playcount": 1 , "resume": {"position": 0} } }' % self.dbID)
-
-				xbmc.executebuiltin("ReloadSkin")
-
-			self.isExit = True
-		except:
-			self.isExit = True
-
-	def onPlayBackPaused(self):
-		self.saveTime()
-
-	def onPlayBackResumed(self):
-		self.saveTime()
-
-	def onPlayBackSeekChapter(self):
-		self.saveTime()
-
-	def onPlayBackSeek(self, time, seekOffset):
-		self.saveTime()
+		t = Thread(target=self.saveTime)
+		t.setDaemon(True)
+		t.start()
+		t = Thread(target=self.saveProgress)
+		t.setDaemon(True)
+		t.start()
 
 	def saveTime(self):
 
-		try:
+		while self.isPlaying():
 			self.time = self.getTime()
-		except:
-			self.onPlayBackStopped()
+			xbmc.sleep(100)
 
-	def sleep(self):
-		xbmc.sleep(100)
+	def saveProgress(self):
+
+		while self.isPlaying():
+			self.updateVideoStats()
+			xbmc.sleep(1000)
+
+	def updateVideoStats(self):
+
+		try:
+			videoProgress = self.time / self.videoDuration * 100
+		except:
+			return
+
+		if videoProgress < self.markedWatchedPoint:
+			self.updateResumePoint()
+		else:
+			self.markVideoWatched()
+
+	def onPlayBackStopped(self):
+		self.updateVideoStats()
+		xbmc.executebuiltin("ReloadSkin")
+		self.isExit = True
+
+	def onPlayBackEnded(self):
+		self.updateVideoStats()
+		xbmc.executebuiltin("ReloadSkin")
+		self.isExit = True
+
+	def updateResumePoint(self):
+
+		if self.isMovie:
+			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "resume": {"position": %d, "total": %d} } }' % (self.dbID, self.time, self.videoDuration ) )
+		else:
+			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "resume": {"position": %d, "total": %d} } }' % (self.dbID, self.time, self.videoDuration) )
+
+	def markVideoWatched(self):
+
+		if self.isMovie:
+			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "playcount": 1 , "resume": {"position": 0} } }' % self.dbID)
+		else:
+			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "playcount": 1 , "resume": {"position": 0} } }' % self.dbID)
