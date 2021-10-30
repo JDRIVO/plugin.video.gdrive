@@ -469,12 +469,8 @@ class contentengine(object):
 			resumeOption = False
 
 			if resumePosition > 0:
-
 				import time
-				options = []
-				options.append('Resume from ' + str(time.strftime('%H:%M:%S', time.gmtime(resumePosition) ) ) )
-				options.append('Play from beginning')
-
+				options = ('Resume from ' + str(time.strftime('%H:%M:%S', time.gmtime(resumePosition))), 'Play from beginning')
 				selection = xbmcgui.Dialog().contextmenu(options)
 
 				if selection == 0:
