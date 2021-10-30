@@ -45,10 +45,14 @@ class gPlayer(xbmc.Player):
 			self.updateProgress()
 			xbmc.sleep(1000)
 
-	def updateProgress(self):
+	def updateProgress(self, thread=True):
 
 		try:
 			self.time = self.getTime()
+		except:
+			pass
+
+		try:
 			videoProgress = self.time / self.videoDuration * 100
 		except:
 			return
@@ -56,29 +60,33 @@ class gPlayer(xbmc.Player):
 		if videoProgress < self.markedWatchedPoint:
 			self.updateResumePoint()
 		else:
-			self.markVideoWatched()
+
+			if thread:
+				self.markVideoWatched()
+			else:
+				timeEnd = time.time() + 5
+
+				while time.time() < timeEnd:
+					self.markVideoWatched()
 
 	def onPlayBackStopped(self):
-		self.updateProgress()
+		self.updateProgress(thread=False)
 		self.isExit = True
 
 	def onPlayBackEnded(self):
-		self.updateProgress()
+		self.updateProgress(thread=False)
 		self.isExit = True
 
 	def updateResumePoint(self):
 
 		if self.isMovie:
-			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "resume": {"position": %d, "total": %d} } }' % (self.dbID, self.time, self.videoDuration))
+			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "playcount": 0, "resume": {"position": %d, "total": %d}}}' % (self.dbID, self.time, self.videoDuration))
 		else:
-			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "resume": {"position": %d, "total": %d} } }' % (self.dbID, self.time, self.videoDuration))
+			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "playcount": 0, "resume": {"position": %d, "total": %d}}}' % (self.dbID, self.time, self.videoDuration))
 
 	def markVideoWatched(self):
-		timeEnd = time.time() + 5
 
-		while time.time() < timeEnd:
-
-			if self.isMovie:
-				xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "playcount": 1, "resume": {"position": 0, "total": 0} } }' % self.dbID)
-			else:
-				xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "playcount": 1, "resume": {"position": 0, "total": 0} } }' % self.dbID)
+		if self.isMovie:
+			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "playcount": 1, "resume": {"position": 0, "total": 0}}}' % self.dbID)
+		else:
+			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "playcount": 1, "resume": {"position": 0, "total": 0}}}' % self.dbID)
