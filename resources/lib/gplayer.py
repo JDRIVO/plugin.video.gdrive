@@ -1,3 +1,4 @@
+import time
 import xbmc
 import constants
 from threading import Thread
@@ -68,13 +69,17 @@ class gPlayer(xbmc.Player):
 	def updateResumePoint(self):
 
 		if self.isMovie:
-			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "resume": {"position": %d, "total": %d} } }' % (self.dbID, self.time, self.videoDuration ) )
+			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "resume": {"position": %d, "total": %d} } }' % (self.dbID, self.time, self.videoDuration))
 		else:
-			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "resume": {"position": %d, "total": %d} } }' % (self.dbID, self.time, self.videoDuration) )
+			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "resume": {"position": %d, "total": %d} } }' % (self.dbID, self.time, self.videoDuration))
 
 	def markVideoWatched(self):
 
-		if self.isMovie:
-			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "playcount": 1 , "resume": {"position": 0} } }' % self.dbID)
-		else:
-			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "playcount": 1 , "resume": {"position": 0} } }' % self.dbID)
+		timeEnd = time.time() + 10
+
+		while time.time() < timeEnd:
+
+			if self.isMovie:
+				xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "playcount": 1, "resume": {"position": 0, "total": 0} } }' % self.dbID)
+			else:
+				xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "playcount": 1, "resume": {"position": 0, "total": 0} } }' % self.dbID)
