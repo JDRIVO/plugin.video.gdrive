@@ -74,7 +74,6 @@ class gPlayer(xbmc.Player):
 			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "resume": {"position": %d, "total": %d} } }' % (self.dbID, self.time, self.videoDuration))
 
 	def markVideoWatched(self):
-
 		timeEnd = time.time() + 10
 
 		while time.time() < timeEnd:
