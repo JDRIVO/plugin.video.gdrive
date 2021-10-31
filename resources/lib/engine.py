@@ -386,8 +386,11 @@ class contentengine(object):
 
 		elif mode == 'video':
 
-			if not dbType and not dbID and not filePath:
-				return
+			if not dbType or not dbID:
+				xbmc.executebuiltin("Dialog.Close(busydialog)")
+				xbmc.sleep(600)
+				dbID = xbmc.getInfoLabel('ListItem.DBID')
+				dbType = xbmc.getInfoLabel('ListItem.DBTYPE')
 
 			instanceName = constants.PLUGIN_NAME + str(self.settingsModule.getSetting('default_account', 1) )
 			service = self.cloudservice2(self.plugin_handle, self.PLUGIN_URL, addon, instanceName, self.user_agent, self.settingsModule)
@@ -425,7 +428,7 @@ class contentengine(object):
 				resumePosition = resumeData['position']
 				videoLength = resumeData['total']
 
-			else:
+			elif filePath:
 
 				from sqlite3 import dbapi2 as sqlite
 				dbPath = xbmc.translatePath(self.settingsModule.getSetting('video_db') )
@@ -440,6 +443,9 @@ class contentengine(object):
 					videoLength = list(db.execute('SELECT totalTimeInSeconds FROM bookmark WHERE idFile=(SELECT idFile FROM files WHERE idPath=(SELECT idPath FROM path WHERE strPath=?) AND strFilename=?)', (dirPath, fileName) ) )[0][0]
 				else:
 					resumePosition = 0
+
+			else:
+				resumePosition = 0
 
 				# import pickle
 
