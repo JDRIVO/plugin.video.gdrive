@@ -64,7 +64,7 @@ class gPlayer(xbmc.Player):
 			if thread:
 				self.markVideoWatched()
 			else:
-				timeEnd = time.time() + 5
+				timeEnd = time.time() + 2
 
 				while time.time() < timeEnd:
 					self.markVideoWatched()
