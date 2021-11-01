@@ -28,9 +28,9 @@ for dic in ffprobeOutput['streams']:
 		videoCodec = dic['codec_name']
 		videoWidth = dic['width']
 		videoHeight = dic['height']
-		aspectRatio = str(videoWidth / videoHeight)
-		videoWidth = str(videoWidth)
-		videoHeight = str(videoHeight)
+		aspectRatio = videoWidth / videoHeight
+		videoWidth = videoWidth
+		videoHeight = videoHeight
 	elif codecType == 'audio':
 		audioCodec = dic['codec_name']
 		audioChannels = dic['channels']
@@ -43,4 +43,4 @@ fileID = subprocess.check_output(args).strip().decode('utf-8')
 with open(strmPath, 'w+') as strm:
 	# Every paramater is optional besides the filename (Google Drive File ID) - essential strm format is:
 	# plugin://plugin.video.gdrive/?mode=video&encfs=True&filename=7ctPNMUl4m8B4KBwY
-	strm.write("plugin://plugin.video.gdrive/?mode=video&encfs=True&video_codec=%s&video_width=%s&video_height=%s&video_duration=%s&aspect_ratio=%s&audio_codec=%s&audio_channels=%s&filename=%s" % (videoCodec, videoWidth, videoHeight, videoDuration, aspectRatio, audioCodec, audioChannels, fileID))
+	strm.write("plugin://plugin.video.gdrive/?mode=video&encfs=True&video_codec={}&video_width={}&video_height={}&video_duration={}&aspect_ratio={}&audio_codec={}&audio_channels={}&filename={}".format(videoCodec, videoWidth, videoHeight, videoDuration, aspectRatio, audioCodec, audioChannels, fileID))
