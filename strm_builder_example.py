@@ -19,7 +19,7 @@ args.append(videoPath)
 ffprobeOutput = subprocess.check_output(args).decode('utf-8')
 ffprobeOutput = json.loads(ffprobeOutput)
 
-videoDuration = str(ffprobeOutput['format']['duration'])
+videoDuration = ffprobeOutput['format']['duration']
 
 for dic in ffprobeOutput['streams']:
 	codecType = dic['codec_type']
