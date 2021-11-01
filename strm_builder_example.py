@@ -29,8 +29,6 @@ for dic in ffprobeOutput['streams']:
 		videoWidth = dic['width']
 		videoHeight = dic['height']
 		aspectRatio = videoWidth / videoHeight
-		videoWidth = videoWidth
-		videoHeight = videoHeight
 	elif codecType == 'audio':
 		audioCodec = dic['codec_name']
 		audioChannels = dic['channels']
