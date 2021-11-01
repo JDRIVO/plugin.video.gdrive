@@ -22,15 +22,16 @@ ffprobeOutput = json.loads(ffprobeOutput)
 videoDuration = str(ffprobeOutput['format']['duration'])
 
 for dic in ffprobeOutput['streams']:
+	codecType = dic['codec_type']
 
-	if dic['codec_type'] == 'video':
+	if codecType == 'video':
 		videoCodec = dic['codec_name']
 		videoWidth = dic['width']
 		videoHeight = dic['height']
 		aspectRatio = str(videoWidth / videoHeight)
 		videoWidth = str(videoWidth)
 		videoHeight = str(videoHeight)
-	elif dic['codec_type'] == 'audio':
+	elif codecType == 'audio':
 		audioCodec = dic['codec_name']
 		audioChannels = dic['channels']
 
