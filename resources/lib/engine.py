@@ -386,7 +386,7 @@ class contentengine(object):
 
 		elif mode == 'video':
 
-			if not dbType or not dbID:
+			if (not dbType or not dbID) and not filePath:
 				xbmc.executebuiltin("Dialog.Close(busydialog)")
 				xbmc.sleep(600)
 				dbID = xbmc.getInfoLabel('ListItem.DBID')
