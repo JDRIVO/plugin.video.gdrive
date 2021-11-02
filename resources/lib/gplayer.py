@@ -39,6 +39,13 @@ class gPlayer(xbmc.Player):
 		t.setDaemon(True)
 		t.start()
 
+	def onPlayBackEnded(self):
+		self.isExit = True
+
+	def onPlayBackStopped(self):
+		self.updateProgress(thread=False)
+		self.isExit = True
+
 	def saveProgress(self):
 
 		while self.isPlaying():
@@ -69,14 +76,6 @@ class gPlayer(xbmc.Player):
 
 			while time.time() < timeEnd:
 				func()
-
-	def onPlayBackStopped(self):
-		self.updateProgress(thread=False)
-		self.isExit = True
-
-	def onPlayBackEnded(self):
-		self.updateProgress(thread=False)
-		self.isExit = True
 
 	def updateResumePoint(self):
 
