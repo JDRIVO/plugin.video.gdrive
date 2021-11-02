@@ -385,13 +385,6 @@ class contentengine(object):
 				xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30160) )
 
 		elif mode == 'video':
-
-			if (not dbType or not dbID) and not filePath:
-				xbmc.executebuiltin("Dialog.Close(busydialog)")
-				xbmc.sleep(600)
-				dbID = xbmc.getInfoLabel('ListItem.DBID')
-				dbType = xbmc.getInfoLabel('ListItem.DBTYPE')
-
 			instanceName = constants.PLUGIN_NAME + str(self.settingsModule.getSetting('default_account', 1) )
 			service = self.cloudservice2(self.plugin_handle, self.PLUGIN_URL, addon, instanceName, self.user_agent, self.settingsModule)
 
@@ -410,6 +403,12 @@ class contentengine(object):
 				xbmc.log(addon.getLocalizedString(30051) + constants.PLUGIN_NAME + '-login', xbmc.LOGERROR)
 				xbmcplugin.endOfDirectory(self.plugin_handle)
 				return
+
+			if (not dbType or not dbID) and not filePath:
+				xbmc.executebuiltin("Dialog.Close(busydialog)")
+				xbmc.sleep(600)
+				dbID = xbmc.getInfoLabel('ListItem.DBID')
+				dbType = xbmc.getInfoLabel('ListItem.DBTYPE')
 
 			if dbID:
 
