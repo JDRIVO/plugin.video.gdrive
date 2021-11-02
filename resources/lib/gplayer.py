@@ -58,16 +58,17 @@ class gPlayer(xbmc.Player):
 			return
 
 		if videoProgress < self.markedWatchedPoint:
-			self.updateResumePoint()
+			func = self.updateResumePoint
 		else:
+			func = self.markVideoWatched
 
-			if thread:
-				self.markVideoWatched()
-			else:
-				timeEnd = time.time() + 2
+		if thread:
+			func()
+		else:
+			timeEnd = time.time() + 2
 
-				while time.time() < timeEnd:
-					self.markVideoWatched()
+			while time.time() < timeEnd:
+				func()
 
 	def onPlayBackStopped(self):
 		self.updateProgress(thread=False)
