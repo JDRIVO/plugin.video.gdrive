@@ -350,7 +350,6 @@ class contentengine(object):
 			addon.setSetting('fallback_accounts', ','.join(self.accountNumbers[x] for x in selection))
 			addon.setSetting('fallback_accounts_ui', ', '.join(self.accountNames[x] for x in selection))
 			addon.setSetting('fallback', 'true')
-
 			xbmc.executebuiltin('Container.Refresh')
 
 		elif mode == 'validate':
@@ -482,7 +481,6 @@ class contentengine(object):
 			resumeOption = False
 
 			if resumePosition > 0:
-				import time
 				options = ('Resume from ' + str(time.strftime('%H:%M:%S', time.gmtime(resumePosition))), 'Play from beginning')
 				selection = xbmcgui.Dialog().contextmenu(options)
 
