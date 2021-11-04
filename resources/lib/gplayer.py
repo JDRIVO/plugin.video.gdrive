@@ -76,7 +76,7 @@ class gPlayer(xbmc.Player):
 			func()
 		else:
 
-			if (watched or self.time < 200) and self.widget:
+			if (watched or self.time < 180) and self.widget:
 				func()
 				self.refreshVideo()
 				return
