@@ -422,7 +422,11 @@ class contentengine(object):
 				import json
 				jsonQuery = jsonQuery.encode('utf-8', errors='ignore')
 				jsonResponse = json.loads(jsonQuery)
-				resumeData = jsonResponse['result'][jsonKey]['resume']
+
+				try:
+					resumeData = jsonResponse['result'][jsonKey]['resume']
+				except:
+					return
 
 				resumePosition = resumeData['position']
 				videoLength = resumeData['total']
