@@ -47,6 +47,9 @@ class gPlayer(xbmc.Player):
 		self.updateProgress(False)
 		self.isExit = True
 
+	def onPlayBackSeek(self, time, seekOffset):
+		self.time = time
+
 	def saveProgress(self):
 
 		while self.isPlaying():
