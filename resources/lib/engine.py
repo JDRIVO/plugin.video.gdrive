@@ -514,7 +514,7 @@ class contentengine(object):
 			if dbID:
 
 				from resources.lib import gplayer
-				player = gplayer.gPlayer(dbID=dbID, dbType=dbType)
+				player = gplayer.gPlayer(dbID=dbID, dbType=dbType, widget=xbmc.getInfoLabel('Container.Content'))
 
 				# with open(resumeDB, 'wb+') as dic:
 					# pickle.dump(videoData, dic)
