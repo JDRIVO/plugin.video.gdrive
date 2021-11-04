@@ -188,7 +188,6 @@ class contentengine(object):
 
 		# enroll a new account
 		elif mode == 'enroll':
-
 			import socket
 			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 			s.connect(('8.8.8.8', 80))
@@ -435,7 +434,6 @@ class contentengine(object):
 				videoLength = resumeData['total']
 
 			elif filePath:
-
 				from sqlite3 import dbapi2 as sqlite
 				dbPath = xbmc.translatePath(self.settingsModule.getSetting('video_db'))
 				db = sqlite.connect(dbPath)
