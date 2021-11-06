@@ -17,14 +17,17 @@
 
 '''
 
-from http.server import BaseHTTPRequestHandler, HTTPServer
-from socketserver import ThreadingMixIn
-import threading
 import re
-import urllib
 import sys
+import time
+import urllib
+from threading import Thread
+from socketserver import ThreadingMixIn
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import xbmc
+import xbmcgui
 import constants
-import xbmc, xbmcgui
+
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 	"""Handle requests in a separate thread."""
@@ -38,12 +41,14 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		except KeyboardInterrupt:
 			pass
 		finally:
+			self.close = True
 			# Clean-up server (close socket, etc.)
 			self.server_close()
 
 	def __init__(self, *args, **kw):
 		HTTPServer.__init__(self, *args, **kw)
 		self.ready = True
+		self.close = False
 
 	def setFile(self, playbackURL, chunksize, playbackFile, response, fileSize, url, service):
 		self.playbackURL = playbackURL
@@ -79,6 +84,17 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		self.crypto = False
 		self.ready = True
 
+	def tokenRefresher(self):
+		lastUpdate = time.time()
+
+		while self.tokenRefresherEnabled and not self.close:
+
+			if time.time() - lastUpdate >= 1740:
+				lastUpdate = time.time()
+				self.service.refreshToken()
+
+			time.sleep(1)
+
 class myStreamer(BaseHTTPRequestHandler):
 
 	#Handler for the GET requests
@@ -104,11 +120,13 @@ class myStreamer(BaseHTTPRequestHandler):
 				xbmc.log("url = " + url + "\n")
 				cloudservice2 = constants.cloudservice2
 				self.server.service = cloudservice2(self.server.plugin_handle, self.server.PLUGIN_URL, self.server.addon, instanceName, self.server.user_agent, self.server.settings)
-
 				self.server.crypto = True
 				self.server.playbackURL = url
 				self.server.drive_stream = drive_stream
 
+			self.server.service.refreshToken()
+			self.server.tokenRefresherEnabled = True
+			Thread(target=self.server.tokenRefresher).start()
 			self.send_response(200)
 			self.end_headers()
 
@@ -225,9 +243,8 @@ class myStreamer(BaseHTTPRequestHandler):
 				#self.wfile.write(b'<html><body>account = '+ str(account) + " " + str(client_id) + " " + str(client_secret) + " " + str(code) )
 
 				count = 1
-				loop = True
 
-				while loop:
+				while True:
 					instanceName = self.server.PLUGIN_NAME + str(count)
 
 					try:
@@ -244,7 +261,7 @@ class myStreamer(BaseHTTPRequestHandler):
 						if count > self.server.addon.getSettingInt("account_amount"):
 							self.server.addon.setSetting("account_amount", str(count) )
 
-						loop = False
+						break
 
 					count += 1
 
@@ -306,68 +323,60 @@ class myStreamer(BaseHTTPRequestHandler):
 					return
 				elif e.code == 401 or e.code == 403 or e.code == 429:
 					xbmc.log("ERROR\n" + self.server.service.getHeadersEncoded() )
-					self.server.service.refreshToken()
-					req = urllib.request.Request(url, None, self.server.service.getHeadersList() )
-					req.get_method = lambda : 'HEAD'
 
-					try:
-						response = urllib.request.urlopen(req)
-					except:
-						xbmc.log("STILL ERROR\n" + self.server.service.getHeadersEncoded() )
+					if e.code == 401:
+						xbmcgui.Dialog().ok(self.server.addon.getLocalizedString(30003), self.server.addon.getLocalizedString(30018) )
+						return
+					elif e.code == 403 or e.code == 429:
 
-						if e.code == 401:
-							xbmcgui.Dialog().ok(self.server.addon.getLocalizedString(30003), self.server.addon.getLocalizedString(30018) )
-							return
-						elif e.code == 403 or e.code == 429:
+						if self.server.addon.getSetting("fallback"):
+							fallbackAccounts = self.server.addon.getSetting("fallback_accounts").split(',')
+							defaultAccount = self.server.addon.getSetting("default_account")
+							accountChange = False
 
-							if self.server.addon.getSetting("fallback"):
-								fallbackAccounts = self.server.addon.getSetting("fallback_accounts").split(',')
-								defaultAccount = self.server.addon.getSetting("default_account")
-								accountChange = False
+							for fallbackAccount in fallbackAccounts:
 
-								for fallbackAccount in fallbackAccounts:
+								username = self.server.addon.getSetting("gdrive%s_username" % fallbackAccount)
 
-									username = self.server.addon.getSetting("gdrive%s_username" % fallbackAccount)
+								if not username:
+									fallbackAccounts.remove(fallbackAccount)
+									continue
 
-									if not username:
-										fallbackAccounts.remove(fallbackAccount)
-										continue
+								try:
+									cloudservice2 = constants.cloudservice2
+									self.server.service = cloudservice2(self.server.plugin_handle, self.server.PLUGIN_URL, self.server.addon, "gdrive" + fallbackAccount, self.server.user_agent, self.server.settings)
+									self.server.service.refreshToken()
 
-									try:
-										cloudservice2 = constants.cloudservice2
-										self.server.service = cloudservice2(self.server.plugin_handle, self.server.PLUGIN_URL, self.server.addon, "gdrive" + fallbackAccount, self.server.user_agent, self.server.settings)
-										self.server.service.refreshToken()
+									req = urllib.request.Request(url, None, self.server.service.getHeadersList() )
+									req.get_method = lambda : 'HEAD'
+									response = urllib.request.urlopen(req)
 
-										req = urllib.request.Request(url, None, self.server.service.getHeadersList() )
-										req.get_method = lambda : 'HEAD'
-										response = urllib.request.urlopen(req)
+									if not defaultAccount in fallbackAccounts:
+										fallbackAccounts.append(defaultAccount)
 
-										if not defaultAccount in fallbackAccounts:
-											fallbackAccounts.append(defaultAccount)
+									fallbackAccounts.remove(fallbackAccount)
+									self.server.addon.setSetting("default_account", fallbackAccount)
+									self.server.addon.setSetting("default_account_ui", username)
+									accountChange = True
+									xbmcgui.Dialog().notification(self.server.addon.getLocalizedString(30003) + ': ' + self.server.addon.getLocalizedString(30006), self.server.addon.getLocalizedString(30007) )
+									break
 
-										fallbackAccounts.remove(fallbackAccount)
-										self.server.addon.setSetting("default_account", fallbackAccount)
-										self.server.addon.setSetting("default_account_ui", username)
-										accountChange = True
-										xbmcgui.Dialog().notification(self.server.addon.getLocalizedString(30003) + ': ' + self.server.addon.getLocalizedString(30006), self.server.addon.getLocalizedString(30007) )
-										break
+								except:
+									continue
 
-									except:
-										continue
+							self.server.addon.setSetting("fallback_accounts", ','.join(fallbackAccounts) )
+							self.server.addon.setSetting('fallback_accounts_ui', ', '.join(self.server.addon.getSetting("gdrive%s_username" % x) for x in fallbackAccounts) )
 
-								self.server.addon.setSetting("fallback_accounts", ','.join(fallbackAccounts) )
-								self.server.addon.setSetting('fallback_accounts_ui', ', '.join(self.server.addon.getSetting("gdrive%s_username" % x) for x in fallbackAccounts) )
-
-								if not accountChange:
-									xbmcgui.Dialog().ok(self.server.addon.getLocalizedString(30003) + ': ' + self.server.addon.getLocalizedString(30006), self.server.addon.getLocalizedString(30009) )
-									return
-
-							else:
+							if not accountChange:
 								xbmcgui.Dialog().ok(self.server.addon.getLocalizedString(30003) + ': ' + self.server.addon.getLocalizedString(30006), self.server.addon.getLocalizedString(30009) )
 								return
 
 						else:
+							xbmcgui.Dialog().ok(self.server.addon.getLocalizedString(30003) + ': ' + self.server.addon.getLocalizedString(30006), self.server.addon.getLocalizedString(30009) )
 							return
+
+					else:
+						return
 
 				else:
 					return
@@ -489,6 +498,11 @@ class myStreamer(BaseHTTPRequestHandler):
 				decrypt.decryptStreamChunkOld(response, self.wfile, startOffset=startOffset)
 
 			response.close()
+
+		elif self.path == '/stop_token_refresh':
+			self.server.tokenRefresherEnabled = False
+			self.send_response(200)
+			self.end_headers()
 
 		# redirect url to output
 		elif self.path == '/enroll':

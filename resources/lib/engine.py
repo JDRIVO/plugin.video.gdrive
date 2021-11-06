@@ -519,13 +519,28 @@ class contentengine(object):
 				from resources.lib import gplayer
 				player = gplayer.gPlayer(dbID=dbID, dbType=dbType, widget=xbmc.getInfoLabel('Container.Content'))
 
+				while not player.isExit:
+					xbmc.sleep(100)
+
+			else:
+				xbmc.sleep(1000)
+				player = xbmc.Player()
+
+				while player.isPlaying():
+					xbmc.sleep(1000)
+
+			url = 'http://localhost:' + str(service.settings.serverPort) + '/stop_token_refresh'
+			req = urllib.request.Request(url)
+			response = urllib.request.urlopen(req)
+			response.close()
+
+		xbmcplugin.endOfDirectory(self.plugin_handle)
+		return
+
 				# with open(resumeDB, 'wb+') as dic:
 					# pickle.dump(videoData, dic)
 
 				# del videoData
-
-				while not player.isExit:
-					xbmc.sleep(100)
 
 				# with open(resumeDB, 'rb') as dic:
 					# videoData = pickle.load(dic)
@@ -540,6 +555,3 @@ class contentengine(object):
 
 		# request = {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"field": "playcount", "operator": "greaterthan", "value": "0"}, "limits": { "start": 0 }, "properties": ["playcount"], "sort": { "order": "ascending", "method": "label" } }, "id": "libMovies"}
 		# request = {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"field": "playcount", "operator": "greaterthan", "value": "0"}, "limits": { "start": 0 }, "properties": ["playcount"], "sort": { "order": "ascending", "method": "label" } }, "id": "libMovies"}
-
-		xbmcplugin.endOfDirectory(self.plugin_handle)
-		return
