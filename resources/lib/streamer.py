@@ -452,6 +452,7 @@ class myStreamer(BaseHTTPRequestHandler):
 					except:
 						xbmc.log("STILL ERROR\n" + self.server.service.getHeadersEncoded() )
 						return
+
 				else:
 					return
 
@@ -482,13 +483,12 @@ class myStreamer(BaseHTTPRequestHandler):
 
 			self.end_headers()
 
-			## may want to add more granular control over chunk fetches
+			# may want to add more granular control over chunk fetches
 			#self.wfile.write(response.read() )
 
 			if (self.server.crypto):
 				from resources.lib import encryption
 				decrypt = encryption.encryption(self.server.addon.getSetting("crypto_salt"), self.server.addon.getSetting("crypto_password") )
-
 				CHUNK = 16 * 1024
 				decrypt.decryptStreamChunkOld(response, self.wfile, startOffset=startOffset)
 
