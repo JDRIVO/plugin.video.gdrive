@@ -334,7 +334,6 @@ class myStreamer(BaseHTTPRequestHandler):
 						accountChange = False
 
 						for fallbackAccount in fallbackAccounts:
-
 							username = self.server.addon.getSetting("gdrive%s_username" % fallbackAccount)
 
 							if not username:
