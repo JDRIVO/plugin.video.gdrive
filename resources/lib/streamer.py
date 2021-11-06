@@ -32,6 +32,7 @@ import constants
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 	"""Handle requests in a separate thread."""
 
+
 class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
 	def run(self):
@@ -94,6 +95,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 				self.service.refreshToken()
 
 			time.sleep(1)
+
 
 class myStreamer(BaseHTTPRequestHandler):
 
@@ -267,7 +269,6 @@ class myStreamer(BaseHTTPRequestHandler):
 
 				url = 'https://accounts.google.com/o/oauth2/token'
 				header = {'User-Agent' : self.server.user_agent, 'Content-Type' : 'application/x-www-form-urlencoded'}
-
 				data = 'code=' + str(code) + '&client_id=' + str(client_id) + '&client_secret=' + str(client_secret) + '&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code'
 				req = urllib.request.Request(url, data.encode('utf-8'), header)
 
@@ -328,48 +329,47 @@ class myStreamer(BaseHTTPRequestHandler):
 				elif e.code == 403 or e.code == 429:
 					xbmc.log("ERROR\n" + self.server.service.getHeadersEncoded() )
 
-					if self.server.addon.getSetting("fallback"):
-						fallbackAccounts = self.server.addon.getSetting("fallback_accounts").split(',')
-						defaultAccount = self.server.addon.getSetting("default_account")
-						accountChange = False
+					if not self.server.addon.getSetting("fallback"):
+						xbmcgui.Dialog().ok(self.server.addon.getLocalizedString(30003) + ': ' + self.server.addon.getLocalizedString(30006), self.server.addon.getLocalizedString(30009) )
+						return
 
-						for fallbackAccount in fallbackAccounts:
-							username = self.server.addon.getSetting("gdrive%s_username" % fallbackAccount)
+					fallbackAccounts = self.server.addon.getSetting("fallback_accounts").split(',')
+					defaultAccount = self.server.addon.getSetting("default_account")
+					accountChange = False
 
-							if not username:
-								fallbackAccounts.remove(fallbackAccount)
-								continue
+					for fallbackAccount in fallbackAccounts:
+						username = self.server.addon.getSetting("gdrive%s_username" % fallbackAccount)
 
-							try:
-								cloudservice2 = constants.cloudservice2
-								self.server.service = cloudservice2(self.server.plugin_handle, self.server.PLUGIN_URL, self.server.addon, "gdrive" + fallbackAccount, self.server.user_agent, self.server.settings)
-								self.server.service.refreshToken()
+						if not username:
+							fallbackAccounts.remove(fallbackAccount)
+							continue
 
-								req = urllib.request.Request(url, None, self.server.service.getHeadersList() )
-								req.get_method = lambda : 'HEAD'
-								response = urllib.request.urlopen(req)
+						try:
+							cloudservice2 = constants.cloudservice2
+							self.server.service = cloudservice2(self.server.plugin_handle, self.server.PLUGIN_URL, self.server.addon, "gdrive" + fallbackAccount, self.server.user_agent, self.server.settings)
+							self.server.service.refreshToken()
 
-								if not defaultAccount in fallbackAccounts:
-									fallbackAccounts.append(defaultAccount)
+							req = urllib.request.Request(url, None, self.server.service.getHeadersList() )
+							req.get_method = lambda : 'HEAD'
+							response = urllib.request.urlopen(req)
 
-								fallbackAccounts.remove(fallbackAccount)
-								self.server.addon.setSetting("default_account", fallbackAccount)
-								self.server.addon.setSetting("default_account_ui", username)
-								accountChange = True
-								xbmcgui.Dialog().notification(self.server.addon.getLocalizedString(30003) + ': ' + self.server.addon.getLocalizedString(30006), self.server.addon.getLocalizedString(30007) )
-								break
+							if not defaultAccount in fallbackAccounts:
+								fallbackAccounts.append(defaultAccount)
 
-							except:
-								continue
+							fallbackAccounts.remove(fallbackAccount)
+							self.server.addon.setSetting("default_account", fallbackAccount)
+							self.server.addon.setSetting("default_account_ui", username)
+							accountChange = True
+							xbmcgui.Dialog().notification(self.server.addon.getLocalizedString(30003) + ': ' + self.server.addon.getLocalizedString(30006), self.server.addon.getLocalizedString(30007) )
+							break
 
-						self.server.addon.setSetting("fallback_accounts", ','.join(fallbackAccounts) )
-						self.server.addon.setSetting('fallback_accounts_ui', ', '.join(self.server.addon.getSetting("gdrive%s_username" % x) for x in fallbackAccounts) )
+						except:
+							continue
 
-						if not accountChange:
-							xbmcgui.Dialog().ok(self.server.addon.getLocalizedString(30003) + ': ' + self.server.addon.getLocalizedString(30006), self.server.addon.getLocalizedString(30009) )
-							return
+					self.server.addon.setSetting("fallback_accounts", ','.join(fallbackAccounts) )
+					self.server.addon.setSetting('fallback_accounts_ui', ', '.join(self.server.addon.getSetting("gdrive%s_username" % x) for x in fallbackAccounts) )
 
-					else:
+					if not accountChange:
 						xbmcgui.Dialog().ok(self.server.addon.getLocalizedString(30003) + ': ' + self.server.addon.getLocalizedString(30006), self.server.addon.getLocalizedString(30009) )
 						return
 
