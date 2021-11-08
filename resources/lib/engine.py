@@ -516,18 +516,18 @@ class contentengine(object):
 			xbmcplugin.setResolvedUrl(self.plugin_handle, True, item)
 
 			if dbID:
-				from resources.lib import gplayer
-				player = gplayer.gPlayer(dbID=dbID, dbType=dbType, widget=xbmc.getInfoLabel('Container.Content'))
+				widget = 0 if xbmc.getInfoLabel('Container.Content') else 1
+				url = 'http://localhost:' + str(service.settings.serverPort) + '/start_player'
+				data = 'dbid={}&dbtype={}&widget={}'.format(dbID, dbType, widget)
+				req = urllib.request.Request(url, data.encode('utf-8'))
+				response = urllib.request.urlopen(req)
+				response.close()
 
-				while not player.isExit:
-					xbmc.sleep(100)
+			xbmc.sleep(1000)
+			player = xbmc.Player()
 
-			else:
-				xbmc.sleep(1000)
-				player = xbmc.Player()
-
-				while player.isPlaying():
-					xbmc.sleep(1000)
+			while player.isPlaying():
+				xbmc.sleep(100)
 
 			url = 'http://localhost:' + str(service.settings.serverPort) + '/stop_token_refresh'
 			req = urllib.request.Request(url)

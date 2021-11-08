@@ -13,7 +13,7 @@ class gPlayer(xbmc.Player):
 		xbmc.Player.__init__(self)
 		self.dbID = kwargs["dbID"]
 		self.dbType = kwargs["dbType"]
-		self.widget = True if not kwargs["widget"] else False
+		self.widget = kwargs["widget"]
 		self.isExit = False
 		self.videoDuration = None
 
@@ -23,8 +23,6 @@ class gPlayer(xbmc.Player):
 		else:
 			self.isMovie = False
 			self.markedWatchedPoint = float(settingsModule.tvWatchTime)
-
-	def onPlayBackStarted(self):
 
 		while not self.videoDuration:
 

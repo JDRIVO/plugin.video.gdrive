@@ -21,12 +21,13 @@ import re
 import sys
 import time
 import urllib
-from threading import Thread
-from socketserver import ThreadingMixIn
-from http.server import BaseHTTPRequestHandler, HTTPServer
 import xbmc
 import xbmcgui
 import constants
+from threading import Thread
+from socketserver import ThreadingMixIn
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from resources.lib import gplayer
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -96,6 +97,11 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
 			time.sleep(1)
 
+	def startPlayer(self, dbID, dbType, widget):
+		player = gplayer.gPlayer(dbID=dbID, dbType=dbType, widget=int(widget))
+
+		while not player.isExit and not self.close:
+			xbmc.sleep(100)
 
 class myStreamer(BaseHTTPRequestHandler):
 
@@ -129,6 +135,19 @@ class myStreamer(BaseHTTPRequestHandler):
 			self.server.service.refreshToken()
 			self.server.tokenRefresherEnabled = True
 			Thread(target=self.server.tokenRefresher).start()
+			self.send_response(200)
+			self.end_headers()
+
+		elif self.path == '/start_player':
+			content_length = int(self.headers['Content-Length'])
+			post_data = self.rfile.read(content_length).decode('utf-8')
+
+			for r in re.finditer('dbid\=([^\&]+)\&dbtype\=([^\|]+)\&widget\=([^\|]+)', post_data, re.DOTALL):
+				dbID = r.group(1)
+				dbType = r.group(2)
+				widget = r.group(3)
+
+			Thread(target=self.server.startPlayer, args=(dbID, dbType, widget)).start()
 			self.send_response(200)
 			self.end_headers()
 
