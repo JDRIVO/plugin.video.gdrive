@@ -273,7 +273,7 @@ class myStreamer(BaseHTTPRequestHandler):
 				code = r.group(2)
 				code = code.replace("%2F", "/")
 
-				# self.wfile.write(b'<html><body>account = '+ str(account) + " " + str(client_id) + " " + str(client_secret) + " " + str(code) )
+				# self.wfile.write(b'<html><body>account = '+ str(account) + " " + str(client_id) + " " + str(client_secret) + " " + str(code))
 
 				count = 1
 
@@ -445,12 +445,12 @@ class myStreamer(BaseHTTPRequestHandler):
 			self.send_header("Content-type", "video/mp4")
 			self.send_header("Accept-Ranges", "bytes")
 
-			# self.send_header('ETag', response.info().get('ETag') )
-			# self.send_header('Server', response.info().get('Server') )
+			# self.send_header('ETag', response.info().get('ETag'))
+			# self.send_header('Server', response.info().get('Server'))
 			self.end_headers()
 
 			## may want to add more granular control over chunk fetches
-			# self.wfile.write(response.read() )
+			# self.wfile.write(response.read())
 
 			response.close()
 			xbmc.log("DONE")
@@ -483,13 +483,13 @@ class myStreamer(BaseHTTPRequestHandler):
 		elif self.path == "/play":
 
 			if self.server.crypto and start != "" and start > 16 and end == "":
-				# start = start - (16 - (end % 16) )
+				# start = start - (16 - (end % 16))
 				xbmc.log("START = " + str(start))
 				startOffset = 16 - ((int(self.server.length) - start) % 16) + 8
 
-			#			 if (self.server.crypto and start == 23474184):
-			# start = start - (16 - (end % 16) )
-			#				start = 23474184 - 8
+			# if (self.server.crypto and start == 23474184):
+				# start = start - (16 - (end % 16))
+				# start = 23474184 - 8
 
 			url = self.server.playbackURL
 			xbmc.log("GET " + url + "\n" + self.server.service.getHeadersEncoded() + "\n")
@@ -533,20 +533,20 @@ class myStreamer(BaseHTTPRequestHandler):
 			else:
 				self.send_response(206)
 				self.send_header("Content-Length", str(int(response.info().get("Content-Length")) - startOffset))
-				# self.send_header('Content-Range', 'bytes ' + str(start) + '-' + str(end) )
+				# self.send_header('Content-Range', 'bytes ' + str(start) + '-' + str(end))
 
 				if end == "":
 					self.send_header("Content-Range", "bytes {}-{}/{}".format(start, int(self.server.length) - 1, self.server.length))
 				else:
 					self.send_header("Content-Range", "bytes {}-{}/{}".format(start, end, self.server.length))
 
-				# self.send_header('Content-Range', response.info().get('Content-Range') )
+				# self.send_header('Content-Range', response.info().get('Content-Range'))
 				xbmc.log("Content-Range!!!{}-{}/{}\n".format(start, int(self.server.length) - 1, self.server.length))
 
 			xbmc.log(str(response.info()) + "\n")
 			self.send_header("Content-Type", response.info().get("Content-Type"))
 
-			# self.send_header('Content-Length', response.info().get('Content-Length') )
+			# self.send_header('Content-Length', response.info().get('Content-Length'))
 			self.send_header("Cache-Control", response.info().get("Cache-Control"))
 			self.send_header("Date", response.info().get("Date"))
 			self.send_header("Content-type", "video/mp4")
@@ -555,7 +555,7 @@ class myStreamer(BaseHTTPRequestHandler):
 			self.end_headers()
 
 			# may want to add more granular control over chunk fetches
-			# self.wfile.write(response.read() )
+			# self.wfile.write(response.read())
 
 			if self.server.crypto:
 				from resources.lib import encryption
