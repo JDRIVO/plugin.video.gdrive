@@ -22,14 +22,6 @@ import cgi
 import re
 import urllib.parse
 
-plugin_queries = None
-
-try:
-	plugin_queries = parse_query(sys.argv[2][1:])
-except:
-	plugin_queries = None
-
-
 #http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
 def _callback(matches):
 	id = matches.group(1)
@@ -124,10 +116,16 @@ def parse_query(query):
 	except:
 		return
 
-	q = {key: value[0] key, value in queries.items()}
+	q = {key: value[0] for key, value in queries.items()}
 	q["mode"] = q.get("mode", "main")
 	return q
 
+plugin_queries = None
+
+try:
+	plugin_queries = parse_query(sys.argv[2][1:])
+except:
+	plugin_queries = None
 
 class settings:
 
