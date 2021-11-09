@@ -35,7 +35,6 @@ class gPlayer(xbmc.Player):
 			xbmc.sleep(100)
 
 		t = Thread(target=self.saveProgress)
-		t.setDaemon(True)
 		t.start()
 
 	def onPlayBackEnded(self):
