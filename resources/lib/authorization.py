@@ -18,10 +18,7 @@
 """
 
 class authorization:
-	# CloudService v0.2.3
 
-	##
-	##
 	def __init__(self, username):
 		self.auth = {}
 		self.username = username
