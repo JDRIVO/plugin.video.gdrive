@@ -1,4 +1,4 @@
-'''
+"""
     Copyright (C) 2013-2016 ddurdle
 
     This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-'''
+"""
+
 import re
 import urllib
 import sys
@@ -23,9 +24,10 @@ import os
 
 PLUGIN_URL = sys.argv[0]
 
-def decode(data):
 
+def decode(data):
 	return re.sub("&#(\d+)(;|(?=\s))", _callback, data).strip()
+
 
 def decode_dict(data):
 
@@ -36,31 +38,26 @@ def decode_dict(data):
 
 	return data
 
+
 #http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
 def _callback(matches):
 	id = matches.group(1)
 
 	try:
-		return unichr(int(id) )
+		return unichr(int(id))
 	except:
 		return id
 
-#
-#
-#
-class cloudservice(object):
-	# CloudService v0.2.3
 
+class cloudservice:
 	PLAYBACK_RESOLVED = 1
 	PLAYBACK_PLAYER = 2
 	PLAYBACK_NONE = 3
 
-	def __init__(self): pass
-
 	def getInstanceSetting(self, setting, default=None):
 
 		try:
-			return self.addon.getSetting(self.instanceName + '_' + setting)
+			return self.addon.getSetting(self.instanceName + "_" + setting)
 		except:
 			return default
 
@@ -75,7 +72,7 @@ class cloudservice(object):
 	##
 	def updateAuthorization(self, addon):
 
-		if self.authorization.isUpdated: #and addon.getSetting(self.instanceName+'_save_auth_token') == 'true':
+		if self.authorization.isUpdated: #and addon.getSetting(self.instanceName + "_save_auth_token") == "true":
 			self.authorization.saveTokens(self.instanceName, addon)
 
 	##
@@ -83,13 +80,11 @@ class cloudservice(object):
 	#   returns: list containing the header
 	##
 	def getHeadersList(self, isPOST=False, additionalHeader=None, additionalValue=None, isJSON=False):
-
-		return {'User-Agent' : self.user_agent}
+		return {"User-Agent": self.user_agent}
 
 	##
 	# return the appropriate "headers" for requests that include 1) user agent, 2) any authorization cookies/tokens
 	#   returns: URL-encoded header string
 	##
 	def getHeadersEncoded(self):
-
-		return urllib.parse.urlencode(self.getHeadersList() )
+		return urllib.parse.urlencode(self.getHeadersList())

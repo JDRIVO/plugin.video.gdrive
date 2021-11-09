@@ -402,7 +402,7 @@ class contentengine(object):
 			if selection is None:
 				return
 
-			self.accountActions(addon, "delete", [self.accountInstances[x] for x in selection] )
+			self.accountActions(addon, "delete", [self.accountInstances[x] for x in selection])
 
 			if mode == "settings_delete" and selection:
 				xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30160))
@@ -438,13 +438,13 @@ class contentengine(object):
 
 				if dbType == "movie":
 					jsonQuery = xbmc.executeJSONRPC(
-						'{"jsonrpc": "2.0", "id": "1", "method": "VideoLibrary.GetMovieDetails", "params": { "movieid": %s, "properties": ["resume"] } }'
+						'{"jsonrpc": "2.0", "id": "1", "method": "VideoLibrary.GetMovieDetails", "params": {"movieid": %s, "properties": ["resume"]}}'
 						% dbID
 					)
 					jsonKey = "moviedetails"
 				else:
 					jsonQuery = xbmc.executeJSONRPC(
-						'{"jsonrpc": "2.0", "id": "1", "method": "VideoLibrary.GetEpisodeDetails", "params": { "episodeid": %s, "properties": ["resume"] } }'
+						'{"jsonrpc": "2.0", "id": "1", "method": "VideoLibrary.GetEpisodeDetails", "params": {"episodeid": %s, "properties": ["resume"]}}'
 						% dbID
 					)
 					jsonKey = "episodedetails"
@@ -493,10 +493,10 @@ class contentengine(object):
 				# import pickle
 
 				# resumeDBPath = xbmc.translatePath(self.settingsModule.resumeDBPath)
-				# resumeDB = os.path.join(resumeDBPath, 'kodi_resumeDB.p')
+				# resumeDB = os.path.join(resumeDBPath, "kodi_resumeDB.p")
 
 				# try:
-					# with open(resumeDB, 'rb') as dic:
+					# with open(resumeDB, "rb") as dic:
 						# videoData = pickle.load(dic)
 				# except:
 					# videoData = {}
@@ -507,8 +507,8 @@ class contentengine(object):
 					# videoData[filename] = 0
 					# resumePosition = 0
 
-				# strmName = self.settingsModule.getParameter('title') + ".strm"
-				# cursor = list(db.execute('SELECT timeInSeconds FROM bookmark WHERE idFile=(SELECT idFile FROM files WHERE strFilename="%s")' % strmName))
+				# strmName = self.settingsModule.getParameter("title") + ".strm"
+				# cursor = list(db.execute("SELECT timeInSeconds FROM bookmark WHERE idFile=(SELECT idFile FROM files WHERE strFilename='%s')" % strmName))
 
 				# if cursor:
 					# resumePosition = cursor[0][0]
@@ -525,7 +525,7 @@ class contentengine(object):
 					# resumePosition = resumePosition / total * 100
 					resumeOption = True
 				# elif selection == 1:
-					# resumePosition = '0'
+					# resumePosition = "0"
 					# videoData[filename] = 0
 				elif selection == -1:
 					return
@@ -544,11 +544,11 @@ class contentengine(object):
 				return
 
 			item = xbmcgui.ListItem(path="http://localhost:{}/play".format(service.settings.serverPort))
-			# item.setProperty('StartPercent', str(position))
-			# item.setProperty('startoffset', '60')
+			# item.setProperty("StartPercent", str(position))
+			# item.setProperty("startoffset", "60")
 
 			if resumeOption:
-				# item.setProperty('totaltime', '1')
+				# item.setProperty("totaltime", "1")
 				item.setProperty("totaltime", str(videoLength))
 				item.setProperty("resumetime", str(resumePosition))
 
@@ -576,12 +576,12 @@ class contentengine(object):
 		xbmcplugin.endOfDirectory(self.plugin_handle)
 		return
 
-				# with open(resumeDB, 'wb+') as dic:
+				# with open(resumeDB, "wb+") as dic:
 					# pickle.dump(videoData, dic)
 
 				# del videoData
 
-				# with open(resumeDB, 'rb') as dic:
+				# with open(resumeDB, "rb") as dic:
 					# videoData = pickle.load(dic)
 
 				# if player.videoWatched:
@@ -589,7 +589,7 @@ class contentengine(object):
 				# else:
 					# videoData[filename] = player.time
 
-				# with open(resumeDB, 'wb+') as dic:
+				# with open(resumeDB, "wb+") as dic:
 					# pickle.dump(videoData, dic)
 
 		# request = {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"field": "playcount", "operator": "greaterthan", "value": "0"}, "limits": { "start": 0 }, "properties": ["playcount"], "sort": { "order": "ascending", "method": "label" } }, "id": "libMovies"}
