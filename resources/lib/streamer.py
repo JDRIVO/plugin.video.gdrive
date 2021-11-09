@@ -118,10 +118,10 @@ class myStreamer(BaseHTTPRequestHandler):
 			return
 
 		elif self.path == "/crypto_playurl":
-			content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
-			post_data = self.rfile.read(content_length).decode('utf-8') # <--- Gets the data itself
+			content_length = int(self.headers["Content-Length"]) # <--- Gets the size of data
+			post_data = self.rfile.read(content_length).decode("utf-8") # <--- Gets the data itself
 
-			for r in re.finditer('instance\=([^\&]+)\&url\=([^\|]+)', post_data, re.DOTALL):
+			for r in re.finditer("instance\=([^\&]+)\&url\=([^\|]+)", post_data, re.DOTALL):
 				instanceName = r.group(1)
 				url = r.group(2)
 				drive_stream = ""
@@ -300,11 +300,11 @@ class myStreamer(BaseHTTPRequestHandler):
 
 				url = "https://accounts.google.com/o/oauth2/token"
 				header = {"User-Agent": self.server.user_agent, "Content-Type": "application/x-www-form-urlencoded"}
-				url = 'https://accounts.google.com/o/oauth2/token'
-				data = 'code={}&client_id={}&client_secret={}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code'.format(
+				url = "https://accounts.google.com/o/oauth2/token"
+				data = "code={}&client_id={}&client_secret={}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code".format(
 					code, client_id, client_secret
 				)
-				req = urllib.request.Request(url, data.encode('utf-8'), header)
+				req = urllib.request.Request(url, data.encode("utf-8"), header)
 				# try login
 				try:
 					response = urllib.request.urlopen(req)
@@ -445,8 +445,8 @@ class myStreamer(BaseHTTPRequestHandler):
 			self.send_header("Content-type", "video/mp4")
 			self.send_header("Accept-Ranges", "bytes")
 
-			# self.send_header('ETag', response.info().get('ETag'))
-			# self.send_header('Server', response.info().get('Server'))
+			# self.send_header("ETag", response.info().get("ETag"))
+			# self.send_header("Server", response.info().get("Server"))
 			self.end_headers()
 
 			## may want to add more granular control over chunk fetches
@@ -533,20 +533,20 @@ class myStreamer(BaseHTTPRequestHandler):
 			else:
 				self.send_response(206)
 				self.send_header("Content-Length", str(int(response.info().get("Content-Length")) - startOffset))
-				# self.send_header('Content-Range', 'bytes ' + str(start) + '-' + str(end))
+				# self.send_header("Content-Range", "bytes " + str(start) + "-" + str(end))
 
 				if end == "":
 					self.send_header("Content-Range", "bytes {}-{}/{}".format(start, int(self.server.length) - 1, self.server.length))
 				else:
 					self.send_header("Content-Range", "bytes {}-{}/{}".format(start, end, self.server.length))
 
-				# self.send_header('Content-Range', response.info().get('Content-Range'))
+				# self.send_header("Content-Range", response.info().get("Content-Range"))
 				xbmc.log("Content-Range!!!{}-{}/{}\n".format(start, int(self.server.length) - 1, self.server.length))
 
 			xbmc.log(str(response.info()) + "\n")
 			self.send_header("Content-Type", response.info().get("Content-Type"))
 
-			# self.send_header('Content-Length', response.info().get('Content-Length'))
+			# self.send_header("Content-Length", response.info().get("Content-Length"))
 			self.send_header("Cache-Control", response.info().get("Cache-Control"))
 			self.send_header("Date", response.info().get("Date"))
 			self.send_header("Content-type", "video/mp4")
