@@ -24,6 +24,8 @@ class gPlayer(xbmc.Player):
 			self.isMovie = False
 			self.markedWatchedPoint = float(settingsModule.tvWatchTime)
 
+		time.sleep(2)
+
 		while not self.videoDuration:
 
 			try:
@@ -32,7 +34,7 @@ class gPlayer(xbmc.Player):
 				self.isExit = True
 				break
 
-			xbmc.sleep(100)
+			time.sleep(0.1)
 
 		t = Thread(target=self.saveProgress)
 		t.start()
@@ -51,7 +53,7 @@ class gPlayer(xbmc.Player):
 
 		while self.isPlaying():
 			self.updateProgress()
-			xbmc.sleep(1000)
+			time.sleep(1)
 
 	def updateProgress(self, thread=True):
 
@@ -81,10 +83,11 @@ class gPlayer(xbmc.Player):
 				self.refreshVideo()
 				return
 
-			timeEnd = time.time() + 2
+			timeEnd = time.time() + 3
 
 			while time.time() < timeEnd:
 				func()
+				time.sleep(1)
 
 	def updateResumePoint(self):
 
