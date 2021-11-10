@@ -20,18 +20,13 @@
 
 import re
 import sys
-
+import xbmcaddon
 from resources.lib import gdrive_api2
 
-# cloudservice - standard XBMC modules
-import xbmcaddon
-
-PLUGIN_NAME = 'gdrive'
-
-# global variables
-addon = xbmcaddon.Addon(id='plugin.video.gdrive')
-
+PLUGIN_NAME = "gdrive"
+addon = xbmcaddon.Addon(id="plugin.video.gdrive")
 cloudservice2 = gdrive_api2.gdrive
+
 
 class CONST():
 	testing_features = False

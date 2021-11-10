@@ -12,14 +12,15 @@ except:
 	pluginHandle = None
 	pluginQueries = None
 
+
 def run():
 	addon = constants.addon
 	pluginName = constants.PLUGIN_NAME
 	settings_ = settings.settings(addon)
-	userAgent = settings_.getSetting('user_agent')
-	port = settings_.getSettingInt('server_port', 8011)
+	userAgent = settings_.getSetting("user_agent")
+	port = settings_.getSettingInt("server_port", 8011)
 
-	server = streamer.MyHTTPServer(('', port), streamer.myStreamer)
+	server = streamer.MyHTTPServer(("", port), streamer.myStreamer)
 	server.setDetails(pluginHandle, pluginName, pluginName, addon, userAgent, settings_)
 	thread = threading.Thread(None, server.run)
 	thread.start()
@@ -37,12 +38,12 @@ def run():
 	# def __init__(self):
 		# addon = constants.addon
 		# settings_ = settings.settings(addon)
-		# user_agent = settings_.getSetting('user_agent')
+		# user_agent = settings_.getSetting("user_agent")
 		# PLUGIN_URL = constants.PLUGIN_NAME
 		# PLUGIN_NAME = constants.PLUGIN_NAME
 
-		# port = settings_.getSettingInt('server_port', 8011)
-		# server = streamer.MyHTTPServer( ('', port), streamer.myStreamer)
+		# port = settings_.getSettingInt("server_port", 8011)
+		# server = streamer.MyHTTPServer(("", port), streamer.myStreamer)
 		# server.setDetails(plugin_handle, PLUGIN_NAME, PLUGIN_URL, addon, user_agent, settings_)
 
 	# def terminate(self):

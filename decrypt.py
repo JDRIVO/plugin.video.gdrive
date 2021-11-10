@@ -11,5 +11,5 @@ encrypt = encryption.encryption(saltFile, password)
 fileName = os.path.basename(filePath)
 fileName = encrypt.decryptString(fileName)
 
-destinationPath = os.path.join(destinationPath, fileName.decode('utf-8') )
+destinationPath = os.path.join(destinationPath, fileName.decode("utf-8"))
 encrypt.decryptFile(filePath, destinationPath)
