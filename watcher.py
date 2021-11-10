@@ -61,7 +61,6 @@ class LibraryWatch(xbmc.Monitor):
 					),
 				)
 				fileId = databaseQuery[0][0]
-
 				insertParams = []
 
 				for k, v in mediaDetails.items():
@@ -114,7 +113,6 @@ class LibraryWatch(xbmc.Monitor):
 		for mediaDetail in splitText:
 			mediaSplit = mediaDetail.split("=")
 			mediaDetail = mediaSplit[0]
-
 			match = False
 
 			if mediaDetail in video_codes:
