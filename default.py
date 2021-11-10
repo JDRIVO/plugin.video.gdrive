@@ -31,5 +31,5 @@ filePath = xbmc.getInfoLabel("ListItem.FolderPath")
 
 from resources.lib import engine
 
-mediaEngine = engine.contentengine()
+mediaEngine = engine.ContentEngine()
 mediaEngine.run(dbID, dbType, filePath)

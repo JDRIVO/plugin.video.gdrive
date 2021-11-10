@@ -52,7 +52,7 @@ def _callback(matches):
 		return id
 
 
-class contentengine(object):
+class ContentEngine:
 	plugin_handle = None
 	PLUGIN_URL = ""
 
