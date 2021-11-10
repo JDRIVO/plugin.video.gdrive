@@ -17,8 +17,8 @@
 
 """
 
-class authorization:
 
+class authorization:
 	def __init__(self, username):
 		self.auth = {}
 		self.username = username

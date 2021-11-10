@@ -22,7 +22,7 @@ import cgi
 import re
 import urllib.parse
 
-#http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
+# http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
 def _callback(matches):
 	id = matches.group(1)
 
@@ -120,6 +120,7 @@ def parse_query(query):
 	q["mode"] = q.get("mode", "main")
 	return q
 
+
 plugin_queries = None
 
 try:
@@ -127,8 +128,8 @@ try:
 except:
 	plugin_queries = None
 
-class settings:
 
+class settings:
 	def __init__(self, addons):
 		self.addon = addons
 		self.username = self.getParameter("username", "")
