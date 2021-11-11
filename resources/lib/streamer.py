@@ -99,7 +99,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 			time.sleep(1)
 
 	def startPlayer(self, dbID, dbType, widget):
-		player = gplayer.gPlayer(dbID=dbID, dbType=dbType, widget=int(widget))
+		player = gplayer.GPlayer(dbID=dbID, dbType=dbType, widget=int(widget))
 
 		while not player.isExit and not self.close:
 			xbmc.sleep(100)

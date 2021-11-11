@@ -7,7 +7,7 @@ from resources.lib import settings
 settingsModule = settings.Settings(constants.addon)
 
 
-class gPlayer(xbmc.Player):
+class GPlayer(xbmc.Player):
 
 	def __init__(self, *args, **kwargs):
 		xbmc.Player.__init__(self)
