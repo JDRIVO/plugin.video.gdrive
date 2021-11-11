@@ -217,6 +217,7 @@ class myStreamer(BaseHTTPRequestHandler):
 					code, client_id, client_secret
 				)
 				req = urllib.request.Request(url, data.encode("utf-8"), header)
+
 				# try login
 				try:
 					response = urllib.request.urlopen(req)
