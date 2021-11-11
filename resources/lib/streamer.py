@@ -31,7 +31,6 @@ from resources.lib import gplayer
 from resources.lib import enrolment
 
 
-
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 	"""Handle requests in a separate thread."""
 
@@ -188,8 +187,6 @@ class myStreamer(BaseHTTPRequestHandler):
 				code = r.group(2)
 				code = code.replace("%2F", "/")
 
-				# self.wfile.write(b'<html><body>account = '+ str(account) + " " + str(client_id) + " " + str(client_secret) + " " + str(code))
-
 				count = 1
 
 				while True:
@@ -279,9 +276,7 @@ class myStreamer(BaseHTTPRequestHandler):
 
 					if not self.server.addon.getSetting("fallback"):
 						xbmcgui.Dialog().ok(
-							self.server.addon.getLocalizedString(30003)
-							+ ": "
-							+ self.server.addon.getLocalizedString(30006),
+							self.server.addon.getLocalizedString(30003) + ": " + self.server.addon.getLocalizedString(30006),
 							self.server.addon.getLocalizedString(30009),
 						)
 						return
@@ -321,9 +316,7 @@ class myStreamer(BaseHTTPRequestHandler):
 							self.server.addon.setSetting("default_account_ui", username)
 							accountChange = True
 							xbmcgui.Dialog().notification(
-								self.server.addon.getLocalizedString(30003)
-								+ ": "
-								+ self.server.addon.getLocalizedString(30006),
+								self.server.addon.getLocalizedString(30003) + ": " + self.server.addon.getLocalizedString(30006),
 								self.server.addon.getLocalizedString(30007),
 							)
 							break
@@ -342,9 +335,7 @@ class myStreamer(BaseHTTPRequestHandler):
 
 					if not accountChange:
 						xbmcgui.Dialog().ok(
-							self.server.addon.getLocalizedString(30003)
-							+ ": "
-							+ self.server.addon.getLocalizedString(30006),
+							self.server.addon.getLocalizedString(30003) + ": " + self.server.addon.getLocalizedString(30006),
 							self.server.addon.getLocalizedString(30009),
 						)
 						return
@@ -417,10 +408,7 @@ class myStreamer(BaseHTTPRequestHandler):
 					None,
 					self.server.service.getHeadersList(
 						additionalHeader="Range",
-						additionalValue="bytes="
-						+ str(start - startOffset)
-						+ "-"
-						+ str(end),
+						additionalValue="bytes=" + str(start - startOffset) + "-" + str(end),
 					)
 				)
 
@@ -459,8 +447,8 @@ class myStreamer(BaseHTTPRequestHandler):
 				xbmc.log("Content-Range!!!{}-{}/{}\n".format(start, int(self.server.length) - 1, self.server.length))
 
 			xbmc.log(str(response.info()) + "\n")
-			self.send_header("Content-Type", response.info().get("Content-Type"))
 
+			self.send_header("Content-Type", response.info().get("Content-Type"))
 			# self.send_header("Content-Length", response.info().get("Content-Length"))
 			self.send_header("Cache-Control", response.info().get("Cache-Control"))
 			self.send_header("Date", response.info().get("Date"))
