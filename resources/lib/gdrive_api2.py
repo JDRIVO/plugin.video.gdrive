@@ -211,5 +211,4 @@ class GDrive(cloudservice.CloudService):
 	#	returns: URL-encoded header string
 	##
 	def getHeadersEncoded(self):
-
 		return urllib.parse.urlencode(self.getHeadersList())
