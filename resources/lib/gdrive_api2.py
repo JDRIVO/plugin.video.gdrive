@@ -36,7 +36,7 @@ SERVICE_NAME = "dmdgdrive"
 #
 # Google Drive API 2 implementation of Google Drive
 #
-class gdrive(cloudservice.cloudservice):
+class GDrive(cloudservice.CloudService):
 	API_VERSION = "3.0"
 	PROTOCOL = "https://"
 	API_URL = PROTOCOL + "www.googleapis.com/drive/v2/"
@@ -58,7 +58,7 @@ class gdrive(cloudservice.cloudservice):
 		except:
 			username = ""
 
-		self.authorization = authorization.authorization(username)
+		self.authorization = authorization.Authorization(username)
 		self.cookiejar = http.cookiejar.CookieJar()
 		self.user_agent = user_agent
 

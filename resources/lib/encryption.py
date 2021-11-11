@@ -16,7 +16,7 @@ except:
 	from Crypto.Cipher import AES
 
 
-class encryption:
+class Encryption:
 
 	# salt size in bytes
 	SALT_SIZE = 32

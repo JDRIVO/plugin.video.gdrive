@@ -6,7 +6,7 @@ password = sys.argv[2]
 filePath = sys.argv[3]
 destinationPath = sys.argv[4]
 
-encrypt = encryption.encryption(saltFile, password)
+encrypt = encryption.Encryption(saltFile, password)
 
 fileName = os.path.basename(filePath)
 fileName = encrypt.encryptString(fileName)

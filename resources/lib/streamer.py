@@ -105,7 +105,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 			xbmc.sleep(100)
 
 
-class myStreamer(BaseHTTPRequestHandler):
+class MyStreamer(BaseHTTPRequestHandler):
 
 	# Handler for the GET requests
 	def do_POST(self):
@@ -464,7 +464,7 @@ class myStreamer(BaseHTTPRequestHandler):
 			if self.server.crypto:
 				from resources.lib import encryption
 
-				decrypt = encryption.encryption(self.server.addon.getSetting("crypto_salt"),self.server.addon.getSetting("crypto_password"))
+				decrypt = encryption.Encryption(self.server.addon.getSetting("crypto_salt"),self.server.addon.getSetting("crypto_password"))
 				CHUNK = 16 * 1024
 				decrypt.decryptStreamChunkOld(response, self.wfile, startOffset=startOffset)
 

@@ -62,7 +62,6 @@ body {
 
 
 def page2(client_id, client_secret):
-
 	return """
 			<html>
 			<head>

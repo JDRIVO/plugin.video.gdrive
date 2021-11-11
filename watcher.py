@@ -12,7 +12,7 @@ class LibraryWatch(xbmc.Monitor):
 
 	def __init__(self):
 		xbmc.Monitor.__init__(self)
-		self.settingsModule = settings.settings(constants.addon)
+		self.settingsModule = settings.Settings(constants.addon)
 		self.getSettings()
 
 	def onNotification(self, sender, method, data):

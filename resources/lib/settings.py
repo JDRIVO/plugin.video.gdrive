@@ -129,7 +129,8 @@ except:
 	plugin_queries = None
 
 
-class settings:
+class Settings:
+
 	def __init__(self, addons):
 		self.addon = addons
 		self.username = self.getParameter("username", "")

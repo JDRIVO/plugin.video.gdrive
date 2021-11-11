@@ -24,7 +24,7 @@ from resources.lib import gdrive_api2
 
 PLUGIN_NAME = "gdrive"
 addon = xbmcaddon.Addon(id="plugin.video.gdrive")
-cloudservice2 = gdrive_api2.gdrive
+cloudservice2 = gdrive_api2.GDrive
 
 
 class CONST():

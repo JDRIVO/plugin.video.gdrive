@@ -4,7 +4,7 @@ import constants
 from threading import Thread
 from resources.lib import settings
 
-settingsModule = settings.settings(constants.addon)
+settingsModule = settings.Settings(constants.addon)
 
 
 class gPlayer(xbmc.Player):

@@ -49,7 +49,7 @@ def _callback(matches):
 		return id
 
 
-class cloudservice:
+class CloudService:
 
 	def getInstanceSetting(self, setting, default=None):
 

@@ -255,7 +255,7 @@ class ContentEngine:
 		plugin_queries = settings.parse_query(sys.argv[2][1:])
 
 		# cloudservice - create settings module
-		self.settingsModule = settings.settings(addon)
+		self.settingsModule = settings.Settings(addon)
 
 		self.user_agent = self.settingsModule.getSetting("user_agent")
 		self.accountAmount = addon.getSettingInt("account_amount")
