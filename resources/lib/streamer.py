@@ -464,7 +464,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			if self.server.crypto:
 				from resources.lib import encryption
 
-				decrypt = encryption.Encryption(self.server.addon.getSetting("crypto_salt"),self.server.addon.getSetting("crypto_password"))
+				decrypt = encryption.Encryption(self.server.addon.getSetting("crypto_salt"), self.server.addon.getSetting("crypto_password"))
 				CHUNK = 16 * 1024
 				decrypt.decryptStreamChunkOld(response, self.wfile, startOffset=startOffset)
 
