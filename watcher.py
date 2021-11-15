@@ -8,6 +8,20 @@ from sqlite3 import dbapi2 as sqlite
 from resources.lib import settings
 
 
+def run():
+	watcher = LibraryWatch()
+
+	# if not watcher.enabled:
+		# sys.exit()
+
+	monitor = xbmc.Monitor()
+
+	while not monitor.abortRequested():
+
+		if monitor.waitForAbort(1) or not watcher.enabled:
+			break
+
+
 class LibraryWatch(xbmc.Monitor):
 
 	def __init__(self):
@@ -92,7 +106,7 @@ class LibraryWatch(xbmc.Monitor):
 		# "Apollo 13 (1995) Anniversary Edition&aspect_ratio=33&audio_codec=69"
 		splitText = strmData.split("&")
 
-		video_codes = {
+		videoCodes = {
 			"video_codec": "strVideoCodec",
 			"aspect_ratio": "fVideoAspect",
 			"video_width": "iVideoWidth",
@@ -100,31 +114,28 @@ class LibraryWatch(xbmc.Monitor):
 			"video_duration": "iVideoDuration"
 		}
 
-		audio_codes = {
+		audioCodes = {
 			"audio_codec": "strAudioCodec",
 			"audio_channels": "iAudioChannels"
 		}
 
-		video_rows = []
-		video_values = []
-		audio_rows = []
-		audio_values = []
+		videoRows, videoValues, audioRows, audioValues = [], [], [], []
 
 		for mediaDetail in splitText:
 			mediaSplit = mediaDetail.split("=")
 			mediaDetail = mediaSplit[0]
 			match = False
 
-			if mediaDetail in video_codes:
+			if mediaDetail in videoCodes:
 				match = True
-				rows = video_rows
-				values = video_values
-				codes = video_codes
-			elif mediaDetail in audio_codes:
+				rows = videoRows
+				values = videoValues
+				codes = videoCodes
+			elif mediaDetail in audioCodes:
 				match = True
-				rows = audio_rows
-				values = audio_values
-				codes = audio_codes
+				rows = audioRows
+				values = audioValues
+				codes = audioCodes
 
 			if match:
 				value = mediaSplit[1]
@@ -136,15 +147,15 @@ class LibraryWatch(xbmc.Monitor):
 
 		converted = {}
 
-		if video_rows:
-			video_rows.append("iStreamType")
-			video_values.append("0")
-			converted["video"] = [video_rows, video_values]
+		if videoRows:
+			videoRows.append("iStreamType")
+			videoValues.append("0")
+			converted["video"] = [videoRows, videoValues]
 
-		if audio_rows:
-			audio_rows.append("iStreamType")
-			audio_values.append("1")
-			converted["audio"] = [audio_rows, audio_values]
+		if audioRows:
+			audioRows.append("iStreamType")
+			audioValues.append("1")
+			converted["audio"] = [audioRows, audioValues]
 
 		if converted:
 			return converted
@@ -185,17 +196,3 @@ class LibraryWatch(xbmc.Monitor):
 	def getSettings(self):
 		self.enabled = self.settingsModule.getSetting("watcher")
 		self.dbPath = xbmcvfs.translatePath(self.settingsModule.getSetting("video_db"))
-
-
-def run():
-	watcher = LibraryWatch()
-
-	# if not watcher.enabled:
-		# sys.exit()
-
-	monitor = xbmc.Monitor()
-
-	while not monitor.abortRequested():
-
-		if monitor.waitForAbort(1) or not watcher.enabled:
-			break

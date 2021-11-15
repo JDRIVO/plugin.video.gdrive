@@ -17,10 +17,11 @@
 
 """
 
+import re
 import sys
 import cgi
-import re
 import urllib.parse
+
 
 # http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931
 def _callback(matches):

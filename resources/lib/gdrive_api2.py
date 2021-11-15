@@ -28,8 +28,7 @@ import urllib.request
 import http.cookiejar
 import xbmc
 import xbmcgui
-from resources.lib import cloudservice
-from resources.lib import authorization
+from resources.lib import authorization, cloudservice
 
 SERVICE_NAME = "dmdgdrive"
 

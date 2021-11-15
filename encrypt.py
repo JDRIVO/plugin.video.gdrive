@@ -1,4 +1,5 @@
-import sys, os
+import os
+import sys
 import encryption
 
 saltFile = sys.argv[1]
@@ -9,8 +10,8 @@ destinationPath = sys.argv[4]
 encrypt = encryption.Encryption(saltFile, password)
 
 fileName = os.path.basename(filePath)
-fileName = encrypt.encryptString(fileName)
-print(fileName)
+encryptedFileName = encrypt.encryptString(fileName)
+print(encryptedFileName)
 
-destinationPath = os.path.join(destinationPath, fileName.decode("utf-8"))
+destinationPath = os.path.join(destinationPath, encryptedFileName.decode("utf-8"))
 encrypt.encryptFile(filePath, destinationPath)

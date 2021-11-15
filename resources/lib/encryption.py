@@ -1,7 +1,6 @@
 # http://stackoverflow.com/questions/6425131/encrpyt-decrypt-data-in-python-with-salt
 
 import os
-import re
 import sys
 import random
 import struct
@@ -17,31 +16,28 @@ except:
 
 
 class Encryption:
-
 	# salt size in bytes
 	SALT_SIZE = 32
-
 	# number of iterations in the key generation
 	NUMBER_OF_ITERATIONS = 20
-
 	# the size multiple required for AES
 	AES_MULTIPLE = 16
 
-	def __init__(self, saltFile, saltpassword):
+	def __init__(self, saltFile, saltPassword):
 
 		try:
 
-			with open(saltFile, "rb") as saltfile:
-				self.salt = saltfile.read()
+			with open(saltFile, "rb") as salt:
+				self.salt = salt.read()
 
 		except:
 
-			with open(saltFile, "wb") as saltfile:
+			with open(saltFile, "wb") as salt:
 				self.salt = self.generateSalt()
-				saltfile.write(self.salt.encode("utf-8"))
+				salt.write(self.salt)
 
-		if saltpassword != None and saltpassword != "":
-			self.key = self.generateKey(saltpassword)
+		if saltPassword:
+			self.key = self.generateKey(saltPassword)
 
 	def generateKey(self, password, iterations=NUMBER_OF_ITERATIONS):
 
@@ -56,18 +52,18 @@ class Encryption:
 		return key
 
 	def generateSalt(self, size=SALT_SIZE):
-		return "".join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(size))
+		return "".join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(size)).encode("utf-8")
 
-	def pad_text(text, multiple):
-		extra_bytes = len(text) % multiple
-		padding_size = multiple - extra_bytes
-		padding = chr(padding_size) * padding_size
-		padded_text = text + padding
-		return padded_text
+	def padText(text, multiple):
+		extraBytes = len(text) % multiple
+		paddingSize = multiple - extraBytes
+		padding = chr(paddingSize) * paddingSize
+		paddedText = text + padding
+		return paddedText
 
-	def unpad_text(padded_text):
-		padding_size = ord(padded_text[-1])
-		text = padded_text[:-padding_size]
+	def unpadText(paddedText):
+		paddingSize = ord(paddedText[-1])
+		text = paddedText[:-paddingSize]
 		return text
 
 	def encryptFilename(fileName):
@@ -84,26 +80,26 @@ class Encryption:
 		except:
 			return ""
 
-	def decryptFile(self, in_filename, out_filename=None, chunksize=24 * 1024):
+	def decryptFile(self, inFilename, outFilename=None, chunksize=24 * 1024):
 		""" Decrypts a file using AES (CBC mode) with the
-			given key. Parameters are similar to encrypt_file,
-			with one difference: out_filename, if not supplied
-			will be in_filename without its last extension
-			(i.e. if in_filename is 'aaa.zip.enc' then
-			out_filename will be 'aaa.zip')
+			given key. Parameters are similar to encryptFile,
+			with one difference: outFilename, if not supplied
+			will be inFilename without its last extension
+			(i.e. if inFilename is 'aaa.zip.enc' then
+			outFilename will be 'aaa.zip')
 		"""
 
-		if not out_filename:
-			out_filename = os.path.splitext(in_filename)[0]
+		if not outFilename:
+			outFilename = os.path.splitext(inFilename)[0]
 
-		with open(in_filename, "rb") as infile:
+		with open(inFilename, "rb") as infile:
 			origsize = struct.unpack("<Q", infile.read(struct.calcsize("Q")))[0]
 			# iv = infile.read(16)
 			# decryptor = AES.new(key, AES.MODE_CBC, iv)
-			# key = generate_key(password, salt, NUMBER_OF_ITERATIONS)
+			# key = generateKey(password, salt, NUMBER_OF_ITERATIONS)
 			decryptor = AES.new(self.key, AES.MODE_ECB)
 
-			with open(out_filename, "wb") as outfile:
+			with open(outFilename, "wb") as outfile:
 
 				while True:
 					chunk = infile.read(chunksize)
@@ -116,11 +112,11 @@ class Encryption:
 				outfile.truncate(origsize)
 
 	def decryptStream(self, response, chunksize=24 * 1024):
-		# with open(in_filename, "rb") as infile:
+		# with open(inFilename, "rb") as infile:
 			origsize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
 			decryptor = AES.new(self.key, AES.MODE_ECB)
 
-			with open(out_filename, "w") as outfile:
+			with open(outFilename, "w") as outfile:
 
 				while True:
 					chunk = response.read(chunksize)
@@ -133,7 +129,7 @@ class Encryption:
 				outfile.truncate(origsize)
 
 	def decryptStreamChunkOld(self, response, wfile, chunksize=24 * 1024, startOffset=0):
-		# with open(in_filename, "rb") as infile:
+		# with open(inFilename, "rb") as infile:
 			origsize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
 			decryptor = AES.new(self.key, AES.MODE_ECB)
 			count = 0
@@ -185,7 +181,7 @@ class Encryption:
 				adjStart = 0
 
 			elif len(nextChunk) == 0 and adjEnd > 0:
-				wfile.write(responseChunk[: (len(responseChunk) - adjEnd)])
+				wfile.write(responseChunk[:(len(responseChunk) - adjEnd)])
 				adjEnd = 0
 
 			elif len(nextChunk) == 0:  # adjEnd = 0
@@ -197,7 +193,7 @@ class Encryption:
 			chunk = nextChunk
 
 	def decryptCalculatePadding(self, response, chunksize=24 * 1024):
-		# with open(in_filename, "rb") as infile:
+		# with open(inFilename, "rb") as infile:
 			origsize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
 			decryptor = AES.new(self.key, AES.MODE_ECB)
 			count = 0
@@ -213,13 +209,13 @@ class Encryption:
 				return int(len(chunk) - len(responseChunk.strip()))
 
 	def decryptCalculateSizing(self, response):
-		# with open(in_filename, "rb") as infile:
+		# with open(inFilename, "rb") as infile:
 			origsize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
 			decryptor = AES.new(self.key, AES.MODE_ECB)
 			return origsize
 
 	def decryptStreamChunk2(self, response, wfile, chunksize=24 * 1024, startOffset=0):
-		# with open(in_filename, "rb") as infile:
+		# with open(inFilename, "rb") as infile:
 			origsize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
 			decryptor = AES.new(self.key, AES.MODE_ECB)
 
@@ -231,7 +227,7 @@ class Encryption:
 
 				wfile.write(decryptor.decrypt(chunk))
 
-	def encryptFile(self, in_filename, out_filename=None, chunksize=64 * 1024):
+	def encryptFile(self, inFilename, outFilename=None, chunksize=64 * 1024):
 		""" Encrypts a file using AES (CBC mode) with the
 			given key.
 
@@ -240,11 +236,11 @@ class Encryption:
 				either 16, 24 or 32 bytes long. Longer keys
 				are more secure.
 
-			in_filename:
+			inFilename:
 				Name of the input file
 
-			out_filename:
-				If None, '<in_filename>.enc' will be used.
+			outFilename:
+				If None, '<inFilename>.enc' will be used.
 
 			chunksize:
 				Sets the size of the chunk which the function
@@ -253,17 +249,17 @@ class Encryption:
 				chunksize must be divisible by 16.
 		"""
 
-		if not out_filename:
-			out_filename = in_filename + ".enc"
+		if not outFilename:
+			outFilename = inFilename + ".enc"
 
-		# key = generate_key(key, salt, NUMBER_OF_ITERATIONS)
+		# key = generateKey(key, salt, NUMBER_OF_ITERATIONS)
 		# iv = "".join(chr(random.randint(0, 0xFF)) for i in range(16))
 		encryptor = AES.new(self.key, AES.MODE_ECB)
-		filesize = os.path.getsize(in_filename)
+		filesize = os.path.getsize(inFilename)
 
-		with open(in_filename, "rb") as infile:
+		with open(inFilename, "rb") as infile:
 
-			with open(out_filename, "wb") as outfile:
+			with open(outFilename, "wb") as outfile:
 				outfile.write(struct.pack("<Q", filesize))
 				# outfile.write(iv)
 
@@ -278,7 +274,7 @@ class Encryption:
 					outfile.write(encryptor.encrypt(chunk))
 
 	def encryptString(self, stringDecrypted):
-		# key = generate_key(key, salt, NUMBER_OF_ITERATIONS)
+		# key = generateKey(key, salt, NUMBER_OF_ITERATIONS)
 		# iv = "".join(chr(random.randint(0, 0xFF)) for i in range(16))
 		encryptor = AES.new(self.key, AES.MODE_ECB)
 
@@ -289,8 +285,7 @@ class Encryption:
 
 		import base64
 
-		stringEncrypted = base64.b64encode(encryptor.encrypt(stringDecrypted.encode("utf-8")))
-		stringEncrypted = re.sub(b"/", b"---", stringEncrypted)
+		stringEncrypted = base64.b64encode(encryptor.encrypt(stringDecrypted.encode("utf-8"))).replace(b"/", b"---")
 		return stringEncrypted
 
 	def decryptString(self, stringEncrypted):
@@ -301,6 +296,6 @@ class Encryption:
 
 		import base64
 
-		stringEncrypted = re.sub(b"---", b"/", stringEncrypted.encode("utf-8"))
-		stringDecrypted = decryptor.decrypt(base64.b64decode(stringEncrypted))
+		stringEncrypted = stringEncrypted.replace("---", "/").encode("utf-8")
+		stringDecrypted = decryptor.decrypt(base64.b64decode(stringEncrypted)).rstrip()
 		return stringDecrypted
