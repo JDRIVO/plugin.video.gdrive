@@ -80,7 +80,7 @@ class Encryption:
 		except:
 			return ""
 
-	def decryptFile(self, inFilename, outFilename=None, chunksize=24 * 1024):
+	def decryptFile(self, inFilename, outFilename=None, chunkSize=24 * 1024):
 		""" Decrypts a file using AES (CBC mode) with the
 			given key. Parameters are similar to encryptFile,
 			with one difference: outFilename, if not supplied
@@ -92,51 +92,51 @@ class Encryption:
 		if not outFilename:
 			outFilename = os.path.splitext(inFilename)[0]
 
-		with open(inFilename, "rb") as infile:
-			origsize = struct.unpack("<Q", infile.read(struct.calcsize("Q")))[0]
-			# iv = infile.read(16)
+		with open(inFilename, "rb") as inFile:
+			origSize = struct.unpack("<Q", inFile.read(struct.calcsize("Q")))[0]
+			# iv = inFile.read(16)
 			# decryptor = AES.new(key, AES.MODE_CBC, iv)
 			# key = generateKey(password, salt, NUMBER_OF_ITERATIONS)
 			decryptor = AES.new(self.key, AES.MODE_ECB)
 
-			with open(outFilename, "wb") as outfile:
+			with open(outFilename, "wb") as outFile:
 
 				while True:
-					chunk = infile.read(chunksize)
+					chunk = inFile.read(chunkSize)
 
 					if len(chunk) == 0:
 						break
 
-					outfile.write(decryptor.decrypt(chunk))
+					outFile.write(decryptor.decrypt(chunk))
 
-				outfile.truncate(origsize)
+				outFile.truncate(origSize)
 
-	def decryptStream(self, response, chunksize=24 * 1024):
-		# with open(inFilename, "rb") as infile:
-			origsize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
+	def decryptStream(self, response, chunkSize=24 * 1024):
+		# with open(inFilename, "rb") as inFile:
+			origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
 			decryptor = AES.new(self.key, AES.MODE_ECB)
 
-			with open(outFilename, "w") as outfile:
+			with open(outFilename, "w") as outFile:
 
 				while True:
-					chunk = response.read(chunksize)
+					chunk = response.read(chunkSize)
 
 					if len(chunk) == 0:
 						break
 
-					outfile.write(decryptor.decrypt(chunk))
+					outFile.write(decryptor.decrypt(chunk))
 
-				outfile.truncate(origsize)
+				outFile.truncate(origSize)
 
-	def decryptStreamChunkOld(self, response, wfile, chunksize=24 * 1024, startOffset=0):
-		# with open(inFilename, "rb") as infile:
-			origsize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
+	def decryptStreamChunkOld(self, response, wfile, chunkSize=24 * 1024, startOffset=0):
+		# with open(inFilename, "rb") as inFile:
+			origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
 			decryptor = AES.new(self.key, AES.MODE_ECB)
 			count = 0
 
 			while True:
-				chunk = response.read(chunksize)
-				count = count + 1
+				chunk = response.read(chunkSize)
+				count += 1
 
 				if len(chunk) == 0:
 					break
@@ -150,22 +150,22 @@ class Encryption:
 				else:
 					wfile.write(responseChunk)
 
-	def decryptStreamChunk(self, response, wfile, adjStart=0, adjEnd=0, chunksize=16 * 1024):
-		# origsize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
+	def decryptStreamChunk(self, response, wfile, adjStart=0, adjEnd=0, chunkSize=16 * 1024):
+		# origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
 		decryptor = AES.new(self.key, AES.MODE_ECB)
-		sending = 0
 		responseChunk = ""
-		count = 0
-		# firstChunkSize = chunksize + adjStart
+		count = sending = 0
+
+		# firstChunkSize = chunkSize + adjStart
 		# if adjStart > 0:
 			# firstChunk = response.read(adjStart)
 			# adjStart = 0
 
-		chunk = response.read(chunksize)
+		chunk = response.read(chunkSize)
 
 		while True:
-			nextChunk = response.read(chunksize)
-			count = count + 1
+			nextChunk = response.read(chunkSize)
+			count += 1
 
 			if len(chunk) == 0:
 				break
@@ -181,7 +181,7 @@ class Encryption:
 				adjStart = 0
 
 			elif len(nextChunk) == 0 and adjEnd > 0:
-				wfile.write(responseChunk[:(len(responseChunk) - adjEnd)])
+				wfile.write(responseChunk[:len(responseChunk) - adjEnd])
 				adjEnd = 0
 
 			elif len(nextChunk) == 0:  # adjEnd = 0
@@ -192,15 +192,15 @@ class Encryption:
 
 			chunk = nextChunk
 
-	def decryptCalculatePadding(self, response, chunksize=24 * 1024):
-		# with open(inFilename, "rb") as infile:
-			origsize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
+	def decryptCalculatePadding(self, response, chunkSize=24 * 1024):
+		# with open(inFilename, "rb") as inFile:
+			origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
 			decryptor = AES.new(self.key, AES.MODE_ECB)
 			count = 0
 
 			while True:
-				chunk = response.read(chunksize)
-				count = count + 1
+				chunk = response.read(chunkSize)
+				count += 1
 
 				if len(chunk) == 0:
 					break
@@ -209,25 +209,25 @@ class Encryption:
 				return int(len(chunk) - len(responseChunk.strip()))
 
 	def decryptCalculateSizing(self, response):
-		# with open(inFilename, "rb") as infile:
-			origsize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
+		# with open(inFilename, "rb") as inFile:
+			origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
 			decryptor = AES.new(self.key, AES.MODE_ECB)
-			return origsize
+			return origSize
 
-	def decryptStreamChunk2(self, response, wfile, chunksize=24 * 1024, startOffset=0):
-		# with open(inFilename, "rb") as infile:
-			origsize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
+	def decryptStreamChunk2(self, response, wfile, chunkSize=24 * 1024, startOffset=0):
+		# with open(inFilename, "rb") as inFile:
+			origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
 			decryptor = AES.new(self.key, AES.MODE_ECB)
 
 			while True:
-				chunk = response.read(chunksize)
+				chunk = response.read(chunkSize)
 
 				if len(chunk) == 0:
 					break
 
 				wfile.write(decryptor.decrypt(chunk))
 
-	def encryptFile(self, inFilename, outFilename=None, chunksize=64 * 1024):
+	def encryptFile(self, inFilename, outFilename=None, chunkSize=64 * 1024):
 		""" Encrypts a file using AES (CBC mode) with the
 			given key.
 
@@ -242,7 +242,7 @@ class Encryption:
 			outFilename:
 				If None, '<inFilename>.enc' will be used.
 
-			chunksize:
+			chunkSize:
 				Sets the size of the chunk which the function
 				uses to read and encrypt the file. Larger chunk
 				sizes can be faster for some files and machines.
@@ -255,23 +255,23 @@ class Encryption:
 		# key = generateKey(key, salt, NUMBER_OF_ITERATIONS)
 		# iv = "".join(chr(random.randint(0, 0xFF)) for i in range(16))
 		encryptor = AES.new(self.key, AES.MODE_ECB)
-		filesize = os.path.getsize(inFilename)
+		fileSize = os.path.getsize(inFilename)
 
-		with open(inFilename, "rb") as infile:
+		with open(inFilename, "rb") as inFile:
 
-			with open(outFilename, "wb") as outfile:
-				outfile.write(struct.pack("<Q", filesize))
-				# outfile.write(iv)
+			with open(outFilename, "wb") as outFile:
+				outFile.write(struct.pack("<Q", fileSize))
+				# outFile.write(iv)
 
 				while True:
-					chunk = infile.read(chunksize)
+					chunk = inFile.read(chunkSize)
 
 					if len(chunk) == 0:
 						break
 					elif len(chunk) % 16 != 0:
 						chunk += b" " * (16 - len(chunk) % 16)
 
-					outfile.write(encryptor.encrypt(chunk))
+					outFile.write(encryptor.encrypt(chunk))
 
 	def encryptString(self, stringDecrypted):
 		# key = generateKey(key, salt, NUMBER_OF_ITERATIONS)
@@ -285,8 +285,7 @@ class Encryption:
 
 		import base64
 
-		stringEncrypted = base64.b64encode(encryptor.encrypt(stringDecrypted.encode("utf-8"))).replace(b"/", b"---")
-		return stringEncrypted
+		return base64.b64encode(encryptor.encrypt(stringDecrypted.encode("utf-8"))).replace(b"/", b"---")
 
 	def decryptString(self, stringEncrypted):
 		decryptor = AES.new(self.key, AES.MODE_ECB)
@@ -296,6 +295,4 @@ class Encryption:
 
 		import base64
 
-		stringEncrypted = stringEncrypted.replace("---", "/").encode("utf-8")
-		stringDecrypted = decryptor.decrypt(base64.b64decode(stringEncrypted)).rstrip()
-		return stringDecrypted
+		return decryptor.decrypt(base64.b64decode(stringEncrypted.replace("---", "/").encode("utf-8"))).rstrip()
