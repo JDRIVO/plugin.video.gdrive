@@ -175,18 +175,14 @@ class Encryption:
 			if count == 1 and adjStart > 0 and len(nextChunk) == 0:
 				wfile.write(responseChunk[adjStart:].strip())
 				adjStart = 0
-
 			elif count == 1 and adjStart > 0:
 				wfile.write(responseChunk[adjStart:])
 				adjStart = 0
-
 			elif len(nextChunk) == 0 and adjEnd > 0:
 				wfile.write(responseChunk[:len(responseChunk) - adjEnd])
 				adjEnd = 0
-
 			elif len(nextChunk) == 0:  # adjEnd = 0
 				wfile.write(responseChunk.strip())
-
 			else:
 				wfile.write(responseChunk)
 
