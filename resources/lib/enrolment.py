@@ -124,7 +124,7 @@ body {
 </style>
 </head>
 <body>
-<a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=%s" target="_blank">
+<a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/drive.readonly&access_type=offline&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=%s" target="_blank">
 <div class="text">
 Click here and paste the code in the form below and then enter an account name.
 </div>
