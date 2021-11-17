@@ -28,14 +28,14 @@ import urllib.request
 import http.cookiejar
 import xbmc
 import xbmcgui
-from resources.lib import authorization, cloudservice
+from resources.lib import authorization
 
 SERVICE_NAME = "dmdgdrive"
 
 #
 # Google Drive API 2 implementation of Google Drive
 #
-class GDrive(cloudservice.CloudService):
+class GDrive:
 	API_VERSION = "3.0"
 	PROTOCOL = "https://"
 	API_URL = PROTOCOL + "www.googleapis.com/drive/v2/"
@@ -43,8 +43,8 @@ class GDrive(cloudservice.CloudService):
 	##
 	# initialize (save addon, instance name, user agent)
 	##
-	def __init__(self, plugin_handle, PLUGIN_URL, addon, instanceName, user_agent, settings, authenticate=True):
-		self.plugin_handle = plugin_handle
+	def __init__(self, PLUGIN_HANDLE, PLUGIN_URL, addon, instanceName, userAgent, settings, authenticate=True):
+		self.PLUGIN_HANDLE = PLUGIN_HANDLE
 		self.PLUGIN_URL = PLUGIN_URL
 		self.addon = addon
 		self.instanceName = instanceName
@@ -59,7 +59,7 @@ class GDrive(cloudservice.CloudService):
 
 		self.authorization = authorization.Authorization(username)
 		self.cookiejar = http.cookiejar.CookieJar()
-		self.user_agent = user_agent
+		self.userAgent = userAgent
 
 		# load the OAUTH2 tokens or force fetch if not set
 		if authenticate == True and (
@@ -83,7 +83,7 @@ class GDrive(cloudservice.CloudService):
 		url = "https://accounts.google.com/o/oauth2/token"
 		clientID = self.getInstanceSetting("client_id")
 		clientSecret = self.getInstanceSetting("client_secret")
-		header = {"User-Agent": self.user_agent, "Content-Type": "application/x-www-form-urlencoded"}
+		header = {"User-Agent": self.userAgent, "Content-Type": "application/x-www-form-urlencoded"}
 		data = "code={}&client_id={}&client_secret={}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code".format(
 			code, clientID, clientSecret
 		)
@@ -98,18 +98,18 @@ class GDrive(cloudservice.CloudService):
 			xbmc.log(str(e))
 			return
 
-		response_data = response.read().decode("utf-8")
+		responseData = response.read().decode("utf-8")
 		response.close()
 
 		# retrieve authorization token
-		for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?' + '\"refresh_token\"\s?\:\s?\"([^\"]+)\".+?', response_data, re.DOTALL):
+		for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?' + '\"refresh_token\"\s?\:\s?\"([^\"]+)\".+?', responseData, re.DOTALL):
 			accessToken, refreshToken = r.groups()
 			self.authorization.setToken("auth_access_token", accessToken)
 			self.authorization.setToken("auth_refresh_token", refreshToken)
 			self.updateAuthorization(self.addon)
 			# xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30142))
 
-		for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"', response_data, re.DOTALL):
+		for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"', responseData, re.DOTALL):
 			errorMessage = r.group(1)
 			# xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119) + errorMessage)
 			xbmc.log(errorMessage)
@@ -125,7 +125,7 @@ class GDrive(cloudservice.CloudService):
 		url = "https://accounts.google.com/o/oauth2/token"
 		clientID = self.getInstanceSetting("client_id")
 		clientSecret = self.getInstanceSetting("client_secret")
-		header = {"User-Agent": self.user_agent, "Content-Type": "application/x-www-form-urlencoded"}
+		header = {"User-Agent": self.userAgent, "Content-Type": "application/x-www-form-urlencoded"}
 		data = "client_id={}&client_secret={}&refresh_token={}&grant_type=refresh_token".format(
 			clientID, clientSecret, self.authorization.getToken("auth_refresh_token")
 		)
@@ -141,16 +141,16 @@ class GDrive(cloudservice.CloudService):
 			xbmc.log(str(e))
 			return
 
-		response_data = response.read().decode("utf-8")
+		responseData = response.read().decode("utf-8")
 		response.close()
 
 		# retrieve authorization token
-		for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?', response_data, re.DOTALL):
+		for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?', responseData, re.DOTALL):
 			accessToken = r.group(1)
 			self.authorization.setToken("auth_access_token", accessToken)
 			self.updateAuthorization(self.addon)
 
-		for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"', response_data, re.DOTALL):
+		for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"', responseData, re.DOTALL):
 			errorMessage = r.group(1)
 			# xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119) + errorMessage)
 			xbmc.log(errorMessage)
@@ -164,7 +164,7 @@ class GDrive(cloudservice.CloudService):
 	def getHeadersList(self, isPOST=False, additionalHeader=None, additionalValue=None, isJSON=False):
 
 		if self.authorization.isToken(self.instanceName, self.addon, "auth_access_token") and not isPOST:
-			# return {"User-Agent": self.user_agent, "Authorization": "Bearer " + self.authorization.getToken("auth_access_token")}
+			# return {"User-Agent": self.userAgent, "Authorization": "Bearer " + self.authorization.getToken("auth_access_token")}
 			if additionalHeader is not None:
 				return {
 					"Cookie": "DRIVE_STREAM=" + self.authorization.getToken("DRIVE_STREAM"),
@@ -178,7 +178,7 @@ class GDrive(cloudservice.CloudService):
 				}
 
 		elif isJSON and self.authorization.isToken(self.instanceName, self.addon, "auth_access_token"):
-			# return {"User-Agent": self.user_agent, "Authorization": "Bearer " + self.authorization.getToken("auth_access_token")}
+			# return {"User-Agent": self.userAgent, "Authorization": "Bearer " + self.authorization.getToken("auth_access_token")}
 			return {
 				"Content-Type": "application/json",
 				"Cookie": "DRIVE_STREAM=" + self.authorization.getToken("DRIVE_STREAM"),
@@ -186,7 +186,7 @@ class GDrive(cloudservice.CloudService):
 			}
 
 		elif self.authorization.isToken(self.instanceName, self.addon, "auth_access_token"):
-			# return {"User-Agent": self.user_agent, "Authorization": "Bearer " + self.authorization.getToken("auth_access_token")}
+			# return {"User-Agent": self.userAgent, "Authorization": "Bearer " + self.authorization.getToken("auth_access_token")}
 			return {
 				"If-Match": "*",
 				"Content-Type": "application/atom+xml",
@@ -203,7 +203,7 @@ class GDrive(cloudservice.CloudService):
 				return {"Cookie": "DRIVE_STREAM=" + self.authorization.getToken("DRIVE_STREAM")}
 
 		else:
-			return {"User-Agent": self.user_agent}
+			return {"User-Agent": self.userAgent}
 
 	##
 	# return the appropriate "headers" for Google Drive requests that include 1) user agent, 2) authorization token, 3) api version
@@ -211,3 +211,25 @@ class GDrive(cloudservice.CloudService):
 	##
 	def getHeadersEncoded(self):
 		return urllib.parse.urlencode(self.getHeadersList())
+
+	def getInstanceSetting(self, setting, default=None):
+
+		try:
+			return self.addon.getSetting(self.instanceName + "_" + setting)
+		except:
+			return default
+
+	##
+	# perform login
+	##
+	def login(self):
+		pass
+
+	##
+	# if we don't have an authorization token set for the plugin, set it with the recent login.
+	#	auth_token will permit "quicker" login in future executions by reusing the existing login session (less HTTPS calls = quicker video transitions between clips)
+	##
+	def updateAuthorization(self, addon):
+
+		if self.authorization.isUpdated: # and addon.getSetting(self.instanceName + "_save_auth_token") == "true":
+			self.authorization.saveTokens(self.instanceName, addon)

@@ -2,6 +2,7 @@
 
 import os
 import sys
+import base64
 import random
 import struct
 import string
@@ -67,15 +68,11 @@ class Encryption:
 		return text
 
 	def encryptFilename(fileName):
-		import base64
-
 		return base64.b64encode(fileName)
 
 	def decrypt(fileName):
 
 		try:
-			import base64
-
 			return base64.b64decode(fileName)
 		except:
 			return ""
@@ -279,8 +276,6 @@ class Encryption:
 		elif len(stringDecrypted) % 16 != 0:
 			stringDecrypted += " " * (16 - len(stringDecrypted) % 16)
 
-		import base64
-
 		return base64.b64encode(encryptor.encrypt(stringDecrypted.encode("utf-8"))).replace(b"/", b"---")
 
 	def decryptString(self, stringEncrypted):
@@ -288,7 +283,5 @@ class Encryption:
 
 		if len(stringEncrypted) == 0:
 			return
-
-		import base64
 
 		return decryptor.decrypt(base64.b64decode(stringEncrypted.replace("---", "/").encode("utf-8"))).rstrip()

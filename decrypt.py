@@ -9,8 +9,8 @@ destinationPath = sys.argv[4]
 
 decrypt = encryption.Encryption(saltFile, password)
 
-encryptedFileName = os.path.basename(filePath)
-fileName = decrypt.decryptString(encryptedFileName)
+encryptedFilename = os.path.basename(filePath)
+filename = decrypt.decryptString(encryptedFilename)
 
-destinationPath = os.path.join(destinationPath, fileName.decode("utf-8"))
+destinationPath = os.path.join(destinationPath, filename.decode("utf-8"))
 decrypt.decryptFile(filePath, destinationPath)

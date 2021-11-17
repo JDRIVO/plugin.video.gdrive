@@ -40,7 +40,7 @@ def decode(data):
 def getParameter0(key, default=""):
 
 	try:
-		value = plugin_queries[key]
+		value = pluginQueries[key]
 
 		if value == "true" or value == "True":
 			return True
@@ -56,7 +56,7 @@ def getParameter0(key, default=""):
 def getParameterInt0(key, default=0):
 
 	try:
-		value = plugin_queries[key]
+		value = pluginQueries[key]
 
 		if value == "":
 			return default
@@ -109,7 +109,7 @@ def getSettingInt0(key, default=0):
 		return default
 
 
-def parse_query(query):
+def parseQuery(query):
 	queries = {}
 
 	try:
@@ -122,12 +122,12 @@ def parse_query(query):
 	return q
 
 
-plugin_queries = None
+pluginQueries = None
 
 try:
-	plugin_queries = parse_query(sys.argv[2][1:])
+	pluginQueries = parseQuery(sys.argv[2][1:])
 except:
-	plugin_queries = None
+	pluginQueries = None
 
 
 class Settings:
@@ -144,7 +144,7 @@ class Settings:
 	def getParameter(self, key, default=""):
 
 		try:
-			value = plugin_queries[key]
+			value = pluginQueries[key]
 
 			if value == "true" or value == "True":
 				return True
@@ -159,7 +159,7 @@ class Settings:
 	def getParameterInt(self, key, default=0):
 
 		try:
-			value = plugin_queries[key]
+			value = pluginQueries[key]
 
 			if value == "true" or value == "True":
 				return True

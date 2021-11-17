@@ -2,8 +2,7 @@ import sys
 import xbmc
 import threading
 import constants
-from resources.lib import settings
-from resources.lib import streamer
+from resources.lib import settings, streamer
 
 try:
 	pluginHandle = int(sys.argv[1])
@@ -22,7 +21,7 @@ def run():
 
 	server = streamer.MyHTTPServer(("", port), streamer.MyStreamer)
 	server.setDetails(pluginHandle, pluginName, pluginName, addon, userAgent, settings_)
-	thread = threading.Thread(None, server.run)
+	thread = threading.Thread(target=server.run)
 	thread.start()
 	monitor = xbmc.Monitor()
 
@@ -38,13 +37,13 @@ def run():
 	# def __init__(self):
 		# addon = constants.addon
 		# settings_ = settings.Settings(addon)
-		# user_agent = settings_.getSetting("user_agent")
+		# userAgent = settings_.getSetting("user_agent")
 		# PLUGIN_URL = constants.PLUGIN_NAME
 		# PLUGIN_NAME = constants.PLUGIN_NAME
 
 		# port = settings_.getSettingInt("server_port", 8011)
 		# server = streamer.MyHTTPServer(("", port), streamer.MyStreamer)
-		# server.setDetails(plugin_handle, PLUGIN_NAME, PLUGIN_URL, addon, user_agent, settings_)
+		# server.setDetails(PLUGIN_HANDLE, PLUGIN_NAME, PLUGIN_URL, addon, userAgent, settings_)
 
 	# def terminate(self):
 		# self.server.socket.close()

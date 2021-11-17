@@ -32,7 +32,7 @@ def decode(data):
 	return re.sub("&#(\d+)(;|(?=\s))", _callback, data).strip()
 
 
-def decode_dict(data):
+def decodeDict(data):
 
 	for k, v in data.items():
 
@@ -53,7 +53,7 @@ def _callback(matches):
 
 
 class ContentEngine:
-	plugin_handle = None
+	PLUGIN_HANDLE = None
 	PLUGIN_URL = ""
 
 	##
@@ -63,16 +63,16 @@ class ContentEngine:
 	def debugger(self):
 
 		try:
-			remote_debugger = self.settingsModule.getSetting("remote_debugger")
-			remote_debugger_host = self.settingsModule.getSetting("remote_debugger_host")
+			remoteDebugger = self.settingsModule.getSetting("remote_debugger")
+			remoteDebuggerHost = self.settingsModule.getSetting("remote_debugger_host")
 
 			# append pydev remote debugger
-			if remote_debugger == "true":
+			if remoteDebugger == "true":
 				# Make pydev debugger works for auto reload.
 				# Note pydevd module need to be copied in XBMC\system\python\Lib\pysrc
 				import pysrc.pydevd as pydevd
 				# stdoutToServer and stderrToServer redirect stdout and stderr to eclipse console
-				pydevd.settrace(remote_debugger_host, stdoutToServer=True, stderrToServer=True)
+				pydevd.settrace(remoteDebuggerHost, stdoutToServer=True, stderrToServer=True)
 
 		except ImportError:
 			xbmc.log(self.addon.getLocalizedString(30016), xbmc.LOGERROR)
@@ -177,7 +177,7 @@ class ContentEngine:
 			xbmc.executebuiltin("Container.Refresh")
 
 		elif mode == "validate":
-			validation = self.cloudservice2(self.plugin_handle, self.PLUGIN_URL, addon, instanceName, self.user_agent, self.settingsModule)
+			validation = self.cloudservice2(self.PLUGIN_HANDLE, self.PLUGIN_URL, addon, instanceName, self.userAgent, self.settingsModule)
 			validation.refreshToken()
 
 			if validation.failed:
@@ -214,9 +214,9 @@ class ContentEngine:
 
 	##
 	# add a menu to a directory screen
-	#	parameters: url to resolve, title to display, optional: icon, fanart, total_items, instance name
+	#	parameters: url to resolve, title to display, optional: icon, fanart, totalItems, instance name
 	##
-	def addMenu(self, url, title, total_items=0, instanceName=None):
+	def addMenu(self, url, title, totalItems=0, instanceName=None):
 		listitem = xbmcgui.ListItem(title)
 
 		if instanceName is not None:
@@ -224,13 +224,11 @@ class ContentEngine:
 			cm.append((self.addon.getLocalizedString(30211), "Addon.OpenSettings({})".format(self.addon.getAddonInfo("id"))))
 			listitem.addContextMenuItems(cm, True)
 
-		xbmcplugin.addDirectoryItem(self.plugin_handle, url, listitem, totalItems=total_items)
+		xbmcplugin.addDirectoryItem(self.PLUGIN_HANDLE, url, listitem, totalItems=totalItems)
 
 	# Retrieves all active accounts
 	def getAccounts(self):
-		self.accountNumbers = []
-		self.accountNames = []
-		self.accountInstances = []
+		self.accountNumbers, self.accountNames, self.accountInstances = [], [], []
 
 		for count in range(1, self.accountAmount + 1):
 			instanceName = self.PLUGIN_NAME + str(count)
@@ -251,18 +249,18 @@ class ContentEngine:
 
 		# global variables
 		self.PLUGIN_URL = sys.argv[0]
-		self.plugin_handle = int(sys.argv[1])
-		plugin_queries = settings.parse_query(sys.argv[2][1:])
+		self.PLUGIN_HANDLE = int(sys.argv[1])
+		pluginQueries = settings.parseQuery(sys.argv[2][1:])
 
 		# cloudservice - create settings module
 		self.settingsModule = settings.Settings(addon)
 
-		self.user_agent = self.settingsModule.getSetting("user_agent")
+		self.userAgent = self.settingsModule.getSetting("user_agent")
 		self.accountAmount = addon.getSettingInt("account_amount")
 		mode = self.settingsModule.getParameter("mode", "main").lower()
 
 		try:
-			instanceName = (plugin_queries["instance"]).lower()
+			instanceName = (pluginQueries["instance"]).lower()
 		except:
 			instanceName = None
 
@@ -289,8 +287,8 @@ class ContentEngine:
 
 					self.addMenu("{}?mode=main&instance={}".format(self.PLUGIN_URL, instanceName), username, instanceName=instanceName)
 
-			xbmcplugin.setContent(self.plugin_handle, "files")
-			xbmcplugin.addSortMethod(self.plugin_handle, xbmcplugin.SORT_METHOD_LABEL)
+			xbmcplugin.setContent(self.PLUGIN_HANDLE, "files")
+			xbmcplugin.addSortMethod(self.PLUGIN_HANDLE, xbmcplugin.SORT_METHOD_LABEL)
 
 		elif instanceName and mode == "main":
 			fallbackAccounts = addon.getSetting("fallback_accounts").split(",")
@@ -383,7 +381,7 @@ class ContentEngine:
 
 			for index_ in selection:
 				instanceName = self.accountInstances[index_]
-				validation = self.cloudservice2(self.plugin_handle, self.PLUGIN_URL, addon, instanceName, self.user_agent, self.settingsModule)
+				validation = self.cloudservice2(self.PLUGIN_HANDLE, self.PLUGIN_URL, addon, instanceName, self.userAgent, self.settingsModule)
 				validation.refreshToken()
 
 				if validation.failed:
@@ -409,7 +407,7 @@ class ContentEngine:
 
 		elif mode == "video":
 			instanceName = constants.PLUGIN_NAME + str(self.settingsModule.getSetting("default_account", 1))
-			service = self.cloudservice2(self.plugin_handle, self.PLUGIN_URL, addon, instanceName, self.user_agent, self.settingsModule)
+			service = self.cloudservice2(self.PLUGIN_HANDLE, self.PLUGIN_URL, addon, instanceName, self.userAgent, self.settingsModule)
 
 			if service.failed:
 				xbmcgui.Dialog().ok(addon.getLocalizedString(30000), addon.getLocalizedString(30005))
@@ -552,7 +550,7 @@ class ContentEngine:
 				item.setProperty("totaltime", str(videoLength))
 				item.setProperty("resumetime", str(resumePosition))
 
-			xbmcplugin.setResolvedUrl(self.plugin_handle, True, item)
+			xbmcplugin.setResolvedUrl(self.PLUGIN_HANDLE, True, item)
 
 			if dbID:
 				widget = 0 if xbmc.getInfoLabel("Container.Content") else 1
@@ -573,7 +571,7 @@ class ContentEngine:
 			response = urllib.request.urlopen(req)
 			response.close()
 
-		xbmcplugin.endOfDirectory(self.plugin_handle)
+		xbmcplugin.endOfDirectory(self.PLUGIN_HANDLE)
 		return
 
 				# with open(resumeDB, "wb+") as dic:

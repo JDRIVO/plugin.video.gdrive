@@ -61,7 +61,7 @@ body {
 </html>"""
 
 
-def page2(client_id, client_secret):
+def page2(clientID, clientSecret):
 	return """
 <html>
 <head>
@@ -146,7 +146,7 @@ Click here and paste the code in the form below and then enter an account name.
 </div>
 </body>
 </html>""" % (
-	client_id,
-	client_id,
-	client_secret,
+	clientID,
+	clientID,
+	clientSecret,
 )
