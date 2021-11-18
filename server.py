@@ -26,7 +26,9 @@ def run():
 	monitor = xbmc.Monitor()
 
 	while not monitor.abortRequested():
-		xbmc.sleep(1000)
+
+		if monitor.waitForAbort(1):
+			break
 
 	server.socket.close()
 	server.shutdown()
