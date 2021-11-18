@@ -19,17 +19,20 @@ args.append(videoPath)
 ffprobeOutput = subprocess.check_output(args).decode("utf-8")
 ffprobeOutput = json.loads(ffprobeOutput)
 
+video = audio = False
 videoDuration = ffprobeOutput["format"]["duration"]
 
 for dic in ffprobeOutput["streams"]:
 	codecType = dic["codec_type"]
 
-	if codecType == "video":
+	if codecType == "video" and not video:
+		video = True
 		videoCodec = dic["codec_name"]
 		videoWidth = dic["width"]
 		videoHeight = dic["height"]
 		aspectRatio = videoWidth / videoHeight
-	elif codecType == "audio":
+	elif codecType == "audio" and not audio:
+		audio = True
 		audioCodec = dic["codec_name"]
 		audioChannels = dic["channels"]
 
