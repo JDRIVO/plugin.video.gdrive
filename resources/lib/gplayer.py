@@ -32,7 +32,7 @@ class GPlayer(xbmc.Player):
 				self.videoDuration = self.getTotalTime()
 			except:
 				self.isExit = True
-				break
+				return
 
 			time.sleep(0.1)
 
