@@ -36,6 +36,11 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
+	def __init__(self, *args, **kw):
+		HTTPServer.__init__(self, *args, **kw)
+		self.ready = True
+		self.close = False
+
 	def run(self):
 
 		try:
@@ -46,11 +51,6 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 			self.close = True
 			# Clean-up server (close socket, etc.)
 			self.server_close()
-
-	def __init__(self, *args, **kw):
-		HTTPServer.__init__(self, *args, **kw)
-		self.ready = True
-		self.close = False
 
 	def setDetails(self, PLUGIN_HANDLE, PLUGIN_NAME, PLUGIN_URL, addon, userAgent, settings):
 		self.PLUGIN_HANDLE = PLUGIN_HANDLE
