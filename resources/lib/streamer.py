@@ -328,7 +328,6 @@ class MyStreamer(BaseHTTPRequestHandler):
 			self.send_header("Date", response.info().get("Date"))
 			self.send_header("Content-type", "video/mp4")
 			self.send_header("Accept-Ranges", "bytes")
-
 			# self.send_header("ETag", response.info().get("ETag"))
 			# self.send_header("Server", response.info().get("Server"))
 			self.end_headers()
@@ -432,7 +431,6 @@ class MyStreamer(BaseHTTPRequestHandler):
 			self.send_header("Date", response.info().get("Date"))
 			self.send_header("Content-type", "video/mp4")
 			self.send_header("Accept-Ranges", "bytes")
-
 			self.end_headers()
 
 			# may want to add more granular control over chunk fetches
