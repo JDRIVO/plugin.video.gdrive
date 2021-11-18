@@ -36,8 +36,8 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
-	def __init__(self, *args, **kw):
-		HTTPServer.__init__(self, *args, **kw)
+	def __init__(self, *args, **kwargs):
+		HTTPServer.__init__(self, *args, **kwargs)
 		self.ready = True
 		self.close = False
 
