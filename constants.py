@@ -27,6 +27,6 @@ addon = xbmcaddon.Addon(id="plugin.video.gdrive")
 cloudservice2 = gdrive_api2.GDrive
 
 
-class CONST():
+class Const:
 	testing_features = False
 	DEBUG = False
