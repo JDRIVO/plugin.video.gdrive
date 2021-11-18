@@ -1,7 +1,7 @@
 import sys
 import xbmc
-import threading
 import constants
+from threading import Thread
 from resources.lib import settings, streamer
 
 try:
@@ -21,8 +21,7 @@ def run():
 
 	server = streamer.MyHTTPServer(("", port), streamer.MyStreamer)
 	server.setDetails(pluginHandle, pluginName, pluginName, addon, userAgent, settings_)
-	thread = threading.Thread(target=server.run)
-	thread.start()
+	Thread(target=server.run, daemon=True).start()
 	monitor = xbmc.Monitor()
 
 	while not monitor.abortRequested():
@@ -32,7 +31,6 @@ def run():
 
 	server.socket.close()
 	server.shutdown()
-	thread.join()
 
 # class KodiServer:
 
