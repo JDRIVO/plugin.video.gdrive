@@ -52,11 +52,12 @@ class GPlayer(xbmc.Player):
 		self.time = time
 
 	def saveProgress(self):
+		url = "http://localhost:{}/play".format(settingsModule.getSetting("server_port"))
 
 		while self.isPlaying():
 			playingFile = self.getPlayingFile()
 
-			if playingFile != self.filePath and playingFile != "http://localhost:8011/play":
+			if playingFile != self.filePath and playingFile != url:
 				self.updateProgress(False)
 				self.isExit = True
 				break

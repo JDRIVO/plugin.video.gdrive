@@ -554,11 +554,15 @@ class ContentEngine:
 
 			if dbID:
 				widget = 0 if xbmc.getInfoLabel("Container.Content") else 1
-				url = "http://localhost:{}/start_player".format(service.settings.serverPort)
+				url = "http://localhost:{}/start_gplayer".format(service.settings.serverPort)
 				data = "dbid={}&dbtype={}&widget={}&filepath={}".format(dbID, dbType, widget, filePath)
-				req = urllib.request.Request(url, data.encode("utf-8"))
-				response = urllib.request.urlopen(req)
-				response.close()
+			else:
+				url = "http://localhost:{}/start_player".format(service.settings.serverPort)
+				data = "filepath={}".format(filePath)
+
+			req = urllib.request.Request(url, data.encode("utf-8"))
+			response = urllib.request.urlopen(req)
+			response.close()
 
 		xbmcplugin.endOfDirectory(self.PLUGIN_HANDLE)
 		return

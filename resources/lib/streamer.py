@@ -64,11 +64,28 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		self.crypto = False
 		self.ready = True
 
-	def startPlayer(self, dbID, dbType, widget, filePath):
+	def startGPlayer(self, dbID, dbType, widget, filePath):
 		lastUpdate = time.time()
 		player = gplayer.GPlayer(dbID=dbID, dbType=dbType, widget=int(widget), filePath=filePath)
 
 		while not player.isExit and not self.close:
+
+			if time.time() - lastUpdate >= 1740:
+				lastUpdate = time.time()
+				self.service.refreshToken()
+
+			xbmc.sleep(1000)
+
+	def startPlayer(self, filePath):
+		lastUpdate = time.time()
+		player = xbmc.Player()
+		url = "http://localhost:{}/play".format(self.server_port)
+
+		while player.isPlaying():
+			playingFile = player.getPlayingFile()
+
+			if playingFile != filePath and playingFile != url:
+				break
 
 			if time.time() - lastUpdate >= 1740:
 				lastUpdate = time.time()
@@ -116,7 +133,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			self.send_response(200)
 			self.end_headers()
 
-		elif self.path == "/start_player":
+		elif self.path == "/start_gplayer":
 			contentLength = int(self.headers["Content-Length"])
 			postData = self.rfile.read(contentLength).decode("utf-8")
 
@@ -126,7 +143,18 @@ class MyStreamer(BaseHTTPRequestHandler):
 				widget = r.group(3)
 				filePath = r.group(4)
 
-			Thread(target=self.server.startPlayer, args=(dbID, dbType, widget, filePath)).start()
+			Thread(target=self.server.startGPlayer, args=(dbID, dbType, widget, filePath)).start()
+			self.send_response(200)
+			self.end_headers()
+
+		elif self.path == "/start_player":
+			contentLength = int(self.headers["Content-Length"])
+			postData = self.rfile.read(contentLength).decode("utf-8")
+
+			for r in re.finditer("filepath\=([^\|]+)", postData, re.DOTALL):
+				filePath = r.group(1)
+
+			Thread(target=self.server.startPlayer, args=(filePath,)).start()
 			self.send_response(200)
 			self.end_headers()
 
