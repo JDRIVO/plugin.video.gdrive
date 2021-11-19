@@ -27,7 +27,7 @@ import xbmc
 
 dbID = xbmc.getInfoLabel("ListItem.DBID")
 dbType = xbmc.getInfoLabel("ListItem.DBTYPE")
-filePath = xbmc.getInfoLabel("ListItem.FolderPath")
+filePath = xbmc.getInfoLabel("ListItem.FileNameAndPath")
 
 from resources.lib import engine
 

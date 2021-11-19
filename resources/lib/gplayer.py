@@ -14,6 +14,8 @@ class GPlayer(xbmc.Player):
 		self.dbID = kwargs["dbID"]
 		self.dbType = kwargs["dbType"]
 		self.widget = kwargs["widget"]
+		self.filePath = kwargs["filePath"]
+		self.time = 0
 		self.isExit = False
 		self.videoDuration = None
 
@@ -24,7 +26,7 @@ class GPlayer(xbmc.Player):
 			self.isMovie = False
 			self.markedWatchedPoint = float(settingsModule.getSetting("tv_watch_time"))
 
-		time.sleep(2)
+		xbmc.sleep(2000)
 
 		while not self.videoDuration:
 
@@ -34,7 +36,7 @@ class GPlayer(xbmc.Player):
 				self.isExit = True
 				return
 
-			time.sleep(0.1)
+			xbmc.sleep(100)
 
 		t = Thread(target=self.saveProgress)
 		t.start()
@@ -52,15 +54,26 @@ class GPlayer(xbmc.Player):
 	def saveProgress(self):
 
 		while self.isPlaying():
+			playingFile = self.getPlayingFile()
+
+			if playingFile != self.filePath and playingFile != "http://localhost:8011/play":
+				self.updateProgress(False)
+				self.isExit = True
+				break
+
+			try:
+				time = self.getTime()
+
+				if time > 5:
+					self.time = time
+
+			except:
+				pass
+
 			self.updateProgress()
-			time.sleep(1)
+			xbmc.sleep(1000)
 
 	def updateProgress(self, thread=True):
-
-		try:
-			self.time = self.getTime()
-		except:
-			pass
 
 		try:
 			videoProgress = self.time / self.videoDuration * 100
@@ -87,7 +100,7 @@ class GPlayer(xbmc.Player):
 
 			while time.time() < timeEnd:
 				func()
-				time.sleep(1)
+				xbmc.sleep(1000)
 
 	def updateResumePoint(self):
 

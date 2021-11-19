@@ -64,23 +64,17 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		self.crypto = False
 		self.ready = True
 
-	def tokenRefresher(self):
+	def startPlayer(self, dbID, dbType, widget, filePath):
 		lastUpdate = time.time()
+		player = gplayer.GPlayer(dbID=dbID, dbType=dbType, widget=int(widget), filePath=filePath)
 
-		while self.tokenRefresherEnabled and not self.close:
+		while not player.isExit and not self.close:
 
 			if time.time() - lastUpdate >= 1740:
 				lastUpdate = time.time()
 				self.service.refreshToken()
 
-			time.sleep(1)
-
-	def startPlayer(self, dbID, dbType, widget):
-		player = gplayer.GPlayer(dbID=dbID, dbType=dbType, widget=int(widget))
-
-		while not player.isExit and not self.close:
-			xbmc.sleep(100)
-
+			xbmc.sleep(1000)
 
 class MyStreamer(BaseHTTPRequestHandler):
 
@@ -119,8 +113,6 @@ class MyStreamer(BaseHTTPRequestHandler):
 				self.server.driveStream = driveStream
 
 			self.server.service.refreshToken()
-			self.server.tokenRefresherEnabled = True
-			Thread(target=self.server.tokenRefresher).start()
 			self.send_response(200)
 			self.end_headers()
 
@@ -128,12 +120,13 @@ class MyStreamer(BaseHTTPRequestHandler):
 			contentLength = int(self.headers["Content-Length"])
 			postData = self.rfile.read(contentLength).decode("utf-8")
 
-			for r in re.finditer("dbid\=([^\&]+)\&dbtype\=([^\|]+)\&widget\=([^\|]+)", postData, re.DOTALL):
+			for r in re.finditer("dbid\=([^\&]+)\&dbtype\=([^\|]+)\&widget\=([^\|]+)\&filepath\=([^\|]+)", postData, re.DOTALL):
 				dbID = r.group(1)
 				dbType = r.group(2)
 				widget = r.group(3)
+				filePath = r.group(4)
 
-			Thread(target=self.server.startPlayer, args=(dbID, dbType, widget)).start()
+			Thread(target=self.server.startPlayer, args=(dbID, dbType, widget, filePath)).start()
 			self.send_response(200)
 			self.end_headers()
 
@@ -442,11 +435,6 @@ class MyStreamer(BaseHTTPRequestHandler):
 				decrypt.decryptStreamChunkOld(response, self.wfile, startOffset=startOffset)
 
 			response.close()
-
-		elif self.path == "/stop_token_refresh":
-			self.server.tokenRefresherEnabled = False
-			self.send_response(200)
-			self.end_headers()
 
 		# redirect url to output
 		elif self.path == "/enroll":

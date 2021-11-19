@@ -555,21 +555,10 @@ class ContentEngine:
 			if dbID:
 				widget = 0 if xbmc.getInfoLabel("Container.Content") else 1
 				url = "http://localhost:{}/start_player".format(service.settings.serverPort)
-				data = "dbid={}&dbtype={}&widget={}".format(dbID, dbType, widget)
+				data = "dbid={}&dbtype={}&widget={}&filepath={}".format(dbID, dbType, widget, filePath)
 				req = urllib.request.Request(url, data.encode("utf-8"))
 				response = urllib.request.urlopen(req)
 				response.close()
-
-			xbmc.sleep(1000)
-			player = xbmc.Player()
-
-			while player.isPlaying():
-				xbmc.sleep(100)
-
-			url = "http://localhost:{}/stop_token_refresh".format(service.settings.serverPort)
-			req = urllib.request.Request(url)
-			response = urllib.request.urlopen(req)
-			response.close()
 
 		xbmcplugin.endOfDirectory(self.PLUGIN_HANDLE)
 		return
