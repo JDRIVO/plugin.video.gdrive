@@ -19,10 +19,10 @@ class GPlayer(xbmc.Player):
 
 		if self.dbType == "movie":
 			self.isMovie = True
-			self.markedWatchedPoint = float(settingsModule.movieWatchTime)
+			self.markedWatchedPoint = float(settingsModule.getSetting("movie_watch_time"))
 		else:
 			self.isMovie = False
-			self.markedWatchedPoint = float(settingsModule.tvWatchTime)
+			self.markedWatchedPoint = float(settingsModule.getSetting("tv_watch_time"))
 
 		time.sleep(2)
 
