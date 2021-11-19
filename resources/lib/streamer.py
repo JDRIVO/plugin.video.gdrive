@@ -93,6 +93,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
 			xbmc.sleep(1000)
 
+
 class MyStreamer(BaseHTTPRequestHandler):
 
 	# Handler for the GET requests
