@@ -14,8 +14,9 @@ class GPlayer(xbmc.Player):
 		self.dbID = kwargs["dbID"]
 		self.dbType = kwargs["dbType"]
 		self.widget = kwargs["widget"]
+		self.trackProgress = kwargs["trackProgress"]
 		self.videoDuration = self.time = 0
-		self.isExit = False
+		self.isExit = self.stop = False
 
 		if self.dbType == "movie":
 			self.isMovie = True
@@ -36,14 +37,18 @@ class GPlayer(xbmc.Player):
 
 			xbmc.sleep(100)
 
-		t = Thread(target=self.saveProgress)
-		t.start()
+		if self.trackProgress: Thread(target=self.saveProgress).start()
+
+	def onPlayBackStarted(self):
+		self.stop = True
+		if self.trackProgress: self.updateProgress(False)
+		self.isExit = True
 
 	def onPlayBackEnded(self):
 		self.isExit = True
 
 	def onPlayBackStopped(self):
-		self.updateProgress(False)
+		if self.trackProgress: self.updateProgress(False)
 		self.isExit = True
 
 	def onPlayBackSeek(self, time, seekOffset):
@@ -51,20 +56,10 @@ class GPlayer(xbmc.Player):
 
 	def saveProgress(self):
 
-		while self.isPlaying():
-			videoDuration = self.getTotalTime()
-
-			if videoDuration != self.videoDuration:
-				self.updateProgress(False)
-				self.isExit = True
-				break
+		while self.isPlaying() and not self.stop:
 
 			try:
-				time = self.getTime()
-
-				if time > 5:
-					self.time = time
-
+				self.time = self.getTime()
 			except:
 				pass
 

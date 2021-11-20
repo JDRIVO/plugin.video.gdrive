@@ -64,9 +64,9 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		self.crypto = False
 		self.ready = True
 
-	def startGPlayer(self, dbID, dbType, widget):
+	def startGPlayer(self, dbID, dbType, widget, trackProgress):
 		lastUpdate = time.time()
-		player = gplayer.GPlayer(dbID=dbID, dbType=dbType, widget=int(widget))
+		player = gplayer.GPlayer(dbID=dbID, dbType=dbType, widget=int(widget), trackProgress=int(trackProgress))
 
 		while not player.isExit and not self.close:
 
@@ -75,27 +75,6 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 				self.service.refreshToken()
 
 			xbmc.sleep(1000)
-
-	def startPlayer(self):
-		lastUpdate = time.time()
-		player = xbmc.Player()
-		videoDuration = None
-		xbmc.sleep(2000)
-
-		while player.isPlaying():
-			currentVideoDuration = player.getTotalTime()
-
-			if videoDuration and videoDuration != currentVideoDuration:
-				break
-			elif not videoDuration and currentVideoDuration > 1:
-				videoDuration = currentVideoDuration
-
-			if time.time() - lastUpdate >= 1740:
-				lastUpdate = time.time()
-				self.service.refreshToken()
-
-			xbmc.sleep(1000)
-
 
 class MyStreamer(BaseHTTPRequestHandler):
 
@@ -143,12 +122,13 @@ class MyStreamer(BaseHTTPRequestHandler):
 			self.send_response(200)
 			self.end_headers()
 
-			for r in re.finditer("dbid\=([^\&]+)\&dbtype\=([^\|]+)\&widget\=([^\|]+)", postData, re.DOTALL):
+			for r in re.finditer("dbid\=([^\&]+)\&dbtype\=([^\|]+)\&widget\=([^\|]+)\&track\=([^\|]+)", postData, re.DOTALL):
 				dbID = r.group(1)
 				dbType = r.group(2)
 				widget = r.group(3)
+				trackProgress = r.group(4)
 
-			Thread(target=self.server.startGPlayer, args=(dbID, dbType, widget)).start()
+			Thread(target=self.server.startGPlayer, args=(dbID, dbType, widget, trackProgress)).start()
 
 		# redirect url to output
 		elif self.path == "/enroll?default=false":
@@ -455,11 +435,6 @@ class MyStreamer(BaseHTTPRequestHandler):
 				decrypt.decryptStreamChunkOld(response, self.wfile, startOffset=startOffset)
 
 			response.close()
-
-		elif self.path == "/start_player":
-			self.send_response(200)
-			self.end_headers()
-			Thread(target=self.server.startPlayer).start()
 
 		# redirect url to output
 		elif self.path == "/enroll":

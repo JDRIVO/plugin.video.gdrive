@@ -554,13 +554,12 @@ class ContentEngine:
 
 			if dbID:
 				widget = 0 if xbmc.getInfoLabel("Container.Content") else 1
-				url = "http://localhost:{}/start_gplayer".format(service.settings.serverPort)
-				data = "dbid={}&dbtype={}&widget={}".format(dbID, dbType, widget)
-				req = urllib.request.Request(url, data.encode("utf-8"))
+				data = "dbid={}&dbtype={}&widget={}&track={}".format(dbID, dbType, widget, 1)
 			else:
-				url = "http://localhost:{}/start_player".format(service.settings.serverPort)
-				req = urllib.request.Request(url)
+				data = "dbid={}&dbtype={}&widget={}&track={}".format(0, 0, 0, 0)
 
+			url = "http://localhost:{}/start_gplayer".format(service.settings.serverPort)
+			req = urllib.request.Request(url, data.encode("utf-8"))
 			response = urllib.request.urlopen(req)
 			response.close()
 
