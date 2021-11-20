@@ -424,7 +424,7 @@ class ContentEngine:
 				xbmc.log(addon.getLocalizedString(30051) + constants.PLUGIN_NAME + "-login", xbmc.LOGERROR)
 				return
 
-			if (dbID or not dbType) and not filePath:
+			if (not dbID or not dbType) and not filePath:
 				timeEnd = time.time() + 1
 
 				while time.time() < timeEnd and (not dbID or not dbType or not filePath):
