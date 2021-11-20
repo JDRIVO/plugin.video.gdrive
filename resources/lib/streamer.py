@@ -64,9 +64,9 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		self.crypto = False
 		self.ready = True
 
-	def startGPlayer(self, dbID, dbType, widget, filePath):
+	def startGPlayer(self, dbID, dbType, widget):
 		lastUpdate = time.time()
-		player = gplayer.GPlayer(dbID=dbID, dbType=dbType, widget=int(widget), filePath=filePath)
+		player = gplayer.GPlayer(dbID=dbID, dbType=dbType, widget=int(widget))
 
 		while not player.isExit and not self.close:
 
@@ -76,16 +76,19 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
 			xbmc.sleep(1000)
 
-	def startPlayer(self, filePath):
+	def startPlayer(self):
 		lastUpdate = time.time()
 		player = xbmc.Player()
-		url = "http://localhost:{}/play".format(self.server_port)
+		videoDuration = None
+		xbmc.sleep(2000)
 
 		while player.isPlaying():
-			playingFile = player.getPlayingFile()
+			currentVideoDuration = player.getTotalTime()
 
-			if playingFile != filePath and playingFile != url:
+			if videoDuration and videoDuration != currentVideoDuration:
 				break
+			elif not videoDuration and currentVideoDuration > 1:
+				videoDuration = currentVideoDuration
 
 			if time.time() - lastUpdate >= 1740:
 				lastUpdate = time.time()
@@ -137,27 +140,15 @@ class MyStreamer(BaseHTTPRequestHandler):
 		elif self.path == "/start_gplayer":
 			contentLength = int(self.headers["Content-Length"])
 			postData = self.rfile.read(contentLength).decode("utf-8")
+			self.send_response(200)
+			self.end_headers()
 
-			for r in re.finditer("dbid\=([^\&]+)\&dbtype\=([^\|]+)\&widget\=([^\|]+)\&filepath\=([^\|]+)", postData, re.DOTALL):
+			for r in re.finditer("dbid\=([^\&]+)\&dbtype\=([^\|]+)\&widget\=([^\|]+)", postData, re.DOTALL):
 				dbID = r.group(1)
 				dbType = r.group(2)
 				widget = r.group(3)
-				filePath = r.group(4)
 
-			Thread(target=self.server.startGPlayer, args=(dbID, dbType, widget, filePath)).start()
-			self.send_response(200)
-			self.end_headers()
-
-		elif self.path == "/start_player":
-			contentLength = int(self.headers["Content-Length"])
-			postData = self.rfile.read(contentLength).decode("utf-8")
-
-			for r in re.finditer("filepath\=([^\|]+)", postData, re.DOTALL):
-				filePath = r.group(1)
-
-			Thread(target=self.server.startPlayer, args=(filePath,)).start()
-			self.send_response(200)
-			self.end_headers()
+			Thread(target=self.server.startGPlayer, args=(dbID, dbType, widget)).start()
 
 		# redirect url to output
 		elif self.path == "/enroll?default=false":
@@ -464,6 +455,11 @@ class MyStreamer(BaseHTTPRequestHandler):
 				decrypt.decryptStreamChunkOld(response, self.wfile, startOffset=startOffset)
 
 			response.close()
+
+		elif self.path == "/start_player":
+			self.send_response(200)
+			self.end_headers()
+			Thread(target=self.server.startPlayer).start()
 
 		# redirect url to output
 		elif self.path == "/enroll":

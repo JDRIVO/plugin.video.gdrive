@@ -14,10 +14,8 @@ class GPlayer(xbmc.Player):
 		self.dbID = kwargs["dbID"]
 		self.dbType = kwargs["dbType"]
 		self.widget = kwargs["widget"]
-		self.filePath = kwargs["filePath"]
-		self.time = 0
+		self.videoDuration = self.time = 0
 		self.isExit = False
-		self.videoDuration = None
 
 		if self.dbType == "movie":
 			self.isMovie = True
@@ -52,12 +50,11 @@ class GPlayer(xbmc.Player):
 		self.time = time
 
 	def saveProgress(self):
-		url = "http://localhost:{}/play".format(settingsModule.getSetting("server_port"))
 
 		while self.isPlaying():
-			playingFile = self.getPlayingFile()
+			videoDuration = self.getTotalTime()
 
-			if playingFile != self.filePath and playingFile != url:
+			if videoDuration != self.videoDuration:
 				self.updateProgress(False)
 				self.isExit = True
 				break
@@ -75,11 +72,7 @@ class GPlayer(xbmc.Player):
 			xbmc.sleep(1000)
 
 	def updateProgress(self, thread=True):
-
-		try:
-			videoProgress = self.time / self.videoDuration * 100
-		except:
-			return
+		videoProgress = self.time / self.videoDuration * 100
 
 		if videoProgress < self.markedWatchedPoint:
 			watched = False
