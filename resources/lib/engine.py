@@ -424,13 +424,17 @@ class ContentEngine:
 				xbmc.log(addon.getLocalizedString(30051) + constants.PLUGIN_NAME + "-login", xbmc.LOGERROR)
 				return
 
-			if (not dbType or not dbID) and not filePath:
+			if (dbID or not dbType) and not filePath:
 				timeEnd = time.time() + 1
 
-				while time.time() < timeEnd and (not dbType or not dbID):
+				while time.time() < timeEnd and (not dbID or not dbType or not filePath):
 					xbmc.executebuiltin("Dialog.Close(busydialog)")
 					dbID = xbmc.getInfoLabel("ListItem.DBID")
 					dbType = xbmc.getInfoLabel("ListItem.DBTYPE")
+					filePath = xbmc.getInfoLabel("ListItem.FileNameAndPath")
+
+				if not dbID or not dbType or not filePath:
+					return
 
 			if dbID:
 
