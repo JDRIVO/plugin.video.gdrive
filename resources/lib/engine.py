@@ -433,9 +433,6 @@ class ContentEngine:
 					dbType = xbmc.getInfoLabel("ListItem.DBTYPE")
 					filePath = xbmc.getInfoLabel("ListItem.FileNameAndPath")
 
-				if not dbID or not dbType or not filePath:
-					return
-
 			if dbID:
 
 				if dbType == "movie":
