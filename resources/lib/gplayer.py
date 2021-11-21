@@ -15,8 +15,7 @@ class GPlayer(xbmc.Player):
 		self.dbType = kwargs["dbType"]
 		self.widget = kwargs["widget"]
 		self.trackProgress = kwargs["trackProgress"]
-		self.videoDuration = self.time = 0
-		self.isExit = self.stop = False
+		self.videoDuration = self.stop = self.isExit = False
 
 		if self.dbType == "movie":
 			self.isMovie = True
@@ -67,7 +66,11 @@ class GPlayer(xbmc.Player):
 			xbmc.sleep(1000)
 
 	def updateProgress(self, thread=True):
-		videoProgress = self.time / self.videoDuration * 100
+
+		try:
+			videoProgress = self.time / self.videoDuration * 100
+		except:
+			return
 
 		if videoProgress < self.markedWatchedPoint:
 			watched = False
