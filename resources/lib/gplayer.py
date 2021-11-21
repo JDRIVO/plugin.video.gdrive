@@ -15,7 +15,7 @@ class GPlayer(xbmc.Player):
 		self.dbType = kwargs["dbType"]
 		self.widget = kwargs["widget"]
 		self.trackProgress = kwargs["trackProgress"]
-		self.videoDuration = self.stop = self.isExit = False
+		self.videoDuration = self.isExit = self.started = self.stop = False
 
 		if self.dbType == "movie":
 			self.isMovie = True
@@ -37,8 +37,10 @@ class GPlayer(xbmc.Player):
 			xbmc.sleep(100)
 
 		if self.trackProgress: Thread(target=self.saveProgress).start()
+		self.started = True
 
 	def onPlayBackStarted(self):
+		if not self.started: return
 		self.stop = True
 		if self.trackProgress: self.updateProgress(False)
 		self.isExit = True
