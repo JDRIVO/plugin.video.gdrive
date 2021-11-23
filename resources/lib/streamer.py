@@ -45,9 +45,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
 		try:
 			self.serve_forever()
-		except KeyboardInterrupt:
-			pass
-		finally:
+		except:
 			self.close = True
 			# Clean-up server (close socket, etc.)
 			self.server_close()
@@ -68,7 +66,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		lastUpdate = time.time()
 		player = gplayer.GPlayer(dbID=dbID, dbType=dbType, widget=int(widget), trackProgress=int(trackProgress))
 
-		while not player.isExit and not self.close:
+		while not player.close and not self.close:
 
 			if time.time() - lastUpdate >= 1740:
 				lastUpdate = time.time()

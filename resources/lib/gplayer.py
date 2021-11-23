@@ -1,4 +1,3 @@
-import time
 import xbmc
 import constants
 from threading import Thread
@@ -15,7 +14,7 @@ class GPlayer(xbmc.Player):
 		self.dbType = kwargs["dbType"]
 		self.widget = kwargs["widget"]
 		self.trackProgress = kwargs["trackProgress"]
-		self.videoDuration = self.isExit = self.started = self.stop = False
+		self.videoDuration = self.stopSaving = self.started = self.close = False
 
 		if self.dbType == "movie":
 			self.isMovie = True
@@ -31,7 +30,7 @@ class GPlayer(xbmc.Player):
 			try:
 				self.videoDuration = self.getTotalTime()
 			except:
-				self.isExit = True
+				self.close = True
 				return
 
 			xbmc.sleep(100)
@@ -41,23 +40,28 @@ class GPlayer(xbmc.Player):
 
 	def onPlayBackStarted(self):
 		if not self.started: return
-		self.stop = True
+		self.stopSaving = True
 		if self.trackProgress: self.updateProgress(False)
-		self.isExit = True
+		self.close = True
 
 	def onPlayBackEnded(self):
-		self.isExit = True
+		self.close = True
 
 	def onPlayBackStopped(self):
-		if self.trackProgress: self.updateProgress(False)
-		self.isExit = True
+
+		if self.trackProgress:
+			self.updateProgress(False)
+		else:
+			xbmc.executebuiltin("Container.Refresh")
+
+		self.close = True
 
 	def onPlayBackSeek(self, time, seekOffset):
 		self.time = time
 
 	def saveProgress(self):
 
-		while self.isPlaying() and not self.stop:
+		while self.isPlaying() and not self.stopSaving:
 
 			try:
 				self.time = self.getTime()
@@ -90,9 +94,7 @@ class GPlayer(xbmc.Player):
 				self.refreshVideo()
 				return
 
-			timeEnd = time.time() + 3
-
-			while time.time() < timeEnd:
+			for _ in range(3):
 				func()
 				xbmc.sleep(1000)
 

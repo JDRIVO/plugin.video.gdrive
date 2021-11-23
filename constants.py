@@ -28,5 +28,5 @@ cloudservice2 = gdrive_api2.GDrive
 
 
 class Const:
-	testing_features = False
+	testingFeatures = False
 	DEBUG = False
