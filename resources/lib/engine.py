@@ -94,7 +94,7 @@ class AccountActions:
 			fallbackAccountNumbers = fallbackAccountNumbers.split(",")
 			fallbackAccountNames = fallbackAccountNames.split(", ")
 
-			if mode == "delete":
+			if mode == "remove":
 				fallbackAccountNumbers.remove(accountNumber)
 				fallbackAccountNames.remove(accountName)
 			else:
@@ -180,7 +180,7 @@ class ContentEngine:
 			if selection == 0:
 
 				if fallbackExists:
-					accountActions.fallbackModifier(instanceName, "delete")
+					accountActions.fallbackModifier(instanceName, "remove")
 				else:
 					accountActions.fallbackModifier(instanceName, "add")
 
