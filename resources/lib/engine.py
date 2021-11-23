@@ -458,7 +458,8 @@ class ContentEngine:
 				elif selection == -1:
 					return
 
-			driveID = SETTINGS_MODULE.getParameter("filename")	# file ID
+			# file ID
+			driveID = SETTINGS_MODULE.getParameter("filename")
 			driveURL = "https://www.googleapis.com/drive/v2/files/{}?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media".format(driveID)
 			url = "http://localhost:{}/crypto_playurl".format(service.settings.serverPort)
 			data = "instance={}&url={}".format(service.instanceName, driveURL)
