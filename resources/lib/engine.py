@@ -115,8 +115,7 @@ class ContentEngine:
 		listitem = xbmcgui.ListItem(title)
 
 		if instanceName is not None:
-			cm = []
-			cm.append((ADDON.getLocalizedString(30211), "Addon.OpenSettings({})".format(ADDON.getAddonInfo("id"))))
+			cm = [(ADDON.getLocalizedString(30211), "Addon.OpenSettings({})".format(ADDON.getAddonInfo("id")))]
 			listitem.addContextMenuItems(cm, True)
 
 		xbmcplugin.addDirectoryItem(PLUGIN_HANDLE, url, listitem, totalItems=totalItems)
@@ -196,10 +195,13 @@ class ContentEngine:
 				accountActions.renameAccount(instanceName, newName)
 			elif selection == 3:
 				accountName = ADDON.getSetting(instanceName + "_username")
-				validation = accountActions.validateAccount(instanceName, accountName, userAgent)
+				validated = accountActions.validateAccount(instanceName, accountName, userAgent)
 
-				if not validation:
-					selection = xbmcgui.Dialog().yesno(ADDON.getLocalizedString(30000), "{} {}".format(accountName, ADDON.getLocalizedString(30019)))
+				if not validated:
+					selection = xbmcgui.Dialog().yesno(
+						ADDON.getLocalizedString(30000),
+						"{} {}".format(accountName, ADDON.getLocalizedString(30019)),
+						)
 
 					if selection:
 						fallbackAccountNames = ADDON.getSetting("fallback_accounts_ui").split(", ")
@@ -298,10 +300,13 @@ class ContentEngine:
 			for index_ in selection:
 				instanceName = accountInstances[index_]
 				accountName = accountNames[index_]
-				validation = accountActions.validateAccount(instanceName, accountName, userAgent)
+				validated = accountActions.validateAccount(instanceName, accountName, userAgent)
 
-				if not validation:
-					selection = xbmcgui.Dialog().yesno(ADDON.getLocalizedString(30000), "{} {}".format(accountName, ADDON.getLocalizedString(30019)))
+				if not validated:
+					selection = xbmcgui.Dialog().yesno(
+						ADDON.getLocalizedString(30000),
+						"{} {}".format(accountName, ADDON.getLocalizedString(30019)),
+					)
 
 					if selection:
 						fallbackAccountNames = ADDON.getSetting("fallback_accounts_ui").split(", ")
@@ -343,7 +348,10 @@ class ContentEngine:
 			try:
 				service
 			except NameError:
-				xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30051) + " " + ADDON.getLocalizedString(30052))
+				xbmcgui.Dialog().ok(
+					ADDON.getLocalizedString(30000),
+					ADDON.getLocalizedString(30051) + " " + ADDON.getLocalizedString(30052),
+				)
 				xbmc.log(ADDON.getLocalizedString(30051) + PLUGIN_NAME + "-login", xbmc.LOGERROR)
 				return
 
