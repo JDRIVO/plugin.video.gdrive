@@ -332,11 +332,13 @@ class ContentEngine:
 						"{} {}".format(accountName, ADDON.getLocalizedString(30019)),
 					)
 
-					if selection:
-						accountActions.deleteAccount(instanceName, accountName)
+					if not selection:
+						continue
 
-						if accountName in fallbackAccountNames:
-							accountActions.removeFallbackAccount(accountName, accountNumber, fallbackAccounts)
+					accountActions.deleteAccount(instanceName, accountName)
+
+					if accountName in fallbackAccountNames:
+						accountActions.removeFallbackAccount(accountName, accountNumber, fallbackAccounts)
 
 			xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30020))
 			xbmc.executebuiltin("Container.Refresh")
