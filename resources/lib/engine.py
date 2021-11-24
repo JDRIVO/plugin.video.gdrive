@@ -102,13 +102,13 @@ class AccountActions:
 		ADDON.setSetting("fallback_accounts_ui", ", ".join(fallbackAccountNames))
 		ADDON.setSetting("fallback_accounts", ",".join(fallbackAccountNumbers))
 
-	def fallbackAddAccount(self, accountName, accountNumber, fallbackAccounts):
+	def addFallbackAccount(self, accountName, accountNumber, fallbackAccounts):
 		fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
 		fallbackAccountNumbers.append(accountNumber)
 		fallbackAccountNames.append(accountName)
 		self.setFallbackAccounts(fallbackAccountNames, fallbackAccountNumbers)
 
-	def fallbackRemoveAccount(self, accountName, accountNumber, fallbackAccounts):
+	def removeFallbackAccount(self, accountName, accountNumber, fallbackAccounts):
 		fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
 		fallbackAccountNumbers.remove(accountNumber)
 		fallbackAccountNames.remove(accountName)
@@ -193,9 +193,9 @@ class ContentEngine:
 			if selection == 0:
 
 				if fallbackExists:
-					accountActions.fallbackRemoveAccount(accountName, accountNumber, fallbackAccounts)
+					accountActions.removeFallbackAccount(accountName, accountNumber, fallbackAccounts)
 				else:
-					accountActions.fallbackAddAccount(accountName, accountNumber, fallbackAccounts)
+					accountActions.addFallbackAccount(accountName, accountNumber, fallbackAccounts)
 
 			elif selection == 1:
 				accountActions.setDefaultAccount(
@@ -224,7 +224,7 @@ class ContentEngine:
 					accountActions.deleteAccount(instanceName, accountName)
 
 					if accountName in fallbackAccountNames:
-						accountActions.fallbackRemoveAccount(accountName, accountNumber, fallbackAccounts)
+						accountActions.removeFallbackAccount(accountName, accountNumber, fallbackAccounts)
 
 				else:
 					xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30020))
@@ -245,7 +245,7 @@ class ContentEngine:
 				accountActions.deleteAccount(instanceName, accountName)
 
 				if accountName in fallbackAccountNames:
-					accountActions.fallbackRemoveAccount(accountName, accountNumber, fallbackAccounts)
+					accountActions.removeFallbackAccount(accountName, accountNumber, fallbackAccounts)
 
 			else:
 				return
@@ -336,7 +336,7 @@ class ContentEngine:
 						accountActions.deleteAccount(instanceName, accountName)
 
 						if accountName in fallbackAccountNames:
-							accountActions.fallbackRemoveAccount(accountName, accountNumber, fallbackAccounts)
+							accountActions.removeFallbackAccount(accountName, accountNumber, fallbackAccounts)
 
 			xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30020))
 			xbmc.executebuiltin("Container.Refresh")
@@ -357,7 +357,7 @@ class ContentEngine:
 				accountActions.deleteAccount(accountInstance, accountName)
 
 				if accountName in fallbackAccountNames:
-					accountActions.fallbackRemoveAccount(accountName, accountNumber, fallbackAccounts)
+					accountActions.removeFallbackAccount(accountName, accountNumber, fallbackAccounts)
 
 			if mode == "settings_delete":
 				xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30160))
