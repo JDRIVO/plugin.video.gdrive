@@ -216,7 +216,7 @@ class ContentEngine:
 					selection = xbmcgui.Dialog().yesno(
 						ADDON.getLocalizedString(30000),
 						"{} {}".format(accountName, ADDON.getLocalizedString(30019)),
-						)
+					)
 
 					if not selection:
 						return
