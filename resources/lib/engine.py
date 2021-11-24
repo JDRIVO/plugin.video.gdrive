@@ -20,52 +20,45 @@ SETTINGS_MODULE = settings.Settings(ADDON)
 class AccountActions:
 
 	@staticmethod
+	def getDefaultAccount():
+		return ADDON.getSetting("default_account_ui"), ADDON.getSetting("default_account")
+
+	@staticmethod
+	def setDefaultAccount(accountName, accountNumber):
+		ADDON.setSetting("default_account_ui", accountName)
+		ADDON.setSetting("default_account", accountNumber)
+
+	@staticmethod
 	def getAccounts(accountAmount):
-		accountNumbers, accountNames, accountInstances = [], [], []
+		accountInstances, accountNames, accountNumbers = [], [], []
 
 		for count in range(1, accountAmount + 1):
 			instanceName = PLUGIN_NAME + str(count)
 			username = ADDON.getSetting(instanceName + "_username")
 
 			if username:
-				accountNumbers.append(str(count))
-				accountNames.append(username)
 				accountInstances.append(instanceName)
+				accountNames.append(username)
+				accountNumbers.append(str(count))
 
-		return accountNumbers, accountNames, accountInstances
+		return accountInstances, accountNames, accountNumbers
 
-	@staticmethod
-	def setDefault(instanceName):
-		ADDON.setSetting("default_account", re.sub("[^\d]", "", instanceName))
-		ADDON.setSetting("default_account_ui", ADDON.getSetting(instanceName + "_username"))
+	def renameAccount(self, instanceName, newAccountName):
+		accountName = self.getAccountName(instanceName)
+		self.setAccountName(instanceName, newAccountName)
+		defaultAccountName, defaultAccountNumber = self.getDefaultAccount()
 
-	@staticmethod
-	def validateAccount(instanceName, accountName, userAgent):
-		validation = CLOUD_SERVICE(PLUGIN_HANDLE, PLUGIN_URL, ADDON, instanceName, userAgent, SETTINGS_MODULE)
-		validation.refreshToken()
+		if defaultAccountName == accountName:
+			self.setDefaultAccount(newAccountName, defaultAccountNumber)
 
-		if not validation.failed:
-			return True
+		fallbackAccountNames, fallbackAccountNumbers = self.getFallbackAccounts()
 
-	@staticmethod
-	def renameAccount(instanceName, newName):
-		accountName = ADDON.getSetting(instanceName + "_username")
-		ADDON.setSetting(instanceName + "_username", newName)
+		if accountName in fallbackAccountNames:
+			fallbackAccountNames.remove(accountName)
+			fallbackAccountNames.append(newAccountName)
+			self.setFallbackAccounts(fallbackAccountNames, fallbackAccountNumbers)
 
-		if ADDON.getSetting("default_account_ui") == accountName:
-			ADDON.setSetting("default_account_ui", newName)
-
-		fallbackAccounts = ADDON.getSetting("fallback_accounts_ui").split(", ")
-
-		if accountName in fallbackAccounts:
-			fallbackAccounts.remove(accountName)
-			fallbackAccounts.append(newName)
-			ADDON.setSetting("fallback_accounts_ui", ", ".join(fallbackAccounts))
-
-	@staticmethod
-	def deleteAccount(instanceName, fallbackAccountNames, fallbackAccountNumbers):
-		accountName = ADDON.getSetting(instanceName + "_username")
-
+	def deleteAccount(self, instanceName, accountName):
 		ADDON.setSetting(instanceName + "_username", "")
 		ADDON.setSetting(instanceName + "_code", "")
 		ADDON.setSetting(instanceName + "_client_id", "")
@@ -73,40 +66,53 @@ class AccountActions:
 		ADDON.setSetting(instanceName + "_auth_access_token", "")
 		ADDON.setSetting(instanceName + "_auth_refresh_token", "")
 
-		if ADDON.getSetting("default_account_ui") == accountName:
+		defaultAccountName, defaultAccountNumber = self.getDefaultAccount()
+
+		if defaultAccountName == accountName:
 			ADDON.setSetting("default_account_ui", "")
 			ADDON.setSetting("default_account", "")
 
-		if accountName in fallbackAccountNames:
-			fallbackAccountNumbers.remove(re.sub("[^\d]", "", instanceName))
-			fallbackAccountNames.remove(accountName)
-			ADDON.setSetting("fallback_accounts", ",".join(fallbackAccountNumbers))
-			ADDON.setSetting("fallback_accounts_ui", ", ".join(fallbackAccountNames))
+	@staticmethod
+	def getAccountName(instanceName):
+		return ADDON.getSetting(instanceName + "_username")
 
 	@staticmethod
-	def fallbackModifier(instanceName, mode):
-		fallbackAccountNumbers = ADDON.getSetting("fallback_accounts")
-		fallbackAccountNames = ADDON.getSetting("fallback_accounts_ui")
-		accountName = ADDON.getSetting(instanceName + "_username")
-		accountNumber = re.sub("[^\d]", "", instanceName)
+	def getAccountNumber(instanceName):
+		return re.sub("[^\d]", "", instanceName)
 
-		if fallbackAccountNumbers:
-			fallbackAccountNumbers = fallbackAccountNumbers.split(",")
-			fallbackAccountNames = fallbackAccountNames.split(", ")
+	@staticmethod
+	def setAccountName(instanceName, newAccountName):
+		ADDON.setSetting(instanceName + "_username", newAccountName)
 
-			if mode == "remove":
-				fallbackAccountNumbers.remove(accountNumber)
-				fallbackAccountNames.remove(accountName)
-			else:
-				fallbackAccountNumbers.append(accountNumber)
-				fallbackAccountNames.append(accountName)
+	@staticmethod
+	def validateAccount(instanceName, userAgent):
+		validation = CLOUD_SERVICE(PLUGIN_HANDLE, PLUGIN_URL, ADDON, instanceName, userAgent, SETTINGS_MODULE)
+		validation.refreshToken()
 
-			ADDON.setSetting("fallback_accounts", ",".join(fallbackAccountNumbers))
-			ADDON.setSetting("fallback_accounts_ui", ", ".join(fallbackAccountNames))
-		else:
-			ADDON.setSetting("fallback", "true")
-			ADDON.setSetting("fallback_accounts", accountNumber)
-			ADDON.setSetting("fallback_accounts_ui", accountName)
+		if not validation.failed:
+			return True
+
+	@staticmethod
+	def getFallbackAccounts():
+		return ADDON.getSetting("fallback_accounts_ui").split(", "), ADDON.getSetting("fallback_accounts").split(",")
+
+	@staticmethod
+	def setFallbackAccounts(fallbackAccountNames, fallbackAccountNumbers):
+		ADDON.setSetting("fallback", "true")
+		ADDON.setSetting("fallback_accounts_ui", ", ".join(fallbackAccountNames))
+		ADDON.setSetting("fallback_accounts", ",".join(fallbackAccountNumbers))
+
+	def fallbackAddAccount(self, accountName, accountNumber, fallbackAccounts):
+		fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
+		fallbackAccountNumbers.append(accountNumber)
+		fallbackAccountNames.append(accountName)
+		self.setFallbackAccounts(fallbackAccountNames, fallbackAccountNumbers)
+
+	def fallbackRemoveAccount(self, accountName, accountNumber, fallbackAccounts):
+		fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
+		fallbackAccountNumbers.remove(accountNumber)
+		fallbackAccountNames.remove(accountName)
+		self.setFallbackAccounts(fallbackAccountNames, fallbackAccountNumbers)
 
 
 class ContentEngine:
@@ -138,37 +144,44 @@ class ContentEngine:
 			self.addMenu(PLUGIN_URL + "?mode=validate", "[B]3. {}[/B]".format(ADDON.getLocalizedString(30021)), instanceName=True)
 			self.addMenu(PLUGIN_URL + "?mode=delete", "[B]4. {}[/B]".format(ADDON.getLocalizedString(30022)), instanceName=True)
 
-			defaultAccount = ADDON.getSetting("default_account")
-			fallBackAccounts = ADDON.getSetting("fallback_accounts").split(",")
+			defaultAccountName, defaultAccountNumber = accountActions.getDefaultAccount()
+			fallbackAccounts = accountActions.getFallbackAccounts()
+			fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
 
 			for count in range (1, accountAmount + 1):
 				instanceName = PLUGIN_NAME + str(count)
-				username = ADDON.getSetting(instanceName + "_username")
+				accountName = accountActions.getAccountName(instanceName)
 
-				if username:
-					countStr = str(count)
+				if accountName:
+					count = str(count)
 
-					if countStr == defaultAccount:
-						username = "[COLOR crimson][B]{}[/B][/COLOR]".format(username)
-					elif countStr in fallBackAccounts:
-						username = "[COLOR deepskyblue][B]{}[/B][/COLOR]".format(username)
+					if count == defaultAccountNumber:
+						accountName = "[COLOR crimson][B]{}[/B][/COLOR]".format(accountName)
+					elif count in fallbackAccountNumbers:
+						accountName = "[COLOR deepskyblue][B]{}[/B][/COLOR]".format(accountName)
 
-					self.addMenu("{}?mode=main&instance={}".format(PLUGIN_URL, instanceName), username, instanceName=instanceName)
+					self.addMenu("{}?mode=main&instance={}".format(
+						PLUGIN_URL, instanceName),
+						accountName,
+						instanceName=instanceName,
+					)
 
 			xbmcplugin.setContent(PLUGIN_HANDLE, "files")
 			xbmcplugin.addSortMethod(PLUGIN_HANDLE, xbmcplugin.SORT_METHOD_LABEL)
 
 		elif instanceName and mode == "main":
-			fallbackAccounts = ADDON.getSetting("fallback_accounts").split(",")
+			fallbackAccounts = accountActions.getFallbackAccounts()
+			fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
 			options = [
 				ADDON.getLocalizedString(30219),
 				ADDON.getLocalizedString(30002),
 				ADDON.getLocalizedString(30023),
 				ADDON.getLocalizedString(30159),
 			]
-			account = re.sub("[^\d]", "", instanceName)
+			accountName = accountActions.getAccountName(instanceName)
+			accountNumber = accountActions.getAccountNumber(instanceName)
 
-			if account in fallbackAccounts:
+			if accountNumber in fallbackAccountNumbers:
 				fallbackExists = True
 				options.insert(0, ADDON.getLocalizedString(30212))
 			else:
@@ -180,12 +193,15 @@ class ContentEngine:
 			if selection == 0:
 
 				if fallbackExists:
-					accountActions.fallbackModifier(instanceName, "remove")
+					accountActions.fallbackRemoveAccount(accountName, accountNumber, fallbackAccounts)
 				else:
-					accountActions.fallbackModifier(instanceName, "add")
+					accountActions.fallbackAddAccount(accountName, accountNumber, fallbackAccounts)
 
 			elif selection == 1:
-				accountActions.setDefault(instanceName)
+				accountActions.setDefaultAccount(
+					accountActions.getAccountName(instanceName),
+					accountActions.getAccountNumber(instanceName),
+				)
 			elif selection == 2:
 				newName = xbmcgui.Dialog().input(ADDON.getLocalizedString(30002))
 
@@ -194,8 +210,7 @@ class ContentEngine:
 
 				accountActions.renameAccount(instanceName, newName)
 			elif selection == 3:
-				accountName = ADDON.getSetting(instanceName + "_username")
-				validated = accountActions.validateAccount(instanceName, accountName, userAgent)
+				validated = accountActions.validateAccount(instanceName, userAgent)
 
 				if not validated:
 					selection = xbmcgui.Dialog().yesno(
@@ -203,12 +218,13 @@ class ContentEngine:
 						"{} {}".format(accountName, ADDON.getLocalizedString(30019)),
 						)
 
-					if selection:
-						fallbackAccountNames = ADDON.getSetting("fallback_accounts_ui").split(", ")
-						fallbackAccountNumbers = ADDON.getSetting("fallback_accounts").split(",")
-						accountActions.deleteAccount(instanceName, fallbackAccountNames, fallbackAccountNumbers)
-					else:
+					if not selection:
 						return
+
+					accountActions.deleteAccount(instanceName, accountName)
+
+					if accountName in fallbackAccountNames:
+						accountActions.fallbackRemoveAccount(accountName, accountNumber, fallbackAccounts)
 
 				else:
 					xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30020))
@@ -219,16 +235,18 @@ class ContentEngine:
 					ADDON.getLocalizedString(30000),
 					"{} {}?".format(
 						ADDON.getLocalizedString(30121),
-						ADDON.getSetting(instanceName + "_username"),
+						accountActions.getAccountName(instanceName),
 					)
 				)
 
 				if not selection:
 					return
 
-				fallbackAccountNames = ADDON.getSetting("fallback_accounts_ui").split(", ")
-				fallbackAccountNumbers = ADDON.getSetting("fallback_accounts").split(",")
-				accountActions.deleteAccount(instanceName, fallbackAccountNames, fallbackAccountNumbers)
+				accountActions.deleteAccount(instanceName, accountName)
+
+				if accountName in fallbackAccountNames:
+					accountActions.fallbackRemoveAccount(accountName, accountNumber, fallbackAccounts)
+
 			else:
 				return
 
@@ -256,41 +274,46 @@ class ContentEngine:
 				xbmc.executebuiltin("Container.Refresh")
 
 		elif mode == "make_default":
-			accountActions.setDefault(instanceName)
+			accountActions.setDefaultAccount(
+				accountActions.getAccountName(instanceName),
+				accountActions.getAccountNumber(instanceName),
+			)
 			xbmc.executebuiltin("Container.Refresh")
 
 		elif mode == "settings_default":
-			accountNumbers, accountNames, accountInstances = accountActions.getAccounts(accountAmount)
+			accountInstances, accountNames, accountNumbers = accountActions.getAccounts(accountAmount)
 			selection = xbmcgui.Dialog().select(ADDON.getLocalizedString(30120), accountNames)
 
 			if selection == -1:
 				return
 
-			ADDON.setSetting("default_account", accountNumbers[selection])
-			ADDON.setSetting("default_account_ui", accountNames[selection])
+			accountActions.setDefaultAccount(accountNames[selection], accountNumbers[selection])
 			xbmc.executebuiltin("Container.Refresh")
 
 		elif mode == "fallback":
-			accountNumbers, accountNames, accountInstances = accountActions.getAccounts(accountAmount)
-			fallbackAccounts = ADDON.getSetting("fallback_accounts")
-			fallbackAccountNames = ADDON.getSetting("fallback_accounts_ui")
+			accountInstances, accountNames, accountNumbers = accountActions.getAccounts(accountAmount)
+			fallbackAccountNames, fallbackAccountNumbers = accountActions.getFallbackAccounts()
 
-			if fallbackAccounts:
-				fallbackAccounts = [accountNumbers.index(x) for x in fallbackAccounts.split(",") if x in accountNumbers]
-				selection = xbmcgui.Dialog().multiselect(ADDON.getLocalizedString(30120), accountNames, preselect=fallbackAccounts)
+			if fallbackAccountNumbers:
+				fallbackAccountNumbers = [accountNumbers.index(x) for x in fallbackAccountNumbers if x in accountNumbers]
+				selection = xbmcgui.Dialog().multiselect(
+					ADDON.getLocalizedString(30120),
+					accountNames,
+					preselect=fallbackAccountNumbers,
+				)
 			else:
 				selection = xbmcgui.Dialog().multiselect(ADDON.getLocalizedString(30120), accountNames)
 
 			if not selection:
 				return
 
-			ADDON.setSetting("fallback_accounts", ",".join(accountNumbers[x] for x in selection))
-			ADDON.setSetting("fallback_accounts_ui", ", ".join(accountNames[x] for x in selection))
-			ADDON.setSetting("fallback", "true")
+			accountActions.setFallbackAccounts([accountNames[x] for x in selection], [accountNumbers[x] for x in selection])
 			xbmc.executebuiltin("Container.Refresh")
 
 		elif mode == "validate":
-			accountNumbers, accountNames, accountInstances = accountActions.getAccounts(accountAmount)
+			accountInstances, accountNames, accountNumbers = accountActions.getAccounts(accountAmount)
+			fallbackAccounts = accountActions.getFallbackAccounts()
+			fallbackAccountNames, fallbackAccountNumbers = accountActions.getFallbackAccounts()
 			accounts = [n for n in range(accountAmount)]
 			selection = xbmcgui.Dialog().multiselect(ADDON.getLocalizedString(30024), accountNames, preselect=accounts)
 
@@ -300,7 +323,8 @@ class ContentEngine:
 			for index_ in selection:
 				instanceName = accountInstances[index_]
 				accountName = accountNames[index_]
-				validated = accountActions.validateAccount(instanceName, accountName, userAgent)
+				accountNumber = accountNumbers[index_]
+				validated = accountActions.validateAccount(instanceName, userAgent)
 
 				if not validated:
 					selection = xbmcgui.Dialog().yesno(
@@ -309,23 +333,31 @@ class ContentEngine:
 					)
 
 					if selection:
-						fallbackAccountNames = ADDON.getSetting("fallback_accounts_ui").split(", ")
-						fallbackAccountNumbers = ADDON.getSetting("fallback_accounts").split(",")
-						accountActions.deleteAccount(instanceName, fallbackAccountNames, fallbackAccountNumbers)
+						accountActions.deleteAccount(instanceName, accountName)
+
+						if accountName in fallbackAccountNames:
+							accountActions.fallbackRemoveAccount(accountName, accountNumber, fallbackAccounts)
 
 			xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30020))
 			xbmc.executebuiltin("Container.Refresh")
 
 		elif mode in ("delete", "settings_delete"):
-			accountNumbers, accountNames, accountInstances = accountActions.getAccounts(accountAmount)
+			accountInstances, accountNames, accountNumbers = accountActions.getAccounts(accountAmount)
+			fallbackAccounts = accountActions.getFallbackAccounts()
+			fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
 			selection = xbmcgui.Dialog().multiselect(ADDON.getLocalizedString(30158), accountNames)
 
 			if not selection:
 				return
 
-			fallbackAccountNames = ADDON.getSetting("fallback_accounts_ui").split(", ")
-			fallbackAccountNumbers = ADDON.getSetting("fallback_accounts").split(",")
-			[accountActions.deleteAccount(accountInstances[x], fallbackAccountNames, fallbackAccountNumbers) for x in selection]
+			for accountIndex in selection:
+				accountInstance = accountInstances[accountIndex]
+				accountName = accountNames[accountIndex]
+				accountNumber = accountNumbers[accountIndex]
+				accountActions.deleteAccount(accountInstance, accountName)
+
+				if accountName in fallbackAccountNames:
+					accountActions.fallbackRemoveAccount(accountName, accountNumber, fallbackAccounts)
 
 			if mode == "settings_delete":
 				xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30160))

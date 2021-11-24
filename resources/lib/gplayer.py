@@ -3,25 +3,25 @@ import constants
 from threading import Thread
 from resources.lib import settings
 
-settingsModule = settings.Settings(constants.addon)
+SETTINGS_MODULE = settings.Settings(constants.addon)
 
 
 class GPlayer(xbmc.Player):
 
 	def __init__(self, *args, **kwargs):
+		self.videoDuration = self.stopSaving = self.started = self.close = False
 		xbmc.Player.__init__(self)
 		self.dbID = kwargs["dbID"]
 		self.dbType = kwargs["dbType"]
 		self.widget = kwargs["widget"]
 		self.trackProgress = kwargs["trackProgress"]
-		self.videoDuration = self.stopSaving = self.started = self.close = False
 
 		if self.dbType == "movie":
 			self.isMovie = True
-			self.markedWatchedPoint = float(settingsModule.getSetting("movie_watch_time"))
+			self.markedWatchedPoint = float(SETTINGS_MODULE.getSetting("movie_watch_time"))
 		else:
 			self.isMovie = False
-			self.markedWatchedPoint = float(settingsModule.getSetting("tv_watch_time"))
+			self.markedWatchedPoint = float(SETTINGS_MODULE.getSetting("tv_watch_time"))
 
 		xbmc.sleep(2000)
 

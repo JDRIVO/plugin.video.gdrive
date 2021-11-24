@@ -336,8 +336,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 		headers = str(self.headers)
 		print(headers)
 
-		start = ""
-		end = ""
+		start = end = ""
 		startOffset = 0
 
 		for r in re.finditer("Range\:\s+bytes\=(\d+)\-", headers, re.DOTALL):
