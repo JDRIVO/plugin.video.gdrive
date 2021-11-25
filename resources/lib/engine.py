@@ -108,6 +108,8 @@ class AccountActions:
 
 		if fallbackAccountNames:
 			SETTINGS.setSetting("fallback", "true")
+		else:
+			SETTINGS.setSetting("fallback", "false")
 
 	def addFallbackAccount(self, accountName, accountNumber, fallbackAccounts):
 		fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
@@ -311,7 +313,7 @@ class ContentEngine:
 			else:
 				selection = xbmcgui.Dialog().multiselect(SETTINGS.getLocalizedString(30120), accountNames)
 
-			if not selection:
+			if selection is None:
 				return
 
 			accountActions.setFallbackAccounts([accountNames[x] for x in selection], [accountNumbers[x] for x in selection])
