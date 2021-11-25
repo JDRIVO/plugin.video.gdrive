@@ -12,21 +12,20 @@ from resources.lib import settings
 PLUGIN_NAME = constants.PLUGIN_NAME
 PLUGIN_HANDLE = int(sys.argv[1])
 PLUGIN_URL = sys.argv[0]
-ADDON = constants.addon
 CLOUD_SERVICE = constants.cloudservice2
-SETTINGS_MODULE = settings.Settings(ADDON)
+SETTINGS = settings.Settings()
 
 
 class AccountActions:
 
 	@staticmethod
 	def getDefaultAccount():
-		return ADDON.getSetting("default_account_ui"), ADDON.getSetting("default_account")
+		return SETTINGS.getSetting("default_account_ui"), SETTINGS.getSetting("default_account")
 
 	@staticmethod
 	def setDefaultAccount(accountName, accountNumber):
-		ADDON.setSetting("default_account_ui", accountName)
-		ADDON.setSetting("default_account", accountNumber)
+		SETTINGS.setSetting("default_account_ui", accountName)
+		SETTINGS.setSetting("default_account", accountNumber)
 
 	@staticmethod
 	def getAccounts(accountAmount):
@@ -34,7 +33,7 @@ class AccountActions:
 
 		for count in range(1, accountAmount + 1):
 			instanceName = PLUGIN_NAME + str(count)
-			username = ADDON.getSetting(instanceName + "_username")
+			username = SETTINGS.getSetting(instanceName + "_username")
 
 			if username:
 				accountInstances.append(instanceName)
@@ -59,22 +58,22 @@ class AccountActions:
 			self.setFallbackAccounts(fallbackAccountNames, fallbackAccountNumbers)
 
 	def deleteAccount(self, instanceName, accountName):
-		ADDON.setSetting(instanceName + "_username", "")
-		ADDON.setSetting(instanceName + "_code", "")
-		ADDON.setSetting(instanceName + "_client_id", "")
-		ADDON.setSetting(instanceName + "_client_secret", "")
-		ADDON.setSetting(instanceName + "_auth_access_token", "")
-		ADDON.setSetting(instanceName + "_auth_refresh_token", "")
+		SETTINGS.setSetting(instanceName + "_username", "")
+		SETTINGS.setSetting(instanceName + "_code", "")
+		SETTINGS.setSetting(instanceName + "_client_id", "")
+		SETTINGS.setSetting(instanceName + "_client_secret", "")
+		SETTINGS.setSetting(instanceName + "_auth_access_token", "")
+		SETTINGS.setSetting(instanceName + "_auth_refresh_token", "")
 
 		defaultAccountName, defaultAccountNumber = self.getDefaultAccount()
 
 		if defaultAccountName == accountName:
-			ADDON.setSetting("default_account_ui", "")
-			ADDON.setSetting("default_account", "")
+			SETTINGS.setSetting("default_account_ui", "")
+			SETTINGS.setSetting("default_account", "")
 
 	@staticmethod
 	def getAccountName(instanceName):
-		return ADDON.getSetting(instanceName + "_username")
+		return SETTINGS.getSetting(instanceName + "_username")
 
 	@staticmethod
 	def getAccountNumber(instanceName):
@@ -82,11 +81,11 @@ class AccountActions:
 
 	@staticmethod
 	def setAccountName(instanceName, newAccountName):
-		ADDON.setSetting(instanceName + "_username", newAccountName)
+		SETTINGS.setSetting(instanceName + "_username", newAccountName)
 
 	@staticmethod
 	def validateAccount(instanceName, userAgent):
-		validation = CLOUD_SERVICE(PLUGIN_HANDLE, PLUGIN_URL, ADDON, instanceName, userAgent, SETTINGS_MODULE)
+		validation = CLOUD_SERVICE(PLUGIN_HANDLE, PLUGIN_URL, SETTINGS, instanceName, userAgent)
 		validation.refreshToken()
 
 		if not validation.failed:
@@ -94,13 +93,21 @@ class AccountActions:
 
 	@staticmethod
 	def getFallbackAccounts():
-		return ADDON.getSetting("fallback_accounts_ui").split(", "), ADDON.getSetting("fallback_accounts").split(",")
+		fallbackAccountNames = SETTINGS.getSetting("fallback_accounts_ui")
+		fallbackAccountNumbers = SETTINGS.getSetting("fallback_accounts")
+
+		if fallbackAccountNames:
+			return fallbackAccountNames.split(", "), fallbackAccountNumbers.split(",")
+		else:
+			return [], []
 
 	@staticmethod
 	def setFallbackAccounts(fallbackAccountNames, fallbackAccountNumbers):
-		ADDON.setSetting("fallback", "true")
-		ADDON.setSetting("fallback_accounts_ui", ", ".join(fallbackAccountNames))
-		ADDON.setSetting("fallback_accounts", ",".join(fallbackAccountNumbers))
+		SETTINGS.setSetting("fallback_accounts_ui", ", ".join(fallbackAccountNames))
+		SETTINGS.setSetting("fallback_accounts", ",".join(fallbackAccountNumbers))
+
+		if fallbackAccountNames:
+			SETTINGS.setSetting("fallback", "true")
 
 	def addFallbackAccount(self, accountName, accountNumber, fallbackAccounts):
 		fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
@@ -121,15 +128,15 @@ class ContentEngine:
 		listitem = xbmcgui.ListItem(title)
 
 		if instanceName is not None:
-			cm = [(ADDON.getLocalizedString(30211), "Addon.OpenSettings({})".format(ADDON.getAddonInfo("id")))]
+			cm = [(SETTINGS.getLocalizedString(30211), "Addon.OpenSettings({})".format(SETTINGS.getAddonInfo("id")))]
 			listitem.addContextMenuItems(cm, True)
 
 		xbmcplugin.addDirectoryItem(PLUGIN_HANDLE, url, listitem, totalItems=totalItems)
 
 	def run(self, dbID, dbType, filePath):
-		mode = SETTINGS_MODULE.getParameter("mode", "main").lower()
-		userAgent = SETTINGS_MODULE.getSetting("user_agent")
-		accountAmount = ADDON.getSettingInt("account_amount")
+		mode = SETTINGS.getParameter("mode", "main").lower()
+		userAgent = SETTINGS.getSetting("user_agent")
+		accountAmount = SETTINGS.getSettingInt("account_amount")
 		pluginQueries = settings.parseQuery(sys.argv[2][1:])
 		accountActions = AccountActions()
 
@@ -139,10 +146,10 @@ class ContentEngine:
 			instanceName = None
 
 		if not instanceName and mode == "main":
-			self.addMenu(PLUGIN_URL + "?mode=enroll", "[B]1. {}[/B]".format(ADDON.getLocalizedString(30207)), instanceName=True)
-			self.addMenu(PLUGIN_URL + "?mode=fallback", "[B]2. {}[/B]".format(ADDON.getLocalizedString(30220)), instanceName=True)
-			self.addMenu(PLUGIN_URL + "?mode=validate", "[B]3. {}[/B]".format(ADDON.getLocalizedString(30021)), instanceName=True)
-			self.addMenu(PLUGIN_URL + "?mode=delete", "[B]4. {}[/B]".format(ADDON.getLocalizedString(30022)), instanceName=True)
+			self.addMenu(PLUGIN_URL + "?mode=enroll", "[B]1. {}[/B]".format(SETTINGS.getLocalizedString(30207)), instanceName=True)
+			self.addMenu(PLUGIN_URL + "?mode=fallback", "[B]2. {}[/B]".format(SETTINGS.getLocalizedString(30220)), instanceName=True)
+			self.addMenu(PLUGIN_URL + "?mode=validate", "[B]3. {}[/B]".format(SETTINGS.getLocalizedString(30021)), instanceName=True)
+			self.addMenu(PLUGIN_URL + "?mode=delete", "[B]4. {}[/B]".format(SETTINGS.getLocalizedString(30022)), instanceName=True)
 
 			defaultAccountName, defaultAccountNumber = accountActions.getDefaultAccount()
 			fallbackAccounts = accountActions.getFallbackAccounts()
@@ -173,20 +180,20 @@ class ContentEngine:
 			fallbackAccounts = accountActions.getFallbackAccounts()
 			fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
 			options = [
-				ADDON.getLocalizedString(30219),
-				ADDON.getLocalizedString(30002),
-				ADDON.getLocalizedString(30023),
-				ADDON.getLocalizedString(30159),
+				SETTINGS.getLocalizedString(30219),
+				SETTINGS.getLocalizedString(30002),
+				SETTINGS.getLocalizedString(30023),
+				SETTINGS.getLocalizedString(30159),
 			]
 			accountName = accountActions.getAccountName(instanceName)
 			accountNumber = accountActions.getAccountNumber(instanceName)
 
 			if accountNumber in fallbackAccountNumbers:
 				fallbackExists = True
-				options.insert(0, ADDON.getLocalizedString(30212))
+				options.insert(0, SETTINGS.getLocalizedString(30212))
 			else:
 				fallbackExists = False
-				options.insert(0, ADDON.getLocalizedString(30213))
+				options.insert(0, SETTINGS.getLocalizedString(30213))
 
 			selection = xbmcgui.Dialog().contextmenu(options)
 
@@ -203,7 +210,7 @@ class ContentEngine:
 					accountActions.getAccountNumber(instanceName),
 				)
 			elif selection == 2:
-				newName = xbmcgui.Dialog().input(ADDON.getLocalizedString(30002))
+				newName = xbmcgui.Dialog().input(SETTINGS.getLocalizedString(30002))
 
 				if not newName:
 					return
@@ -214,8 +221,8 @@ class ContentEngine:
 
 				if not validated:
 					selection = xbmcgui.Dialog().yesno(
-						ADDON.getLocalizedString(30000),
-						"{} {}".format(accountName, ADDON.getLocalizedString(30019)),
+						SETTINGS.getLocalizedString(30000),
+						"{} {}".format(accountName, SETTINGS.getLocalizedString(30019)),
 					)
 
 					if not selection:
@@ -227,14 +234,14 @@ class ContentEngine:
 						accountActions.removeFallbackAccount(accountName, accountNumber, fallbackAccounts)
 
 				else:
-					xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30020))
+					xbmcgui.Dialog().ok(SETTINGS.getLocalizedString(30000), SETTINGS.getLocalizedString(30020))
 					return
 
 			elif selection == 4:
 				selection = xbmcgui.Dialog().yesno(
-					ADDON.getLocalizedString(30000),
+					SETTINGS.getLocalizedString(30000),
 					"{} {}?".format(
-						ADDON.getLocalizedString(30121),
+						SETTINGS.getLocalizedString(30121),
 						accountActions.getAccountName(instanceName),
 					)
 				)
@@ -261,12 +268,12 @@ class ContentEngine:
 			s.close()
 
 			selection = xbmcgui.Dialog().ok(
-				ADDON.getLocalizedString(30000),
+				SETTINGS.getLocalizedString(30000),
 				"{} [B][COLOR blue]http://{}:{}/enroll[/COLOR][/B] {}".format(
-					ADDON.getLocalizedString(30210),
+					SETTINGS.getLocalizedString(30210),
 					address,
-					ADDON.getSetting("server_port"),
-					ADDON.getLocalizedString(30218),
+					SETTINGS.getSetting("server_port"),
+					SETTINGS.getLocalizedString(30218),
 				)
 			)
 
@@ -282,7 +289,7 @@ class ContentEngine:
 
 		elif mode == "settings_default":
 			accountInstances, accountNames, accountNumbers = accountActions.getAccounts(accountAmount)
-			selection = xbmcgui.Dialog().select(ADDON.getLocalizedString(30120), accountNames)
+			selection = xbmcgui.Dialog().select(SETTINGS.getLocalizedString(30120), accountNames)
 
 			if selection == -1:
 				return
@@ -297,12 +304,12 @@ class ContentEngine:
 			if fallbackAccountNumbers:
 				fallbackAccountNumbers = [accountNumbers.index(x) for x in fallbackAccountNumbers if x in accountNumbers]
 				selection = xbmcgui.Dialog().multiselect(
-					ADDON.getLocalizedString(30120),
+					SETTINGS.getLocalizedString(30120),
 					accountNames,
 					preselect=fallbackAccountNumbers,
 				)
 			else:
-				selection = xbmcgui.Dialog().multiselect(ADDON.getLocalizedString(30120), accountNames)
+				selection = xbmcgui.Dialog().multiselect(SETTINGS.getLocalizedString(30120), accountNames)
 
 			if not selection:
 				return
@@ -315,7 +322,7 @@ class ContentEngine:
 			fallbackAccounts = accountActions.getFallbackAccounts()
 			fallbackAccountNames, fallbackAccountNumbers = accountActions.getFallbackAccounts()
 			accounts = [n for n in range(accountAmount)]
-			selection = xbmcgui.Dialog().multiselect(ADDON.getLocalizedString(30024), accountNames, preselect=accounts)
+			selection = xbmcgui.Dialog().multiselect(SETTINGS.getLocalizedString(30024), accountNames, preselect=accounts)
 
 			if not selection:
 				return
@@ -328,8 +335,8 @@ class ContentEngine:
 
 				if not validated:
 					selection = xbmcgui.Dialog().yesno(
-						ADDON.getLocalizedString(30000),
-						"{} {}".format(accountName, ADDON.getLocalizedString(30019)),
+						SETTINGS.getLocalizedString(30000),
+						"{} {}".format(accountName, SETTINGS.getLocalizedString(30019)),
 					)
 
 					if not selection:
@@ -340,14 +347,14 @@ class ContentEngine:
 					if accountName in fallbackAccountNames:
 						accountActions.removeFallbackAccount(accountName, accountNumber, fallbackAccounts)
 
-			xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30020))
+			xbmcgui.Dialog().ok(SETTINGS.getLocalizedString(30000), SETTINGS.getLocalizedString(30020))
 			xbmc.executebuiltin("Container.Refresh")
 
 		elif mode in ("delete", "settings_delete"):
 			accountInstances, accountNames, accountNumbers = accountActions.getAccounts(accountAmount)
 			fallbackAccounts = accountActions.getFallbackAccounts()
 			fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
-			selection = xbmcgui.Dialog().multiselect(ADDON.getLocalizedString(30158), accountNames)
+			selection = xbmcgui.Dialog().multiselect(SETTINGS.getLocalizedString(30158), accountNames)
 
 			if not selection:
 				return
@@ -362,31 +369,31 @@ class ContentEngine:
 					accountActions.removeFallbackAccount(accountName, accountNumber, fallbackAccounts)
 
 			if mode == "settings_delete":
-				xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30160))
+				xbmcgui.Dialog().ok(SETTINGS.getLocalizedString(30000), SETTINGS.getLocalizedString(30160))
 			else:
-				xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30161))
+				xbmcgui.Dialog().ok(SETTINGS.getLocalizedString(30000), SETTINGS.getLocalizedString(30161))
 				xbmc.executebuiltin("Container.Refresh")
 
 		elif mode == "video":
-			instanceName = PLUGIN_NAME + str(SETTINGS_MODULE.getSetting("default_account", 1))
-			service = CLOUD_SERVICE(PLUGIN_HANDLE, PLUGIN_URL, ADDON, instanceName, userAgent, SETTINGS_MODULE)
+			instanceName = PLUGIN_NAME + str(SETTINGS.getSetting("default_account", 1))
+			service = CLOUD_SERVICE(PLUGIN_HANDLE, PLUGIN_URL, SETTINGS, instanceName, userAgent)
 
 			if service.failed:
-				xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30005))
+				xbmcgui.Dialog().ok(SETTINGS.getLocalizedString(30000), SETTINGS.getLocalizedString(30005))
 				return
 
-			if not SETTINGS_MODULE.cryptoPassword or not SETTINGS_MODULE.cryptoSalt:
-				xbmcgui.Dialog().ok(ADDON.getLocalizedString(30000), ADDON.getLocalizedString(30208))
+			if not SETTINGS.cryptoPassword or not SETTINGS.cryptoSalt:
+				xbmcgui.Dialog().ok(SETTINGS.getLocalizedString(30000), SETTINGS.getLocalizedString(30208))
 				return
 
 			try:
 				service
 			except NameError:
 				xbmcgui.Dialog().ok(
-					ADDON.getLocalizedString(30000),
-					ADDON.getLocalizedString(30051) + " " + ADDON.getLocalizedString(30052),
+					SETTINGS.getLocalizedString(30000),
+					SETTINGS.getLocalizedString(30051) + " " + SETTINGS.getLocalizedString(30052),
 				)
-				xbmc.log(ADDON.getLocalizedString(30051) + PLUGIN_NAME + "-login", xbmc.LOGERROR)
+				xbmc.log(SETTINGS.getLocalizedString(30051) + PLUGIN_NAME + "-login", xbmc.LOGERROR)
 				return
 
 			if (not dbID or not dbType) and not filePath:
@@ -427,7 +434,7 @@ class ContentEngine:
 			elif filePath:
 				from sqlite3 import dbapi2 as sqlite
 
-				dbPath = xbmc.translatePath(SETTINGS_MODULE.getSetting("video_db"))
+				dbPath = xbmc.translatePath(SETTINGS.getSetting("video_db"))
 				db = sqlite.connect(dbPath)
 				dirPath = os.path.dirname(filePath) + os.sep
 				fileName = os.path.basename(filePath)
@@ -454,7 +461,7 @@ class ContentEngine:
 
 				# import pickle
 
-				# resumeDBPath = xbmc.translatePath(SETTINGS_MODULE.resumeDBPath)
+				# resumeDBPath = xbmc.translatePath(SETTINGS.resumeDBPath)
 				# resumeDB = os.path.join(resumeDBPath, "kodi_resumeDB.p")
 
 				# try:
@@ -469,7 +476,7 @@ class ContentEngine:
 					# videoData[filename] = 0
 					# resumePosition = 0
 
-				# strmName = SETTINGS_MODULE.getParameter("title") + ".strm"
+				# strmName = SETTINGS.getParameter("title") + ".strm"
 				# cursor = list(db.execute("SELECT timeInSeconds FROM bookmark WHERE idFile=(SELECT idFile FROM files WHERE strFilename='%s')" % strmName))
 
 				# if cursor:
@@ -493,7 +500,7 @@ class ContentEngine:
 					return
 
 			# file ID
-			driveID = SETTINGS_MODULE.getParameter("filename")
+			driveID = SETTINGS.getParameter("filename")
 			driveURL = "https://www.googleapis.com/drive/v2/files/{}?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media".format(driveID)
 			url = "http://localhost:{}/crypto_playurl".format(service.settings.serverPort)
 			data = "instance={}&url={}".format(service.instanceName, driveURL)
@@ -503,7 +510,7 @@ class ContentEngine:
 				response = urllib.request.urlopen(req)
 				response.close()
 			except urllib.error.URLError as e:
-				xbmc.log(ADDON.getAddonInfo("name") + ": " + str(e), xbmc.LOGERROR)
+				xbmc.log(SETTINGS.getAddonInfo("name") + ": " + str(e), xbmc.LOGERROR)
 				return
 
 			item = xbmcgui.ListItem(path="http://localhost:{}/play".format(service.settings.serverPort))
@@ -529,7 +536,6 @@ class ContentEngine:
 			response.close()
 
 		xbmcplugin.endOfDirectory(PLUGIN_HANDLE)
-		return
 
 				# with open(resumeDB, "wb+") as dic:
 					# pickle.dump(videoData, dic)

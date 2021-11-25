@@ -15,12 +15,11 @@ except:
 def run():
 	addon = constants.addon
 	pluginName = constants.PLUGIN_NAME
-	settings_ = settings.Settings(addon)
-	userAgent = settings_.getSetting("user_agent")
+	settings_ = settings.Settings()
 	port = settings_.getSettingInt("server_port", 8011)
 
 	server = streamer.MyHTTPServer(("", port), streamer.MyStreamer)
-	server.setDetails(pluginHandle, pluginName, pluginName, addon, userAgent, settings_)
+	server.setDetails(pluginHandle, pluginName, pluginName, settings_)
 	Thread(target=server.run, daemon=True).start()
 	monitor = xbmc.Monitor()
 
@@ -31,20 +30,3 @@ def run():
 
 	server.socket.close()
 	server.shutdown()
-
-# class KodiServer:
-
-	# def __init__(self):
-		# addon = constants.addon
-		# settings_ = settings.Settings(addon)
-		# userAgent = settings_.getSetting("user_agent")
-		# PLUGIN_URL = constants.PLUGIN_NAME
-		# PLUGIN_NAME = constants.PLUGIN_NAME
-
-		# port = settings_.getSettingInt("server_port", 8011)
-		# server = streamer.MyHTTPServer(("", port), streamer.MyStreamer)
-		# server.setDetails(PLUGIN_HANDLE, PLUGIN_NAME, PLUGIN_URL, addon, userAgent, settings_)
-
-	# def terminate(self):
-		# self.server.socket.close()
-		# self.server.shutdown()

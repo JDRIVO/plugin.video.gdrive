@@ -26,7 +26,7 @@ class LibraryWatch(xbmc.Monitor):
 
 	def __init__(self):
 		xbmc.Monitor.__init__(self)
-		self.settingsModule = settings.Settings(constants.addon)
+		self.settings = settings.Settings()
 		self.getSettings()
 
 	def onNotification(self, sender, method, data):
@@ -140,7 +140,7 @@ class LibraryWatch(xbmc.Monitor):
 			if match:
 				value = mediaSplit[1]
 
-				if value != "":
+				if value:
 					rowTitle = codes[mediaDetail]
 					rows.append(rowTitle)
 					values.append(value)
@@ -194,5 +194,5 @@ class LibraryWatch(xbmc.Monitor):
 		self.getSettings()
 
 	def getSettings(self):
-		self.enabled = self.settingsModule.getSetting("watcher")
-		self.dbPath = xbmcvfs.translatePath(self.settingsModule.getSetting("video_db"))
+		self.enabled = self.settings.getSetting("watcher")
+		self.dbPath = xbmcvfs.translatePath(self.settings.getSetting("video_db"))

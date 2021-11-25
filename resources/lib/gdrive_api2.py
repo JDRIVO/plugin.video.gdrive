@@ -43,12 +43,13 @@ class GDrive:
 	##
 	# initialize (save addon, instance name, user agent)
 	##
-	def __init__(self, PLUGIN_HANDLE, PLUGIN_URL, addon, instanceName, userAgent, settings, authenticate=True):
+	def __init__(self, PLUGIN_HANDLE, PLUGIN_URL, settings, instanceName, userAgent, authenticate=True):
 		self.PLUGIN_HANDLE = PLUGIN_HANDLE
 		self.PLUGIN_URL = PLUGIN_URL
-		self.addon = addon
-		self.instanceName = instanceName
 		self.settings = settings
+		self.instanceName = instanceName
+		self.cookiejar = http.cookiejar.CookieJar()
+		self.userAgent = userAgent
 		self.failed = False
 
 		try:
@@ -58,19 +59,17 @@ class GDrive:
 			username = ""
 
 		self.authorization = authorization.Authorization(username)
-		self.cookiejar = http.cookiejar.CookieJar()
-		self.userAgent = userAgent
 
 		# load the OAUTH2 tokens or force fetch if not set
 		if authenticate == True and (
-			not self.authorization.loadToken(self.instanceName, addon, "auth_access_token")
-			or not self.authorization.loadToken(self.instanceName, addon, "auth_refresh_token")
+			not self.authorization.loadToken(self.instanceName, self.settings, "auth_access_token")
+			or not self.authorization.loadToken(self.instanceName, self.settings, "auth_refresh_token")
 		):
 
 			if self.getInstanceSetting("code"):
 				self.getToken(self.getInstanceSetting("code"))
 			else:
-				# xbmcgui.Dialog().ok(self.addon.getLocalizedString(30003), self.addon.getLocalizedString(30005))
+				# xbmcgui.Dialog().ok(self.settings.getLocalizedString(30003), self.settings.getLocalizedString(30005))
 				self.failed = True
 				return
 
@@ -94,7 +93,7 @@ class GDrive:
 		try:
 			response = urllib.request.urlopen(req)
 		except urllib.error.URLError as e:
-			# xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017))
+			# xbmcgui.Dialog().ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30017))
 			xbmc.log(str(e))
 			return
 
@@ -106,12 +105,12 @@ class GDrive:
 			accessToken, refreshToken = r.groups()
 			self.authorization.setToken("auth_access_token", accessToken)
 			self.authorization.setToken("auth_refresh_token", refreshToken)
-			self.updateAuthorization(self.addon)
-			# xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30142))
+			self.updateAuthorization()
+			# xbmcgui.Dialog().ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30142))
 
 		for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"', responseData, re.DOTALL):
 			errorMessage = r.group(1)
-			# xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119) + errorMessage)
+			# xbmcgui.Dialog().ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30119) + errorMessage)
 			xbmc.log(errorMessage)
 
 		return
@@ -136,7 +135,7 @@ class GDrive:
 		try:
 			response = urllib.request.urlopen(req)
 		except urllib.error.URLError as e:
-			# xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30017))
+			# xbmcgui.Dialog().ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30017))
 			self.failed = True
 			xbmc.log(str(e))
 			return
@@ -148,11 +147,11 @@ class GDrive:
 		for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?', responseData, re.DOTALL):
 			accessToken = r.group(1)
 			self.authorization.setToken("auth_access_token", accessToken)
-			self.updateAuthorization(self.addon)
+			self.updateAuthorization()
 
 		for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"', responseData, re.DOTALL):
 			errorMessage = r.group(1)
-			# xbmcgui.Dialog().ok(self.addon.getLocalizedString(30000), self.addon.getLocalizedString(30119) + errorMessage)
+			# xbmcgui.Dialog().ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30119) + errorMessage)
 			xbmc.log(errorMessage)
 
 		return
@@ -163,7 +162,7 @@ class GDrive:
 	##
 	def getHeadersList(self, isPOST=False, additionalHeader=None, additionalValue=None, isJSON=False):
 
-		if self.authorization.isToken(self.instanceName, self.addon, "auth_access_token") and not isPOST:
+		if self.authorization.isToken(self.instanceName, self.settings, "auth_access_token") and not isPOST:
 			# return {"User-Agent": self.userAgent, "Authorization": "Bearer " + self.authorization.getToken("auth_access_token")}
 			if additionalHeader is not None:
 				return {
@@ -177,7 +176,7 @@ class GDrive:
 					"Authorization": "Bearer " + self.authorization.getToken("auth_access_token"),
 				}
 
-		elif isJSON and self.authorization.isToken(self.instanceName, self.addon, "auth_access_token"):
+		elif isJSON and self.authorization.isToken(self.instanceName, self.settings, "auth_access_token"):
 			# return {"User-Agent": self.userAgent, "Authorization": "Bearer " + self.authorization.getToken("auth_access_token")}
 			return {
 				"Content-Type": "application/json",
@@ -185,7 +184,7 @@ class GDrive:
 				"Authorization": "Bearer " + self.authorization.getToken("auth_access_token"),
 			}
 
-		elif self.authorization.isToken(self.instanceName, self.addon, "auth_access_token"):
+		elif self.authorization.isToken(self.instanceName, self.settings, "auth_access_token"):
 			# return {"User-Agent": self.userAgent, "Authorization": "Bearer " + self.authorization.getToken("auth_access_token")}
 			return {
 				"If-Match": "*",
@@ -195,7 +194,7 @@ class GDrive:
 			}
 			# return {"Content-Type": "application/atom+xml", "Authorization": "Bearer " + self.authorization.getToken("auth_access_token")}
 
-		elif self.authorization.isToken(self.instanceName, self.addon, "DRIVE_STREAM") and not isPOST:
+		elif self.authorization.isToken(self.instanceName, self.settings, "DRIVE_STREAM") and not isPOST:
 
 			if additionalHeader is not None:
 				return {"Cookie": "DRIVE_STREAM=" + self.authorization.getToken("DRIVE_STREAM"), additionalHeader: additionalValue}
@@ -215,7 +214,7 @@ class GDrive:
 	def getInstanceSetting(self, setting, default=None):
 
 		try:
-			return self.addon.getSetting(self.instanceName + "_" + setting)
+			return self.settings.getSetting(self.instanceName + "_" + setting)
 		except:
 			return default
 
@@ -229,7 +228,7 @@ class GDrive:
 	# if we don't have an authorization token set for the plugin, set it with the recent login.
 	#	auth_token will permit "quicker" login in future executions by reusing the existing login session (less HTTPS calls = quicker video transitions between clips)
 	##
-	def updateAuthorization(self, addon):
+	def updateAuthorization(self):
 
-		if self.authorization.isUpdated: # and addon.getSetting(self.instanceName + "_save_auth_token") == "true":
-			self.authorization.saveTokens(self.instanceName, addon)
+		if self.authorization.isUpdated: # and settings.getSetting(self.instanceName + "_save_auth_token") == "true":
+			self.authorization.saveTokens(self.instanceName, self.settings)

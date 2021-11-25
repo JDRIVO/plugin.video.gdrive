@@ -41,6 +41,15 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		self.ready = True
 		self.close = False
 
+	def setDetails(self, PLUGIN_HANDLE, PLUGIN_NAME, PLUGIN_URL, settings):
+		self.PLUGIN_HANDLE = PLUGIN_HANDLE
+		self.PLUGIN_NAME = PLUGIN_NAME
+		self.PLUGIN_URL = PLUGIN_URL
+		self.settings = settings
+		self.userAgent = self.settings.getSetting("user_agent")
+		self.crypto = False
+		self.ready = True
+
 	def run(self):
 
 		try:
@@ -49,18 +58,6 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 			self.close = True
 			# Clean-up server (close socket, etc.)
 			self.server_close()
-
-	def setDetails(self, PLUGIN_HANDLE, PLUGIN_NAME, PLUGIN_URL, addon, userAgent, settings):
-		self.PLUGIN_HANDLE = PLUGIN_HANDLE
-		self.PLUGIN_NAME = PLUGIN_NAME
-		self.PLUGIN_URL = PLUGIN_URL
-		self.addon = addon
-		self.userAgent = userAgent
-		self.settings = settings
-		# self.domain = domain
-		self.playbackURL = ""
-		self.crypto = False
-		self.ready = True
 
 	def startGPlayer(self, dbID, dbType, widget, trackProgress):
 		lastUpdate = time.time()
@@ -101,10 +98,9 @@ class MyStreamer(BaseHTTPRequestHandler):
 				self.server.service = cloudservice2(
 					self.server.PLUGIN_HANDLE,
 					self.server.PLUGIN_URL,
-					self.server.addon,
+					self.server.settings,
 					instanceName,
 					self.server.userAgent,
-					self.server.settings,
 				)
 				self.server.crypto = True
 				self.server.playbackURL = url
@@ -166,13 +162,13 @@ class MyStreamer(BaseHTTPRequestHandler):
 						username = ""
 
 					if username == account or username == "":
-						self.server.addon.setSetting(instanceName + "_username", str(account))
-						self.server.addon.setSetting(instanceName + "_code", str(code))
-						self.server.addon.setSetting(instanceName + "_client_id", str(clientID))
-						self.server.addon.setSetting(instanceName + "_client_secret", str(clientSecret))
+						self.server.settings.setSetting(instanceName + "_username", str(account))
+						self.server.settings.setSetting(instanceName + "_code", str(code))
+						self.server.settings.setSetting(instanceName + "_client_id", str(clientID))
+						self.server.settings.setSetting(instanceName + "_client_secret", str(clientSecret))
 
-						if count > self.server.addon.getSettingInt("account_amount"):
-							self.server.addon.setSetting("account_amount", str(count))
+						if count > self.server.settings.getSettingInt("account_amount"):
+							self.server.settings.setSetting("account_amount", str(count))
 
 						break
 
@@ -201,8 +197,8 @@ class MyStreamer(BaseHTTPRequestHandler):
 				# retrieve authorization token
 				for r in re.finditer('\"access_token\"\s?\:\s?\"([^\"]+)\".+?' + '\"refresh_token\"\s?\:\s?\"([^\"]+)\".+?', responseData, re.DOTALL):
 					accessToken, refreshToken = r.groups()
-					self.server.addon.setSetting(instanceName + "_auth_access_token", str(accessToken))
-					self.server.addon.setSetting(instanceName + "_auth_refresh_token", str(refreshToken))
+					self.server.settings.setSetting(instanceName + "_auth_access_token", str(accessToken))
+					self.server.settings.setSetting(instanceName + "_auth_refresh_token", str(refreshToken))
 					self.wfile.write(b"Successfully enrolled account.")
 					self.server.ready = False
 
@@ -234,28 +230,28 @@ class MyStreamer(BaseHTTPRequestHandler):
 			except urllib.error.URLError as e:
 
 				if e.code == 404:
-					xbmcgui.Dialog().ok(self.server.addon.getLocalizedString(30003), self.server.addon.getLocalizedString(30209))
+					xbmcgui.Dialog().ok(self.server.settings.getLocalizedString(30003), self.server.settings.getLocalizedString(30209))
 					return
 				elif e.code == 401:
 					xbmc.log("ERROR\n" + self.server.service.getHeadersEncoded())
-					xbmcgui.Dialog().ok(self.server.addon.getLocalizedString(30003), self.server.addon.getLocalizedString(30018))
+					xbmcgui.Dialog().ok(self.server.settings.getLocalizedString(30003), self.server.settings.getLocalizedString(30018))
 					return
 				elif e.code == 403 or e.code == 429:
 					xbmc.log("ERROR\n" + self.server.service.getHeadersEncoded())
 
-					if not self.server.addon.getSetting("fallback"):
+					if not self.server.settings.getSetting("fallback"):
 						xbmcgui.Dialog().ok(
-							self.server.addon.getLocalizedString(30003) + ": " + self.server.addon.getLocalizedString(30006),
-							self.server.addon.getLocalizedString(30009),
+							self.server.settings.getLocalizedString(30003) + ": " + self.server.settings.getLocalizedString(30006),
+							self.server.settings.getLocalizedString(30009),
 						)
 						return
 
-					fallbackAccounts = self.server.addon.getSetting("fallback_accounts").split(",")
-					defaultAccount = self.server.addon.getSetting("default_account")
+					fallbackAccounts = self.server.settings.getSetting("fallback_accounts").split(",")
+					defaultAccount = self.server.settings.getSetting("default_account")
 					accountChange = False
 
 					for fallbackAccount in fallbackAccounts:
-						username = self.server.addon.getSetting("gdrive{}_username".format(fallbackAccount))
+						username = self.server.settings.getSetting("gdrive{}_username".format(fallbackAccount))
 
 						if not username:
 							fallbackAccounts.remove(fallbackAccount)
@@ -266,10 +262,9 @@ class MyStreamer(BaseHTTPRequestHandler):
 							self.server.service = cloudservice2(
 								self.server.PLUGIN_HANDLE,
 								self.server.PLUGIN_URL,
-								self.server.addon,
+								self.server.settings,
 								"gdrive" + fallbackAccount,
 								self.server.userAgent,
-								self.server.settings,
 							)
 							self.server.service.refreshToken()
 
@@ -281,31 +276,31 @@ class MyStreamer(BaseHTTPRequestHandler):
 								fallbackAccounts.append(defaultAccount)
 
 							fallbackAccounts.remove(fallbackAccount)
-							self.server.addon.setSetting("default_account", fallbackAccount)
-							self.server.addon.setSetting("default_account_ui", username)
+							self.server.settings.setSetting("default_account", fallbackAccount)
+							self.server.settings.setSetting("default_account_ui", username)
 							accountChange = True
 							xbmcgui.Dialog().notification(
-								self.server.addon.getLocalizedString(30003) + ": " + self.server.addon.getLocalizedString(30006),
-								self.server.addon.getLocalizedString(30007),
+								self.server.settings.getLocalizedString(30003) + ": " + self.server.settings.getLocalizedString(30006),
+								self.server.settings.getLocalizedString(30007),
 							)
 							break
 
 						except:
 							continue
 
-					self.server.addon.setSetting("fallback_accounts", ",".join(fallbackAccounts))
-					self.server.addon.setSetting(
+					self.server.settings.setSetting("fallback_accounts", ",".join(fallbackAccounts))
+					self.server.settings.setSetting(
 						"fallback_accounts_ui",
 						", ".join(
-							self.server.addon.getSetting("gdrive{}_username".format(x))
+							self.server.settings.getSetting("gdrive{}_username".format(x))
 							for x in fallbackAccounts
 						)
 					)
 
 					if not accountChange:
 						xbmcgui.Dialog().ok(
-							self.server.addon.getLocalizedString(30003) + ": " + self.server.addon.getLocalizedString(30006),
-							self.server.addon.getLocalizedString(30009),
+							self.server.settings.getLocalizedString(30003) + ": " + self.server.settings.getLocalizedString(30006),
+							self.server.settings.getLocalizedString(30009),
 						)
 						return
 
@@ -427,7 +422,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			# self.wfile.write(response.read())
 
 			if self.server.crypto:
-				decrypt = encryption.Encryption(self.server.addon.getSetting("crypto_salt"), self.server.addon.getSetting("crypto_password"))
+				decrypt = encryption.Encryption(self.server.settings.getSetting("crypto_salt"), self.server.settings.getSetting("crypto_password"))
 				CHUNK = 16 * 1024
 				decrypt.decryptStreamChunkOld(response, self.wfile, startOffset=startOffset)
 
