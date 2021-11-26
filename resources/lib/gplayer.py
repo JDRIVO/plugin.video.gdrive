@@ -1,5 +1,4 @@
 import xbmc
-import constants
 from threading import Thread
 
 class GPlayer(xbmc.Player):
