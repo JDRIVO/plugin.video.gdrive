@@ -18,10 +18,7 @@
 
 """
 
-import os
 import re
-import sys
-import socket
 import urllib.error
 import urllib.parse
 import urllib.request
