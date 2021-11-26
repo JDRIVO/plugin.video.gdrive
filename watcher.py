@@ -106,7 +106,6 @@ class LibraryWatch(xbmc.Monitor):
 			"video_height": "iVideoHeight",
 			"video_duration": "iVideoDuration"
 		}
-
 		audioCodes = {
 			"audio_codec": "strAudioCodec",
 			"audio_channels": "iAudioChannels"

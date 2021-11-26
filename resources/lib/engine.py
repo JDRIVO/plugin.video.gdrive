@@ -5,6 +5,7 @@ import time
 import urllib
 import xbmc
 import xbmcgui
+import xbmcvfs
 import xbmcplugin
 import constants
 
@@ -436,7 +437,7 @@ class ContentEngine:
 			elif filePath:
 				from sqlite3 import dbapi2 as sqlite
 
-				dbPath = xbmc.translatePath(SETTINGS.getSetting("video_db"))
+				dbPath = xbmcvfs.translatePath(SETTINGS.getSetting("video_db"))
 				db = sqlite.connect(dbPath)
 				dirPath = os.path.dirname(filePath) + os.sep
 				fileName = os.path.basename(filePath)
@@ -463,7 +464,7 @@ class ContentEngine:
 
 				# import pickle
 
-				# resumeDBPath = xbmc.translatePath(SETTINGS.resumeDBPath)
+				# resumeDBPath = xbmcvfs.translatePath(SETTINGS.resumeDBPath)
 				# resumeDB = os.path.join(resumeDBPath, "kodi_resumeDB.p")
 
 				# try:
