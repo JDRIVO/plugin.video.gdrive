@@ -18,7 +18,6 @@
 """
 
 import re
-import sys
 import time
 import urllib
 import xbmc
@@ -38,8 +37,6 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
 	def __init__(self, *args, **kwargs):
 		HTTPServer.__init__(self, *args, **kwargs)
-		self.ready = True
-		self.close = False
 
 	def setDetails(self, PLUGIN_HANDLE, PLUGIN_NAME, PLUGIN_URL, settings):
 		self.PLUGIN_HANDLE = PLUGIN_HANDLE
@@ -47,8 +44,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		self.PLUGIN_URL = PLUGIN_URL
 		self.settings = settings
 		self.userAgent = self.settings.getSetting("user_agent")
-		self.crypto = False
-		self.ready = True
+		self.close = False
 
 	def run(self):
 
@@ -61,7 +57,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
 	def startGPlayer(self, dbID, dbType, widget, trackProgress):
 		lastUpdate = time.time()
-		player = gplayer.GPlayer(dbID=dbID, dbType=dbType, widget=int(widget), trackProgress=int(trackProgress))
+		player = gplayer.GPlayer(dbID, dbType, int(widget), int(trackProgress), self.settings)
 
 		while not player.close and not self.close:
 
@@ -79,20 +75,12 @@ class MyStreamer(BaseHTTPRequestHandler):
 		headers = str(self.headers)
 		print(headers)
 
-		# passed a kill signal?
-		if self.path == "/kill":
-			self.server.ready = False
-			return
-
-		elif self.path == "/crypto_playurl":
+		if self.path == "/crypto_playurl":
 			contentLength = int(self.headers["Content-Length"]) # <--- Gets the size of data
 			postData = self.rfile.read(contentLength).decode("utf-8") # <--- Gets the data itself
 
 			for r in re.finditer("instance\=([^\&]+)\&url\=([^\|]+)", postData, re.DOTALL):
-				instanceName = r.group(1)
-				url = r.group(2)
-				driveStream = ""
-				xbmc.log("drive_stream = " + driveStream + "\n")
+				instanceName, url = r.groups()
 				xbmc.log("url = " + url + "\n")
 				cloudservice2 = constants.cloudservice2
 				self.server.service = cloudservice2(
@@ -102,9 +90,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 					instanceName,
 					self.server.userAgent,
 				)
-				self.server.crypto = True
 				self.server.playbackURL = url
-				self.server.driveStream = driveStream
 
 			self.server.service.refreshToken()
 			self.send_response(200)
@@ -117,10 +103,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			self.end_headers()
 
 			for r in re.finditer("dbid\=([^\&]+)\&dbtype\=([^\|]+)\&widget\=([^\|]+)\&track\=([^\|]+)", postData, re.DOTALL):
-				dbID = r.group(1)
-				dbType = r.group(2)
-				widget = r.group(3)
-				trackProgress = r.group(4)
+				dbID, dbType, widget, trackProgress = r.groups()
 
 			Thread(target=self.server.startGPlayer, args=(dbID, dbType, widget, trackProgress)).start()
 
@@ -132,8 +115,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			self.end_headers()
 
 			for r in re.finditer("client_id=([^&]+)&client_secret=([^&]+)", postData, re.DOTALL):
-				clientID = r.group(1)
-				clientSecret = r.group(2)
+				clientID, clientSecret = r.groups()
 				data = enrolment.page2(clientID, clientSecret)
 				self.wfile.write(data.encode("utf-8"))
 
@@ -145,12 +127,8 @@ class MyStreamer(BaseHTTPRequestHandler):
 			self.end_headers()
 
 			for r in re.finditer("account=([^&]+)&code=([^&]+)&client_id=([^&]+)&client_secret=([^&]+)", postData, re.DOTALL):
-				account = r.group(1)
-				clientID = r.group(3)
-				clientSecret = r.group(4)
-				code = r.group(2)
+				account, code, clientID, clientSecret = r.groups()
 				code = code.replace("%2F", "/")
-
 				count = 1
 
 				while True:
@@ -200,7 +178,6 @@ class MyStreamer(BaseHTTPRequestHandler):
 					self.server.settings.setSetting(instanceName + "_auth_access_token", str(accessToken))
 					self.server.settings.setSetting(instanceName + "_auth_refresh_token", str(refreshToken))
 					self.wfile.write(b"Successfully enrolled account.")
-					self.server.ready = False
 
 				for r in re.finditer('\"error_description\"\s?\:\s?\"([^\"]+)\"', responseData, re.DOTALL):
 					errorMessage = r.group(1)
@@ -213,13 +190,8 @@ class MyStreamer(BaseHTTPRequestHandler):
 		headers = str(self.headers)
 		print(headers)
 
-		# passed a kill signal?
-		if self.path == "/kill":
-			self.server.ready = False
-			return
-
 		# redirect url to output
-		elif self.path == "/play":
+		if self.path == "/play":
 			url = self.server.playbackURL
 			xbmc.log("HEAD " + url + "\n")
 			req = urllib.request.Request(url, None, self.server.service.getHeadersList())
@@ -342,20 +314,15 @@ class MyStreamer(BaseHTTPRequestHandler):
 			end = int(r.group(1))
 			break
 
-		# passed a kill signal?
-		if self.path == "/kill":
-			self.server.ready = False
-			return
-
 		# redirect url to output
-		elif self.path == "/play":
+		if self.path == "/play":
 
-			if self.server.crypto and start != "" and start > 16 and end == "":
+			if start != "" and start > 16 and end == "":
 				# start = start - (16 - (end % 16))
 				xbmc.log("START = " + str(start))
 				startOffset = 16 - ((int(self.server.length) - start) % 16) + 8
 
-			# if (self.server.crypto and start == 23474184):
+			# if start == 23474184:
 				# start = start - (16 - (end % 16))
 				# start = 23474184 - 8
 
@@ -421,10 +388,8 @@ class MyStreamer(BaseHTTPRequestHandler):
 			# may want to add more granular control over chunk fetches
 			# self.wfile.write(response.read())
 
-			if self.server.crypto:
-				decrypt = encryption.Encryption(self.server.settings.getSetting("crypto_salt"), self.server.settings.getSetting("crypto_password"))
-				CHUNK = 16 * 1024
-				decrypt.decryptStreamChunkOld(response, self.wfile, startOffset=startOffset)
+			decrypt = encryption.Encryption(self.server.settings.getSetting("crypto_salt"), self.server.settings.getSetting("crypto_password"))
+			decrypt.decryptStreamChunkOld(response, self.wfile, startOffset=startOffset)
 
 			response.close()
 

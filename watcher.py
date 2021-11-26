@@ -1,19 +1,13 @@
 import os
-import sys
 import json
 import xbmc
 import xbmcvfs
 import constants
 from sqlite3 import dbapi2 as sqlite
-from resources.lib import settings
 
 
 def run():
 	watcher = LibraryWatch()
-
-	# if not watcher.enabled:
-		# sys.exit()
-
 	monitor = xbmc.Monitor()
 
 	while not monitor.abortRequested():
@@ -25,8 +19,7 @@ def run():
 class LibraryWatch(xbmc.Monitor):
 
 	def __init__(self):
-		xbmc.Monitor.__init__(self)
-		self.settings = settings.Settings()
+		self.settings = constants.addon
 		self.getSettings()
 
 	def onNotification(self, sender, method, data):

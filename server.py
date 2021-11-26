@@ -2,24 +2,23 @@ import sys
 import xbmc
 import constants
 from threading import Thread
-from resources.lib import settings, streamer
-
-try:
-	pluginHandle = int(sys.argv[1])
-	pluginQueries = settings.parse_query(sys.argv[2][1:])
-except:
-	pluginHandle = None
-	pluginQueries = None
+from resources.lib import streamer
 
 
 def run():
-	addon = constants.addon
+	settings = constants.addon
 	pluginName = constants.PLUGIN_NAME
-	settings_ = settings.Settings()
-	port = settings_.getSettingInt("server_port", 8011)
-
+	port = settings.getSettingInt("server_port", 8011)
 	server = streamer.MyHTTPServer(("", port), streamer.MyStreamer)
-	server.setDetails(pluginHandle, pluginName, pluginName, settings_)
+
+	try:
+		pluginHandle = int(sys.argv[1])
+		pluginQueries = settings.parse_query(sys.argv[2][1:])
+	except:
+		pluginHandle = None
+		pluginQueries = None
+
+	server.setDetails(pluginHandle, pluginName, pluginName, settings)
 	Thread(target=server.run, daemon=True).start()
 	monitor = xbmc.Monitor()
 

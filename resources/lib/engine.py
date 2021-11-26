@@ -7,13 +7,12 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 import constants
-from resources.lib import settings
 
 PLUGIN_NAME = constants.PLUGIN_NAME
 PLUGIN_HANDLE = int(sys.argv[1])
 PLUGIN_URL = sys.argv[0]
 CLOUD_SERVICE = constants.cloudservice2
-SETTINGS = settings.Settings()
+SETTINGS = constants.addon
 
 
 class AccountActions:
@@ -42,8 +41,7 @@ class AccountActions:
 
 		return accountInstances, accountNames, accountNumbers
 
-	def renameAccount(self, instanceName, newAccountName):
-		accountName = self.getAccountName(instanceName)
+	def renameAccount(self, instanceName, accountName, newAccountName):
 		self.setAccountName(instanceName, newAccountName)
 		defaultAccountName, defaultAccountNumber = self.getDefaultAccount()
 
@@ -139,7 +137,7 @@ class ContentEngine:
 		mode = SETTINGS.getParameter("mode", "main").lower()
 		userAgent = SETTINGS.getSetting("user_agent")
 		accountAmount = SETTINGS.getSettingInt("account_amount")
-		pluginQueries = settings.parseQuery(sys.argv[2][1:])
+		pluginQueries = SETTINGS.parseQuery(sys.argv[2][1:])
 		accountActions = AccountActions()
 
 		try:
@@ -179,14 +177,14 @@ class ContentEngine:
 			xbmcplugin.addSortMethod(PLUGIN_HANDLE, xbmcplugin.SORT_METHOD_LABEL)
 
 		elif instanceName and mode == "main":
-			fallbackAccounts = accountActions.getFallbackAccounts()
-			fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
 			options = [
 				SETTINGS.getLocalizedString(30219),
 				SETTINGS.getLocalizedString(30002),
 				SETTINGS.getLocalizedString(30023),
 				SETTINGS.getLocalizedString(30159),
 			]
+			fallbackAccounts = accountActions.getFallbackAccounts()
+			fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
 			accountName = accountActions.getAccountName(instanceName)
 			accountNumber = accountActions.getAccountNumber(instanceName)
 
@@ -211,13 +209,15 @@ class ContentEngine:
 					accountActions.getAccountName(instanceName),
 					accountActions.getAccountNumber(instanceName),
 				)
+
 			elif selection == 2:
-				newName = xbmcgui.Dialog().input(SETTINGS.getLocalizedString(30002))
+				newName = xbmcgui.Dialog().input(SETTINGS.getLocalizedString(30002) + ": " + accountName)
 
 				if not newName:
 					return
 
-				accountActions.renameAccount(instanceName, newName)
+				accountActions.renameAccount(instanceName, accountName, newName)
+
 			elif selection == 3:
 				validated = accountActions.validateAccount(instanceName, userAgent)
 
@@ -304,7 +304,7 @@ class ContentEngine:
 			fallbackAccountNames, fallbackAccountNumbers = accountActions.getFallbackAccounts()
 
 			if fallbackAccountNumbers:
-				fallbackAccountNumbers = [accountNumbers.index(x) for x in fallbackAccountNumbers if x in accountNumbers]
+				fallbackAccountNumbers = [accountNumbers.index(n) for n in fallbackAccountNumbers if n in accountNumbers]
 				selection = xbmcgui.Dialog().multiselect(
 					SETTINGS.getLocalizedString(30120),
 					accountNames,
@@ -316,7 +316,7 @@ class ContentEngine:
 			if selection is None:
 				return
 
-			accountActions.setFallbackAccounts([accountNames[x] for x in selection], [accountNumbers[x] for x in selection])
+			accountActions.setFallbackAccounts([accountNames[i] for i in selection], [accountNumbers[i] for i in selection])
 			xbmc.executebuiltin("Container.Refresh")
 
 		elif mode == "validate":
@@ -384,7 +384,7 @@ class ContentEngine:
 				xbmcgui.Dialog().ok(SETTINGS.getLocalizedString(30000), SETTINGS.getLocalizedString(30005))
 				return
 
-			if not SETTINGS.cryptoPassword or not SETTINGS.cryptoSalt:
+			if not SETTINGS.getSetting("crypto_password") or not SETTINGS.getSetting("crypto_salt"):
 				xbmcgui.Dialog().ok(SETTINGS.getLocalizedString(30000), SETTINGS.getLocalizedString(30208))
 				return
 
@@ -504,7 +504,8 @@ class ContentEngine:
 			# file ID
 			driveID = SETTINGS.getParameter("filename")
 			driveURL = "https://www.googleapis.com/drive/v2/files/{}?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media".format(driveID)
-			url = "http://localhost:{}/crypto_playurl".format(service.settings.serverPort)
+			serverPort = SETTINGS.getSettingInt("server_port", 8011)
+			url = "http://localhost:{}/crypto_playurl".format(serverPort)
 			data = "instance={}&url={}".format(service.instanceName, driveURL)
 			req = urllib.request.Request(url, data.encode("utf-8"))
 
@@ -515,7 +516,7 @@ class ContentEngine:
 				xbmc.log(SETTINGS.getAddonInfo("name") + ": " + str(e), xbmc.LOGERROR)
 				return
 
-			item = xbmcgui.ListItem(path="http://localhost:{}/play".format(service.settings.serverPort))
+			item = xbmcgui.ListItem(path="http://localhost:{}/play".format(serverPort))
 			# item.setProperty("StartPercent", str(position))
 			# item.setProperty("startoffset", "60")
 
@@ -532,7 +533,7 @@ class ContentEngine:
 			else:
 				data = "dbid={}&dbtype={}&widget={}&track={}".format(0, 0, 0, 0)
 
-			url = "http://localhost:{}/start_gplayer".format(service.settings.serverPort)
+			url = "http://localhost:{}/start_gplayer".format(serverPort)
 			req = urllib.request.Request(url, data.encode("utf-8"))
 			response = urllib.request.urlopen(req)
 			response.close()

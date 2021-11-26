@@ -18,44 +18,36 @@
 """
 
 import sys
-import xbmc
 import urllib.parse
 from xbmcaddon import Addon
-
-
-def parseQuery(query):
-	queries = {}
-
-	try:
-		queries = urllib.parse.parse_qs(query)
-	except:
-		return
-
-	q = {key: value[0] for key, value in queries.items()}
-	q["mode"] = q.get("mode", "main")
-	return q
-
-
-pluginQueries = None
-
-try:
-	pluginQueries = parseQuery(sys.argv[2][1:])
-except:
-	pluginQueries = None
 
 
 class Settings(Addon):
 
 	def __init__(self):
-		self.username = self.getParameter("username", "")
-		self.serverPort = self.getSettingInt("server_port", 8011)
-		self.cryptoPassword = self.getSetting("crypto_password")
-		self.cryptoSalt = self.getSetting("crypto_salt")
+
+		try:
+			self.pluginQueries = self.parseQuery(sys.argv[2][1:])
+		except:
+			self.pluginQueries = None
+
+	@staticmethod
+	def parseQuery(query):
+		queries = {}
+
+		try:
+			queries = urllib.parse.parse_qs(query)
+		except:
+			return
+
+		q = {key: value[0] for key, value in queries.items()}
+		q["mode"] = q.get("mode", "main")
+		return q
 
 	def getParameter(self, key, default=""):
 
 		try:
-			value = pluginQueries[key]
+			value = self.pluginQueries[key]
 
 			if value == "true" or value == "True":
 				return True
@@ -70,7 +62,7 @@ class Settings(Addon):
 	def getParameterInt(self, key, default=0):
 
 		try:
-			value = pluginQueries[key]
+			value = self.pluginQueries[key]
 
 			if value == "true" or value == "True":
 				return True
@@ -85,7 +77,7 @@ class Settings(Addon):
 	def getSetting(self, key, default=""):
 
 		try:
-			value = super(Settings, self).getSetting(key)
+			value = super().getSetting(key)
 
 			if value == "true" or value == "True":
 				return True

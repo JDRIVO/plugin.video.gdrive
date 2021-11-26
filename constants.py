@@ -17,16 +17,8 @@
 
 """
 
-import re
-import sys
-import xbmcaddon
-from resources.lib import gdrive_api2
+from resources.lib import gdrive_api2, settings
 
 PLUGIN_NAME = "gdrive"
-addon = xbmcaddon.Addon(id="plugin.video.gdrive")
+addon = settings.Settings()
 cloudservice2 = gdrive_api2.GDrive
-
-
-class Const:
-	testingFeatures = False
-	DEBUG = False

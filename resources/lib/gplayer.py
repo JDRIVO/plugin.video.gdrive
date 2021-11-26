@@ -1,19 +1,16 @@
 import xbmc
 import constants
 from threading import Thread
-from resources.lib import settings
-
 
 class GPlayer(xbmc.Player):
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self, dbID, dbType, widget, trackProgress, settings):
 		self.videoDuration = self.stopSaving = self.started = self.close = False
-		xbmc.Player.__init__(self)
-		self.settings = settings.Settings()
-		self.dbID = kwargs["dbID"]
-		self.dbType = kwargs["dbType"]
-		self.widget = kwargs["widget"]
-		self.trackProgress = kwargs["trackProgress"]
+		self.dbID = dbID
+		self.dbType = dbType
+		self.widget = widget
+		self.settings = settings
+		self.trackProgress = trackProgress
 
 		if self.dbType == "movie":
 			self.isMovie = True
