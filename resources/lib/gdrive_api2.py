@@ -211,13 +211,6 @@ class GDrive:
 	def getHeadersEncoded(self):
 		return urllib.parse.urlencode(self.getHeadersList())
 
-	def getInstanceSetting(self, setting, default=None):
-
-		try:
-			return self.settings.getSetting(self.instanceName + "_" + setting)
-		except:
-			return default
-
 	##
 	# perform login
 	##
@@ -232,3 +225,10 @@ class GDrive:
 
 		if self.authorization.isUpdated: # and settings.getSetting(self.instanceName + "_save_auth_token") == "true":
 			self.authorization.saveTokens(self.instanceName, self.settings)
+
+	def getInstanceSetting(self, setting, default=None):
+
+		try:
+			return self.settings.getSetting(self.instanceName + "_" + setting)
+		except:
+			return default

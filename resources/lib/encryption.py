@@ -1,7 +1,6 @@
 # http://stackoverflow.com/questions/6425131/encrpyt-decrypt-data-in-python-with-salt
 
 import os
-import sys
 import base64
 import random
 import struct
