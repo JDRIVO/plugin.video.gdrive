@@ -210,8 +210,8 @@ msgid "Mark Episode as Watched at:"
 msgstr "Mark Episode as Watched at:"
 
 msgctxt "#30403"
-msgid "Default playback action:"
-msgstr "Default playback action:"
+msgid "Default Playback Action:"
+msgstr "Default Playback Action:"
 
 msgctxt "#30404"
 msgid "Enable Media Flag Background Service (Requires Restart)"
