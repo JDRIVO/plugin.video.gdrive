@@ -170,8 +170,8 @@ msgid "Set fallback account(s)"
 msgstr "Set fallback account(s)"
 
 msgctxt "#30221"
-msgid "The video database set in your gDrive video settings is incompatible with this version of Kodi."
-msgstr "The video database set in your gDrive video settings is incompatible with this version of Kodi."
+msgid "The video database set in your gDrive library settings is incompatible with this version of Kodi."
+msgstr "The video database set in your gDrive library settings is incompatible with this version of Kodi."
 
 msgctxt "#30300"
 msgid "Accounts"
