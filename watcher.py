@@ -93,11 +93,11 @@ class LibraryMonitor(xbmc.Monitor):
 			"aspect_ratio": "fVideoAspect",
 			"video_width": "iVideoWidth",
 			"video_height": "iVideoHeight",
-			"video_duration": "iVideoDuration"
+			"video_duration": "iVideoDuration",
 		}
 		audioInfo = {
 			"audio_codec": "strAudioCodec",
-			"audio_channels": "iAudioChannels"
+			"audio_channels": "iAudioChannels",
 		}
 
 		videoNames, videoValues, audioNames, audioValues = [], [], [], []
