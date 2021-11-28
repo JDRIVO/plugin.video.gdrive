@@ -84,8 +84,7 @@ class LibraryMonitor(xbmc.Monitor):
 					)
 					return
 
-				statement = self.statementConstructor(mediaInfo, fileID)
-				self.insert(statement)
+				self.insert(self.statementConstructor(mediaInfo, fileID))
 
 	@staticmethod
 	def mediaInfoConversion(strmData):
