@@ -36,11 +36,11 @@ class LibraryMonitor(xbmc.Monitor):
 		if method != "VideoLibrary.OnUpdate":
 			return
 
-		response = json.loads(data)
+		data = json.loads(data)
 
-		if "item" in response and "type" in response.get("item") and response.get("item").get("type") in ("episode", "movie"):
-			dbID = response["item"]["id"]
-			dbType = response["item"]["type"]
+		if "item" in data and "type" in data.get("item") and data.get("item").get("type") in ("episode", "movie"):
+			dbID = data["item"]["id"]
+			dbType = data["item"]["type"]
 
 			if dbType == "movie":
 				query =	{
