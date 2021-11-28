@@ -34,57 +34,59 @@ class LibraryMonitor(xbmc.Monitor):
 
 	def onNotification(self, sender, method, data):
 
-		if method == "VideoLibrary.OnUpdate":
-			response = json.loads(data)
+		if method != "VideoLibrary.OnUpdate":
+			return
 
-			if "item" in response and "type" in response.get("item") and response.get("item").get("type") in ("episode", "movie"):
-				dbID = response["item"]["id"]
-				dbType = response["item"]["type"]
+		response = json.loads(data)
 
-				if dbType == "movie":
-					query =	{
-						"jsonrpc": "2.0",
-						"id": "1",
-						"method": "VideoLibrary.GetMovieDetails",
-						"params": {"movieid": dbID, "properties": ["file"]},
-					}
-					jsonKey = "moviedetails"
-				else:
-					query = {
-						"jsonrpc": "2.0",
-						"id": "1",
-						"method": "VideoLibrary.GetEpisodeDetails",
-						"params": {"episodeid": dbID, "properties": ["file"]},
-					}
-					jsonKey = "episodedetails"
+		if "item" in response and "type" in response.get("item") and response.get("item").get("type") in ("episode", "movie"):
+			dbID = response["item"]["id"]
+			dbType = response["item"]["type"]
 
-				jsonResponse = self.jsonQuery(query)
+			if dbType == "movie":
+				query =	{
+					"jsonrpc": "2.0",
+					"id": "1",
+					"method": "VideoLibrary.GetMovieDetails",
+					"params": {"movieid": dbID, "properties": ["file"]},
+				}
+				jsonKey = "moviedetails"
+			else:
+				query = {
+					"jsonrpc": "2.0",
+					"id": "1",
+					"method": "VideoLibrary.GetEpisodeDetails",
+					"params": {"episodeid": dbID, "properties": ["file"]},
+				}
+				jsonKey = "episodedetails"
 
-				strmPath = jsonResponse["result"][jsonKey]["file"]
-				strmName = os.path.basename(strmPath)
-				strmDir = os.path.dirname(strmPath) + os.sep
-				strmData = self.openFile(strmPath)
+			jsonResponse = self.jsonQuery(query)
 
-				mediaInfo = self.mediaInfoConversion(strmData)
+			strmPath = jsonResponse["result"][jsonKey]["file"]
+			strmName = os.path.basename(strmPath)
+			strmDir = os.path.dirname(strmPath) + os.sep
+			strmData = self.openFile(strmPath)
 
-				if not mediaInfo:
-					return
+			mediaInfo = self.mediaInfoConversion(strmData)
 
-				try:
-					fileID = self.select(
-						(
-							"SELECT idFile FROM files WHERE idPath=(SELECT idPath FROM path WHERE strPath=?) AND strFilename=?",
-							(strmDir, strmName),
-						),
-					)
-				except:
-					xbmc.log(
-						self.settings.getLocalizedString(30003) + ": " + self.settings.getLocalizedString(30221),
-						xbmc.LOGERROR,
-					)
-					return
+			if not mediaInfo:
+				return
 
-				self.insert(self.statementConstructor(mediaInfo, fileID))
+			try:
+				fileID = self.select(
+					(
+						"SELECT idFile FROM files WHERE idPath=(SELECT idPath FROM path WHERE strPath=?) AND strFilename=?",
+						(strmDir, strmName),
+					),
+				)
+			except:
+				xbmc.log(
+					self.settings.getLocalizedString(30003) + ": " + self.settings.getLocalizedString(30221),
+					xbmc.LOGERROR,
+				)
+				return
+
+			self.insert(self.statementConstructor(mediaInfo, fileID))
 
 	@staticmethod
 	def mediaInfoConversion(strmData):
