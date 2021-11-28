@@ -22,12 +22,14 @@ class LibraryMonitor(xbmc.Monitor):
 		self.settings = constants.addon
 		self.getSettings()
 
-	def openFile(self, path):
+	@staticmethod
+	def openFile(path):
 
 		with open(path, "rb") as strm:
 			return strm.read().decode("utf-8")
 
-	def jsonQuery(self, query):
+	@staticmethod
+	def jsonQuery(query):
 		query = json.dumps(query)
 		return json.loads(xbmc.executeJSONRPC(query))
 
