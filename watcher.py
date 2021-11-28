@@ -118,17 +118,17 @@ class LibraryMonitor(xbmc.Monitor):
 				audioNames.append(audioInfo[mediaInfo])
 				audioValues.append(value)
 
-		converted = {}
+		converted = []
 
 		if videoNames:
 			videoNames.append("iStreamType")
 			videoValues.append("0")
-			converted["video"] = videoNames, videoValues
+			converted.append((videoNames, videoValues))
 
 		if audioNames:
 			audioNames.append("iStreamType")
 			audioValues.append("1")
-			converted["audio"] = audioNames, audioValues
+			converted.append((audioNames, audioValues))
 
 		if converted:
 			return converted
@@ -137,21 +137,22 @@ class LibraryMonitor(xbmc.Monitor):
 	def statementConstructor(mediaInfo, fileID):
 		statements = []
 
-		for k, v in mediaInfo.items():
-			v[0].append("idFile")
-			v[1].append(str(fileID))
+		for names, values in mediaInfo:
+			names.append("idFile")
+			values.append(fileID)
 			reconstruct = "".join(
 				[
-					"{}='{}' AND ".format(value, v[1][count])
-					if value != v[0][-1]
-					else "{}='{}'".format(value, v[1][count])
-					for count, value in enumerate(v[0])
+					"{}='{}' AND ".format(name, values[count])
+					if name != names[-1]
+					else "{}='{}'".format(name, values[count])
+					for count, name in enumerate(names)
 				]
 			)
-			rows, values = ", ".join(v[0]), str(v[1])[1:-1]
+			names = ", ".join(names)
+			values = str(values)[1:-1]
 			statements.append(
 				"INSERT INTO streamdetails ({}) SELECT {} WHERE NOT EXISTS (SELECT 1 FROM streamdetails WHERE {})".format(
-					rows, values, reconstruct
+					names, values, reconstruct
 				)
 			)
 
