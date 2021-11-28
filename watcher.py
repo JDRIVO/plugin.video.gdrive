@@ -88,8 +88,6 @@ class LibraryMonitor(xbmc.Monitor):
 
 	@staticmethod
 	def mediaInfoConversion(strmData):
-		# "Apollo 13 (1995) Anniversary Edition&aspect_ratio=33&audio_codec=69"
-
 		videoInfo = {
 			"video_codec": "strVideoCodec",
 			"aspect_ratio": "fVideoAspect",
