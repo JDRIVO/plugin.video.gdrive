@@ -111,22 +111,12 @@ class LibraryMonitor(xbmc.Monitor):
 			if not value:
 				continue
 
-			match = False
-
 			if mediaInfo in videoInfo:
-				match = True
-				names = videoNames
-				values = videoValues
-				media = videoInfo
+				videoNames.append(videoInfo[mediaInfo])
+				videoValues.append(value)
 			elif mediaInfo in audioInfo:
-				match = True
-				names = audioNames
-				values = audioValues
-				media = audioInfo
-
-			if match:
-				names.append(media[mediaInfo])
-				values.append(value)
+				audioNames.append(audioInfo[mediaInfo])
+				audioValues.append(value)
 
 		converted = {}
 
