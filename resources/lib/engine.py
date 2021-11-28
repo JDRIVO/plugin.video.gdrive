@@ -500,7 +500,7 @@ class ContentEngine:
 
 			if resumePosition > 0:
 
-				if playbackAction == "Resume prompt":
+				if playbackAction == "Show resume prompt":
 					options = ("Resume from " + str(time.strftime("%H:%M:%S", time.gmtime(resumePosition))), "Play from beginning")
 					selection = xbmcgui.Dialog().contextmenu(options)
 
@@ -571,5 +571,5 @@ class ContentEngine:
 				# with open(resumeDB, "wb+") as dic:
 					# pickle.dump(videoData, dic)
 
-		# request = {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"field": "playcount", "operator": "greaterthan", "value": "0"}, "limits": { "start": 0 }, "properties": ["playcount"], "sort": { "order": "ascending", "method": "label" } }, "id": "libMovies"}
-		# request = {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"field": "playcount", "operator": "greaterthan", "value": "0"}, "limits": { "start": 0 }, "properties": ["playcount"], "sort": { "order": "ascending", "method": "label" } }, "id": "libMovies"}
+		# request = {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": {"field": "playcount", "operator": "greaterthan", "value": "0"}, "limits": {"start": 0}, "properties": ["playcount"], "sort": {"order": "ascending", "method": "label"}}, "id": "libMovies"}
+		# request = {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": {"field": "playcount", "operator": "greaterthan", "value": "0"}, "limits": {"start": 0}, "properties": ["playcount"], "sort": {"order": "ascending", "method": "label"}}, "id": "libMovies"}
