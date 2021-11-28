@@ -109,7 +109,7 @@ class LibraryMonitor(xbmc.Monitor):
 			mediaInfo, value = params.split("=")
 
 			if not value:
-				conintue
+				continue
 
 			match = False
 
