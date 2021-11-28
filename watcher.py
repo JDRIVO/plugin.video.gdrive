@@ -99,7 +99,6 @@ class LibraryMonitor(xbmc.Monitor):
 			"audio_codec": "strAudioCodec",
 			"audio_channels": "iAudioChannels",
 		}
-
 		videoNames, videoValues, audioNames, audioValues = [], [], [], []
 		strmData = strmData.split("&")
 
