@@ -330,6 +330,8 @@ class ContentEngine:
 			if not selection:
 				return
 
+			deleted = False
+
 			for index_ in selection:
 				instanceName = accountInstances[index_]
 				accountName = accountNames[index_]
@@ -346,12 +348,15 @@ class ContentEngine:
 						continue
 
 					accountActions.deleteAccount(instanceName, accountName)
+					deleted = True
 
 					if accountName in fallbackAccountNames:
 						accountActions.removeFallbackAccount(accountName, accountNumber, fallbackAccounts)
 
 			xbmcgui.Dialog().ok(SETTINGS.getLocalizedString(30000), SETTINGS.getLocalizedString(30020))
-			xbmc.executebuiltin("Container.Refresh")
+
+			if deleted:
+				xbmc.executebuiltin("Container.Refresh")
 
 		elif mode in ("delete", "settings_delete"):
 			accountInstances, accountNames, accountNumbers = accountActions.getAccounts(accountAmount)
