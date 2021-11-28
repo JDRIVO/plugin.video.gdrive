@@ -29,8 +29,7 @@ class LibraryMonitor(xbmc.Monitor):
 
 	def jsonQuery(self, query):
 		query = json.dumps(query)
-		result = xbmc.executeJSONRPC(query)
-		return json.loads(result)
+		return json.loads(xbmc.executeJSONRPC(query))
 
 	def onNotification(self, sender, method, data):
 
