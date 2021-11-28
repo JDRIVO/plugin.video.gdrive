@@ -104,16 +104,16 @@ class LibraryMonitor(xbmc.Monitor):
 		strmData = strmData.split("&")
 
 		for params in strmData:
-			mediaInfo, value = params.split("=")
+			name, value = params.split("=")
 
 			if not value:
 				continue
 
-			if mediaInfo in videoInfo:
-				videoNames.append(videoInfo[mediaInfo])
+			if name in videoInfo:
+				videoNames.append(videoInfo[name])
 				videoValues.append(value)
-			elif mediaInfo in audioInfo:
-				audioNames.append(audioInfo[mediaInfo])
+			elif name in audioInfo:
+				audioNames.append(audioInfo[name])
 				audioValues.append(value)
 
 		converted = []
