@@ -166,10 +166,7 @@ class LibraryMonitor(xbmc.Monitor):
 
 	def insert(self, statements):
 		db = sqlite.connect(self.dbPath)
-
-		for statement in statements:
-			db.execute(statement)
-
+		[db.execute(statement) for statement in statements]
 		db.commit()
 		db.close()
 
