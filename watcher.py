@@ -25,8 +25,8 @@ class LibraryMonitor(xbmc.Monitor):
 	@staticmethod
 	def openFile(path):
 
-		with open(path, "rb") as strm:
-			return strm.read().decode("utf-8")
+		with open(path, "r") as strm:
+			return strm.read()
 
 	@staticmethod
 	def jsonQuery(query):
@@ -140,7 +140,7 @@ class LibraryMonitor(xbmc.Monitor):
 		for names, values in mediaInfo:
 			names.append("idFile")
 			values.append(fileID)
-			reconstruct = "".join(
+			condition = "".join(
 				[
 					"{}='{}' AND ".format(name, values[count])
 					if name != names[-1]
@@ -152,7 +152,7 @@ class LibraryMonitor(xbmc.Monitor):
 			values = str(values)[1:-1]
 			statements.append(
 				"INSERT INTO streamdetails ({}) SELECT {} WHERE NOT EXISTS (SELECT 1 FROM streamdetails WHERE {})".format(
-					names, values, reconstruct
+					names, values, condition
 				)
 			)
 
