@@ -334,7 +334,7 @@ class ContentEngine:
 			deleted = False
 			total = len(selection)
 			dialog = xbmcgui.DialogProgress()
-			dialog.create("Processing")
+			dialog.create(SETTINGS.getLocalizedString(30306))
 
 			for index_ in selection:
 
