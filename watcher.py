@@ -72,7 +72,6 @@ class LibraryMonitor(xbmc.Monitor):
 
 			strmDir = os.path.dirname(strmPath) + os.sep
 			strmData = self.openFile(strmPath)
-
 			mediaInfo = self.mediaInfoConversion(strmData)
 
 			if not mediaInfo:
