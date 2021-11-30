@@ -344,6 +344,7 @@ class ContentEngine:
 				instanceName = accountInstances[index_]
 				accountName = accountNames[index_]
 				accountNumber = accountNumbers[index_]
+
 				validated = accountActions.validateAccount(instanceName, userAgent)
 				dialog.update(int(round(count / total * 100)), accountName)
 				count += 1
@@ -536,6 +537,7 @@ class ContentEngine:
 			driveID = SETTINGS.getParameter("filename")
 			driveURL = "https://www.googleapis.com/drive/v2/files/{}?includeTeamDriveItems=true&supportsTeamDrives=true&alt=media".format(driveID)
 			serverPort = SETTINGS.getSettingInt("server_port", 8011)
+
 			url = "http://localhost:{}/crypto_playurl".format(serverPort)
 			data = "instance={}&url={}".format(service.instanceName, driveURL)
 			req = urllib.request.Request(url, data.encode("utf-8"))
