@@ -283,7 +283,7 @@ class ContentEngine:
 			if selection:
 				xbmc.executebuiltin("Container.Refresh")
 
-		elif mode == "settings_default":
+		elif mode == "default":
 			accountInstances, accountNames, accountNumbers = accountActions.getAccounts(accountAmount)
 			selection = xbmcgui.Dialog().select(SETTINGS.getLocalizedString(30120), accountNames)
 
