@@ -550,7 +550,7 @@ class ContentEngine:
 				item.setProperty("totaltime", str(videoLength))
 				item.setProperty("resumetime", str(resumePosition))
 
-			if SETTINGS.getSetting("subtitles"):
+			if SETTINGS.getSetting("subtitles") == "Subtitles are named the same as STRM":
 				subtitles = filePath.replace(".strm", ".srt")
 
 				if os.path.exists(subtitles):

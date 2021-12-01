@@ -218,8 +218,8 @@ msgid "Default Playback Action:"
 msgstr "Default Playback Action:"
 
 msgctxt "#30404"
-msgid "Are SRT subtitles named the same as STRM files?"
-msgstr "Are SRT subtitles named the same as STRM files?"
+msgid "Subtitle Structure:"
+msgstr "Subtitle Structure:"
 
 msgctxt "#30405"
 msgid "Enable Media Flag Background Service (Requires Restart)"
