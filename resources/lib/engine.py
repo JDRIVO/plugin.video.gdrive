@@ -336,14 +336,14 @@ class ContentEngine:
 			dialog = xbmcgui.DialogProgress()
 			dialog.create(SETTINGS.getLocalizedString(30306))
 
-			for index_ in selection:
+			for index in selection:
 
 				if dialog.iscanceled():
 					return
 
-				instanceName = accountInstances[index_]
-				accountName = accountNames[index_]
-				accountNumber = accountNumbers[index_]
+				instanceName = accountInstances[index]
+				accountName = accountNames[index]
+				accountNumber = accountNumbers[index]
 
 				validated = accountActions.validateAccount(instanceName, userAgent)
 				dialog.update(int(round(count / total * 100)), accountName)
@@ -462,14 +462,14 @@ class ContentEngine:
 
 					dbPath = xbmcvfs.translatePath(SETTINGS.getSetting("video_db"))
 					db = sqlite.connect(dbPath)
-					dirPath = os.path.dirname(filePath) + os.sep
+					fileDir = os.path.dirname(filePath) + os.sep
 					fileName = os.path.basename(filePath)
 
 					try:
 						resumePosition = list(
 							db.execute(
 								"SELECT timeInSeconds FROM bookmark WHERE idFile=(SELECT idFile FROM files WHERE idPath=(SELECT idPath FROM path WHERE strPath=?) AND strFilename=?)",
-								(dirPath, fileName)
+								(fileDir, fileName)
 							)
 						)
 					except:
@@ -484,7 +484,7 @@ class ContentEngine:
 						videoLength = list(
 							db.execute(
 								"SELECT totalTimeInSeconds FROM bookmark WHERE idFile=(SELECT idFile FROM files WHERE idPath=(SELECT idPath FROM path WHERE strPath=?) AND strFilename=?)",
-								(dirPath, fileName)
+								(fileDir, fileName)
 							)
 						)[0][0]
 					else:
