@@ -549,6 +549,11 @@ class ContentEngine:
 				# item.setProperty("totaltime", "1")
 				item.setProperty("totaltime", str(videoLength))
 				item.setProperty("resumetime", str(resumePosition))
+			
+			subtitles = filePath.replace(".strm", ".srt")
+			
+			if os.path.exists(subtitles):
+				item.setSubtitles([subtitles])
 
 			xbmcplugin.setResolvedUrl(PLUGIN_HANDLE, True, item)
 
