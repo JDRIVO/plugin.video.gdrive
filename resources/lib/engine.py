@@ -549,11 +549,18 @@ class ContentEngine:
 				# item.setProperty("totaltime", "1")
 				item.setProperty("totaltime", str(videoLength))
 				item.setProperty("resumetime", str(resumePosition))
-			
-			subtitles = filePath.replace(".strm", ".srt")
-			
-			if os.path.exists(subtitles):
-				item.setSubtitles([subtitles])
+
+			if SETTINGS.getSetting("subtitles"):
+				subtitles = filePath.replace(".strm", ".srt")
+
+				if os.path.exists(subtitles):
+					item.setSubtitles([subtitles])
+
+			else:
+				fileDir = os.path.dirname(filePath) + os.sep
+
+				for root, dirs, files in os.walk(fileDir):
+					[item.setSubtitles([fileDir + file]) for file in files if file.endswith(".srt")]
 
 			xbmcplugin.setResolvedUrl(PLUGIN_HANDLE, True, item)
 
