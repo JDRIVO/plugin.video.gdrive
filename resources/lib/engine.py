@@ -283,13 +283,6 @@ class ContentEngine:
 			if selection:
 				xbmc.executebuiltin("Container.Refresh")
 
-		elif mode == "make_default":
-			accountActions.setDefaultAccount(
-				accountActions.getAccountName(instanceName),
-				accountActions.getAccountNumber(instanceName),
-			)
-			xbmc.executebuiltin("Container.Refresh")
-
 		elif mode == "settings_default":
 			accountInstances, accountNames, accountNumbers = accountActions.getAccounts(accountAmount)
 			selection = xbmcgui.Dialog().select(SETTINGS.getLocalizedString(30120), accountNames)
@@ -298,7 +291,6 @@ class ContentEngine:
 				return
 
 			accountActions.setDefaultAccount(accountNames[selection], accountNumbers[selection])
-			xbmc.executebuiltin("Container.Refresh")
 
 		elif mode == "fallback":
 			accountInstances, accountNames, accountNumbers = accountActions.getAccounts(accountAmount)
