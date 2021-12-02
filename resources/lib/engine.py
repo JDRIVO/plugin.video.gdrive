@@ -1,6 +1,7 @@
 import re
 import os
 import sys
+import glob
 import time
 import urllib
 import xbmc
@@ -415,6 +416,7 @@ class ContentEngine:
 					xbmc.executebuiltin("Dialog.Close(busydialog)")
 					dbID = xbmc.getInfoLabel("ListItem.DBID")
 					dbType = xbmc.getInfoLabel("ListItem.DBTYPE")
+					filePath = xbmc.getInfoLabel("ListItem.FileNameAndPath")
 
 			resumePosition = 0
 			resumeOption = False
@@ -551,16 +553,12 @@ class ContentEngine:
 				item.setProperty("resumetime", str(resumePosition))
 
 			if SETTINGS.getSetting("subtitles") == "Subtitles are named the same as STRM":
-				subtitles = filePath.replace(".strm", ".srt")
-
-				if os.path.exists(subtitles):
-					item.setSubtitles([subtitles])
-
+				subtitles = glob.glob(glob.escape(filePath.replace(".strm", "")) + "*[!m]")
+				item.setSubtitles(subtitles)
 			else:
 				fileDir = os.path.dirname(filePath) + os.sep
-
-				for root, dirs, files in os.walk(fileDir):
-					[item.setSubtitles([fileDir + file]) for file in files if file.endswith(".srt")]
+				subtitles = glob.glob(glob.escape(fileDir) + "*[!m]")
+				item.setSubtitles(subtitles)
 
 			xbmcplugin.setResolvedUrl(PLUGIN_HANDLE, True, item)
 
