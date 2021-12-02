@@ -556,8 +556,7 @@ class ContentEngine:
 				subtitles = glob.glob(glob.escape(filePath.replace(".strm", "")) + "*[!m]")
 				item.setSubtitles(subtitles)
 			else:
-				fileDir = os.path.dirname(filePath) + os.sep
-				subtitles = glob.glob(glob.escape(fileDir) + "*[!m]")
+				subtitles = glob.glob(glob.escape(os.path.dirname(filePath) + os.sep) + "*[!m]")
 				item.setSubtitles(subtitles)
 
 			xbmcplugin.setResolvedUrl(PLUGIN_HANDLE, True, item)
