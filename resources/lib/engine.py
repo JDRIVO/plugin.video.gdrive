@@ -317,19 +317,14 @@ class ContentEngine:
 			accountInstances, accountNames, accountNumbers = accountActions.getAccounts(accountAmount)
 			fallbackAccounts = accountActions.getFallbackAccounts()
 			fallbackAccountNames, fallbackAccountNumbers = accountActions.getFallbackAccounts()
-			accounts = [n for n in range(accountAmount)]
-			selection = xbmcgui.Dialog().multiselect(SETTINGS.getLocalizedString(30024), accountNames, preselect=accounts)
-
-			if not selection:
-				return
 
 			count = 1
 			deleted = False
-			total = len(selection)
+			totalAccounts = len(accountNames)
 			dialog = xbmcgui.DialogProgress()
 			dialog.create(SETTINGS.getLocalizedString(30306))
 
-			for index in selection:
+			for index in range(totalAccounts):
 
 				if dialog.iscanceled():
 					return
@@ -339,7 +334,7 @@ class ContentEngine:
 				accountNumber = accountNumbers[index]
 
 				validated = accountActions.validateAccount(instanceName, userAgent)
-				dialog.update(int(round(count / total * 100)), accountName)
+				dialog.update(int(round(count / totalAccounts * 100)), accountName)
 				count += 1
 
 				if not validated:
