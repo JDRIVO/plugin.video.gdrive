@@ -41,7 +41,6 @@
 				</setting>
 				<setting id="fallback_accounts" type="string" label="30001" help="">
 					<level>0</level>
-					<default/>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
@@ -181,7 +180,6 @@
 			<group id="2" label="30503">
 				<setting id="crypto_password" type="string" label="30504" help="">
 					<level>0</level>
-					<default/>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
@@ -191,7 +189,6 @@
 				</setting>
 				<setting id="crypto_salt" type="path" label="30505" help="">
 					<level>0</level>
-					<default/>
 					<constraints>
 						<writable>false</writable>
 						<allowempty>true</allowempty>
