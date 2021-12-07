@@ -317,12 +317,12 @@ class ContentEngine:
 			accountInstances, accountNames, accountNumbers = accountActions.getAccounts(accountAmount)
 			fallbackAccounts = accountActions.getFallbackAccounts()
 			fallbackAccountNames, fallbackAccountNumbers = accountActions.getFallbackAccounts()
-
-			count = 1
-			deleted = False
 			totalAccounts = len(accountNames)
+
 			dialog = xbmcgui.DialogProgress()
 			dialog.create(SETTINGS.getLocalizedString(30306))
+			deleted = False
+			count = 1
 
 			for index in range(totalAccounts):
 
