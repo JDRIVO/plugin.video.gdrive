@@ -29,7 +29,9 @@
 				</setting>
 				<setting id="default_account" type="string" label="30001" help="">
 					<level>0</level>
-					<default>1</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
 					<dependencies>
 						<dependency type="visible">
 							<condition on="property" name="InfoBool">false</condition>
