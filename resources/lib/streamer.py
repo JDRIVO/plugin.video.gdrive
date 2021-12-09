@@ -378,4 +378,3 @@ class MyStreamer(BaseHTTPRequestHandler):
 			self.send_response(200)
 			self.end_headers()
 			self.wfile.write(enrolment.page1)
-			return
