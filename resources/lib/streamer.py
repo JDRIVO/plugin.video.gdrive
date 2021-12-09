@@ -369,7 +369,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			try:
 				decrypt.decryptStreamChunkOld(response, self.wfile, startOffset=startOffset)
 			except Exception as e:
-				xbmc.log("gDrive: " + str(e))
+				xbmc.log(self.server.settings.getLocalizedString(30003) + ": " + str(e))
 
 			response.close()
 
