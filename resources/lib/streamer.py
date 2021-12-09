@@ -117,9 +117,9 @@ class MyStreamer(BaseHTTPRequestHandler):
 		elif self.path == "/enroll":
 			contentLength = int(self.headers["Content-Length"])  # <--- Gets the size of data
 			postData = self.rfile.read(contentLength).decode("utf-8")  # <--- Gets the data itself
+			postData = urllib.parse.unquote_plus(postData)
 			self.send_response(200)
 			self.end_headers()
-			postData = urllib.parse.unquote_plus(postData)
 
 			account, code, clientID, clientSecret = re.findall("account=(.*)&code=(.*)&client_id=(.*)&client_secret=(.*)", postData)[0]
 			url = "https://accounts.google.com/o/oauth2/token"
