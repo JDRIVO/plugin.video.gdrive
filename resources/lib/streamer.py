@@ -42,6 +42,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		self.PLUGIN_HANDLE = PLUGIN_HANDLE
 		self.PLUGIN_NAME = PLUGIN_NAME
 		self.PLUGIN_URL = PLUGIN_URL
+
 		self.settings = settings
 		self.userAgent = self.settings.getSetting("user_agent")
 		self.close = False
