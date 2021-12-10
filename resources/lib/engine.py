@@ -540,10 +540,10 @@ class ContentEngine:
 				item.setProperty("resumetime", str(resumePosition))
 
 			if SETTINGS.getSetting("subtitles") == "Subtitles are named the same as STRM":
-				subtitles = glob.glob(glob.escape(filePath.replace(".strm", "")) + "*[!m]")
+				subtitles = glob.glob(glob.escape(filePath.replace(".strm", "")) + "*[!gm]")
 				item.setSubtitles(subtitles)
 			else:
-				subtitles = glob.glob(glob.escape(os.path.dirname(filePath) + os.sep) + "*[!m]")
+				subtitles = glob.glob(glob.escape(os.path.dirname(filePath) + os.sep) + "*[!gm]")
 				item.setSubtitles(subtitles)
 
 			xbmcplugin.setResolvedUrl(PLUGIN_HANDLE, True, item)
