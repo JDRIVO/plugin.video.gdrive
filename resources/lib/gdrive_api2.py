@@ -76,7 +76,7 @@ class GDrive:
 		try:
 			response = urllib.request.urlopen(req)
 		except urllib.error.URLError as e:
-			xbmc.log(settings.getLocalizedString(30003) + ": " + str(e))
+			xbmc.log(self.settings.getLocalizedString(30003) + ": " + str(e))
 			return
 
 		responseData = response.read().decode("utf-8")
@@ -84,7 +84,7 @@ class GDrive:
 		error = re.findall('"error_description": "(.*?)"', responseData)
 
 		if error:
-			xbmc.log(settings.getLocalizedString(30003) + ": " + error[0])
+			xbmc.log(self.settings.getLocalizedString(30003) + ": " + error[0])
 			return
 
 		accessToken, refreshToken = re.findall('access_token": "(.*?)".*refresh_token": "(.*?)"', responseData, re.DOTALL)[0]
@@ -114,7 +114,7 @@ class GDrive:
 			response = urllib.request.urlopen(req)
 		except urllib.error.URLError as e:
 			self.failed = True
-			xbmc.log(settings.getLocalizedString(30003) + ": " + str(e))
+			xbmc.log(self.settings.getLocalizedString(30003) + ": " + str(e))
 			return
 
 		responseData = response.read().decode("utf-8")
@@ -122,7 +122,7 @@ class GDrive:
 		error = re.findall('"error_description": "(.*?)"', responseData)
 
 		if error:
-			xbmc.log(settings.getLocalizedString(30003) + ": " + error[0])
+			xbmc.log(self.settings.getLocalizedString(30003) + ": " + error[0])
 			return
 
 		accessToken = re.findall('"access_token": "(.*?)"', responseData)[0]
