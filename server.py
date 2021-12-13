@@ -11,13 +11,6 @@ def run():
 	port = settings.getSettingInt("server_port", 8011)
 	server = streamer.MyHTTPServer(("", port), streamer.MyStreamer)
 
-	try:
-		pluginHandle = int(sys.argv[1])
-		pluginQueries = settings.parse_query(sys.argv[2][1:])
-	except:
-		pluginHandle = None
-		pluginQueries = None
-
 	server.setDetails(pluginName, settings)
 	Thread(target=server.run, daemon=True).start()
 	monitor = xbmc.Monitor()
