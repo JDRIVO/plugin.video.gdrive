@@ -527,7 +527,7 @@ class ContentEngine:
 				response = urllib.request.urlopen(req)
 				response.close()
 			except urllib.error.URLError as e:
-				xbmc.log(settings.getLocalizedString(30003) + ": " + str(e))
+				xbmc.log(SETTINGS.getLocalizedString(30003) + ": " + str(e))
 				return
 
 			item = xbmcgui.ListItem(path="http://localhost:{}/play".format(serverPort))
