@@ -81,7 +81,6 @@ class GDrive:
 
 		responseData = response.read().decode("utf-8")
 		response.close()
-
 		error = re.findall('"error_description": "(.*?)"', responseData)
 
 		if error:
@@ -120,7 +119,6 @@ class GDrive:
 
 		responseData = response.read().decode("utf-8")
 		response.close()
-
 		error = re.findall('"error_description": "(.*?)"', responseData)
 
 		if error:
