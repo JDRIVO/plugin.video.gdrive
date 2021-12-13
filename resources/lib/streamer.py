@@ -263,7 +263,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 						return
 
 				else:
-					xbmc.log(settings.getLocalizedString(30003) + ": " + str(e))
+					xbmc.log(self.server.settings.getLocalizedString(30003) + ": " + str(e))
 					return
 
 			self.server.failed = False
