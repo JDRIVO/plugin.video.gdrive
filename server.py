@@ -18,7 +18,7 @@ def run():
 		pluginHandle = None
 		pluginQueries = None
 
-	server.setDetails(pluginHandle, pluginName, pluginName, settings)
+	server.setDetails(pluginName, settings)
 	Thread(target=server.run, daemon=True).start()
 	monitor = xbmc.Monitor()
 

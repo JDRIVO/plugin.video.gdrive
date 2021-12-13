@@ -39,13 +39,11 @@ class GDrive:
 	##
 	# initialize (save addon, instance name, user agent)
 	##
-	def __init__(self, PLUGIN_HANDLE, PLUGIN_URL, settings, instanceName, userAgent, authenticate=True):
-		self.PLUGIN_HANDLE = PLUGIN_HANDLE
-		self.PLUGIN_URL = PLUGIN_URL
+	def __init__(self, settings, instanceName, userAgent, authenticate=True):
 		self.settings = settings
 		self.instanceName = instanceName
-
 		self.authorization = authorization.Authorization()
+
 		self.cookiejar = http.cookiejar.CookieJar()
 		self.userAgent = userAgent
 		self.failed = False
@@ -78,21 +76,22 @@ class GDrive:
 		try:
 			response = urllib.request.urlopen(req)
 		except urllib.error.URLError as e:
-			xbmc.log(str(e))
+			xbmc.log(settings.getLocalizedString(30003) + ": " + str(e))
 			return
 
 		responseData = response.read().decode("utf-8")
 		response.close()
 
-		# retrieve authorization token
+		error = re.findall('"error_description": "(.*?)"', responseData)
+
+		if error:
+			xbmc.log(settings.getLocalizedString(30003) + ": " + error[0])
+			return
+
 		accessToken, refreshToken = re.findall('access_token": "(.*?)".*refresh_token": "(.*?)"', responseData, re.DOTALL)[0]
 		self.authorization.setToken("auth_access_token", accessToken)
 		self.authorization.setToken("auth_refresh_token", refreshToken)
 		self.updateAuthorization()
-		errorMessage = re.findall('"error_description": "(.*)"', responseData)
-
-		if errorMessage:
-			xbmc.log(errorMessage[0])
 
 	##
 	# refresh OAUTH2 access given refresh token
@@ -116,20 +115,21 @@ class GDrive:
 			response = urllib.request.urlopen(req)
 		except urllib.error.URLError as e:
 			self.failed = True
-			xbmc.log(str(e))
+			xbmc.log(settings.getLocalizedString(30003) + ": " + str(e))
 			return
 
 		responseData = response.read().decode("utf-8")
 		response.close()
 
-		# retrieve authorization token
+		error = re.findall('"error_description": "(.*?)"', responseData)
+
+		if error:
+			xbmc.log(settings.getLocalizedString(30003) + ": " + error[0])
+			return
+
 		accessToken = re.findall('"access_token": "(.*?)"', responseData)[0]
 		self.authorization.setToken("auth_access_token", accessToken)
 		self.updateAuthorization()
-		errorMessage = re.findall('"error_description": "(.*)"', responseData)
-
-		if errorMessage:
-			xbmc.log(errorMessage[0])
 
 	##
 	# return the appropriate "headers" for Google Drive requests that include 1) user agent, 2) authorization token
@@ -185,12 +185,6 @@ class GDrive:
 	##
 	def getHeadersEncoded(self):
 		return urllib.parse.urlencode(self.getHeadersList())
-
-	##
-	# perform login
-	##
-	def login(self):
-		pass
 
 	##
 	# if we don't have an authorization token set for the plugin, set it with the recent login.
