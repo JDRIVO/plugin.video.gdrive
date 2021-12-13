@@ -325,7 +325,8 @@ class MyStreamer(BaseHTTPRequestHandler):
 			try:
 				response = urllib.request.urlopen(req)
 			except urllib.error.URLError as e:
-					return
+				xbmc.log(self.server.settings.getLocalizedString(30003) + ": " + str(e))
+				return
 
 			if not start:
 				self.send_response(200)
