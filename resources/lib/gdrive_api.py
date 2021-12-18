@@ -7,6 +7,7 @@ from resources.lib import encryption
 
 API_VERSION = "3"
 GOOGLE_AUTH_URL = "https://oauth2.googleapis.com/token"
+SCOPE_URL = "https://www.googleapis.com/auth/drive.readonly"
 GDRIVE_URL = "https://www.googleapis.com/drive/v3/files/"
 GDRIVE_PARAMS = "?supportsAllDrives=true&alt=media"
 
@@ -50,7 +51,7 @@ class GoogleDrive:
 		key = self.account.get("key")
 
 		if key:
-			jwt = encryption.JasonWebToken(self.account["email"], key).create()
+			jwt = encryption.JasonWebToken(self.account["email"], key, SCOPE_URL, GOOGLE_AUTH_URL).create()
 			data = "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=" + jwt
 		else:
 			data = "client_id={}&client_secret={}&refresh_token={}&grant_type=refresh_token".format(

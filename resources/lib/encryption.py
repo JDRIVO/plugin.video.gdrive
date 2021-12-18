@@ -25,7 +25,7 @@ except:
 
 class JasonWebToken:
 
-	def __init__(self, email, key):
+	def __init__(self, email, key, scope, authURL):
 		self.key = key
 		self.headers = {
 			"alg": "RS256",
@@ -35,8 +35,8 @@ class JasonWebToken:
 		exp = iat + 3600
 		self.claimSet = {
 			"iss": email,
-			"scope": "https://www.googleapis.com/auth/drive.readonly",
-			"aud": "https://oauth2.googleapis.com/token",
+			"scope": scope,
+			"aud": authURL,
 			"exp": exp,
 			"iat": iat,
 		}
