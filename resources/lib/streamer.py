@@ -129,7 +129,6 @@ class MyStreamer(BaseHTTPRequestHandler):
 					"refresh_token": refreshToken,
 				}
 			)
-
 			defaultAccountName, defaultAccountNumber = self.server.accountManager.getDefaultAccount()
 
 			if not defaultAccountName:
@@ -216,6 +215,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 			self.server.failed = False
 			self.send_response(200)
+
 			self.send_header("Content-Type", response.info().get("Content-Type"))
 			self.send_header("Content-Length", response.info().get("Content-Length"))
 			self.send_header("Cache-Control", response.info().get("Cache-Control"))
@@ -226,7 +226,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			# self.send_header("Server", response.info().get("Server"))
 			self.end_headers()
 
-			## may want to add more granular control over chunk fetches
+			# may want to add more granular control over chunk fetches
 			# self.wfile.write(response.read())
 			response.close()
 			self.server.length = response.info().get("Content-Length")
