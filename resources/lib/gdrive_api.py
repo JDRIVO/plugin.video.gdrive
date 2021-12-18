@@ -84,14 +84,9 @@ class GoogleDrive:
 		accessToken = str(self.account.get("access_token"))
 
 		if additionalHeader:
-			return {
-				"Authorization": "Bearer " + accessToken,
-				additionalHeader: additionalValue,
-			}
+			return {"Authorization": "Bearer " + accessToken, additionalHeader: additionalValue}
 		else:
-			return {
-				"Authorization": "Bearer " + accessToken,
-			}
+			return {"Authorization": "Bearer " + accessToken}
 
 	def getHeadersEncoded(self):
 		return urllib.parse.urlencode(self.getHeaders())
