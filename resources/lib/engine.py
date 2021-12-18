@@ -236,8 +236,8 @@ class ContentEngine:
 
 			return
 
-		account = self.accountManager.getVacantAccount()
-		self.accounts[account] = {
+		accountNumber = self.accountManager.getVacantAccount()
+		self.accounts[accountNumber] = {
 			"username": username,
 			"email": email,
 			"key": key,
