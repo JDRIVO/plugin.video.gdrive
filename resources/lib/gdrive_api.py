@@ -39,12 +39,12 @@ class GoogleDrive:
 
 		responseData = response.read().decode("utf-8")
 		response.close()
-		error = re.findall('"error_description": "(.*?)"', responseData)
+		error = re.findall('"error_description":[\s]*"(.*?)"', responseData)
 
 		if error:
 			return "failed", error[0]
 
-		return re.findall('"refresh_token": "(.*?)"', responseData, re.DOTALL)[0]
+		return re.findall('"refresh_token":[\s]*"(.*?)"', responseData, re.DOTALL)[0]
 
 	def refreshToken(self):
 		header = {"User-Agent": self.userAgent, "Content-Type": "application/x-www-form-urlencoded"}
@@ -68,17 +68,13 @@ class GoogleDrive:
 
 		responseData = response.read().decode("utf-8")
 		response.close()
-		error = re.findall('"error_description": "(.*?)"', responseData)
+		error = re.findall('"error_description":[\s]*"(.*?)"', responseData)
 
 		if error:
 			xbmc.log(self.settings.getLocalizedString(30003) + ": " + error[0])
 			return "failed"
 
-		if key:
-			accessToken = re.findall('"access_token":"(.*?)[.]*"', responseData)[0]
-		else:
-			accessToken = re.findall('"access_token": "(.*?)"', responseData)[0]
-
+		accessToken = re.findall('"access_token":[\s]*"(.*?)[.]*"', responseData)[0]
 		self.account["access_token"] = accessToken
 
 	def getHeaders(self, additionalHeader=None, additionalValue=None):
