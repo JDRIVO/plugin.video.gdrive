@@ -122,11 +122,11 @@ class MyStreamer(BaseHTTPRequestHandler):
 			self.server.accountManager.loadAccounts()
 			accountNumber = self.server.accountManager.addAccount(
 				{
-						"username": username,
-						"code": code,
-						"client_id": clientID,
-						"client_secret": clientSecret,
-						"refresh_token": refreshToken,
+					"username": username,
+					"code": code,
+					"client_id": clientID,
+					"client_secret": clientSecret,
+					"refresh_token": refreshToken,
 				}
 			)
 
