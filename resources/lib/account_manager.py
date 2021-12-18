@@ -25,7 +25,8 @@ class AccountManager:
 		accountAmount = self.settings.getSettingInt("account_amount")
 
 		for number in range(1, accountAmount + 1):
-			instanceName = "gdrive" + str(number)
+			number = str(number)
+			instanceName = "gdrive" + number
 			username = self.settings.getSetting(instanceName + "_username")
 			code = self.settings.getSetting(instanceName + "_code")
 
