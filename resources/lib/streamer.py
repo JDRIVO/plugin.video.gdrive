@@ -202,7 +202,10 @@ class MyStreamer(BaseHTTPRequestHandler):
 						)
 						break
 
-					self.server.accountManager.setFallbackAccounts([accounts[n]["username"] for n in fallbackAccountNumbers], fallbackAccountNumbers)
+					self.server.accountManager.setFallbackAccounts(
+						[accounts[n]["username"] for n in fallbackAccountNumbers],
+						fallbackAccountNumbers,
+					)
 
 					if not accountChange:
 						xbmcgui.Dialog().ok(
