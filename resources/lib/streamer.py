@@ -42,6 +42,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		self.pluginName = pluginName
 		self.settings = settings
 		self.userAgent = self.settings.getSetting("user_agent")
+
 		self.accountManager = account_manager.AccountManager(self.settings)
 		self.service = constants.cloudservice2(self.settings, self.accountManager, self.userAgent)
 		self.close = False
@@ -77,8 +78,8 @@ class MyStreamer(BaseHTTPRequestHandler):
 			postData = self.rfile.read(contentLength).decode("utf-8") # <--- Gets the data itself
 			accountNumber, url = re.findall("account=(.*)&url=(.*)", postData)[0]
 			self.server.accountManager.loadAccounts()
-
 			self.server.service.setAccount(self.server.accountManager.accounts[accountNumber])
+
 			self.server.service.refreshToken()
 			self.server.playbackURL = url
 			self.send_response(200)
@@ -108,8 +109,8 @@ class MyStreamer(BaseHTTPRequestHandler):
 			postData = self.rfile.read(contentLength).decode("utf-8")  # <--- Gets the data itself
 			postData = urllib.parse.unquote_plus(postData)
 			self.send_response(200)
-			self.end_headers()
 
+			self.end_headers()
 			username, code, clientID, clientSecret = re.findall("account=(.*)&code=(.*)&client_id=(.*)&client_secret=(.*)", postData)[0]
 			refreshToken = self.server.service.getToken(code, clientID, clientSecret)
 
