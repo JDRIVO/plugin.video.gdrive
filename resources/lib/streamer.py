@@ -172,7 +172,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 					accounts = self.server.accountManager.accounts
 					accountChange = False
 
-					for fallbackAccountNumber in fallbackAccountNumbers:
+					for fallbackAccountName, fallbackAccountNumber in list(zip(fallbackAccountNames, fallbackAccountNumbers)):
 						account = accounts[fallbackAccountNumber]
 						accountName = account["username"]
 						self.server.service.setAccount(account)
@@ -190,22 +190,20 @@ class MyStreamer(BaseHTTPRequestHandler):
 							continue
 
 						if not defaultAccountNumber in fallbackAccountNumbers:
+							fallbackAccountNames.append(defaultAccountName)
 							fallbackAccountNumbers.append(defaultAccountNumber)
 
+						fallbackAccountNames.remove(fallbackAccountName)
 						fallbackAccountNumbers.remove(fallbackAccountNumber)
 						self.server.accountManager.setDefaultAccount(accountName, fallbackAccountNumber)
-
-						accountChange = True
 						xbmcgui.Dialog().notification(
 							self.server.settings.getLocalizedString(30003) + ": " + self.server.settings.getLocalizedString(30006),
 							self.server.settings.getLocalizedString(30007),
 						)
+						accountChange = True
 						break
 
-					self.server.accountManager.setFallbackAccounts(
-						[accounts[n]["username"] for n in fallbackAccountNumbers],
-						fallbackAccountNumbers,
-					)
+					self.server.accountManager.setFallbackAccounts(fallbackAccountNames, fallbackAccountNumbers)
 
 					if not accountChange:
 						xbmcgui.Dialog().ok(
