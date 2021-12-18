@@ -19,6 +19,7 @@ class ContentEngine:
 		self.pluginHandle = int(sys.argv[1])
 		self.settings = constants.addon
 		self.userAgent = self.settings.getSetting("user_agent")
+
 		self.accountManager = account_manager.AccountManager(self.settings)
 		self.accounts = self.accountManager.accounts
 		self.cloudService = constants.cloudservice2(self.settings, self.accountManager, self.userAgent)
@@ -277,8 +278,8 @@ class ContentEngine:
 		fallbackAccounts = self.accountManager.getFallbackAccounts()
 		fallbackAccountNames, fallbackAccountNumbers = self.accountManager.getFallbackAccounts()
 		accountAmount = len(self.accounts)
-
 		pDialog = xbmcgui.DialogProgress()
+
 		pDialog.create(self.settings.getLocalizedString(30306))
 		deleted = False
 		count = 1
