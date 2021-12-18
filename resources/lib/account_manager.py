@@ -28,6 +28,7 @@ class AccountManager:
 			instanceName = "gdrive" + str(number)
 			username = self.settings.getSetting(instanceName + "_username")
 			code = self.settings.getSetting(instanceName + "_code")
+
 			clientID = self.settings.getSetting(instanceName + "_client_id")
 			clientSecret = self.settings.getSetting(instanceName + "_client_secret")
 			refreshToken = self.settings.getSetting(instanceName + "_auth_refresh_token")
