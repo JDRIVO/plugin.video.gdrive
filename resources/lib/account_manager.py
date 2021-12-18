@@ -53,16 +53,19 @@ class AccountManager:
 	def loadAccounts(self):
 		self.accounts = json.loads(self.settings.getSetting("accounts"))
 
-	def getVacantAccount(self):
+	def addAccount(self, accountInfo):
 		accountNumber = 1
 
 		while True:
 			accountNumberString = str(accountNumber)
 
 			if accountNumberString not in self.accounts:
-				return accountNumberString
+				break
 			else:
 				accountNumber += 1
+
+		self.accounts[accountNumberString] = accountInfo
+		self.saveAccounts()
 
 	def renameAccount(self, accountName, accountNumber, newAccountName):
 		self.saveAccounts()
