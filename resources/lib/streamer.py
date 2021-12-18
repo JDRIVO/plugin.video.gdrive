@@ -238,7 +238,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			if self.server.failed:
 				return
 
-			start, end = re.findall("Range: bytes=([\d]+)-([\d]+)?", str(self.headers), re.DOTALL)[0]
+			start, end = re.findall("Range:[\s]*bytes=([\d]+)-([\d]*)", str(self.headers), re.DOTALL)[0]
 			if start: start = int(start)
 			if end: end = int(end)
 			startOffset = 0
