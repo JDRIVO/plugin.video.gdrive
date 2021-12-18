@@ -66,6 +66,7 @@ class AccountManager:
 
 		self.accounts[accountNumberString] = accountInfo
 		self.saveAccounts()
+		return accountNumberString
 
 	def renameAccount(self, accountName, accountNumber, newAccountName):
 		self.saveAccounts()

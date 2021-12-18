@@ -119,32 +119,23 @@ class MyStreamer(BaseHTTPRequestHandler):
 				self.wfile.write(data.encode("utf-8"))
 				return
 
-			accountNumber = 1
 			self.server.accountManager.loadAccounts()
-			accounts = self.server.accountManager.accounts
-
-			while True:
-
-				if str(accountNumber) in accounts:
-					accountNumber += 1
-					continue
-
-				accounts[accountNumber] = {
-					"username": username,
-					"code": code,
-					"client_id": clientID,
-					"client_secret": clientSecret,
-					"refresh_token": refreshToken,
+			accountNumber = self.server.accountManager.addAccount(
+				{
+						"username": username,
+						"code": code,
+						"client_id": clientID,
+						"client_secret": clientSecret,
+						"refresh_token": refreshToken,
 				}
-				self.server.accountManager.saveAccounts()
+			)
 
-				if not self.server.settings.getSetting("default_account"):
-					self.server.settings.setSetting("default_account", str(accountNumber))
-					self.server.settings.setSetting("default_account_ui", username)
+			if not self.server.settings.getSetting("default_account"):
+				self.server.settings.setSetting("default_account", accountNumber)
+				self.server.settings.setSetting("default_account_ui", username)
 
-				data = enrolment.status("Successfully enrolled account")
-				self.wfile.write(data.encode("utf-8"))
-				break
+			data = enrolment.status("Successfully enrolled account")
+			self.wfile.write(data.encode("utf-8"))
 
 	def do_HEAD(self):
 
