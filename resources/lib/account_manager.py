@@ -24,19 +24,19 @@ class AccountManager:
 		accounts = {}
 		accountAmount = self.settings.getSettingInt("account_amount")
 
-		for number in range(1, accountAmount + 1):
-			number = str(number)
-			instanceName = "gdrive" + number
-			username = self.settings.getSetting(instanceName + "_username")
+		for accountNumber in range(1, accountAmount + 1):
+			accountNumber = str(accountNumber)
+			instanceName = "gdrive" + accountNumber
+			accountName = self.settings.getSetting(instanceName + "_username")
 			code = self.settings.getSetting(instanceName + "_code")
 
 			clientID = self.settings.getSetting(instanceName + "_client_id")
 			clientSecret = self.settings.getSetting(instanceName + "_client_secret")
 			refreshToken = self.settings.getSetting(instanceName + "_auth_refresh_token")
 
-			if username:
-				accounts[number] = {
-					"username": username,
+			if accountName:
+				accounts[accountNumber] = {
+					"username": accountName,
 					"code": code,
 					"client_id": clientID,
 					"client_secret": clientSecret,

@@ -196,9 +196,9 @@ class ContentEngine:
 			xbmc.executebuiltin("Container.Refresh")
 
 	def addServiceAccount(self):
-		username = self.dialog.input(self.settings.getLocalizedString(30025))
+		accountName = self.dialog.input(self.settings.getLocalizedString(30025))
 
-		if not username:
+		if not accountName:
 			return
 
 		keyFilePath = self.dialog.browse(1, self.settings.getLocalizedString(30026), "files")
@@ -236,7 +236,7 @@ class ContentEngine:
 
 			return
 
-		self.accountManager.addAccount({"username": username, "email": email, "key": key})
+		self.accountManager.addAccount({"username": accountName, "email": email, "key": key})
 		xbmc.executebuiltin("Container.Refresh")
 
 	def setDefaultAccount(self):

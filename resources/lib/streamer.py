@@ -111,7 +111,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			self.send_response(200)
 
 			self.end_headers()
-			username, code, clientID, clientSecret = re.findall("account=(.*)&code=(.*)&client_id=(.*)&client_secret=(.*)", postData)[0]
+			accountName, code, clientID, clientSecret = re.findall("account=(.*)&code=(.*)&client_id=(.*)&client_secret=(.*)", postData)[0]
 			refreshToken = self.server.service.getToken(code, clientID, clientSecret)
 
 			if "failed" in refreshToken:
@@ -122,7 +122,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			self.server.accountManager.loadAccounts()
 			accountNumber = self.server.accountManager.addAccount(
 				{
-					"username": username,
+					"username": accountName,
 					"code": code,
 					"client_id": clientID,
 					"client_secret": clientSecret,
@@ -132,7 +132,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 			if not self.server.settings.getSetting("default_account"):
 				self.server.settings.setSetting("default_account", accountNumber)
-				self.server.settings.setSetting("default_account_ui", username)
+				self.server.settings.setSetting("default_account_ui", accountName)
 
 			data = enrolment.status("Successfully enrolled account")
 			self.wfile.write(data.encode("utf-8"))
@@ -173,7 +173,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 					for fallbackAccountNumber in fallbackAccountNumbers:
 						account = accounts[fallbackAccountNumber]
-						username = account["username"]
+						accountName = account["username"]
 						self.server.service.setAccount(account)
 						refreshToken = self.server.service.refreshToken()
 
@@ -193,7 +193,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 						fallbackAccountNumbers.remove(fallbackAccountNumber)
 						self.server.settings.setSetting("default_account", fallbackAccountNumber)
-						self.server.settings.setSetting("default_account_ui", username)
+						self.server.settings.setSetting("default_account_ui", accountName)
 
 						accountChange = True
 						xbmcgui.Dialog().notification(
