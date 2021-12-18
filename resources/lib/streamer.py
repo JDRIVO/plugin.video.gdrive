@@ -196,6 +196,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 						fallbackAccountNames.remove(fallbackAccountName)
 						fallbackAccountNumbers.remove(fallbackAccountNumber)
 						self.server.accountManager.setDefaultAccount(accountName, fallbackAccountNumber)
+
 						xbmcgui.Dialog().notification(
 							self.server.settings.getLocalizedString(30003) + ": " + self.server.settings.getLocalizedString(30006),
 							self.server.settings.getLocalizedString(30007),
