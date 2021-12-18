@@ -130,9 +130,10 @@ class MyStreamer(BaseHTTPRequestHandler):
 				}
 			)
 
-			if not self.server.settings.getSetting("default_account"):
-				self.server.settings.setSetting("default_account", accountNumber)
-				self.server.settings.setSetting("default_account_ui", accountName)
+			defaultAccountName, defaultAccountNumber = self.server.accountManager.getDefaultAccount()
+
+			if not defaultAccountName:
+				self.server.accountManager.setDefaultAccount(accountName, accountNumber)
 
 			data = enrolment.status("Successfully enrolled account")
 			self.wfile.write(data.encode("utf-8"))
@@ -192,8 +193,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 							fallbackAccountNumbers.append(defaultAccount)
 
 						fallbackAccountNumbers.remove(fallbackAccountNumber)
-						self.server.settings.setSetting("default_account", fallbackAccountNumber)
-						self.server.settings.setSetting("default_account_ui", accountName)
+						self.server.accountManager.setDefaultAccount(accountName, fallbackAccountNumber)
 
 						accountChange = True
 						xbmcgui.Dialog().notification(
@@ -202,10 +202,9 @@ class MyStreamer(BaseHTTPRequestHandler):
 						)
 						break
 
-					self.server.settings.setSetting("fallback_accounts", ",".join(fallbackAccountNumbers))
-					self.server.settings.setSetting(
-						"fallback_accounts_ui",
-						", ".join(accounts[n]["username"] for n in fallbackAccountNumbers)
+					self.server.accountManager.setFallbackAccounts(
+						", ".join(accounts[n]["username"] for n in fallbackAccountNumbers),
+						",".join(fallbackAccountNumbers),
 					)
 
 					if not accountChange:
