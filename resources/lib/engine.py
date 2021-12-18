@@ -236,7 +236,7 @@ class ContentEngine:
 
 			return
 
-		accountNumber = self.accountManager.addAccount({"username": username, "email": email, "key": key})
+		self.accountManager.addAccount({"username": username, "email": email, "key": key})
 		xbmc.executebuiltin("Container.Refresh")
 
 	def setDefaultAccount(self):
