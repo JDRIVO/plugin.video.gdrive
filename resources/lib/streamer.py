@@ -173,8 +173,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 					accountChange = False
 
 					for fallbackAccountName, fallbackAccountNumber in list(zip(fallbackAccountNames, fallbackAccountNumbers)):
-						account = accounts[fallbackAccountNumber]
-						self.server.service.setAccount(account)
+						self.server.service.setAccount(accounts[fallbackAccountNumber])
 						refreshToken = self.server.service.refreshToken()
 
 						if refreshToken == "failed":
