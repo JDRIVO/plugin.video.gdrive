@@ -17,8 +17,8 @@
 
 """
 
-from resources.lib import gdrive_api2, settings
+from resources.lib import gdrive_api, settings
 
 PLUGIN_NAME = "gdrive"
 addon = settings.Settings()
-cloudservice2 = gdrive_api2.GDrive
+cloudservice2 = gdrive_api.GoogleDrive

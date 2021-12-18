@@ -26,7 +26,7 @@ import constants
 from threading import Thread
 from socketserver import ThreadingMixIn
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from resources.lib import encryption, enrolment, gplayer
+from resources.lib import account_manager, encryption, enrolment, gplayer
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -42,6 +42,8 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		self.pluginName = pluginName
 		self.settings = settings
 		self.userAgent = self.settings.getSetting("user_agent")
+		self.accountManager = account_manager.AccountManager(self.settings)
+		self.service = constants.cloudservice2(self.settings, self.accountManager, self.userAgent)
 		self.close = False
 
 	def run(self):
@@ -65,24 +67,20 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
 			xbmc.sleep(1000)
 
+
 class MyStreamer(BaseHTTPRequestHandler):
 
-	# Handler for the GET requests
 	def do_POST(self):
 
 		if self.path == "/crypto_playurl":
 			contentLength = int(self.headers["Content-Length"]) # <--- Gets the size of data
 			postData = self.rfile.read(contentLength).decode("utf-8") # <--- Gets the data itself
-			instanceName, url = re.findall("instance=(.*)&url=(.*)", postData)[0]
-			xbmc.log("url = " + url + "\n")
-			self.server.service = constants.cloudservice2(
-				self.server.settings,
-				instanceName,
-				self.server.userAgent,
-			)
+			accountNumber, url = re.findall("account=(.*)&url=(.*)", postData)[0]
+			self.server.accountManager.loadAccounts()
 
-			self.server.playbackURL = url
+			self.server.service.setAccount(self.server.accountManager.accounts[accountNumber])
 			self.server.service.refreshToken()
+			self.server.playbackURL = url
 			self.send_response(200)
 			self.end_headers()
 
@@ -95,7 +93,6 @@ class MyStreamer(BaseHTTPRequestHandler):
 			dbID, dbType, widget, trackProgress = re.findall("dbid=([\d]+)&dbtype=(.*)&widget=(\d)&track=(\d)", postData)[0]
 			Thread(target=self.server.startGPlayer, args=(dbID, dbType, widget, trackProgress)).start()
 
-		# redirect url to output
 		elif self.path == "/enroll?default=false":
 			contentLength = int(self.headers["Content-Length"])  # <--- Gets the size of data
 			postData = self.rfile.read(contentLength).decode("utf-8")  # <--- Gets the data itself
@@ -106,7 +103,6 @@ class MyStreamer(BaseHTTPRequestHandler):
 			data = enrolment.form2(clientID, clientSecret)
 			self.wfile.write(data.encode("utf-8"))
 
-		# redirect url to output
 		elif self.path == "/enroll":
 			contentLength = int(self.headers["Content-Length"])  # <--- Gets the size of data
 			postData = self.rfile.read(contentLength).decode("utf-8")  # <--- Gets the data itself
@@ -114,71 +110,46 @@ class MyStreamer(BaseHTTPRequestHandler):
 			self.send_response(200)
 			self.end_headers()
 
-			account, code, clientID, clientSecret = re.findall("account=(.*)&code=(.*)&client_id=(.*)&client_secret=(.*)", postData)[0]
-			url = "https://accounts.google.com/o/oauth2/token"
-			header = {"User-Agent": self.server.userAgent, "Content-Type": "application/x-www-form-urlencoded"}
-			data = "code={}&client_id={}&client_secret={}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code".format(
-				code, clientID, clientSecret
-			)
-			req = urllib.request.Request(url, data.encode("utf-8"), header)
+			username, code, clientID, clientSecret = re.findall("account=(.*)&code=(.*)&client_id=(.*)&client_secret=(.*)", postData)[0]
+			refreshToken = self.server.service.getToken(code, clientID, clientSecret)
 
-			# try login
-			try:
-				response = urllib.request.urlopen(req)
-			except urllib.error.URLError as e:
-				data = enrolment.status(e)
-				self.wfile.write(data.encode("utf-8"))
-				return
-
-			responseData = response.read().decode("utf-8")
-			response.close()
-			error = re.findall('"error_description": "(.*?)"', responseData)
-
-			if error:
-				data = enrolment.status(error[0])
+			if "failed" in refreshToken:
+				data = enrolment.status(refreshToken[1])
 				self.wfile.write(data.encode("utf-8"))
 				return
 
 			accountNumber = 1
+			self.server.accountManager.loadAccounts()
+			accounts = self.server.accountManager.accounts
 
 			while True:
-				instanceName = self.server.pluginName + str(accountNumber)
 
-				try:
-					username = self.server.settings.getSetting(instanceName + "_username")
-				except:
-					username = False
+				if str(accountNumber) in accounts:
+					accountNumber += 1
+					continue
 
-				if not username or username == account:
-					self.server.settings.setSetting(instanceName + "_username", account)
-					self.server.settings.setSetting(instanceName + "_code", code)
-					self.server.settings.setSetting(instanceName + "_client_id", clientID)
-					self.server.settings.setSetting(instanceName + "_client_secret", clientSecret)
+				accounts[accountNumber] = {
+					"username": username,
+					"code": code,
+					"client_id": clientID,
+					"client_secret": clientSecret,
+					"refresh_token": refreshToken,
+				}
+				self.server.accountManager.saveAccounts()
 
-					if not self.server.settings.getSetting("default_account"):
-						self.server.settings.setSetting("default_account", str(accountNumber))
-						self.server.settings.setSetting("default_account_ui", account)
+				if not self.server.settings.getSetting("default_account"):
+					self.server.settings.setSetting("default_account", str(accountNumber))
+					self.server.settings.setSetting("default_account_ui", username)
 
-					if accountNumber > self.server.settings.getSettingInt("account_amount"):
-						self.server.settings.setSettingInt("account_amount", accountNumber)
-
-					break
-
-				accountNumber += 1
-
-			accessToken, refreshToken = re.findall('access_token": "(.*?)".*refresh_token": "(.*?)"', responseData, re.DOTALL)[0]
-			self.server.settings.setSetting(instanceName + "_auth_access_token", accessToken)
-			self.server.settings.setSetting(instanceName + "_auth_refresh_token", refreshToken)
-			data = enrolment.status("Successfully enrolled account")
-			self.wfile.write(data.encode("utf-8"))
+				data = enrolment.status("Successfully enrolled account")
+				self.wfile.write(data.encode("utf-8"))
+				break
 
 	def do_HEAD(self):
 
-		# redirect url to output
 		if self.path == "/play":
 			url = self.server.playbackURL
-			xbmc.log("HEAD " + url + "\n")
-			req = urllib.request.Request(url, None, self.server.service.getHeadersList())
+			req = urllib.request.Request(url, None, self.server.service.getHeaders())
 			req.get_method = lambda: "HEAD"
 
 			try:
@@ -203,28 +174,21 @@ class MyStreamer(BaseHTTPRequestHandler):
 						)
 						return
 
-					fallbackAccounts = self.server.settings.getSetting("fallback_accounts").split(",")
+					fallbackAccountNumbers = self.server.settings.getSetting("fallback_accounts").split(",")
 					defaultAccount = self.server.settings.getSetting("default_account")
+					accounts = self.server.accountManager.accounts
 					accountChange = False
 
-					for fallbackAccount in fallbackAccounts:
-						username = self.server.settings.getSetting("gdrive{}_username".format(fallbackAccount))
+					for fallbackAccountNumber in fallbackAccountNumbers:
+						account = accounts[fallbackAccountNumber]
+						username = account["username"]
+						self.server.service.setAccount(account)
+						refreshToken = self.server.service.refreshToken()
 
-						if not username:
-							fallbackAccounts.remove(fallbackAccount)
+						if refreshToken == "failed":
 							continue
 
-						self.server.service = constants.cloudservice2(
-							self.server.settings,
-							"gdrive" + fallbackAccount,
-							self.server.userAgent,
-						)
-						self.server.service.refreshToken()
-
-						if self.server.service.failed:
-							continue
-
-						req = urllib.request.Request(url, None, self.server.service.getHeadersList())
+						req = urllib.request.Request(url, None, self.server.service.getHeaders())
 						req.get_method = lambda: "HEAD"
 
 						try:
@@ -232,11 +196,11 @@ class MyStreamer(BaseHTTPRequestHandler):
 						except urllib.error.URLError as e:
 							continue
 
-						if not defaultAccount in fallbackAccounts:
-							fallbackAccounts.append(defaultAccount)
+						if not defaultAccount in fallbackAccountNumbers:
+							fallbackAccountNumbers.append(defaultAccount)
 
-						fallbackAccounts.remove(fallbackAccount)
-						self.server.settings.setSetting("default_account", fallbackAccount)
+						fallbackAccountNumbers.remove(fallbackAccountNumber)
+						self.server.settings.setSetting("default_account", fallbackAccountNumber)
 						self.server.settings.setSetting("default_account_ui", username)
 
 						accountChange = True
@@ -246,13 +210,10 @@ class MyStreamer(BaseHTTPRequestHandler):
 						)
 						break
 
-					self.server.settings.setSetting("fallback_accounts", ",".join(fallbackAccounts))
+					self.server.settings.setSetting("fallback_accounts", ",".join(fallbackAccountNumbers))
 					self.server.settings.setSetting(
 						"fallback_accounts_ui",
-						", ".join(
-							self.server.settings.getSetting("gdrive{}_username".format(n))
-							for n in fallbackAccounts
-						)
+						", ".join(accounts[n]["username"] for n in fallbackAccountNumbers)
 					)
 
 					if not accountChange:
@@ -281,13 +242,10 @@ class MyStreamer(BaseHTTPRequestHandler):
 			## may want to add more granular control over chunk fetches
 			# self.wfile.write(response.read())
 			response.close()
-			xbmc.log("DONE")
 			self.server.length = response.info().get("Content-Length")
 
-	# Handler for the GET requests
 	def do_GET(self):
 
-		# redirect url to output
 		if self.path == "/play":
 
 			if self.server.failed:
@@ -311,12 +269,12 @@ class MyStreamer(BaseHTTPRequestHandler):
 			xbmc.log("GET " + url + "\n" + self.server.service.getHeadersEncoded() + "\n")
 
 			if not start:
-				req = urllib.request.Request(url, None, self.server.service.getHeadersList())
+				req = urllib.request.Request(url, None, self.server.service.getHeaders())
 			else:
 				req = urllib.request.Request(
 					url,
 					None,
-					self.server.service.getHeadersList(
+					self.server.service.getHeaders(
 						additionalHeader="Range",
 						additionalValue="bytes=" + str(start - startOffset) + "-" + str(end),
 					)
@@ -356,7 +314,6 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 			# may want to add more granular control over chunk fetches
 			# self.wfile.write(response.read())
-
 			decrypt = encryption.Encryption(self.server.settings.getSetting("crypto_salt"), self.server.settings.getSetting("crypto_password"))
 
 			try:
@@ -366,7 +323,6 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 			response.close()
 
-		# redirect url to output
 		elif self.path == "/enroll":
 			self.send_response(200)
 			self.end_headers()

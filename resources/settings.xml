@@ -61,7 +61,7 @@
 						<allowempty>true</allowempty>
 					</constraints>
 					<control type="button" format="action">
-						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=default)</data>
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_default_account)</data>
 					</control>
 				</setting>
 				<setting id="fallback" type="boolean" label="30302" help="">
@@ -78,12 +78,12 @@
 						<dependency type="visible" setting="fallback">true</dependency>
 					</dependencies>
 					<control type="button" format="action">
-						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=fallback)</data>
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=add_fallback_account)</data>
 					</control>
 				</setting>
 				<setting id="validate_accounts" type="action" label="30304" help="">
 					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.gdrive/?mode=validate)</data>
+					<data>RunPlugin(plugin://plugin.video.gdrive/?mode=validate_accounts)</data>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
@@ -91,7 +91,7 @@
 				</setting>
 				<setting id="delete_accounts" type="action" label="30305" help="">
 					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.gdrive/?mode=settings_delete)</data>
+					<data>RunPlugin(plugin://plugin.video.gdrive/?mode=settings_delete_account)</data>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
