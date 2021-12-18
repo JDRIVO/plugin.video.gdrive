@@ -174,7 +174,6 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 					for fallbackAccountName, fallbackAccountNumber in list(zip(fallbackAccountNames, fallbackAccountNumbers)):
 						account = accounts[fallbackAccountNumber]
-						accountName = account["username"]
 						self.server.service.setAccount(account)
 						refreshToken = self.server.service.refreshToken()
 
@@ -195,7 +194,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 						fallbackAccountNames.remove(fallbackAccountName)
 						fallbackAccountNumbers.remove(fallbackAccountNumber)
-						self.server.accountManager.setDefaultAccount(accountName, fallbackAccountNumber)
+						self.server.accountManager.setDefaultAccount(fallbackAccountName, fallbackAccountNumber)
 
 						xbmcgui.Dialog().notification(
 							self.server.settings.getLocalizedString(30003) + ": " + self.server.settings.getLocalizedString(30006),
