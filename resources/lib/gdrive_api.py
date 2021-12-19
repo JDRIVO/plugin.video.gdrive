@@ -2,7 +2,9 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
+
 import xbmc
+
 from . import encryption
 
 API_VERSION = "3"

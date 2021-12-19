@@ -1,7 +1,9 @@
+from threading import Thread
+
 import xbmc
+
 import server
 import watcher
-from threading import Thread
 
 if __name__ == "__main__":
 	Thread(target=server.run, daemon=True).start()

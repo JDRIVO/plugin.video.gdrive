@@ -1,9 +1,11 @@
 import os
 import json
+from sqlite3 import dbapi2 as sqlite
+
 import xbmc
 import xbmcvfs
+
 import constants
-from sqlite3 import dbapi2 as sqlite
 
 
 def run():

@@ -19,6 +19,7 @@
 
 import sys
 import urllib.parse
+
 from xbmcaddon import Addon
 
 

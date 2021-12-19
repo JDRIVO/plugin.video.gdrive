@@ -20,12 +20,14 @@
 import re
 import time
 import urllib
-import xbmc
-import xbmcgui
-import constants
 from threading import Thread
 from socketserver import ThreadingMixIn
 from http.server import BaseHTTPRequestHandler, HTTPServer
+
+import xbmc
+import xbmcgui
+
+import constants
 from . import account_manager, encryption, enrolment, gplayer
 
 

@@ -1,7 +1,9 @@
 import sys
-import xbmc
-import constants
 from threading import Thread
+
+import xbmc
+
+import constants
 from resources.lib import streamer
 
 
