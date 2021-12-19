@@ -141,7 +141,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 		if self.path == "/play":
 			url = self.server.playbackURL
-			req = urllib.request.Request(url, None, self.server.service.getHeaders())
+			req = urllib.request.Request(url, headers=self.server.service.getHeaders())
 			req.get_method = lambda: "HEAD"
 
 			try:
@@ -177,7 +177,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 						if refreshToken == "failed":
 							continue
 
-						req = urllib.request.Request(url, None, self.server.service.getHeaders())
+						req = urllib.request.Request(url, headers=self.server.service.getHeaders())
 						req.get_method = lambda: "HEAD"
 
 						try:
@@ -256,12 +256,11 @@ class MyStreamer(BaseHTTPRequestHandler):
 			xbmc.log("GET " + url + "\n" + self.server.service.getHeadersEncoded() + "\n")
 
 			if not start:
-				req = urllib.request.Request(url, None, self.server.service.getHeaders())
+				req = urllib.request.Request(url, headers=self.server.service.getHeaders())
 			else:
 				req = urllib.request.Request(
 					url,
-					None,
-					self.server.service.getHeaders(
+					headers=self.server.service.getHeaders(
 						additionalHeader="Range",
 						additionalValue="bytes=" + str(start - startOffset) + "-" + str(end),
 					)
