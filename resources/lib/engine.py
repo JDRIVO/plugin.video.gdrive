@@ -72,8 +72,7 @@ class ContentEngine:
 		self.addMenu(pluginURL + "?mode=delete_accounts", "[B]5. {}[/B]".format(self.settings.getLocalizedString(30022)), instance=True)
 
 		defaultAccountName, defaultAccountNumber = self.accountManager.getDefaultAccount()
-		fallbackAccounts = self.accountManager.getFallbackAccounts()
-		fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
+		fallbackAccountNames, fallbackAccountNumbers = self.accountManager.getFallbackAccounts()
 
 		for accountNumber, accountInfo in self.accounts.items():
 			accountName = accountInfo["username"]
@@ -271,13 +270,12 @@ class ContentEngine:
 		xbmc.executebuiltin("Container.Refresh")
 
 	def validateAccounts(self):
-		fallbackAccounts = self.accountManager.getFallbackAccounts()
 		fallbackAccountNames, fallbackAccountNumbers = self.accountManager.getFallbackAccounts()
 		accountAmount = len(self.accounts)
 		pDialog = xbmcgui.DialogProgress()
 
 		pDialog.create(self.settings.getLocalizedString(30306))
-		deleted = False
+		deletion = fallbackDeletion = False
 		count = 1
 
 		for accountNumber, accountInfo in list(self.accounts.items()):
@@ -300,24 +298,30 @@ class ContentEngine:
 					continue
 
 				self.accountManager.deleteAccount(accountNumber)
-				deleted = True
+				deletion = True
 
 				if accountNumber in fallbackAccountNumbers:
-					self.accountManager.removeFallbackAccount(accountName, accountNumber, fallbackAccounts)
+					fallbackDeletion = True
+					fallbackAccountNames.remove(accountName)
+					fallbackAccountNumbers.remove(accountNumber)
 
 		pDialog.close()
 		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30020))
 
-		if deleted:
+		if deletion:
+
+			if fallbackDeletion:
+				self.accountManager.setFallbackAccounts(fallbackAccountNames, fallbackAccountNumbers)
+
 			xbmc.executebuiltin("Container.Refresh")
 
 	def accountDeletion(func):
 
 		def wrapper(self):
 			accountNames, accountNumbers = self.accountManager.getAccountNamesAndNumbers()
-			fallbackAccounts = self.accountManager.getFallbackAccounts()
-			fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
+			fallbackAccountNames, fallbackAccountNumbers = self.accountManager.getFallbackAccounts()
 			selection = self.dialog.multiselect(self.settings.getLocalizedString(30158), accountNames)
+			fallbackDeletion = False
 
 			if not selection:
 				return
@@ -328,7 +332,12 @@ class ContentEngine:
 				self.accountManager.deleteAccount(accountNumber)
 
 				if accountNumber in fallbackAccountNumbers:
-					self.accountManager.removeFallbackAccount(accountName, accountNumber, fallbackAccounts)
+					fallbackDeletion = True
+					fallbackAccountNames.remove(accountName)
+					fallbackAccountNumbers.remove(accountNumber)
+
+			if fallbackDeletion:
+				self.accountManager.setFallbackAccounts(fallbackAccountNames, fallbackAccountNumbers)
 
 			func(self)
 
