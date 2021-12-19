@@ -9,7 +9,7 @@ import xbmcgui
 import xbmcvfs
 import xbmcplugin
 import constants
-from resources.lib import account_manager
+from . import account_manager
 
 
 class ContentEngine:
@@ -480,7 +480,7 @@ class ContentEngine:
 			response = urllib.request.urlopen(req)
 			response.close()
 		except urllib.error.URLError as e:
-			xbmc.log(self.settings.getLocalizedString(30003) + ": " + str(e))
+			xbmc.log("gdrive error: " + str(e))
 			return
 
 		item = xbmcgui.ListItem(path="http://localhost:{}/play".format(serverPort))

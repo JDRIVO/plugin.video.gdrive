@@ -26,7 +26,7 @@ import constants
 from threading import Thread
 from socketserver import ThreadingMixIn
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from resources.lib import account_manager, encryption, enrolment, gplayer
+from . import account_manager, encryption, enrolment, gplayer
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -210,7 +210,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 						return
 
 				else:
-					xbmc.log(self.server.settings.getLocalizedString(30003) + ": " + str(e))
+					xbmc.log("gdrive error: " + str(e))
 					return
 
 			self.server.failed = False
@@ -269,7 +269,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			try:
 				response = urllib.request.urlopen(req)
 			except urllib.error.URLError as e:
-				xbmc.log(self.server.settings.getLocalizedString(30003) + ": " + str(e))
+				xbmc.log("gdrive error: " + str(e))
 				return
 
 			if not start:

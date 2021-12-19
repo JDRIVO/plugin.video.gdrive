@@ -3,7 +3,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import xbmc
-from resources.lib import encryption
+from . import encryption
 
 API_VERSION = "3"
 GOOGLE_AUTH_URL = "https://oauth2.googleapis.com/token"
@@ -63,7 +63,7 @@ class GoogleDrive:
 		try:
 			response = urllib.request.urlopen(req)
 		except urllib.error.URLError as e:
-			xbmc.log(self.settings.getLocalizedString(30003) + ": " + str(e))
+			xbmc.log("gdrive error: " + str(e))
 			return "failed"
 
 		responseData = response.read().decode("utf-8")
@@ -71,7 +71,7 @@ class GoogleDrive:
 		error = re.findall('"error_description":[\s]*"(.*?)"', responseData)
 
 		if error:
-			xbmc.log(self.settings.getLocalizedString(30003) + ": " + error[0])
+			xbmc.log("gdrive error: " + error[0])
 			return "failed"
 
 		accessToken = re.findall('"access_token":[\s]*"(.*?)[.]*"', responseData)[0]

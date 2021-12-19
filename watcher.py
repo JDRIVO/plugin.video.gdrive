@@ -84,10 +84,7 @@ class LibraryMonitor(xbmc.Monitor):
 					),
 				)
 			except:
-				xbmc.log(
-					self.settings.getLocalizedString(30003) + ": " + self.settings.getLocalizedString(30221),
-					xbmc.LOGERROR,
-				)
+				xbmc.log("gdrive error: Your video database is incompatible with this Kodi version")
 				return
 
 			self.insert(self.statementConstructor(mediaInfo, fileID))
