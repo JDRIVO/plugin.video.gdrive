@@ -504,7 +504,7 @@ class ContentEngine:
 			item.setProperty("resumetime", str(resumePosition))
 
 		if self.settings.getSetting("subtitles") == "Subtitles are named the same as STRM":
-			subtitles = glob.glob(glob.escape(filePath.replace(".strm", "")) + "*[!gom]")
+			subtitles = glob.glob(glob.escape(filePath.rstrip(".strm")) + "*[!gom]")
 			item.setSubtitles(subtitles)
 		else:
 			subtitles = glob.glob(glob.escape(os.path.dirname(filePath) + os.sep) + "*[!gom]")
