@@ -27,8 +27,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import xbmc
 import xbmcgui
 
-import constants
-from . import account_manager, encryption, enrolment, gplayer
+from . import account_manager, encryption, enrolment, gdrive_api, gplayer, settings
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -37,38 +36,26 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
-	def __init__(self, *args, **kwargs):
-		HTTPServer.__init__(self, *args, **kwargs)
-
-	def setDetails(self, pluginName, settings):
-		self.pluginName = pluginName
-		self.settings = settings
-		self.userAgent = self.settings.getSetting("user_agent")
-
+	def __init__(self):
+		self.settings = settings.Settings()
+		port = self.settings.getSettingInt("server_port", 8011)
+		super().__init__(("", port), MyStreamer)
+		self.monitor = xbmc.Monitor()
 		self.accountManager = account_manager.AccountManager(self.settings)
-		self.service = constants.cloudservice2(self.settings, self.accountManager, self.userAgent)
-		self.close = False
-
-	def run(self):
-
-		try:
-			self.serve_forever()
-		except:
-			self.close = True
-			# Clean-up server (close socket, etc.)
-			self.server_close()
+		self.service = gdrive_api.GoogleDrive(self.settings, self.accountManager)
 
 	def startGPlayer(self, dbID, dbType, widget, trackProgress):
 		lastUpdate = time.time()
 		player = gplayer.GPlayer(dbID, dbType, int(widget), int(trackProgress), self.settings)
 
-		while not player.close and not self.close:
+		while not self.monitor.abortRequested() and not player.close:
 
 			if time.time() - lastUpdate >= 1740:
 				lastUpdate = time.time()
 				self.service.refreshToken()
 
-			xbmc.sleep(1000)
+			if self.monitor.waitForAbort(1):
+				break
 
 
 class MyStreamer(BaseHTTPRequestHandler):

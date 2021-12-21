@@ -5,23 +5,13 @@ from sqlite3 import dbapi2 as sqlite
 import xbmc
 import xbmcvfs
 
-import constants
-
-
-def run():
-	monitor = xbmc.Monitor()
-	watcher = LibraryMonitor()
-
-	while not monitor.abortRequested() and watcher.enabled:
-
-		if monitor.waitForAbort(1):
-			break
+from resources.lib import settings
 
 
 class LibraryMonitor(xbmc.Monitor):
 
 	def __init__(self):
-		self.settings = constants.addon
+		self.settings = settings.Settings()
 		self.getSettings()
 
 	@staticmethod
@@ -37,7 +27,7 @@ class LibraryMonitor(xbmc.Monitor):
 
 	def onNotification(self, sender, method, data):
 
-		if method != "VideoLibrary.OnUpdate":
+		if method != "VideoLibrary.OnUpdate" or not self.enabled:
 			return
 
 		data = json.loads(data)

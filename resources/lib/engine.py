@@ -10,21 +10,19 @@ import xbmcgui
 import xbmcvfs
 import xbmcplugin
 
-import constants
-from . import account_manager
+from . import account_manager, gdrive_api, settings
 
 
 class ContentEngine:
 
 	def __init__(self):
-		self.pluginName = constants.PLUGIN_NAME
 		self.pluginHandle = int(sys.argv[1])
-		self.settings = constants.addon
+		self.settings = settings.Settings()
 		self.userAgent = self.settings.getSetting("user_agent")
 
 		self.accountManager = account_manager.AccountManager(self.settings)
 		self.accounts = self.accountManager.accounts
-		self.cloudService = constants.cloudservice2(self.settings, self.accountManager, self.userAgent)
+		self.cloudService = gdrive_api.GoogleDrive(self.settings, self.accountManager)
 
 	def run(self, dbID, dbType, filePath):
 		mode = self.settings.getParameter("mode", "main").lower()
