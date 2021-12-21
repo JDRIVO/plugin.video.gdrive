@@ -5,10 +5,10 @@ import xbmc
 from resources.lib import streamer, watcher
 
 if __name__ == "__main__":
+	monitor = xbmc.Monitor()
 	watcher = watcher.LibraryMonitor()
 	server = streamer.MyHTTPServer()
 	Thread(target=server.serve_forever, daemon=True).start()
-	monitor = xbmc.Monitor()
 
 	while not monitor.abortRequested():
 
