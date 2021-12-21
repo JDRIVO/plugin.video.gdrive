@@ -22,7 +22,8 @@ class GoogleDrive:
 	def setAccount(self, account):
 		self.account = account
 
-	def constructDriveURL(self, fileID):
+	@staticmethod
+	def constructDriveURL(fileID):
 		return GDRIVE_URL + fileID + GDRIVE_PARAMS
 
 	def getToken(self, code, clientID, clientSecret):
