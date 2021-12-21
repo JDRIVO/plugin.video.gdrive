@@ -27,7 +27,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import xbmc
 import xbmcgui
 
-from . import account_manager, encryption, enrolment, gdrive_api, gplayer, settings
+import constants
+from . import account_manager, encryption, enrolment, gdrive_api, gplayer
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -37,12 +38,12 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
 	def __init__(self):
-		self.settings = settings.Settings()
+		self.settings = constants.settings
 		port = self.settings.getSettingInt("server_port", 8011)
 		super().__init__(("", port), MyStreamer)
 		self.monitor = xbmc.Monitor()
 		self.accountManager = account_manager.AccountManager(self.settings)
-		self.service = gdrive_api.GoogleDrive(self.settings, self.accountManager)
+		self.cloudService = gdrive_api.GoogleDrive(self.settings.getParameter("user_agent"))
 
 	def startGPlayer(self, dbID, dbType, widget, trackProgress):
 		lastUpdate = time.time()
@@ -52,7 +53,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
 			if time.time() - lastUpdate >= 1740:
 				lastUpdate = time.time()
-				self.service.refreshToken()
+				self.cloudService.refreshToken()
 
 			if self.monitor.waitForAbort(1):
 				break
@@ -67,9 +68,9 @@ class MyStreamer(BaseHTTPRequestHandler):
 			postData = self.rfile.read(contentLength).decode("utf-8") # <--- Gets the data itself
 			accountNumber, url = re.findall("account=(.*)&url=(.*)", postData)[0]
 			self.server.accountManager.loadAccounts()
-			self.server.service.setAccount(self.server.accountManager.accounts[accountNumber])
+			self.server.cloudService.setAccount(self.server.accountManager.accounts[accountNumber])
 
-			self.server.service.refreshToken()
+			self.server.cloudService.refreshToken()
 			self.server.playbackURL = url
 			self.send_response(200)
 			self.end_headers()
@@ -101,7 +102,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 			self.end_headers()
 			accountName, code, clientID, clientSecret = re.findall("account=(.*)&code=(.*)&client_id=(.*)&client_secret=(.*)", postData)[0]
-			refreshToken = self.server.service.getToken(code, clientID, clientSecret)
+			refreshToken = self.server.cloudService.getToken(code, clientID, clientSecret)
 
 			if "failed" in refreshToken:
 				data = enrolment.status(refreshToken[1])
@@ -130,7 +131,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 		if self.path == "/play":
 			url = self.server.playbackURL
-			req = urllib.request.Request(url, headers=self.server.service.getHeaders())
+			req = urllib.request.Request(url, headers=self.server.cloudService.getHeaders())
 			req.get_method = lambda: "HEAD"
 
 			try:
@@ -160,13 +161,13 @@ class MyStreamer(BaseHTTPRequestHandler):
 					accountChange = False
 
 					for fallbackAccountName, fallbackAccountNumber in list(zip(fallbackAccountNames, fallbackAccountNumbers)):
-						self.server.service.setAccount(self.server.accountManager.accounts[fallbackAccountNumber])
-						refreshToken = self.server.service.refreshToken()
+						self.server.cloudService.setAccount(self.server.accountManager.accounts[fallbackAccountNumber])
+						refreshToken = self.server.cloudService.refreshToken()
 
 						if refreshToken == "failed":
 							continue
 
-						req = urllib.request.Request(url, headers=self.server.service.getHeaders())
+						req = urllib.request.Request(url, headers=self.server.cloudService.getHeaders())
 						req.get_method = lambda: "HEAD"
 
 						try:
@@ -242,14 +243,14 @@ class MyStreamer(BaseHTTPRequestHandler):
 				# start = 23474184 - 8
 
 			url = self.server.playbackURL
-			xbmc.log("GET " + url + "\n" + self.server.service.getHeadersEncoded() + "\n")
+			xbmc.log("GET " + url + "\n" + self.server.cloudService.getHeadersEncoded() + "\n")
 
 			if not start:
-				req = urllib.request.Request(url, headers=self.server.service.getHeaders())
+				req = urllib.request.Request(url, headers=self.server.cloudService.getHeaders())
 			else:
 				req = urllib.request.Request(
 					url,
-					headers=self.server.service.getHeaders(
+					headers=self.server.cloudService.getHeaders(
 						additionalHeader="Range",
 						additionalValue="bytes=" + str(start - startOffset) + "-" + str(end),
 					)
