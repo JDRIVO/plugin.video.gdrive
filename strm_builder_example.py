@@ -31,8 +31,6 @@ for dic in ffprobeOutput["streams"]:
 		videoCodec = dic.get("codec_name")
 		videoWidth = dic.get("width")
 		videoHeight = dic.get("height")
-		codecTag = dic.get("codec_tag_string")
-		colourTransfer = dic.get("color_transfer")
 
 		if videoCodec:
 			mediaInfo["video_codec"] = videoCodec
@@ -46,15 +44,6 @@ for dic in ffprobeOutput["streams"]:
 		if videoWidth and videoHeight:
 			mediaInfo["aspect_ratio"] = videoWidth / videoHeight
 
-		if codecTag in ("dva1", "dvav", "dvh1", "dvhe"):
-			mediaInfo["hdr"] = "dolbyvision"
-			codecs = {"dva1": "h264", "dvav": "h264", "dvh1": "hevc", "dvhe": "hevc"}
-			mediaInfo["video_codec"] = codecs[codecTag]
-		elif colourTransfer in ("smpte2084", "smpte2086"):
-			mediaInfo["hdr"] = "hdr10"
-		elif colourTransfer == "arib-std-b67":
-			mediaInfo["hdr"] = "hlg"
-
 	elif codecType == "audio" and not audio:
 		audio = True
 		audioCodec = dic.get("codec_name")
@@ -65,6 +54,22 @@ for dic in ffprobeOutput["streams"]:
 
 		if audioChannels:
 			mediaInfo["audio_channels"] = audioChannels
+
+	if codecType == "video":
+		codecTag = dic.get("codec_tag_string")
+		colourTransfer = dic.get("color_transfer")
+
+		if mediaInfo.get("hdr") in ("dva1", "dvav", "dvh1", "dvhe"):
+			continue
+
+		if codecTag in ("dva1", "dvav", "dvh1", "dvhe"):
+			mediaInfo["hdr"] = "dolbyvision"
+			codecs = {"dva1": "h264", "dvav": "h264", "dvh1": "hevc", "dvhe": "hevc"}
+			mediaInfo["video_codec"] = codecs[codecTag]
+		elif colourTransfer in ("smpte2084", "smpte2086", "smpte2094"):
+			mediaInfo["hdr"] = "hdr10"
+		elif colourTransfer == "arib-std-b67":
+			mediaInfo["hdr"] = "hlg"
 
 cmd = "rclone lsf --format i"
 args = shlex.split(cmd)
