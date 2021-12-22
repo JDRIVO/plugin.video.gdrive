@@ -30,19 +30,18 @@ for dic in ffprobeOutput["streams"]:
 		video = True
 		colourTransfer = dic.get("color_transfer")
 
-		if colourTransfer:
+		if colourTransfer in ("smpte2084", "smpte2086"):
+			mediaInfo["hdr"] = "hdr10"
+		elif colourTransfer == "arib-std-b67":
+			mediaInfo["hdr"] = "hlg"
+		elif dic.get("codec_tag_string") == "dvhe":
+			mediaInfo["hdr"] = "dolbyvision"
 
-			if colourTransfer in ("smpte2084", "smpte2086"):
-				mediaInfo["hdr"] = "hdr10"
-			elif colourTransfer == "arib-std-b67":
-				mediaInfo["hdr"] = "hlg"
+		videoCodec = dic.get("codec_name")
 
-		else:
+		if videoCodec:
+				mediaInfo["video_codec"] = dic["codec_name"]
 
-			if dic.get("codec_tag_string") == "dvhe":
-				mediaInfo["hdr"] = "dolbyvision"
-
-		mediaInfo["video_codec"] = dic["codec_name"]
 		mediaInfo["video_width"] = dic["width"]
 		mediaInfo["video_height"] = dic["height"]
 		mediaInfo["aspect_ratio"] = mediaInfo["video_width"] / mediaInfo["video_height"]
