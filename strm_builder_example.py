@@ -27,11 +27,12 @@ for dic in ffprobeOutput["streams"]:
 	codecType = dic.get("codec_type")
 
 	if codecType == "video":
-		codecTag = dic.get("codec_tag_string")
-		colourTransfer = dic.get("color_transfer")
 
 		if mediaInfo.get("hdr") == "dolbyvision":
 			continue
+
+		codecTag = dic.get("codec_tag_string")
+		colourTransfer = dic.get("color_transfer")
 
 		if codecTag in ("dva1", "dvav", "dvh1", "dvhe"):
 			mediaInfo["hdr"] = "dolbyvision"
