@@ -28,7 +28,22 @@ for dic in ffprobeOutput["streams"]:
 
 	if codecType == "video" and not video:
 		video = True
+		videoCodec = dic.get("codec_name")
+		videoWidth = dic.get("width")
+		videoHeight = dic.get("height")
 		colourTransfer = dic.get("color_transfer")
+
+		if videoCodec:
+			mediaInfo["video_codec"] = videoCodec
+
+		if videoWidth:
+			mediaInfo["video_width"] = videoWidth
+
+		if videoHeight:
+			mediaInfo["video_height"] = videoHeight
+
+		if videoWidth and videoHeight:
+			mediaInfo["aspect_ratio"] = videoWidth / videoHeight
 
 		if colourTransfer in ("smpte2084", "smpte2086"):
 			mediaInfo["hdr"] = "hdr10"
@@ -37,19 +52,16 @@ for dic in ffprobeOutput["streams"]:
 		elif dic.get("codec_tag_string") == "dvhe":
 			mediaInfo["hdr"] = "dolbyvision"
 
-		videoCodec = dic.get("codec_name")
-
-		if videoCodec:
-			mediaInfo["video_codec"] = videoCodec
-
-		mediaInfo["video_width"] = dic["width"]
-		mediaInfo["video_height"] = dic["height"]
-		mediaInfo["aspect_ratio"] = mediaInfo["video_width"] / mediaInfo["video_height"]
-
 	elif codecType == "audio" and not audio:
 		audio = True
-		mediaInfo["audio_codec"] = dic["codec_name"]
-		mediaInfo["audio_channels"] = dic["channels"]
+		audioCodec = dic.get("codec_name")
+		audioChannels = dic.get("channels")
+
+		if audioCodec:
+			mediaInfo["audio_codec"] = audioCodec
+
+		if audioChannels:
+			mediaInfo["audio_channels"] = audioChannels
 
 cmd = "rclone lsf --format i"
 args = shlex.split(cmd)
