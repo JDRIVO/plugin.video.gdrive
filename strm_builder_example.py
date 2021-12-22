@@ -40,7 +40,7 @@ for dic in ffprobeOutput["streams"]:
 		videoCodec = dic.get("codec_name")
 
 		if videoCodec:
-				mediaInfo["video_codec"] = dic["codec_name"]
+			mediaInfo["video_codec"] = dic["codec_name"]
 
 		mediaInfo["video_width"] = dic["width"]
 		mediaInfo["video_height"] = dic["height"]
