@@ -48,6 +48,9 @@ for dic in ffprobeOutput["streams"]:
 
 		if codecTag in ("dva1", "dvav", "dvh1", "dvhe"):
 			mediaInfo["hdr"] = "dolbyvision"
+			codecs = {"dva1": "h264", "dvav": "h264", "dvh1": "hevc", "dvhe": "hevc"}
+			mediaInfo["video_codec"] = codecs[codecTag]
+
 		elif colourTransfer in ("smpte2084", "smpte2086"):
 			mediaInfo["hdr"] = "hdr10"
 		elif colourTransfer == "arib-std-b67":
