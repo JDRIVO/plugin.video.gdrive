@@ -24,7 +24,7 @@ mediaInfo["video_duration"] = ffprobeOutput["format"]["duration"]
 video = audio = False
 
 for dic in ffprobeOutput["streams"]:
-	codecType = dic["codec_type"]
+	codecType = dic.get("codec_type")
 
 	if codecType == "video" and not video:
 		video = True
