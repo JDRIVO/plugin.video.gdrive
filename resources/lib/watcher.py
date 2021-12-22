@@ -85,6 +85,7 @@ class LibraryMonitor(xbmc.Monitor):
 	def mediaInfoConversion(strmData):
 		videoInfo = {
 			"video_codec": "strVideoCodec",
+			# "hdr": "strHdrType",
 			"aspect_ratio": "fVideoAspect",
 			"video_width": "iVideoWidth",
 			"video_height": "iVideoHeight",
