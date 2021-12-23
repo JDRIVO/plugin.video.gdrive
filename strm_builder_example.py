@@ -78,8 +78,10 @@ for dic in ffprobeOutput["streams"]:
 		if audioChannels:
 			mediaInfo["audio_channels"] = audioChannels
 
-if re.findall("[._\- ](dv|dovi|dolby[._\- ]*vision)([._\- ]|$)", videoPath, re.IGNORECASE):
+if re.search("[._\- ](dv|dovi|dolby[._\- ]*vision)[._\- ]", videoPath, re.IGNORECASE):
 	mediaInfo["hdr"] = "dolbyvision"
+elif not mediaInfo.get("hdr") and re.search("hdr10", videoPath, re.IGNORECASE):
+	mediaInfo["hdr"] = "hdr10"
 
 cmd = "rclone lsf --format i"
 args = shlex.split(cmd)
