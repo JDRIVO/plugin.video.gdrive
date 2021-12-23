@@ -1,5 +1,6 @@
 # To be ran by the script that uploads files to Google Drive. Sync strms with resilio, syncthing etc. Install watchdog on Kodi.
 
+import re
 import sys
 import json
 import shlex
@@ -73,6 +74,11 @@ for dic in ffprobeOutput["streams"]:
 
 		if audioChannels:
 			mediaInfo["audio_channels"] = audioChannels
+
+dv = re.findall("[. ](dv|dolby[. ]*vision)([. ]|$)", videoPath, re.IGNORECASE)
+
+if dv:
+	mediaInfo["hdr"] = "dolbyvision"
 
 cmd = "rclone lsf --format i"
 args = shlex.split(cmd)
