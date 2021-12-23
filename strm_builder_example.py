@@ -78,7 +78,7 @@ for dic in ffprobeOutput["streams"]:
 		if audioChannels:
 			mediaInfo["audio_channels"] = audioChannels
 
-if re.findall("[. ](dv|dovi|dolby[. ]*vision)([. ]|$)", videoPath, re.IGNORECASE):
+if re.findall("[._- ](dv|dovi|dolby[._- ]*vision)([._- ]|$)", videoPath, re.IGNORECASE):
 	mediaInfo["hdr"] = "dolbyvision"
 
 cmd = "rclone lsf --format i"
