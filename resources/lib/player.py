@@ -3,7 +3,7 @@ from threading import Thread
 import xbmc
 
 
-class GPlayer(xbmc.Player):
+class Player(xbmc.Player):
 
 	def __init__(self, dbID, dbType, widget, trackProgress, settings):
 		self.videoDuration = self.stopSaving = self.started = self.close = False

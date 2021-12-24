@@ -515,7 +515,7 @@ class ContentEngine:
 		else:
 			data = "dbid={}&dbtype={}&widget={}&track={}".format(0, 0, 0, 0)
 
-		url = "http://localhost:{}/start_gplayer".format(serverPort)
+		url = "http://localhost:{}/start_player".format(serverPort)
 		req = urllib.request.Request(url, data.encode("utf-8"))
 		response = urllib.request.urlopen(req)
 		response.close()
