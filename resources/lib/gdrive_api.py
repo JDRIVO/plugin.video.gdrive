@@ -75,8 +75,9 @@ class GoogleDrive:
 			xbmc.log("gdrive error: " + error[0])
 			return "failed"
 
-		accessToken = re.findall('"access_token":[\s]*"(.*?)[.]*"', responseData)[0]
+		accessToken, expiry = re.findall('"access_token":[\s]*"(.*?)[.]*".*"expires_in":[\s]*([\d]+)', responseData, re.DOTALL)[0]
 		self.account["access_token"] = accessToken
+		return expiry
 
 	def getHeaders(self, additionalHeader=None, additionalValue=None):
 		accessToken = str(self.account.get("access_token"))

@@ -51,7 +51,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
 		while not self.monitor.abortRequested() and not vPlayer.close:
 
-			if time.time() - lastUpdate >= 1740:
+			if time.time() - lastUpdate >= self.expiry:
 				lastUpdate = time.time()
 				self.cloudService.refreshToken()
 
@@ -70,7 +70,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			self.server.accountManager.loadAccounts()
 			self.server.cloudService.setAccount(self.server.accountManager.accounts[accountNumber])
 
-			self.server.cloudService.refreshToken()
+			self.server.expiry = int(self.server.cloudService.refreshToken()) - 30
 			self.server.playbackURL = url
 			self.send_response(200)
 			self.end_headers()
