@@ -81,7 +81,7 @@ for dic in ffprobeOutput["streams"]:
 
 filename = os.path.basename(videoPath)
 
-if re.search("[._\- ](dv|dovi|dolby[._\- ]*vision)[._\- ]", filename, re.IGNORECASE):
+if re.search("[-_. ](dv|dovi|dolby[-_. ]*vision)[-_. ]", filename, re.IGNORECASE):
 	mediaInfo["hdr"] = "dolbyvision"
 elif not mediaInfo.get("hdr") and re.search("hdr10", filename, re.IGNORECASE):
 	mediaInfo["hdr"] = "hdr10"

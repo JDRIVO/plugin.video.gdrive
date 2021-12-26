@@ -43,15 +43,16 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		super().__init__(("", port), MyStreamer)
 		self.monitor = xbmc.Monitor()
 		self.accountManager = account_manager.AccountManager(self.settings)
-		self.cloudService = gdrive_api.GoogleDrive(self.settings.getParameter("user_agent"))
+		self.cloudService = gdrive_api.GoogleDrive()
 
 	def startPlayer(self, dbID, dbType, widget, trackProgress):
 		lastUpdate = time.time()
 		vPlayer = player.Player(dbID, dbType, int(widget), int(trackProgress), self.settings)
+		expiry = self.cloudService.account["expiry"] - 30
 
 		while not self.monitor.abortRequested() and not vPlayer.close:
 
-			if time.time() - lastUpdate >= self.expiry:
+			if time.time() - lastUpdate >= expiry:
 				lastUpdate = time.time()
 				self.cloudService.refreshToken()
 
@@ -63,14 +64,14 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 	def do_POST(self):
 
-		if self.path == "/crypto_playurl":
+		if self.path == "/playurl":
 			contentLength = int(self.headers["Content-Length"]) # <--- Gets the size of data
 			postData = self.rfile.read(contentLength).decode("utf-8") # <--- Gets the data itself
 			accountNumber, url = re.findall("account=(.*)&url=(.*)", postData)[0]
 			self.server.accountManager.loadAccounts()
 			self.server.cloudService.setAccount(self.server.accountManager.accounts[accountNumber])
 
-			self.server.expiry = int(self.server.cloudService.refreshToken()) - 30
+			self.server.cloudService.refreshToken()
 			self.server.playbackURL = url
 			self.send_response(200)
 			self.end_headers()
@@ -228,7 +229,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			if self.server.failed:
 				return
 
-			start, end = re.findall("Range:[\s]*bytes=([\d]+)-([\d]*)", str(self.headers), re.DOTALL)[0]
+			start, end = re.findall("([\d]+)-([\d]*)", self.headers["range"])[0]
 			if start: start = int(start)
 			if end: end = int(end)
 			startOffset = 0

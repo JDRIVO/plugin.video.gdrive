@@ -3,18 +3,6 @@
 	<section id="plugin.video.gdrive">
 		<category id="accounts" label="30300" help="">
 			<group id="1">
-				<setting id="user_agent" type="string" label="30001" help="">
-					<level>0</level>
-					<default>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>30001</heading>
-					</control>
-				</setting>
 				<setting id="default_account" type="string" label="30001" help="">
 					<level>0</level>
 					<constraints>

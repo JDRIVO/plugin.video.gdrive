@@ -21,7 +21,7 @@ class ContentEngine:
 		self.settings = constants.settings
 		self.accountManager = account_manager.AccountManager(self.settings)
 		self.accounts = self.accountManager.accounts
-		self.cloudService = gdrive_api.GoogleDrive(self.settings.getSetting("user_agent"))
+		self.cloudService = gdrive_api.GoogleDrive()
 
 	def run(self, dbID, dbType, filePath):
 		mode = self.settings.getParameter("mode", "main").lower()
@@ -51,22 +51,19 @@ class ContentEngine:
 
 		xbmcplugin.endOfDirectory(self.pluginHandle)
 
-	def addMenu(self, url, title, totalItems=0, instance=None):
+	def addMenu(self, url, title):
 		listitem = xbmcgui.ListItem(title)
-
-		if instance is not None:
-			cm = [(self.settings.getLocalizedString(30211), "Addon.OpenSettings({})".format(self.settings.getAddonInfo("id")))]
-			listitem.addContextMenuItems(cm, True)
-
-		xbmcplugin.addDirectoryItem(self.pluginHandle, url, listitem, totalItems=totalItems)
+		cm = [(self.settings.getLocalizedString(30211), "Addon.OpenSettings({})".format(self.settings.getAddonInfo("id")))]
+		listitem.addContextMenuItems(cm, True)
+		xbmcplugin.addDirectoryItem(self.pluginHandle, url, listitem)
 
 	def createMenu(self):
 		pluginURL = sys.argv[0]
-		self.addMenu(pluginURL + "?mode=enroll_account", "[B]1. {}[/B]".format(self.settings.getLocalizedString(30207)), instance=True)
-		self.addMenu(pluginURL + "?mode=add_service_account", "[B]2. {}[/B]".format(self.settings.getLocalizedString(30214)), instance=True)
-		self.addMenu(pluginURL + "?mode=add_fallback_account", "[B]3. {}[/B]".format(self.settings.getLocalizedString(30220)), instance=True)
-		self.addMenu(pluginURL + "?mode=validate_accounts", "[B]4. {}[/B]".format(self.settings.getLocalizedString(30021)), instance=True)
-		self.addMenu(pluginURL + "?mode=delete_accounts", "[B]5. {}[/B]".format(self.settings.getLocalizedString(30022)), instance=True)
+		self.addMenu(pluginURL + "?mode=enroll_account", "[B]1. {}[/B]".format(self.settings.getLocalizedString(30207)))
+		self.addMenu(pluginURL + "?mode=add_service_account", "[B]2. {}[/B]".format(self.settings.getLocalizedString(30214)))
+		self.addMenu(pluginURL + "?mode=add_fallback_account", "[B]3. {}[/B]".format(self.settings.getLocalizedString(30220)))
+		self.addMenu(pluginURL + "?mode=validate_accounts", "[B]4. {}[/B]".format(self.settings.getLocalizedString(30021)))
+		self.addMenu(pluginURL + "?mode=delete_accounts", "[B]5. {}[/B]".format(self.settings.getLocalizedString(30022)))
 
 		defaultAccountName, defaultAccountNumber = self.accountManager.getDefaultAccount()
 		fallbackAccountNames, fallbackAccountNumbers = self.accountManager.getFallbackAccounts()
@@ -80,11 +77,7 @@ class ContentEngine:
 			elif accountNumber in fallbackAccountNumbers:
 				accountName = "[COLOR deepskyblue][B]{}[/B][/COLOR]".format(accountName)
 
-			self.addMenu("{}?mode=main&instance={}".format(
-				pluginURL, instance),
-				accountName,
-				instance=instance,
-			)
+			self.addMenu("{}?mode=main&instance={}".format(pluginURL, instance), accountName)
 
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
@@ -96,8 +89,10 @@ class ContentEngine:
 			self.settings.getLocalizedString(30023),
 			self.settings.getLocalizedString(30159),
 		]
-		accountName = self.accounts[self.instance]["username"]
+
 		accountNumber = self.instance
+		account = self.accounts[accountNumber]
+		accountName = account["username"]
 		fallbackAccounts = self.accountManager.getFallbackAccounts()
 		fallbackAccountNames, fallbackAccountNumbers = fallbackAccounts
 
@@ -126,13 +121,14 @@ class ContentEngine:
 			if not newAccountName:
 				return
 
-			self.accounts[accountNumber]["username"] = newAccountName
+			account["username"] = newAccountName
 			self.accountManager.renameAccount(accountName, accountNumber, newAccountName)
 
 		elif selection == 3:
-			validator = self.accountManager.validateAccount(self.cloudService, self.accounts[accountNumber])
+			self.cloudService.setAccount(account)
+			validation = self.cloudService.refreshToken()
 
-			if validator == "failed":
+			if validation == "failed":
 				selection = self.dialog.yesno(
 					self.settings.getLocalizedString(30000),
 					"{} {}".format(accountName, self.settings.getLocalizedString(30019)),
@@ -281,11 +277,12 @@ class ContentEngine:
 			if pDialog.iscanceled():
 				return
 
-			validator = self.accountManager.validateAccount(self.cloudService, self.accounts[accountNumber])
+			self.cloudService.setAccount(self.accounts[accountNumber])
+			validation = self.cloudService.refreshToken()
 			pDialog.update(int(round(count / accountAmount * 100)), accountName)
 			count += 1
 
-			if validator == "failed":
+			if validation == "failed":
 				selection = self.dialog.yesno(
 					self.settings.getLocalizedString(30000),
 					"{} {}".format(accountName, self.settings.getLocalizedString(30019)),
@@ -359,8 +356,6 @@ class ContentEngine:
 		if not self.settings.getSetting("crypto_password") or not self.settings.getSetting("crypto_salt"):
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30208))
 			return
-
-		self.cloudService.setAccount(self.accounts[defaultAccount])
 
 		if (not dbID or not dbType) and not filePath:
 			timeEnd = time.time() + 1
@@ -480,7 +475,7 @@ class ContentEngine:
 
 		driveURL = self.cloudService.constructDriveURL(self.settings.getParameter("filename"))
 		serverPort = self.settings.getSettingInt("server_port", 8011)
-		url = "http://localhost:{}/crypto_playurl".format(serverPort)
+		url = "http://localhost:{}/playurl".format(serverPort)
 		data = "account={}&url={}".format(defaultAccount, driveURL)
 		req = urllib.request.Request(url, data.encode("utf-8"))
 

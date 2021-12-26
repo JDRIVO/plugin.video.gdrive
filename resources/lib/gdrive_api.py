@@ -1,4 +1,4 @@
-import re
+import json
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -12,12 +12,9 @@ GOOGLE_AUTH_URL = "https://oauth2.googleapis.com/token"
 SCOPE_URL = "https://www.googleapis.com/auth/drive.readonly"
 GDRIVE_URL = "https://www.googleapis.com/drive/v3/files/"
 GDRIVE_PARAMS = "?supportsAllDrives=true&alt=media"
-
+USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0"
 
 class GoogleDrive:
-
-	def __init__(self, userAgent):
-		self.userAgent = userAgent
 
 	def setAccount(self, account):
 		self.account = account
@@ -26,29 +23,41 @@ class GoogleDrive:
 	def constructDriveURL(fileID):
 		return GDRIVE_URL + fileID + GDRIVE_PARAMS
 
-	def getToken(self, code, clientID, clientSecret):
-		header = {"User-Agent": self.userAgent, "Content-Type": "application/x-www-form-urlencoded"}
-		data = "code={}&client_id={}&client_secret={}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code".format(
-			code, clientID, clientSecret
-		)
-		req = urllib.request.Request(GOOGLE_AUTH_URL, data.encode("utf-8"), header)
+	@staticmethod
+	def sendPayload(url, data=None, headers={}):
+
+		if data:
+			data = data.encode("utf8")
+
+		req = urllib.request.Request(url, data, headers)
 
 		try:
 			response = urllib.request.urlopen(req)
 		except urllib.error.URLError as e:
+			xbmc.log("gdrive error: " + str(e))
 			return "failed", str(e)
 
-		responseData = response.read().decode("utf-8")
-		response.close()
-		error = re.findall('"error_description":[\s]*"(.*?)"', responseData)
+		response = json.loads(response.read().decode("utf-8"))
 
-		if error:
-			return "failed", error[0]
+		if response.get("error_description"):
+			xbmc.log("gdrive error: " + response["error_description"])
+			return "failed", response["error_description"]
 
-		return re.findall('"refresh_token":[\s]*"(.*?)"', responseData, re.DOTALL)[0]
+		return response
+
+	def getToken(self, code, clientID, clientSecret):
+		data = "code={}&client_id={}&client_secret={}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code".format(
+			code, clientID, clientSecret
+		)
+		headers = {"User-Agent": USER_AGENT, "Content-Type": "application/x-www-form-urlencoded"}
+		response = self.sendPayload(GOOGLE_AUTH_URL, data, headers)
+
+		if "failed" in response:
+			return response
+
+		return response["refresh_token"]
 
 	def refreshToken(self):
-		header = {"User-Agent": self.userAgent, "Content-Type": "application/x-www-form-urlencoded"}
 		key = self.account.get("key")
 
 		if key:
@@ -59,27 +68,16 @@ class GoogleDrive:
 				self.account["client_id"], self.account["client_secret"], self.account["refresh_token"]
 			)
 
-		req = urllib.request.Request(GOOGLE_AUTH_URL, data.encode("utf-8"), header)
+		headers = {"User-Agent": USER_AGENT, "Content-Type": "application/x-www-form-urlencoded"}
+		response = self.sendPayload(GOOGLE_AUTH_URL, data, headers)
 
-		try:
-			response = urllib.request.urlopen(req)
-		except urllib.error.URLError as e:
-			xbmc.log("gdrive error: " + str(e))
+		if "failed" in response:
 			return "failed"
 
-		responseData = response.read().decode("utf-8")
-		response.close()
-		error = re.findall('"error_description":[\s]*"(.*?)"', responseData)
+		self.account["access_token"] = response["access_token"].rstrip(".")
+		self.account["expiry"] = response["expires_in"]
 
-		if error:
-			xbmc.log("gdrive error: " + error[0])
-			return "failed"
-
-		accessToken, expiry = re.findall('"access_token":[\s]*"(.*?)[.]*".*"expires_in":[\s]*([\d]+)', responseData, re.DOTALL)[0]
-		self.account["access_token"] = accessToken
-		return expiry
-
-	def getHeaders(self, additionalHeader=None, additionalValue=None):
+	def getHeaders(self, accessToken=None, additionalHeader=None, additionalValue=None):
 		accessToken = str(self.account.get("access_token"))
 
 		if additionalHeader:
