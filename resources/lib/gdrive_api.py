@@ -78,7 +78,7 @@ class GoogleDrive:
 		self.account["expiry"] = response["expires_in"]
 
 	def getHeaders(self, accessToken=None, additionalHeader=None, additionalValue=None):
-		accessToken = str(self.account.get("access_token"))
+		accessToken = self.account.get("access_token")
 
 		if additionalHeader:
 			return {"Authorization": "Bearer " + accessToken, additionalHeader: additionalValue}
