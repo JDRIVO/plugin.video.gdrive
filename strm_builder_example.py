@@ -1,5 +1,6 @@
 # To be ran by the script that uploads files to Google Drive. Sync strms with resilio, syncthing etc. Install watchdog on Kodi.
 
+import os
 import re
 import sys
 import json
