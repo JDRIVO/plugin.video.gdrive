@@ -40,8 +40,9 @@ class GoogleDrive:
 		response = json.loads(response.read().decode("utf-8"))
 
 		if response.get("error_description"):
-			xbmc.log("gdrive error: " + response["error_description"])
-			return "failed", response["error_description"]
+			error = response["error_description"]
+			xbmc.log("gdrive error: " + error)
+			return "failed", error
 
 		return response
 
