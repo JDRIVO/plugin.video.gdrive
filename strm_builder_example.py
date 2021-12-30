@@ -93,7 +93,12 @@ fileID = subprocess.check_output(args).strip().decode("utf-8")
 mediaInfo["filename"] = fileID
 
 with open(strmPath, "w+") as strm:
-	# Every paramater is optional besides the filename (Google Drive File ID) - essential strm format is:
+
+	# Essential strm format for unencrypted videos:
+	# plugin://plugin.video.gdrive/?mode=video&encfs=False&filename=7ctPNMUl4m8B4KBwY
+
+	# Essential strm format for gDrive encrypted videos:
 	# plugin://plugin.video.gdrive/?mode=video&encfs=True&filename=7ctPNMUl4m8B4KBwY
+
 	url = "plugin://plugin.video.gdrive/?mode=video&encfs=True" + "".join(["&{}={}".format(k, v) for k, v in mediaInfo.items()])
 	strm.write(url)

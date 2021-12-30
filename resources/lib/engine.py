@@ -473,10 +473,43 @@ class ContentEngine:
 			else:
 				resumeOption = True
 
-		driveURL = self.cloudService.constructDriveURL(self.settings.getParameter("filename"))
+		crypto = self.settings.getParameter("encfs")
+		fileID = self.settings.getParameter("filename")
+		driveURL = self.cloudService.constructDriveURL(fileID)
+
+		self.cloudService.setAccount(self.accounts[defaultAccount])
+		self.cloudService.refreshToken()
+		transcoded = False
+
+		if not crypto:
+			qualityPrompty = self.settings.getSetting("quality_prompt")
+			defaultResolution = self.settings.getSetting("default_resolution")
+
+			if qualityPrompty:
+				streams = self.cloudService.getStreams(fileID)
+
+				if streams:
+					resolutions = ["Original"] + [s[0] for s in streams]
+					selection = self.dialog.select(self.settings.getLocalizedString(30031), resolutions)
+
+					if selection == -1:
+						return
+
+					if resolutions[selection] != "Original":
+						driveURL = streams[selection - 1][1]
+						transcoded = resolutions[selection]
+
+			elif defaultResolution != "Original":
+				stream = self.cloudService.getStreams(fileID, defaultResolution)
+
+				if stream:
+					driveURL = stream
+					transcoded = defaultResolution
+
+		self.accountManager.saveAccounts()
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = "http://localhost:{}/playurl".format(serverPort)
-		data = "account={}&url={}".format(defaultAccount, driveURL)
+		data = "encrypted={}&account={}&url={}&transcoded={}&fileid={}".format(crypto, defaultAccount, driveURL, transcoded, fileID)
 		req = urllib.request.Request(url, data.encode("utf-8"))
 
 		try:

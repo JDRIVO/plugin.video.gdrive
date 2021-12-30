@@ -1,3 +1,4 @@
+import re
 import json
 import urllib.error
 import urllib.parse
@@ -24,7 +25,7 @@ class GoogleDrive:
 		return GDRIVE_URL + fileID + GDRIVE_PARAMS
 
 	@staticmethod
-	def sendPayload(url, data=None, headers={}):
+	def sendPayload(url, data=None, headers={}, cookie=None):
 
 		if data:
 			data = data.encode("utf8")
@@ -37,14 +38,24 @@ class GoogleDrive:
 			xbmc.log("gdrive error: " + str(e))
 			return "failed", str(e)
 
-		response = json.loads(response.read().decode("utf-8"))
+		responseData = response.read().decode("utf-8")
+		if cookie: cookie = response.headers['set-cookie']
+		response.close()
 
-		if response.get("error_description"):
-			error = response["error_description"]
-			xbmc.log("gdrive error: " + error)
-			return "failed", error
+		try:
+			responseData = json.loads(responseData)
 
-		return response
+			if responseData.get("error_description"):
+				error = responseData["error_description"]
+				xbmc.log("gdrive error: " + error)
+				return "failed", error
+		except:
+			pass
+
+		if not cookie:
+			return responseData
+		else:
+			return responseData, cookie
 
 	def getToken(self, code, clientID, clientSecret):
 		data = "code={}&client_id={}&client_secret={}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code".format(
@@ -79,12 +90,44 @@ class GoogleDrive:
 		self.account["expiry"] = response["expires_in"]
 
 	def getHeaders(self, accessToken=None, additionalHeader=None, additionalValue=None):
+		cookie = self.account.get("drive_stream")
 		accessToken = self.account.get("access_token")
+		if not accessToken: accessToken = ""
+		if not cookie: cookie = ""
 
 		if additionalHeader:
-			return {"Authorization": "Bearer " + accessToken, additionalHeader: additionalValue}
+			return {"Cookie": "DRIVE_STREAM=" + cookie, "Authorization": "Bearer " + accessToken, additionalHeader: additionalValue}
 		else:
-			return {"Authorization": "Bearer " + accessToken}
+			return {"Cookie": "DRIVE_STREAM=" + cookie, "Authorization": "Bearer " + accessToken}
 
 	def getHeadersEncoded(self):
 		return urllib.parse.urlencode(self.getHeaders())
+
+	def getStreams(self, fileID, defaultResolution=False):
+		url = "https://drive.google.com/get_video_info?docid=" + fileID
+		self.account["drive_stream"] = ""
+		responseData, cookie = self.sendPayload(url, headers=self.getHeaders(), cookie=True)
+		self.account["drive_stream"] = re.findall("DRIVE_STREAM=(.*?);", cookie)[0]
+
+		for _ in range(5):
+			responseData = urllib.parse.unquote(responseData)
+
+		# urls = re.sub("\\\\u003d", "=", urls)
+		# urls = re.sub("\\\\u0026", "&", urls)
+		urls = re.sub("\&url\=https://", "\@", responseData)
+		streams = {}
+
+		for r in re.finditer("([\d]+)/[\d]+x([\d]+)", urls, re.DOTALL):
+			itag, resolution = r.groups()
+			streams[itag] = {"resolution": resolution + "P"}
+
+		for r in re.finditer("\@([^\@]+)", urls):
+			videoURL = r.group(1)
+			itag = re.findall("itag=([\d]+)", videoURL)[0]
+			streams[itag]["url"] = "https://" + videoURL + "|" + self.getHeadersEncoded()
+
+			if defaultResolution and streams[itag]["resolution"] == defaultResolution:
+				return streams[itag]["url"]
+
+		if streams:
+			return [(v["resolution"], v["url"]) for k, v in streams.items()]

@@ -101,6 +101,29 @@
 						<popup>false</popup>
 					</control>
 				</setting>
+				<setting id="quality_prompt" type="boolean" label="30407" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="default_resolution" type="string" label="30408" help="">
+					<level>0</level>
+					<default>Original</default>
+					<constraints>
+						<options>
+							<option>Original</option>
+							<option>1080P</option>
+							<option>720P</option>
+							<option>360P</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="enable" setting="quality_prompt">false</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>30408</heading>
+					</control>
+				</setting>
 				<setting id="playback_action" type="string" label="30403" help="">
 					<level>0</level>
 					<default>Show resume prompt</default>

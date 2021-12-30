@@ -9,8 +9,10 @@ class Player(xbmc.Player):
 		self.videoDuration = self.stopSaving = self.started = self.close = False
 		self.dbID = dbID
 		self.dbType = dbType
+
 		self.widget = widget
 		self.trackProgress = trackProgress
+		self.monitor = xbmc.Monitor()
 
 		if self.dbType == "movie":
 			self.isMovie = True
@@ -21,7 +23,7 @@ class Player(xbmc.Player):
 
 		xbmc.sleep(2000)
 
-		while not self.videoDuration:
+		while not self.monitor.abortRequested() and not self.videoDuration:
 
 			try:
 				self.videoDuration = self.getTotalTime()
@@ -29,7 +31,8 @@ class Player(xbmc.Player):
 				self.close = True
 				return
 
-			xbmc.sleep(100)
+			if self.monitor.waitForAbort(0.1):
+				break
 
 		if self.trackProgress: Thread(target=self.saveProgress).start()
 		self.started = True
@@ -57,7 +60,7 @@ class Player(xbmc.Player):
 
 	def saveProgress(self):
 
-		while self.isPlaying() and not self.stopSaving:
+		while not self.monitor.abortRequested() and not self.stopSaving and self.isPlaying():
 
 			try:
 				self.time = self.getTime()
@@ -65,7 +68,9 @@ class Player(xbmc.Player):
 				pass
 
 			self.updateProgress()
-			xbmc.sleep(1000)
+
+			if self.monitor.waitForAbort(1):
+				break
 
 	def updateProgress(self, thread=True):
 
