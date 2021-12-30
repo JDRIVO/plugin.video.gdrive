@@ -15,6 +15,7 @@ GDRIVE_URL = "https://www.googleapis.com/drive/v3/files/"
 GDRIVE_PARAMS = "?supportsAllDrives=true&alt=media"
 USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0"
 
+
 class GoogleDrive:
 
 	def setAccount(self, account):
@@ -130,4 +131,4 @@ class GoogleDrive:
 				return streams[itag]["url"]
 
 		if streams and not defaultResolution:
-			return [(v["resolution"], v["url"]) for k, v in streams.items()]
+			return sorted([(v["resolution"], v["url"]) for k, v in streams.items()], key=lambda x: int(x[0][:-1]), reverse=True)

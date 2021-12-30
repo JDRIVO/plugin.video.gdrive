@@ -40,6 +40,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		self.settings = settings
 		port = self.settings.getSettingInt("server_port", 8011)
 		super().__init__(("", port), MyStreamer)
+
 		self.monitor = xbmc.Monitor()
 		self.accountManager = account_manager.AccountManager(self.settings)
 		self.cloudService = gdrive_api.GoogleDrive()

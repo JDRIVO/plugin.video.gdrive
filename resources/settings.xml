@@ -114,6 +114,7 @@
 							<option>Original</option>
 							<option>1080P</option>
 							<option>720P</option>
+							<option>480P</option>
 							<option>360P</option>
 						</options>
 					</constraints>
