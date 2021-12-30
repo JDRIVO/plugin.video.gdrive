@@ -353,10 +353,6 @@ class ContentEngine:
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30005))
 			return
 
-		if not self.settings.getSetting("crypto_password") or not self.settings.getSetting("crypto_salt"):
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30208))
-			return
-
 		if (not dbID or not dbType) and not filePath:
 			timeEnd = time.time() + 1
 
