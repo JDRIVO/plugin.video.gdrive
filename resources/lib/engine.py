@@ -477,7 +477,13 @@ class ContentEngine:
 		self.cloudService.refreshToken()
 		transcoded = False
 
-		if not crypto:
+		if crypto:
+
+			if not self.settings.getSetting("crypto_password") or not self.settings.getSetting("crypto_salt"):
+				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30208))
+				return
+
+		else:
 			qualityPrompty = self.settings.getSetting("quality_prompt")
 			defaultResolution = self.settings.getSetting("default_resolution")
 
