@@ -129,5 +129,5 @@ class GoogleDrive:
 			if defaultResolution and streams[itag]["resolution"] == defaultResolution:
 				return streams[itag]["url"]
 
-		if streams:
+		if streams and not defaultResolution:
 			return [(v["resolution"], v["url"]) for k, v in streams.items()]
