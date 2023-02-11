@@ -46,6 +46,7 @@ class Core:
 			"not_implemented": self.notImplemented,
 			"accounts_cm": self.accountsContextMenu,
 			"list_shared_drives": self.listSharedDrives,
+			"search_drive": self.searchDrive,
 		}
 
 		if mode == "video":
@@ -85,7 +86,7 @@ class Core:
 			if validation == "failed":
 				selection = self.dialog.yesno(
 					self.settings.getLocalizedString(30000),
-					"{} {}".format(accountName, self.settings.getLocalizedString(30019)),
+					f"{accountName} {self.settings.getLocalizedString(30019)}",
 				)
 
 				if not selection:
@@ -100,10 +101,7 @@ class Core:
 		elif selection == 2:
 			selection = self.dialog.yesno(
 				self.settings.getLocalizedString(30000),
-				"{} {}?".format(
-					self.settings.getLocalizedString(30121),
-					accountName,
-				)
+				f"{self.settings.getLocalizedString(30121)} {accountName}?",
 			)
 
 			if not selection:
@@ -136,27 +134,27 @@ class Core:
 
 		self.addMenu(
 			pluginURL + "?mode=register_account",
-			"[COLOR deepskyblue][B]{}[/B][/COLOR]".format(self.settings.getLocalizedString(30207)),
+			f"[COLOR deepskyblue][B]{self.settings.getLocalizedString(30207)}[/B][/COLOR]",
 			folder=False,
 		)
 		contextMenu = [
 			(
 				"Force Sync",
-				"RunPlugin({})".format(pluginURL + "?mode=not_implemented")
+				f"RunPlugin({pluginURL}?mode=not_implemented)",
 			),
 			(
 				"Create Alias",
-				"RunPlugin({})".format(pluginURL + "?mode=not_implemented")
+				f"RunPlugin({pluginURL}?mode=not_implemented)",
 			),
 			(
 				"Delete Drive",
-				"RunPlugin({})".format(pluginURL + "?mode=not_implemented")
+				f"RunPlugin({pluginURL}?mode=not_implemented)",
 			)
 		]
 
 		for driveID in self.accounts:
 			self.addMenu(
-				"{}?mode=list_drive&drive_id={}".format(pluginURL, driveID),
+				f"{pluginURL}?mode=list_drive&drive_id={driveID}",
 				"DRIVE: " + driveID,
 				cm=contextMenu,
 			)
@@ -190,20 +188,28 @@ class Core:
 			)
 
 		self.addMenu(
-			"{}?mode=list_accounts&drive_id={}".format(pluginURL, driveID),
-			"[B][COLOR deepskyblue]{}[/COLOR][/B]".format(self.settings.getLocalizedString(30032)),
+			f"{pluginURL}?mode=list_accounts&drive_id={driveID}",
+			f"[B][COLOR deepskyblue]{self.settings.getLocalizedString(30032)}[/COLOR][/B]",
 		)
 		self.addMenu(
-			"{}?mode=list_directory&drive_id={}".format(pluginURL, driveID),
+			f"{pluginURL}?mode=list_directory&drive_id={driveID}",
 			"My Drive",
 		)
 		self.addMenu(
-			"{}?mode=list_directory&drive_id={}&shared_with_me=true".format(pluginURL, driveID),
+			f"{pluginURL}?mode=list_directory&drive_id={driveID}&shared_with_me=true",
 			"Shared With Me",
 		)
 		self.addMenu(
-			"{}?mode=list_shared_drives&drive_id={}".format(pluginURL, driveID),
+			f"{pluginURL}?mode=list_shared_drives&drive_id={driveID}",
 			"Shared Drives",
+		)
+		self.addMenu(
+			f"{pluginURL}?mode=search_drive&drive_id={driveID}",
+			"Search",
+		)
+		self.addMenu(
+			f"{pluginURL}?mode=list_directory&drive_id={driveID}&starred=true",
+			"Starred",
 		)
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
@@ -226,32 +232,41 @@ class Core:
 			driveSettings = False
 
 		self.addMenu(
-			"{}?mode=add_service_account&drive_id={}".format(pluginURL, driveID),
-			"[B][COLOR deepskyblue]{}[/COLOR][/B]".format(self.settings.getLocalizedString(30214)),
+			f"{pluginURL}?mode=add_service_account&drive_id={driveID}",
+			f"[B][COLOR deepskyblue]{self.settings.getLocalizedString(30214)}[/COLOR][/B]",
 			folder=False,
 		)
 		self.addMenu(
-			"{}?mode=validate_accounts&drive_id={}".format(pluginURL, driveID),
-			"[B][COLOR deepskyblue]{}[/COLOR][/B]".format(self.settings.getLocalizedString(30021)),
+			f"{pluginURL}?mode=validate_accounts&drive_id={driveID}",
+			f"[B][COLOR deepskyblue]{self.settings.getLocalizedString(30021)}[/COLOR][/B]",
 			folder=False,
 		)
 		self.addMenu(
-			"{}?mode=delete_accounts&drive_id={}".format(pluginURL, driveID),
-			"[COLOR deepskyblue][B]{}[/B][/COLOR]".format(self.settings.getLocalizedString(30022)),
+			f"{pluginURL}?mode=delete_accounts&drive_id={driveID}",
+			f"[COLOR deepskyblue][B]{self.settings.getLocalizedString(30022)}[/B][/COLOR]",
 			folder=False,
 		)
 
 		for index, account in enumerate(self.accounts[driveID]):
 			accountName = account.name
-			accountName = "{}".format(accountName)
 			self.addMenu(
-				"{}?mode=accounts_cm&account_name={}&account_index={}&drive_id={}".format(pluginURL, accountName, index, driveID),
+				f"{pluginURL}?mode=accounts_cm&account_name={accountName}&account_index={index}&drive_id={driveID}",
 				accountName,
 				folder=False,
 			)
 
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
+
+	def searchDrive(self):
+		pluginURL = sys.argv[0]
+		driveID = self.settings.getParameter("drive_id")
+		searchQuery = xbmcgui.Dialog().input("Search Query")
+
+		if not searchQuery:
+			return
+
+		self.listDirectory(search=searchQuery)
 
 	def listSharedDrives(self):
 		pluginURL = sys.argv[0]
@@ -267,16 +282,17 @@ class Core:
 				sharedDriveID = sharedDrive["id"]
 				sharedDriveName = sharedDrive["name"]
 				self.addMenu(
-					"{}?mode=list_directory&drive_id={}&shared_drive_id={}".format(pluginURL, driveID, sharedDriveID),
-					"[B]{}[/B]".format(sharedDriveName),
+					f"{pluginURL}?mode=list_directory&drive_id={driveID}&shared_drive_id={sharedDriveID}",
+					f"[B]{sharedDriveName}[/B]",
 				)
 
-	def listDirectory(self):
+	def listDirectory(self, search=False):
 		pluginURL = sys.argv[0]
 		driveID = self.settings.getParameter("drive_id")
 		sharedDriveID = self.settings.getParameter("shared_drive_id")
 		folderID = self.settings.getParameter("folder_id")
 		sharedWithMe = self.settings.getParameter("shared_with_me")
+		starred = self.settings.getParameter("starred")
 
 		if not folderID:
 
@@ -288,7 +304,7 @@ class Core:
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
 		self.refreshAccess(account.expiry)
-		folders = self.cloudService.listDirectory(folderID=folderID, sharedWithMe=sharedWithMe, foldersOnly=True)
+		folders = self.cloudService.listDirectory(folderID=folderID, sharedWithMe=sharedWithMe, foldersOnly=True, starred=starred, search=search)
 		syncSettings = self.settings.getSyncSettings()
 
 		if syncSettings:
@@ -309,36 +325,24 @@ class Core:
 				contextMenu = [
 					(
 						"Folders Sync Settings",
-						"RunPlugin({})".format(
-							pluginURL + "?mode=not_implemented&drive_id={}&folder_id={}&folder_name={}".format(
-								driveID, folderID if folderID else driveID, folderName
-							)
-						)
+						f"RunPlugin({pluginURL}?mode=not_implemented&drive_id={driveID}&folder_id={folderID if folderID else driveID}&folder_name={folderName})",
 					),
 					(
 						"Stop Folder Sync",
-						"RunPlugin({})".format(
-							pluginURL + "?mode=not_implemented&drive_id={}&folder_id={}&folder_name={}".format(
-								driveID, folderID if folderID else driveID, folderName
-							)
-						)
+						f"RunPlugin({pluginURL}?mode=not_implemented&drive_id={driveID}&folder_id={folderID if folderID else driveID}&folder_name={folderName})",
 					)
 				]
-				folderName = "[COLOR crimson][B]{}[/B][/COLOR]".format(folderName)
+				folderName = f"[COLOR crimson][B]{folderName}[/B][/COLOR]"
 			else:
 				contextMenu = [
 					(
 						"Sync folder",
-						"RunPlugin({})".format(
-							pluginURL + "?mode=sync&drive_id={}&folder_id={}&folder_name={}".format(
-							driveID, folderID if folderID else driveID, folderName
-							)
-						)
+						f"RunPlugin({pluginURL}?mode=sync&drive_id={driveID}&folder_id={folderID if folderID else driveID}&folder_name={folderName})",
 					)
 				]
 
 			self.addMenu(
-				pluginURL + "?mode=list_directory&drive_id={}&folder_id={}".format(driveID, folderID),
+				f"{pluginURL}?mode=list_directory&drive_id={driveID}&folder_id={folderID}",
 				folderName,
 				cm=contextMenu,
 			)
@@ -359,8 +363,8 @@ class Core:
 		folderName = self.settings.getParameter("folder_name")
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 
-		data = "drive_id={}&folder_id={}&folder_name={}".format(driveID, folderID, folderName)
-		url = "http://localhost:{}/add_sync_task".format(serverPort)
+		data = f"drive_id={driveID}&folder_id={folderID}&folder_name={folderName}"
+		url = f"http://localhost:{serverPort}/add_sync_task"
 		req = urllib.request.Request(url, data.encode("utf-8"))
 		response = urllib.request.urlopen(req)
 		response.close()
@@ -464,7 +468,7 @@ class Core:
 			if validation == "failed":
 				selection = self.dialog.yesno(
 					self.settings.getLocalizedString(30000),
-					"{} {}".format(accountName, self.settings.getLocalizedString(30019)),
+					"{accountName} {self.settings.getLocalizedString(30019)}",
 				)
 
 				if not selection:
@@ -555,8 +559,8 @@ class Core:
 					transcoded, driveURL = stream
 
 		serverPort = self.settings.getSettingInt("server_port", 8011)
-		url = "http://localhost:{}/play_url".format(serverPort)
-		data = "encrypted={}&url={}&driveid={}&fileid={}&transcoded={}".format(crypto, driveURL, driveID, fileID, transcoded)
+		url = f"http://localhost:{serverPort}/play_url"
+		data = f"encrypted={crypto}&url={driveURL}&driveid={driveID}&fileid={fileID}&transcoded={transcoded}"
 		req = urllib.request.Request(url, data.encode("utf-8"))
 
 		try:
@@ -566,7 +570,7 @@ class Core:
 			xbmc.log("gdrive error: " + str(e))
 			return
 
-		item = xbmcgui.ListItem(path="http://localhost:{}/play".format(serverPort))
+		item = xbmcgui.ListItem(path=f"http://localhost:{serverPort}/play")
 
 		if self.settings.getSetting("subtitles_format") == "Subtitles are named the same as STRM":
 			subtitles = glob.glob(glob.escape(filePath.rstrip(".strm")) + "*[!gom]")
@@ -577,12 +581,12 @@ class Core:
 
 		if dbID:
 			widget = 0 if xbmc.getInfoLabel("Container.Content") else 1
-			data = "dbid={}&dbtype={}&widget={}&track={}".format(dbID, dbType, widget, 1)
+			data = f"dbid={dbID}&dbtype={dbType}&widget={widget}&track=1"
 		else:
-			data = "dbid={}&dbtype={}&widget={}&track={}".format(0, 0, 0, 0)
+			data = "dbid=0&dbtype=0&widget=0&track=0"
 
 		xbmcplugin.setResolvedUrl(self.pluginHandle, True, item)
-		url = "http://localhost:{}/start_player".format(serverPort)
+		url = f"http://localhost:{serverPort}/start_player"
 		req = urllib.request.Request(url, data.encode("utf-8"))
 		response = urllib.request.urlopen(req)
 		response.close()

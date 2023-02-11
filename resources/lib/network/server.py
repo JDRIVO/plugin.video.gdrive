@@ -246,12 +246,12 @@ class MyStreamer(BaseHTTPRequestHandler):
 				# self.send_header("Content-Range", "bytes " + str(start) + "-" + str(end))
 
 				if not end:
-					self.send_header("Content-Range", "bytes {}-{}/{}".format(start, int(self.server.length) - 1, self.server.length))
+					self.send_header("Content-Range", f"bytes {start}-{int(self.server.length) - 1}/{self.server.length}")
 				else:
-					self.send_header("Content-Range", "bytes {}-{}/{}".format(start, end, self.server.length))
+					self.send_header("Content-Range", f"bytes {start}-{end}/{self.server.length}")
 
 				# self.send_header("Content-Range", response.info().get("Content-Range"))
-				xbmc.log("Content-Range!!!{}-{}/{}\n".format(start, int(self.server.length) - 1, self.server.length))
+				xbmc.log(f"Content-Range!!!{start}-{int(self.server.length) - 1}/{self.server.length}\n")
 
 			xbmc.log(str(response.info()) + "\n")
 

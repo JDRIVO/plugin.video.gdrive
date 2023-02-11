@@ -17,7 +17,7 @@ def getVideoDB():
 
 def updateLibrary(filePath, metadata):
 	dirPath, filename = os.path.split(filePath)
-	selectStatement = "SELECT idFile FROM files WHERE idPath=(SELECT idPath FROM path WHERE strPath='{}') AND strFilename='{}'".format(dirPath + os.sep, filename)
+	selectStatement = f"SELECT idFile FROM files WHERE idPath=(SELECT idPath FROM path WHERE strPath='{dirPath + os.sep}') AND strFilename='{filename}'"
 	dbPath = getVideoDB()
 
 	db = sqlite.connect(dbPath)
@@ -34,10 +34,10 @@ def updateLibrary(filePath, metadata):
 	aspectRatio = float(videoWidth) / videoHeight
 
 	p1 = "INSERT INTO streamdetails (iVideoWidth, iVideoHeight, fVideoAspect, iVideoDuration, idFile, iStreamType)"
-	p2 = "SELECT '{}', '{}', '{}', '{}', {}, '0'".format(videoWidth, videoHeight, aspectRatio, videoDuration, fileID)
-	p3 = "WHERE NOT EXISTS (SELECT 1 FROM streamdetails WHERE iVideoWidth='{}' AND iVideoHeight='{}' AND fVideoAspect='{}' AND iVideoDuration='{}' AND idFile='{}' AND iStreamType='0')".format(videoWidth, videoHeight, aspectRatio, videoDuration, fileID)
+	p2 = f"SELECT '{videoWidth}', '{videoHeight}', '{aspectRatio}', '{videoDuration}', {fileID}, '0'"
+	p3 = f"WHERE NOT EXISTS (SELECT 1 FROM streamdetails WHERE iVideoWidth='{videoWidth}' AND iVideoHeight='{videoHeight}' AND fVideoAspect='{aspectRatio}' AND iVideoDuration='{videoDuration}' AND idFile='{fileID}' AND iStreamType='0')"
 
-	insertStatement = "{} {} {}".format(p1, p2, p3)
+	insertStatement = f"{p1} {p2} {p3}"
 	db = sqlite.connect(dbPath)
 	db.execute(insertStatement)
 	db.commit()

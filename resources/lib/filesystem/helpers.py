@@ -75,7 +75,7 @@ def duplicateFileCheck(dirPath, filename):
 	copy = 1
 
 	while os.path.exists(filePath):
-		filePath = os.path.join(dirPath, "{} ({}){}".format(filename, copy, fileExtension))
+		filePath = os.path.join(dirPath, f"{filename} ({copy}){fileExtension}")
 		copy += 1
 
 	return filePath
@@ -168,13 +168,13 @@ def createSTRMContents(driveID, fileID, encrypted, contents):
 	contents["drive_id"] = driveID
 	contents["file_id"] = fileID
 	contents["encrypted"] = str(encrypted)
-	return "plugin://plugin.video.gdrive/?mode=video" + "".join(["&{}={}".format(k, v) for k, v in contents.items() if v])
+	return "plugin://plugin.video.gdrive/?mode=video" + "".join([f"&{k}={v}"for k, v in contents.items() if v])
 
 def getTMDBtitle(type, title, year):
 	url = "https://www.themoviedb.org/search/"
 
 	if year:
-		params = {"query": "{} y:{}".format(title, year)}
+		params = {"query": f"{title} y:{year}"}
 	else:
 		params = {"query": title}
 

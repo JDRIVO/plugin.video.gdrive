@@ -198,7 +198,7 @@ class GoogleDrive:
 
 		return dirPath, rootID, rootPath
 
-	def listDirectory(self, folderID="root", sharedWithMe=False, foldersOnly=False):
+	def listDirectory(self, folderID="root", sharedWithMe=False, foldersOnly=False, starred=False, search=False):
 
 		if foldersOnly:
 
@@ -206,28 +206,36 @@ class GoogleDrive:
 				params = {
 					"q": "mimeType='application/vnd.google-apps.folder' and sharedWithMe=true and not trashed",
 					"fields": "nextPageToken,files(id,name)",
-					"supportsAllDrives": "true",
-					"includeItemsFromAllDrives": "true",
-					"pageSize": "1000",
+				}
+			elif starred:
+				params = {
+					"q": f"mimeType='application/vnd.google-apps.folder' and starred and not trashed",
+					"fields": "nextPageToken,files(id,name)",
+				}
+			elif search:
+				params = {
+					"q": f"mimeType='application/vnd.google-apps.folder' and name contains '{search}' and not trashed",
+					"fields": "nextPageToken,files(id,name)",
 				}
 			else:
 				params = {
-					"q": "mimeType='application/vnd.google-apps.folder' and '{}' in parents and not trashed".format(folderID),
+					"q": f"mimeType='application/vnd.google-apps.folder' and '{folderID}' in parents and not trashed",
 					"fields": "nextPageToken,files(id,name)",
-					"supportsAllDrives": "true",
-					"includeItemsFromAllDrives": "true",
-					"pageSize": "1000",
 				}
 
 		else:
 			params = {
-				"q": "'{}' in parents and not trashed".format(folderID),
+				"q": f"'{folderID}' in parents and not trashed",
 				"fields": "nextPageToken,files(id,parents,name,mimeType,videoMediaMetadata,fileExtension)",
+			}
+
+		params.update(
+			{
 				"supportsAllDrives": "true",
 				"includeItemsFromAllDrives": "true",
 				"pageSize": "1000",
 			}
-
+		)
 		files = []
 		pageToken = True
 

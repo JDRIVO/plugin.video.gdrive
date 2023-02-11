@@ -61,7 +61,7 @@ class Syncer:
 
 		if newFiles:
 			self.syncFileAdditions(newFiles, syncRoot, folders, cachedDirectories, cachedFiles, driveID)
-			xbmc.executebuiltin("UpdateLibrary(video,{})".format(syncRoot))
+			xbmc.executebuiltin(f"UpdateLibrary(video,{syncRoot})")
 
 		if self.deleted:
 

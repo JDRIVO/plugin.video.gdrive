@@ -191,7 +191,7 @@ class Tasker:
 
 		syncChoices = syncOptions.settings
 		del syncOptions
-		self.dialog.notification("gDrive", "Generating files please wait. A notification will appear when this task has completed.")
+		self.dialog.notification("gDrive", "Syncing files. A notification will appear when this task has completed.")
 
 		if startupSync:
 			taskDetails["startup_sync"] = syncChoices["startup_sync"]
@@ -232,7 +232,7 @@ class Tasker:
 			driveSettings["page_token"] = self.cloudService.getPageToken()
 
 		self.settings.saveSyncSettings(syncSettings)
-		xbmc.executebuiltin("UpdateLibrary(video,{})".format(syncRoot))
+		xbmc.executebuiltin(f"UpdateLibrary(video,{syncRoot})")
 		xbmc.executebuiltin("Container.Refresh")
 		self.dialog.notification("gDrive", "Sync Completed")
 		self.spawnTask(taskDetails, driveID, startUpRun=False)

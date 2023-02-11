@@ -23,7 +23,7 @@ class FileProcessor:
 					if subtitles:
 						newFilename, fileExtension = os.path.splitext(filename)
 						newFilename = newFilename.replace(videoFilename, "").lstrip()
-						newFilename = "{}{}{}".format(newVideoFilename, newFilename, fileExtension)
+						newFilename = f"{newVideoFilename}{newFilename}{fileExtension}"
 					else:
 						newFilename = newVideoFilename + fileExtension
 

@@ -138,31 +138,27 @@ class LibraryMonitor(xbmc.Monitor):
 			values.append(fileID)
 			condition = "".join(
 				[
-					"{}='{}' AND ".format(name, values[count])
+					f"{name}='{values[count]}' AND "
 					if name != names[-1]
-					else "{}='{}'".format(name, values[count])
+					else f"{name}='{values[count]}'"
 					for count, name in enumerate(names)
 				]
 			)
 			names = ", ".join(names)
 			values = str(values)[1:-1]
 			statements.append(
-				"INSERT INTO streamdetails ({}) SELECT {} WHERE NOT EXISTS (SELECT 1 FROM streamdetails WHERE {})".format(
-					names, values, condition
-				)
+				f"INSERT INTO streamdetails ({names}) SELECT {values} WHERE NOT EXISTS (SELECT 1 FROM streamdetails WHERE {condition})"
 			)
 
 		return statements
 
 	def select(self, statement):
-		xbmc.log("the select statement = " + str(statement), xbmc.LOGERROR)
 		db = sqlite.connect(self.dbPath)
 		query = list(db.execute(*statement))
 		db.close()
 		return query[0][0]
 
 	def insert(self, statements):
-		xbmc.log("the insert statements = " + str(statements), xbmc.LOGERROR)
 		db = sqlite.connect(self.dbPath)
 		[db.execute(statement) for statement in statements]
 		db.commit()

@@ -91,7 +91,7 @@ class Episode(Video):
 					append = e
 
 				if e != self.episode[-1]:
-					modifiedEpisode += "{}-".format(append)
+					modifiedEpisode += f"{append}-"
 				else:
 					modifiedEpisode += str(append)
 
