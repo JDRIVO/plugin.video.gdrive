@@ -3,6 +3,7 @@ import os
 import xbmcgui
 import xbmcaddon
 
+
 class ResolutionOrder(xbmcgui.WindowDialog):
 	ACTION_MOVE_LEFT = 1
 	ACTION_MOVE_RIGHT = 2
