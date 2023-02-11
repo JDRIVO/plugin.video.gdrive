@@ -13,7 +13,6 @@ class SyncOptions(xbmcgui.WindowDialog):
 	ACTION_BACKSPACE = 92
 
 	def __init__(self, *args, **kwargs):
-
 		self.syncStartup = kwargs.get("startup_sync")
 		self.closed = False
 		addon = xbmcaddon.Addon()
