@@ -11,7 +11,7 @@ class FileProcessor:
 		self.fileOperations = fileOperations
 		self.settings = settings
 
-	def processMediaAssets(self, mediaExtras, videoFilename, newVideoFilename, fileExtension, dirPath, videoRenamed, originalPath, fileCache, folderID, subtitles=False):
+	def processMediaAssets(self, mediaExtras, videoFilename, newVideoFilename, fileExtension, dirPath, videoRenamed, originalPath, cachedFiles, folderID, subtitles=False):
 
 		for mediaExtra in list(mediaExtras):
 			filename = mediaExtra.name
@@ -22,15 +22,13 @@ class FileProcessor:
 
 					if subtitles:
 						newFilename, fileExtension = os.path.splitext(filename)
-						newFilename = newFilename.replace(videoFilename, "").lstrip()
-						newFilename = f"{newVideoFilename}{newFilename}{fileExtension}"
+						newFilename = f"{newVideoFilename}{fileExtension}"
 					else:
 						newFilename = newVideoFilename + fileExtension
 
 					filePath = helpers.generateFilePath(dirPath, newFilename)
 					originalName = False
 					originalFolder = True if originalPath else False
-
 				else:
 					filePath = helpers.generateFilePath(dirPath, filename)
 					originalName = True
@@ -41,7 +39,7 @@ class FileProcessor:
 				mediaExtras.remove(mediaExtra)
 				cachedFiles[fileID]  = {
 					"local_name": os.path.basename(filePath),
-					"remote_name": filenameWithoutExtension,
+					"remote_name": filename,
 					"local_path": filePath if not originalFolder else False,
 					"parent_folder_id": folderID,
 					"original_name": originalName,
@@ -112,18 +110,18 @@ class FileProcessor:
 					videoRenamed = True
 
 				if syncSubtitles and subtitles:
-					self.processMediaAssets(subtitles, filename, newFilename, None, dirPath, videoRenamed, originalPath, cachedFiles, parentFolderID, subtitles=True)
+					self.processMediaAssets(subtitles, filenameWithoutExtension, newFilename, None, dirPath, videoRenamed, originalPath, cachedFiles, parentFolderID, subtitles=True)
 
 				if syncArtwork:
 
 					if fanart:
-						self.processMediaAssets(fanart, filename, newFilename, "-fanart.jpg", dirPath, videoRenamed, originalPath, cachedFiles, parentFolderID)
+						self.processMediaAssets(fanart, filenameWithoutExtension, newFilename, "-fanart.jpg", dirPath, videoRenamed, originalPath, cachedFiles, parentFolderID)
 
 					if posters:
-						self.processMediaAssets(posters, filename, newFilename, "-poster.jpg", dirPath, videoRenamed, originalPath, cachedFiles, parentFolderID)
+						self.processMediaAssets(posters, filenameWithoutExtension, newFilename, "-poster.jpg", dirPath, videoRenamed, originalPath, cachedFiles, parentFolderID)
 
 				if syncNFO and nfos:
-					self.processMediaAssets(nfos, filename, newFilename, ".nfo", dirPath, videoRenamed, originalPath, cachedFiles, parentFolderID)
+					self.processMediaAssets(nfos, filenameWithoutExtension, newFilename, ".nfo", dirPath, videoRenamed, originalPath, cachedFiles, parentFolderID)
 
 			if not strmPath:
 				strmPath = helpers.generateFilePath(dirPath, filenameWithoutExtension + ".strm")

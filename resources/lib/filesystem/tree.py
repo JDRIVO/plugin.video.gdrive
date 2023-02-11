@@ -74,21 +74,21 @@ class FileTree:
 					mediaType = helpers.identifyMediaType(videoInfo)
 
 					if mediaType == "episode":
-						_file = video.Episode()
+						file_ = video.Episode()
 					elif mediaType == "movie":
-						_file = video.Movie()
+						file_ = video.Movie()
 					else:
-						_file = video.Video()
+						file_ = video.Video()
 
-					_file.setContents(videoInfo)
+					file_.setContents(videoInfo)
 
 				else:
-					_file = File()
+					file_ = File()
 
-				_file.name = filename
-				_file.id = file["id"]
-				_file.metadata = metadata
-				_file.encrypted = encrypted
-				tree[folderID]["files"][fileType].append(_file)
+				file_.name = filename
+				file_.id = file["id"]
+				file_.metadata = metadata
+				file_.encrypted = encrypted
+				tree[folderID]["files"][fileType].append(file_)
 
 		return tree
