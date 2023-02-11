@@ -184,11 +184,11 @@ class Tasker:
 
 		syncOptions = ui.sync_settings.SyncOptions(startup_sync=startupSync)
 		syncOptions.doModal()
-		syncChoices = syncOptions.settings
 
 		if syncOptions.closed:
 			return
 
+		syncChoices = syncOptions.settings
 		del syncOptions
 		self.dialog.notification("gDrive", "Generating files please wait. A notification will appear when this task has completed.")
 
