@@ -1,12 +1,10 @@
 # http://stackoverflow.com/questions/6425131/encrpyt-decrypt-data-in-python-with-salt
 
 import os
-import json
-import time
 import base64
 import random
-import struct
 import string
+import struct
 import hashlib
 
 try:
@@ -15,7 +13,7 @@ try:
 	from Cryptodome.Hash import SHA256
 	from Cryptodome.PublicKey import RSA
 	from Cryptodome.Signature import pkcs1_15
-except:
+except Exception:
 	import Crypto.Random
 	from Crypto.Cipher import AES
 	from Crypto.Hash import SHA256
@@ -23,46 +21,7 @@ except:
 	from Crypto.Signature import pkcs1_15
 
 
-class JasonWebToken:
-
-	def __init__(self, email, key, scope, authURL):
-		self.key = key
-		self.headers = {
-			"alg": "RS256",
-			"typ": "JWT",
-		}
-		iat = time.time()
-		exp = iat + 3600
-		self.claimSet = {
-			"iss": email,
-			"scope": scope,
-			"aud": authURL,
-			"exp": exp,
-			"iat": iat,
-		}
-
-	@staticmethod
-	def encode(input):
-		return base64.urlsafe_b64encode(input).decode("utf-8").rstrip("=")
-
-	def create(self):
-		key = self.key.encode("utf-8")
-		claimSet = json.dumps(self.claimSet).encode("utf-8")
-		headers = json.dumps(self.headers).encode("utf-8")
-
-		segments = []
-		segments.append(self.encode(headers))
-		segments.append(self.encode(claimSet))
-		sigContent = ".".join(segments).encode("utf-8")
-
-		key = RSA.import_key(key)
-		h = SHA256.new(sigContent)
-		signature = pkcs1_15.new(key).sign(h)
-		segments.append(self.encode(signature))
-		return ".".join(segments)
-
-
-class Encryption:
+class Encrypter:
 	# salt size in bytes
 	SALT_SIZE = 32
 	# number of iterations in the key generation
@@ -70,21 +29,39 @@ class Encryption:
 	# the size multiple required for AES
 	AES_MULTIPLE = 16
 
-	def __init__(self, saltFile, saltPassword):
+	def __init__(self, saltFile=None, saltPassword=None, settings=None):
+		self.setup(saltFile, saltPassword, settings)
+
+	def setup(self, saltFile=None, saltPassword=None, settings=None):
+
+		if settings:
+			saltFile = settings.getSetting("crypto_salt")
+			saltPassword = settings.getSetting("crypto_password")
 
 		try:
 
-			with open(saltFile, "rb") as salt:
-				self.salt = salt.read()
+			try:
 
-		except:
+				with open(saltFile, "rb") as salt:
+					self.salt = salt.read()
 
-			with open(saltFile, "wb") as salt:
-				self.salt = self.generateSalt()
-				salt.write(self.salt)
+			except Exception:
+
+				with open(saltFile, "wb") as salt:
+					self.salt = self.generateSalt()
+					salt.write(self.salt)
+
+		except Exception:
+			return
 
 		if saltPassword:
 			self.key = self.generateKey(saltPassword)
+
+	def decryptFilename(self, filename):
+		decryptedFilename = self.decryptString(filename)
+
+		if decryptedFilename:
+			return decryptedFilename.decode("utf-8")
 
 	def generateKey(self, password, iterations=NUMBER_OF_ITERATIONS):
 
@@ -120,7 +97,7 @@ class Encryption:
 
 		try:
 			return base64.b64decode(fileName)
-		except:
+		except Exception:
 			return ""
 
 	def decryptFile(self, inFilename, outFilename=None, chunkSize=24 * 1024):
@@ -154,12 +131,12 @@ class Encryption:
 
 				outFile.truncate(origSize)
 
-	def decryptStream(self, response, chunkSize=24 * 1024):
+	def decryptStream(self, response, outFilename, chunkSize=24 * 1024):
 		# with open(inFilename, "rb") as inFile:
 			origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
 			decryptor = AES.new(self.key, AES.MODE_ECB)
 
-			with open(outFilename, "w") as outFile:
+			with open(outFilename, "wb") as outFile:
 
 				while True:
 					chunk = response.read(chunkSize)
@@ -330,4 +307,7 @@ class Encryption:
 		if len(stringEncrypted) == 0:
 			return
 
-		return decryptor.decrypt(base64.b64decode(stringEncrypted.replace("---", "/").encode("utf-8"))).rstrip()
+		try:
+			return decryptor.decrypt(base64.b64decode(stringEncrypted.replace("---", "/").encode("utf-8"))).rstrip()
+		except Exception:
+			return

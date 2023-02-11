@@ -1,83 +1,41 @@
 <?xml version="1.0" ?>
 <settings version="1">
 	<section id="plugin.video.gdrive">
-		<category id="accounts" label="30300" help="">
+		<category id="playback" label="30400" help="">
 			<group id="1">
-				<setting id="default_account" type="string" label="30001" help="">
+				<setting id="resolution_prompt" type="boolean" label="30401" help="">
 					<level>0</level>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>30001</heading>
-					</control>
-				</setting>
-				<setting id="fallback_accounts" type="string" label="30001" help="">
-					<level>0</level>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>30001</heading>
-					</control>
-				</setting>
-				<setting id="default_account_ui" type="string" label="30301" help="">
-					<level>0</level>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="button" format="action">
-						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_default_account)</data>
-					</control>
-				</setting>
-				<setting id="fallback" type="boolean" label="30302" help="">
-					<level>0</level>
-					<default>false</default>
+					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="fallback_accounts_ui" type="string" label="30303" help="" parent="fallback_accounts">
+				<setting id="resolution_priority" type="string" label="30402" parent="resolution_prompt" help="">
 					<level>0</level>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
+					<default>Original, 1080P, 720P, 480P, 360P</default>
 					<dependencies>
-						<dependency type="visible" setting="fallback">true</dependency>
+						<dependency type="enable" setting="resolution_prompt">false</dependency>
 					</dependencies>
 					<control type="button" format="action">
-						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=add_fallback_account)</data>
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=resolution_priority)</data>
 					</control>
 				</setting>
-				<setting id="validate_accounts" type="action" label="30304" help="">
+				<setting id="subtitles_format" type="string" label="30403" help="">
 					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.gdrive/?mode=validate_accounts)</data>
+					<default>Subtitles are named the same as STRM</default>
 					<constraints>
-						<allowempty>true</allowempty>
+						<options>
+							<option>Subtitles are named the same as STRM</option>
+							<option>Subtitles aren't named the same as STRM and are in an isolated folder with STRM</option>
+						</options>
 					</constraints>
-					<control type="button" format="action"/>
-				</setting>
-				<setting id="delete_accounts" type="action" label="30305" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.gdrive/?mode=settings_delete_account)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="button" format="action"/>
+					<control type="list" format="string">
+						<heading>30403</heading>
+					</control>
 				</setting>
 			</group>
 		</category>
-		<category id="library" label="30400" help="">
+		<category id="library" label="30500" help="">
 			<group id="1">
-				<setting id="movie_watch_time" type="integer" label="30401" help="">
+				<setting id="movie_watch_time" type="integer" label="30501" help="">
 					<level>0</level>
 					<default>93</default>
 					<constraints>
@@ -89,7 +47,7 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="tv_watch_time" type="integer" label="30402" help="">
+				<setting id="tv_watch_time" type="integer" label="30502" help="">
 					<level>0</level>
 					<default>88</default>
 					<constraints>
@@ -101,93 +59,41 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="quality_prompt" type="boolean" label="30407" help="">
+				<setting id="library_monitor" type="boolean" label="30503" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
-				</setting>
-				<setting id="resolution_priority" type="string" label="30408" help="">
-					<level>0</level>
-					<default>Original, 1080P, 720P, 480P, 360P</default>
-					<dependencies>
-						<dependency type="enable" setting="quality_prompt">false</dependency>
-					</dependencies>
-					<control type="button" format="action">
-						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=resolution_priority)</data>
-					</control>
-				</setting>
-				<setting id="playback_action" type="string" label="30403" help="">
-					<level>0</level>
-					<default>Show resume prompt</default>
-					<constraints>
-						<options>
-							<option>Show resume prompt</option>
-							<option>Resume automatically</option>
-							<option>Play from beginning</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>30403</heading>
-					</control>
-				</setting>
-				<setting id="subtitles" type="string" label="30404" help="">
-					<level>0</level>
-					<default>Subtitles are named the same as STRM</default>
-					<constraints>
-						<options>
-							<option>Subtitles are named the same as STRM</option>
-							<option>Subtitles aren't named the same as STRM and are in an isolated folder with STRM</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>30404</heading>
-					</control>
-				</setting>
-				<setting id="watcher" type="boolean" label="30405" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="video_db" type="path" label="30406" help="">
-					<level>0</level>
-					<default>special://profile/Database/MyVideos119.db</default>
-					<constraints>
-						<writable>false</writable>
-					</constraints>
-					<control type="button" format="file">
-						<heading>30406</heading>
-					</control>
 				</setting>
 			</group>
 		</category>
-		<category id="streamer" label="30500" help="">
-			<group id="1" label="30501">
-				<setting id="server_port" type="integer" label="30502" help="">
+		<category id="streamer" label="30600" help="">
+			<group id="1" label="30601">
+				<setting id="server_port" type="integer" label="30602" help="">
 					<level>0</level>
 					<default>8011</default>
 					<control type="edit" format="integer">
-						<heading>30502</heading>
+						<heading>30602</heading>
 					</control>
 				</setting>
 			</group>
-			<group id="2" label="30503">
-				<setting id="crypto_password" type="string" label="30504" help="">
+			<group id="2" label="30603">
+				<setting id="crypto_password" type="string" label="30604" help="">
 					<level>0</level>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
 					<control type="edit" format="string">
-						<heading>30504</heading>
+						<heading>30604</heading>
 					</control>
 				</setting>
-				<setting id="crypto_salt" type="path" label="30505" help="">
+				<setting id="crypto_salt" type="path" label="30605" help="">
 					<level>0</level>
 					<constraints>
 						<writable>false</writable>
 						<allowempty>true</allowempty>
 					</constraints>
 					<control type="button" format="file">
-						<heading>30505</heading>
+						<heading>30605</heading>
 					</control>
 				</setting>
 			</group>

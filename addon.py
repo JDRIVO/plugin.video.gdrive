@@ -10,7 +10,7 @@ dbID = xbmc.getInfoLabel("ListItem.DBID")
 dbType = xbmc.getInfoLabel("ListItem.DBTYPE")
 filePath = xbmc.getInfoLabel("ListItem.FileNameAndPath")
 
-from resources.lib import engine
+from resources.lib import core
 
-mediaEngine = engine.ContentEngine()
-mediaEngine.run(dbID, dbType, filePath)
+core = core.Core()
+core.run(dbID, dbType, filePath)

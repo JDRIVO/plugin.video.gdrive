@@ -1,14 +1,14 @@
 import os
 import sys
 
-import encryption
+import encrypter
 
 saltFile = sys.argv[1]
 password = sys.argv[2]
 filePath = sys.argv[3]
 destinationPath = sys.argv[4]
 
-decrypt = encryption.Encryption(saltFile, password)
+decrypt = encrypter.Encrypter(saltFile, password)
 
 encryptedFilename = os.path.basename(filePath)
 filename = decrypt.decryptString(encryptedFilename)

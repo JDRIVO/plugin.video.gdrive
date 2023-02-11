@@ -101,9 +101,13 @@ msgctxt "#30031"
 msgid "Stream Quality"
 msgstr "Stream Quality"
 
+msgctxt "#30032"
+msgid "Accounts"
+msgstr "Accounts"
+
 msgctxt "#30118"
-msgid "The following account was enrolled:"
-msgstr "The following account was enrolled:"
+msgid "The following account was added:"
+msgstr "The following account was added:"
 
 msgctxt "#30119"
 msgid "The following login error was encountered:"
@@ -138,8 +142,8 @@ msgid "Account(s) deleted."
 msgstr "Account(s) deleted."
 
 msgctxt "#30207"
-msgid "Enroll account"
-msgstr "Enroll account"
+msgid "Add account"
+msgstr "Add account"
 
 msgctxt "#30208"
 msgid "No encryption settings found. Please update your encryption information in the gDrive settings."
@@ -185,6 +189,30 @@ msgctxt "#30221"
 msgid "The video database set in your gDrive library settings is incompatible with this version of Kodi."
 msgstr "The video database set in your gDrive library settings is incompatible with this version of Kodi."
 
+msgctxt "#30222"
+msgid "You must create an"
+msgstr "You must create an"
+
+msgctxt "#30223"
+msgid "OAuth Client ID"
+msgstr "OAuth Client ID"
+
+msgctxt "#30224"
+msgid "that is a"
+msgstr "that is a"
+
+msgctxt "#30225"
+msgid "Web Application"
+msgstr "Web Application"
+
+msgctxt "#30226"
+msgid "with this"
+msgstr "with this"
+
+msgctxt "#30227"
+msgid "Redirect URI"
+msgstr "Redirect URI"
+
 msgctxt "#30300"
 msgid "Accounts"
 msgstr "Accounts"
@@ -214,61 +242,57 @@ msgid "Validating"
 msgstr "Validating"
 
 msgctxt "#30400"
-msgid "Library"
-msgstr "Library"
+msgid "Playback"
+msgstr "Playback"
 
 msgctxt "#30401"
-msgid "Mark Movies as Watched at:"
-msgstr "Mark Movies as Watched at:"
+msgid "Prompt Resolution Selection (If Available)"
+msgstr "Prompt Resolution Selection (If Available)"
 
 msgctxt "#30402"
-msgid "Mark Episodes as Watched at:"
-msgstr "Mark Episodes as Watched at:"
-
-msgctxt "#30403"
-msgid "Default Playback Action:"
-msgstr "Default Playback Action:"
-
-msgctxt "#30404"
-msgid "Subtitle Structure:"
-msgstr "Subtitle Structure:"
-
-msgctxt "#30405"
-msgid "Obtain Media Flag Information From STRM"
-msgstr "Obtain Media Flag Information From STRM"
-
-msgctxt "#30406"
-msgid "Video Database File:"
-msgstr "Video Database File:"
-
-msgctxt "#30407"
-msgid "Display Resolution Selection (If Available)"
-msgstr "Display Resolution Selection (If Available)"
-
-msgctxt "#30408"
 msgid "Video Resolution Priority:"
 msgstr "Video Resolution Priority:"
 
+msgctxt "#30403"
+msgid "Subtitle Format:"
+msgstr "Subtitle Format:"
+
 msgctxt "#30500"
+msgid "Library"
+msgstr "Library"
+
+msgctxt "#30501"
+msgid "Mark Movies as Watched at:"
+msgstr "Mark Movies as Watched at:"
+
+msgctxt "#30502"
+msgid "Mark Episodes as Watched at:"
+msgstr "Mark Episodes as Watched at:"
+
+msgctxt "#30503"
+msgid "Obtain Media Flag Information From STRM"
+msgstr "Obtain Media Flag Information From STRM"
+
+msgctxt "#30600"
 msgid "Streamer"
 msgstr "Streamer"
 
-msgctxt "#30501"
+msgctxt "#30601"
 msgid "Server"
 msgstr "Server"
 
-msgctxt "#30502"
+msgctxt "#30602"
 msgid "Server Port (Requires Restart):"
 msgstr "Server Port (Requires Restart):"
 
-msgctxt "#30503"
+msgctxt "#30603"
 msgid "Crypto"
 msgstr "Crypto"
 
-msgctxt "#30504"
+msgctxt "#30604"
 msgid "Password:"
 msgstr "Password:"
 
-msgctxt "#30505"
+msgctxt "#30605"
 msgid "Salt File:"
 msgstr "Salt File:"

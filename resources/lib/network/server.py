@@ -1,25 +1,7 @@
-"""
-	Copyright (C) 2014-2016 ddurdle
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-"""
-
 import re
 import time
 import urllib
+import datetime
 from threading import Thread
 from socketserver import ThreadingMixIn
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -27,59 +9,67 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import xbmc
 import xbmcgui
 
-from . import account_manager, encryption, enrolment, gdrive_api, player
+from .. import sync
+from .. import accounts
+from .. import playback
+from .. import encryption
+from .. import google_api
+from . import registration
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 	"""Handle requests in a separate thread."""
 
-
 class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
 	def __init__(self, settings):
 		self.settings = settings
-		port = self.settings.getSettingInt("server_port", 8011)
-		super().__init__(("", port), MyStreamer)
+		self.port = self.settings.getSettingInt("server_port", 8011)
+		super().__init__(("", self.port), MyStreamer)
 
 		self.monitor = xbmc.Monitor()
-		self.accountManager = account_manager.AccountManager(self.settings)
-		self.cloudService = gdrive_api.GoogleDrive()
+		self.accountManager = accounts.manager.AccountManager(self.settings)
+		self.cloudService = google_api.drive.GoogleDrive(self.accountManager)
+		self.taskManager = sync.tasker.Tasker(self.settings, self.accountManager)
+		self.taskManager.run()
 
 	def run(self):
 
 		try:
 			self.serve_forever()
-		except:
+		except Exception:
 			self.server_close()
 
 	def startPlayer(self, dbID, dbType, widget, trackProgress):
-		lastUpdate = time.time()
-		vPlayer = player.Player(dbID, dbType, int(widget), int(trackProgress), self.settings)
-		expiry = self.cloudService.account["expiry"] - 30
+		vPlayer = playback.player.Player(dbID, dbType, int(widget), int(trackProgress), self.settings)
+		expiry = self.cloudService.account.expiry
 
 		while not self.monitor.abortRequested() and not vPlayer.close:
 
-			if time.time() - lastUpdate >= expiry:
-				lastUpdate = time.time()
+			if datetime.datetime.now() >= expiry:
+
 				self.cloudService.refreshToken()
 
 				if self.transcoded:
 					self.playbackURL = self.cloudService.getStreams(self.fileID, (self.transcoded,))[1]
 
+				self.accountManager.saveAccounts()
+
 			if self.monitor.waitForAbort(1):
 				break
-
 
 class MyStreamer(BaseHTTPRequestHandler):
 
 	def do_POST(self):
 
 		if self.path == "/play_url":
+			self.server.failed = False
 			contentLength = int(self.headers["Content-Length"]) # <--- Gets the size of data
 			postData = self.rfile.read(contentLength).decode("utf-8") # <--- Gets the data itself
-			encrypted, accountNumber, url, transcoded, fileID = re.findall("encrypted=(.*)&account=(.*)&url=(.*)&transcoded=(.*)&fileid=(.*)", postData)[0]
+			encrypted, self.server.playbackURL, self.server.driveID, fileID, transcoded = re.findall("encrypted=(.*)&url=(.*)&driveid=(.*)&fileid=(.*)&transcoded=(.*)", postData)[0]
 			self.server.accountManager.loadAccounts()
-			self.server.cloudService.setAccount(self.server.accountManager.accounts[accountNumber])
+			account = self.server.accountManager.getAccount(self.server.driveID)
+			self.server.cloudService.setAccount(account)
 
 			if encrypted == "True":
 				self.server.crypto = True
@@ -92,7 +82,6 @@ class MyStreamer(BaseHTTPRequestHandler):
 				self.server.transcoded = transcoded
 				self.server.fileID = fileID
 
-			self.server.playbackURL = url
 			self.send_response(200)
 			self.end_headers()
 
@@ -105,48 +94,28 @@ class MyStreamer(BaseHTTPRequestHandler):
 			dbID, dbType, widget, trackProgress = re.findall("dbid=([\d]+)&dbtype=(.*)&widget=(\d)&track=(\d)", postData)[0]
 			Thread(target=self.server.startPlayer, args=(dbID, dbType, widget, trackProgress)).start()
 
-		elif self.path == "/enroll?default=false":
-			contentLength = int(self.headers["Content-Length"]) # <--- Gets the size of data
-			postData = self.rfile.read(contentLength).decode("utf-8") # <--- Gets the data itself
+		elif self.path == "/add_sync_task":
+			contentLength = int(self.headers["Content-Length"])
+			postData = self.rfile.read(contentLength).decode("utf-8")
 			self.send_response(200)
 			self.end_headers()
+			driveID, folderID, folderName = re.findall("drive_id=(.*)&folder_id=(.*)&folder_name=(.*)", postData)[0]
+			self.server.taskManager.createTask(driveID, folderID, folderName)
 
-			clientID, clientSecret = re.findall("client_id=(.*)&client_secret=(.*)", postData)[0]
-			data = enrolment.form2(clientID, clientSecret)
-			self.wfile.write(data.encode("utf-8"))
-
-		elif self.path == "/enroll":
+		elif self.path == "/register":
 			contentLength = int(self.headers["Content-Length"]) # <--- Gets the size of data
 			postData = self.rfile.read(contentLength).decode("utf-8") # <--- Gets the data itself
-			postData = urllib.parse.unquote_plus(postData)
-			self.send_response(200)
 
+			accountName, clientID, clientSecret = re.findall("account=(.*)&client_id=(.*)&client_secret=(.*)", postData)[0]
+			authURL = self.server.cloudService.getAuthURL(clientID, self.server.port)
+			self.server.account = accounts.account.Account()
+			self.server.account.name = urllib.parse.unquote_plus(accountName)
+			self.server.account.clientID = clientID
+			self.server.account.clientSecret = clientSecret
+
+			self.send_response(303)
+			self.send_header('Location', authURL)
 			self.end_headers()
-			accountName, code, clientID, clientSecret = re.findall("account=(.*)&code=(.*)&client_id=(.*)&client_secret=(.*)", postData)[0]
-			refreshToken = self.server.cloudService.getToken(code, clientID, clientSecret)
-
-			if "failed" in refreshToken:
-				data = enrolment.status(refreshToken[1])
-				self.wfile.write(data.encode("utf-8"))
-				return
-
-			self.server.accountManager.loadAccounts()
-			accountNumber = self.server.accountManager.addAccount(
-				{
-					"username": accountName,
-					"code": code,
-					"client_id": clientID,
-					"client_secret": clientSecret,
-					"refresh_token": refreshToken,
-				}
-			)
-			defaultAccountName, defaultAccountNumber = self.server.accountManager.getDefaultAccount()
-
-			if not defaultAccountName:
-				self.server.accountManager.setDefaultAccount(accountName, accountNumber)
-
-			data = enrolment.status("Successfully enrolled account")
-			self.wfile.write(data.encode("utf-8"))
 
 	def do_HEAD(self):
 
@@ -169,20 +138,11 @@ class MyStreamer(BaseHTTPRequestHandler):
 					return
 
 				elif e.code == 403 or e.code == 429:
-
-					if not self.server.settings.getSetting("fallback"):
-						xbmcgui.Dialog().ok(
-							self.server.settings.getLocalizedString(30003) + ": " + self.server.settings.getLocalizedString(30006),
-							self.server.settings.getLocalizedString(30009),
-						)
-						return
-
-					fallbackAccountNames, fallbackAccountNumbers = self.server.accountManager.getFallbackAccounts()
-					defaultAccountName, defaultAccountNumber = self.server.accountManager.getDefaultAccount()
 					accountChange = False
+					accounts = self.server.accountManager.getAccounts(self.server.driveID)
 
-					for fallbackAccountName, fallbackAccountNumber in list(zip(fallbackAccountNames, fallbackAccountNumbers)):
-						self.server.cloudService.setAccount(self.server.accountManager.accounts[fallbackAccountNumber])
+					for account in accounts:
+						self.server.cloudService.setAccount(account)
 						refreshToken = self.server.cloudService.refreshToken()
 
 						if refreshToken == "failed":
@@ -196,22 +156,12 @@ class MyStreamer(BaseHTTPRequestHandler):
 						except urllib.error.URLError as e:
 							continue
 
-						if not defaultAccountNumber in fallbackAccountNumbers:
-							fallbackAccountNames.append(defaultAccountName)
-							fallbackAccountNumbers.append(defaultAccountNumber)
-
-						fallbackAccountNames.remove(fallbackAccountName)
-						fallbackAccountNumbers.remove(fallbackAccountNumber)
-						self.server.accountManager.setDefaultAccount(fallbackAccountName, fallbackAccountNumber)
-
+						accountChange = True
 						xbmcgui.Dialog().notification(
 							self.server.settings.getLocalizedString(30003) + ": " + self.server.settings.getLocalizedString(30006),
 							self.server.settings.getLocalizedString(30007),
 						)
-						accountChange = True
 						break
-
-					self.server.accountManager.setFallbackAccounts(fallbackAccountNames, fallbackAccountNumbers)
 
 					if not accountChange:
 						xbmcgui.Dialog().ok(
@@ -219,6 +169,10 @@ class MyStreamer(BaseHTTPRequestHandler):
 							self.server.settings.getLocalizedString(30009),
 						)
 						return
+					else:
+						accounts.remove(account)
+						accounts.insert(0, account)
+						self.server.accountManager.saveAccounts()
 
 				else:
 					xbmc.log("gdrive error: " + str(e))
@@ -313,7 +267,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			# self.wfile.write(response.read())
 
 			if self.server.crypto:
-				decrypt = encryption.Encryption(self.server.settings.getSetting("crypto_salt"), self.server.settings.getSetting("crypto_password"))
+				decrypt = encryption.encrypter.Encrypter(self.server.settings.getSetting("crypto_salt"), self.server.settings.getSetting("crypto_password"))
 
 				try:
 					decrypt.decryptStreamChunkOld(response, self.wfile, startOffset=startOffset)
@@ -338,8 +292,43 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 			response.close()
 
-		elif self.path == "/enroll":
+		elif self.path == "/register":
 			self.send_response(200)
 			self.end_headers()
-			data = enrolment.form1
+			data = registration.form
+			self.wfile.write(data.encode("utf-8"))
+
+		elif "/status" in self.path:
+
+			try:
+				code = re.findall("code=(.*)&", self.path)[0]
+				token = self.server.cloudService.getToken(self.server.account.clientID, self.server.account.clientSecret, code, self.server.port)
+				self.server.account.accessToken = token["access_token"]
+				self.server.account.refreshToken = token["refresh_token"]
+				self.server.cloudService.setAccount(self.server.account)
+				self.server.cloudService.refreshToken()
+				driveID = self.server.cloudService.getDriveID()
+				self.server.accountManager.loadAccounts()
+				self.server.accountManager.addAccount(
+					self.server.account,
+					driveID,
+				)
+				redirect = "/registration_succeeded"
+			except Exception as e:
+				redirect = "/registration_failed"
+
+			self.send_response(303)
+			self.send_header('Location', "http://localhost:" + str(self.server.port) + redirect)
+			self.end_headers()
+
+		elif self.path == "/registration_succeeded":
+			self.send_response(200)
+			self.end_headers()
+			data = registration.status("Account registration succeeded")
+			self.wfile.write(data.encode("utf-8"))
+
+		elif self.path == "/registration_failed":
+			self.send_response(200)
+			self.end_headers()
+			data = registration.status("Account registration failed")
 			self.wfile.write(data.encode("utf-8"))
