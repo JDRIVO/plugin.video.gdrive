@@ -86,7 +86,7 @@ class FileProcessor:
 				if folderStructure != "original" and newFilename:
 
 					if str(video) == "Movie":
-						dirPath = os.path.join(strmRoot, "1. Movies [gDrive]")
+						dirPath = os.path.join(strmRoot, "[gDrive] Movies")
 
 						if fileRenaming != "original":
 							strmPath = helpers.generateFilePath(dirPath, newFilename + ".strm")
@@ -95,7 +95,7 @@ class FileProcessor:
 							strmPath = helpers.generateFilePath(dirPath, filenameWithoutExtension + ".strm")
 
 					elif str(video) == "Episode":
-						dirPath = os.path.join(strmRoot, "2. TV [gDrive]", modifiedName["title"], "Season " + video.season)
+						dirPath = os.path.join(strmRoot, "[gDrive] TV", modifiedName["title"], "Season " + video.season)
 
 						if fileRenaming != "original":
 							strmPath = helpers.generateFilePath(dirPath, newFilename + ".strm")
