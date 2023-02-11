@@ -21,7 +21,7 @@ class FileProcessor:
 				if videoRenamed:
 
 					if subtitles:
-						newFilename, fileExtension = os.path.splitext(filename)
+						_, fileExtension = os.path.splitext(filename)
 						newFilename = f"{newVideoFilename}{fileExtension}"
 					else:
 						newFilename = newVideoFilename + fileExtension
