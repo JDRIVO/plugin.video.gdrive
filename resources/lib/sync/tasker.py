@@ -186,6 +186,7 @@ class Tasker:
 		syncOptions.doModal()
 
 		if syncOptions.closed:
+			del syncOptions
 			return
 
 		syncChoices = syncOptions.settings
