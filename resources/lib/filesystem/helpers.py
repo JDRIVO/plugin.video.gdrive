@@ -191,6 +191,7 @@ def getTMDBtitle(type, title, year):
 		return
 
 	if not tmdbResult and year:
+		params = {"query": title}
 		response = network.requester.sendPayload(network.helpers.addQueryString(url, params))
 
 		try:
