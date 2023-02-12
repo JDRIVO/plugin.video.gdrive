@@ -558,6 +558,7 @@ class Core:
 				if stream:
 					transcoded, driveURL = stream
 
+		self.accountManager.saveAccounts()
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/play_url"
 		data = f"encrypted={crypto}&url={driveURL}&driveid={driveID}&fileid={fileID}&transcoded={transcoded}"
