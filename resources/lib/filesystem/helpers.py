@@ -248,9 +248,9 @@ def getTMDBtitle(type, title, year):
 	if titleSimilarity > 0.85:
 
 		if year and tmdbYearInt != year + 1 and tmdbYearInt != year - 1:
-				return tmdbTitle, year
-
-		return tmdbTitle, tmdbYear
+			return tmdbTitle, year
+		else:
+			return tmdbTitle, tmdbYear
 
 	elif (tmdbTitleLowerCase in titleLowerCase or titleLowerCase in tmdbTitleLowerCase) and year:
 		tmdbYearInt = int(tmdbYear)
