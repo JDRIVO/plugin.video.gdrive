@@ -216,6 +216,7 @@ class Tasker:
 			"contains_encrypted": syncChoices["contains_encrypted"],
 		}
 
+		self.accountManager.loadAccounts()
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
 		self.cloudService.refreshToken()
