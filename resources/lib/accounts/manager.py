@@ -29,7 +29,8 @@ class AccountManager:
 		accounts = self.accounts.get(driveID)
 
 		if accounts:
-			return accounts[0]
+			# avoid returning a service account
+			return [account for account in accounts if not account.key][0]
 
 	def getAccounts(self, driveID):
 		return self.accounts[driveID]

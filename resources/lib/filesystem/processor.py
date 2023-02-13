@@ -64,6 +64,9 @@ class FileProcessor:
 
 		fileIDs = cachedDirectories[parentFolderID]["file_ids"]
 
+		if videos:
+			videos.reverse()
+
 		for video in videos:
 			filenameWithoutExtension = video.removeFileExtension()
 			filename = video.name

@@ -199,16 +199,61 @@ def getTMDBtitle(type, title, year):
 		except Exception:
 			return
 
-	if not tmdbResult:
+		try:
+			tmdbTitle, tmdbYear = tmdbResult[0]
+		except KeyError:
+			return
+
+		tmdbYearInt = int(tmdbYear)
+
+		if tmdbYearInt != year + 1 and tmdbYearInt != year - 1:
+			return
+
+	elif not tmdbResult:
 		return
 
-	tmdbTitle, tmdbYear = tmdbResult[0]
-	tmdbTitle = removeProhibitedFSchars(html.unescape(tmdbTitle))
+	else:
+
+		try:
+			tmdbTitle, tmdbYear = tmdbResult[0]
+		except KeyError:
+			return
+
 	titleLowerCase = title.lower()
+	tmdbTitle = removeProhibitedFSchars(html.unescape(tmdbTitle))
+	tmdbTitleLowerCase = tmdbTitle.lower()
+	titleSimilarity = difflib.SequenceMatcher(None, titleLowerCase, tmdbTitleLowerCase).ratio()
+	tmdbYearInt = int(tmdbYear)
+
+	if titleSimilarity > 0.85:
+
+		if tmdbYearInt != year + 1 and tmdbYearInt != year - 1:
+			return tmdbTitle, year
+		else:
+			return tmdbTitle, tmdbYear
+
+	elif (tmdbTitleLowerCase in titleLowerCase or titleLowerCase in tmdbTitleLowerCase) and year:
+
+		if tmdbYearInt == year or tmdbYearInt == year + 1 or tmdbYearInt == year - 1:
+			return tmdbTitle, tmdbYear
+
+	try:
+		tmdbTitle, tmdbYear = tmdbResult[1]
+	except IndexError:
+		return
 
 	tmdbTitleLowerCase = tmdbTitle.lower()
-	title = title.lower()
 	titleSimilarity = difflib.SequenceMatcher(None, titleLowerCase, tmdbTitleLowerCase).ratio()
 
-	if titleSimilarity > 0.85 or tmdbTitleLowerCase in titleLowerCase or titleLowerCase in tmdbTitleLowerCase:
-		return tmdbTitle, tmdbYear
+	if titleSimilarity > 0.85:
+
+		if tmdbYearInt != year + 1 and tmdbYearInt != year - 1:
+			return tmdbTitle, year
+		else:
+			return tmdbTitle, tmdbYear
+
+	elif (tmdbTitleLowerCase in titleLowerCase or titleLowerCase in tmdbTitleLowerCase) and year:
+		tmdbYearInt = int(tmdbYear)
+
+		if tmdbYearInt == year or tmdbYearInt == year + 1 or tmdbYearInt == year - 1:
+			return tmdbTitle, tmdbYear
