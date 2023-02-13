@@ -105,6 +105,26 @@ msgctxt "#30032"
 msgid "Accounts"
 msgstr "Accounts"
 
+msgctxt "#30033"
+msgid "Select a file to import"
+msgstr "Select a file to import"
+
+msgctxt "#30034"
+msgid "Select a folder to export to"
+msgstr "Select a folder to export to"
+
+msgctxt "#30035"
+msgid "File exported as gdrive_accounts.pkl"
+msgstr "File exported as gdrive_accounts.pkl"
+
+msgctxt "#30036"
+msgid "Accounts imported"
+msgstr "Accounts imported"
+
+msgctxt "#30037"
+msgid "Account import failed"
+msgstr "Account import failed"
+
 msgctxt "#30118"
 msgid "The following account was added:"
 msgstr "The following account was added:"
@@ -296,3 +316,15 @@ msgstr "Password:"
 msgctxt "#30605"
 msgid "Salt File:"
 msgstr "Salt File:"
+
+msgctxt "#30700"
+msgid "Accounts"
+msgstr "Accounts"
+
+msgctxt "#30701"
+msgid "Import Accounts"
+msgstr "Import Accounts"
+
+msgctxt "#30702"
+msgid "Export Accounts"
+msgstr "Export Accounts"

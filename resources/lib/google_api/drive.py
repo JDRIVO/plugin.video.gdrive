@@ -96,9 +96,23 @@ class GoogleDrive:
 		urls = re.sub("\&url\=https://", "\@", responseData)
 		streams = {}
 		resolutions = {}
+		resolutionList = ["360", "480", "720", "1080"]
 
 		for r in re.finditer("([\d]+)/[\d]+x([\d]+)", urls, re.DOTALL):
 			itag, resolution = r.groups()
+
+			if resolution not in resolutionList:
+				resolutionInt = int(resolution)
+
+				if resolutionInt < 360:
+					resolution = "360"
+				elif resolutionInt > 360 and resolutionInt < 480:
+					resolution = "480"
+				elif resolutionInt > 480 and resolutionInt < 720:
+					resolution = "720"
+				elif resolutionInt > 720:
+					resolution = "1080"
+
 			resolution = resolution + "P"
 			resolutions[resolution] = itag
 			streams[itag] = {"resolution": resolution}

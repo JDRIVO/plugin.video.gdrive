@@ -47,6 +47,8 @@ class Core:
 			"accounts_cm": self.accountsContextMenu,
 			"list_shared_drives": self.listSharedDrives,
 			"search_drive": self.searchDrive,
+			"import_accounts": self.importAccounts,
+			"export_accounts": self.exportAccounts,
 		}
 
 		if mode == "video":
@@ -129,12 +131,12 @@ class Core:
 		if syncSettings:
 			self.addMenu(
 				syncSettings["local_path"],
-				"[B][COLOR deepskyblue]Browse STRM[/COLOR][/B]",
+				"[B][COLOR yellow]Browse STRM[/COLOR][/B]",
 			)
 
 		self.addMenu(
 			pluginURL + "?mode=register_account",
-			f"[COLOR deepskyblue][B]{self.settings.getLocalizedString(30207)}[/B][/COLOR]",
+			f"[COLOR yellow][B]{self.settings.getLocalizedString(30207)}[/B][/COLOR]",
 			folder=False,
 		)
 		contextMenu = [
@@ -184,12 +186,12 @@ class Core:
 		if driveSettings:
 			self.addMenu(
 				pluginURL + "?mode=not_implemented",
-				"[COLOR deepskyblue][B]Synced[/B][/COLOR]",
+				"[COLOR yellow][B]Synced[/B][/COLOR]",
 			)
 
 		self.addMenu(
 			f"{pluginURL}?mode=list_accounts&drive_id={driveID}",
-			f"[B][COLOR deepskyblue]{self.settings.getLocalizedString(30032)}[/COLOR][/B]",
+			f"[B][COLOR yellow]{self.settings.getLocalizedString(30032)}[/COLOR][/B]",
 		)
 		self.addMenu(
 			f"{pluginURL}?mode=list_directory&drive_id={driveID}",
@@ -233,17 +235,17 @@ class Core:
 
 		self.addMenu(
 			f"{pluginURL}?mode=add_service_account&drive_id={driveID}",
-			f"[B][COLOR deepskyblue]{self.settings.getLocalizedString(30214)}[/COLOR][/B]",
+			f"[B][COLOR yellow]{self.settings.getLocalizedString(30214)}[/COLOR][/B]",
 			folder=False,
 		)
 		self.addMenu(
 			f"{pluginURL}?mode=validate_accounts&drive_id={driveID}",
-			f"[B][COLOR deepskyblue]{self.settings.getLocalizedString(30021)}[/COLOR][/B]",
+			f"[B][COLOR yellow]{self.settings.getLocalizedString(30021)}[/COLOR][/B]",
 			folder=False,
 		)
 		self.addMenu(
 			f"{pluginURL}?mode=delete_accounts&drive_id={driveID}",
-			f"[COLOR deepskyblue][B]{self.settings.getLocalizedString(30022)}[/B][/COLOR]",
+			f"[COLOR yellow][B]{self.settings.getLocalizedString(30022)}[/B][/COLOR]",
 			folder=False,
 		)
 
@@ -506,6 +508,28 @@ class Core:
 
 		if newOrder:
 			self.settings.setSetting("resolution_priority", ", ".join(newOrder))
+
+	def importAccounts(self):
+		filePath = self.dialog.browse(1, self.settings.getLocalizedString(30033), "files", mask=".pkl")
+
+		if not filePath:
+			return
+
+		imported = self.accountManager.mergeAccounts(filePath)
+
+		if imported == "failed":
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30037))
+		else:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30036))
+
+	def exportAccounts(self):
+		filePath = self.dialog.browse(0, self.settings.getLocalizedString(30034), "")
+
+		if not filePath:
+			return
+
+		self.accountManager.exportAccounts(filePath)
+		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30035))
 
 	def playVideo(self, dbID, dbType, filePath):
 

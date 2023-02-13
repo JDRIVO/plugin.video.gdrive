@@ -14,31 +14,29 @@ class AccountManager:
 
 	def loadAccounts(self):
 
-		if os.path.exists(ACCOUNTS_FILE):
-
-			try:
-
-				with open(ACCOUNTS_FILE, "rb") as accounts:
-					self.accounts = pickle.load(accounts)
-
-			except EOFError:
-				self.accounts = {}
-
-		else:
+		try:
+			self.accounts = self.loadFile()
+		except Exception:
 			self.accounts = {}
+
+	@staticmethod
+	def loadFile(filePath=ACCOUNTS_FILE):
+
+		with open(filePath, "rb") as accounts:
+			return pickle.load(accounts)
 
 	def getAccount(self, driveID):
 		accounts = self.accounts.get(driveID)
 
 		if accounts:
-			return [account for account in accounts][0]
+			return accounts[0]
 
 	def getAccounts(self, driveID):
 		return self.accounts[driveID]
 
-	def saveAccounts(self):
+	def saveAccounts(self, filePath=ACCOUNTS_FILE):
 
-		with open(ACCOUNTS_FILE, "wb") as accounts:
+		with open(filePath, "wb") as accounts:
 			pickle.dump(self.accounts, accounts)
 
 	def addAccount(self, accountInfo, driveID):
@@ -80,3 +78,31 @@ class AccountManager:
 	@staticmethod
 	def getAccountNames(accounts):
 		return [account.name for account in accounts]
+
+	def mergeAccounts(self, filePath):
+
+		try:
+			importedAccounts = self.loadFile(filePath)
+		except Exception:
+			return "failed"
+
+		if not self.accounts:
+			self.accounts = importedAccounts
+		else:
+
+			for driveID, accounts in importedAccounts.items():
+
+				if driveID not in self.accounts:
+					self.accounts[driveID] = accounts
+				else:
+					currentAccounts = self.accounts[driveID]
+
+					for account in accounts:
+
+						if account not in currentAccounts:
+							currentAccounts.append(account)
+
+		self.saveAccounts()
+
+	def exportAccounts(self, filePath):
+		self.saveAccounts(os.path.join(filePath, "gdrive_accounts.pkl"))
