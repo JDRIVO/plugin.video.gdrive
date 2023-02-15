@@ -81,7 +81,6 @@ class Syncer:
 			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.Clean", "params": {"showdialogs": false, "content": "video", "directory": "%s"}}' % syncRoot)
 
 		cloudData["page_token"] = pageToken
-
 		self.settings.saveSyncSettings(syncSettings)
 
 	def syncDeletions(self, fileProperties, syncRoot, parentFolderID, cachedDirectories, cachedFiles):

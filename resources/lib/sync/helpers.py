@@ -11,16 +11,6 @@ def removeFileFromCache(fileID, fileIDs, cachedFiles):
 	if fileID in fileIDs:
 		fileIDs.remove(fileID)
 
-def removeCachedFiles(fileIDs, cachedFiles):
-
-	for fileID in list(fileIDs):
-
-		if fileID in cachedFiles:
-			del cachedFiles[fileID]
-
-	if fileID in fileIDs:
-		fileIDs.remove(fileID)
-
 def addDirectoryToCache(folderID, parentFolderID, directory, cachedDirectories):
 
 	if parentFolderID in cachedDirectories:
@@ -56,6 +46,9 @@ def updateCache(cachedDirectories, cachedFiles, folderID):
 	cachedDirectory = cachedDirectories[folderID]
 	folderIDs = cachedDirectory["folder_ids"]
 	fileIDs = cachedDirectory["file_ids"]
-	removeCachedFiles(fileIDs, cachedFiles)
+
+	for fileID in list(fileIDs):
+		removeFileFromCache(fileID, fileIDs, cachedFiles)
+
 	updateCachedPaths(cachedDirectories, cachedFiles, folderIDs)
 	del cachedDirectories[folderID]
