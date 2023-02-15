@@ -98,7 +98,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 			self.settings = {}
 			settings = {
 				"Sync at startup?": "startup_sync",
-				"Does this folder contain encrypted files?": "contains_encrypted",
+				"Does this folder contain gDrive encrypted files?": "contains_encrypted",
 				"Rename videos to a Kodi friendly format?": "file_renaming",
 				"Create a Kodi friendly directory structure?": "folder_structure",
 				"Sync NFOs?": "sync_nfos",
@@ -161,7 +161,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 			focusTexture=self.radioButtonMenuFocus,
 		)
 		self.buttonLabels = [
-			"Does this folder contain encrypted files?",
+			"Does this folder contain gDrive encrypted files?",
 			"Rename videos to a Kodi friendly format?",
 			"Create a Kodi friendly directory structure?",
 			"Sync NFOs?",
