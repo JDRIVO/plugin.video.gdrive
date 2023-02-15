@@ -214,7 +214,7 @@ def getTMDBtitle(type, title, year):
 
 	titleLowerCase = title.lower()
 
-	for result in tmdbResult[0:2]:
+	for result in tmdbResult[0:3]:
 
 		try:
 			tmdbTitle, tmdbYear = result
