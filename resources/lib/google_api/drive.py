@@ -194,7 +194,7 @@ class GoogleDrive:
 
 			try:
 				dirName, folderID = response["name"], response["parents"][0]
-			except KeyError:
+			except Exception:
 				return None, None, None
 
 			dirPath = os.path.join(dirName, dirPath)

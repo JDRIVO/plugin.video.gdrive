@@ -201,7 +201,7 @@ def getTMDBtitle(type, title, year):
 
 		try:
 			tmdbTitle, tmdbYear = tmdbResult[0]
-		except KeyError:
+		except ValueError:
 			return
 
 		tmdbYearInt = int(tmdbYear)
@@ -218,7 +218,7 @@ def getTMDBtitle(type, title, year):
 
 		try:
 			tmdbTitle, tmdbYear = result
-		except KeyError:
+		except ValueError:
 			return
 
 		tmdbTitle = removeProhibitedFSchars(html.unescape(tmdbTitle))
