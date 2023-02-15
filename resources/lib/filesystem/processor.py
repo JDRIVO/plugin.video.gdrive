@@ -53,6 +53,7 @@ class FileProcessor:
 		syncNFO = folderSettings["sync_nfo"]
 		syncArtwork = folderSettings["sync_artwork"]
 		syncSubtitles = folderSettings["sync_subtitles"]
+		fileIDs = cachedDirectories[parentFolderID]["file_ids"]
 
 		videos = files.get("video")
 		subtitles = files.get("subtitles")
@@ -61,8 +62,6 @@ class FileProcessor:
 		posters = files.get("poster")
 		nfos = files.get("nfo")
 		strm = files.get("strm")
-
-		fileIDs = cachedDirectories[parentFolderID]["file_ids"]
 
 		if videos:
 			videos.reverse()

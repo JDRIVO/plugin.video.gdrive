@@ -73,11 +73,14 @@ class LibraryMonitor(xbmc.Monitor):
 						(fileDir, fileName),
 					),
 				)
-			except Exception:
-				xbmc.log("gdrive error: Your video database is incompatible with this Kodi version")
+			except Exception as e:
+				xbmc.log(f"gdrive error: Monitor error {e}", xbmc.LOGERROR)
+
+			if not fileID:
 				return
 
-			self.insert(self.statementConstructor(mediaInfo, fileID))
+			fileID = fileID[0][0]
+			self.insertMultiple(self.statementConstructor(mediaInfo, fileID))
 
 	@staticmethod
 	def mediaInfoConversion(strmData):
@@ -154,11 +157,18 @@ class LibraryMonitor(xbmc.Monitor):
 
 	def select(self, statement):
 		db = sqlite.connect(self.dbPath)
-		query = list(db.execute(*statement))
+		query = db.execute(*statement)
+		query = query.fetchall()
 		db.close()
-		return query[0][0]
+		return query
 
-	def insert(self, statements):
+	def insert(self, statement):
+		db = sqlite.connect(self.dbPath)
+		db.execute(statement)
+		db.commit()
+		db.close()
+
+	def insertMultiple(self, statements):
 		db = sqlite.connect(self.dbPath)
 		[db.execute(statement) for statement in statements]
 		db.commit()

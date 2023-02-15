@@ -17,11 +17,14 @@ def getVideoDB():
 
 def updateLibrary(filePath, metadata):
 	dirPath, filename = os.path.split(filePath)
-	selectStatement = f"SELECT idFile FROM files WHERE idPath=(SELECT idPath FROM path WHERE strPath='{dirPath + os.sep}') AND strFilename='{filename}'"
+	statement = (
+		"SELECT idFile FROM files WHERE idPath=(SELECT idPath FROM path WHERE strPath=?) AND strFilename=?",
+		(dirPath + os.sep, filename),
+	)
 	dbPath = getVideoDB()
-
 	db = sqlite.connect(dbPath)
-	query = list(db.execute(selectStatement))
+	query = db.execute(*statement)
+	query = query.fetchall()
 	db.close()
 
 	if not query:

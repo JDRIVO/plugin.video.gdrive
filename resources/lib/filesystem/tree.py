@@ -28,7 +28,7 @@ class FileTree:
 			"dirs": [],
 		}
 
-	def buildTree(self, folderID, parentFolderID, path, tree, hasEncryptedFiles):
+	def buildTree(self, folderID, parentFolderID, path, tree, hasEncryptedFiles, synced):
 		remoteFiles = self.cloudService.listDirectory(folderID)
 
 		for file in remoteFiles:
@@ -57,6 +57,9 @@ class FileTree:
 
 			folderDic = tree.get(folderID)
 
+			if synced is not None:
+				synced.append(fileID)
+
 			if not folderDic:
 				tree[folderID] = self.createFileTree(parentFolderID, path)
 
@@ -65,7 +68,7 @@ class FileTree:
 				newPath = os.path.join(path, filename)
 				tree[folderID]["dirs"].append(fileID)
 				tree[fileID] = self.createFileTree(parentFolderID, newPath)
-				self.buildTree(fileID, parentFolderID, newPath, tree, hasEncryptedFiles)
+				self.buildTree(fileID, parentFolderID, newPath, tree, hasEncryptedFiles, synced)
 			else:
 				metadata = file.get("videoMediaMetadata")
 
