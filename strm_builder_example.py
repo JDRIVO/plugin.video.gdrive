@@ -23,8 +23,8 @@ args.append(videoPath)
 ffprobeOutput = subprocess.check_output(args).decode("utf-8")
 ffprobeOutput = json.loads(ffprobeOutput)
 
-mediaInfo = {}
-mediaInfo["video_duration"] = ffprobeOutput["format"]["duration"]
+strmInfo = {}
+strmInfo["video_duration"] = ffprobeOutput["format"]["duration"]
 video = audio = False
 
 for dic in ffprobeOutput["streams"]:
@@ -32,7 +32,7 @@ for dic in ffprobeOutput["streams"]:
 
 	if codecType == "video":
 
-		if mediaInfo.get("hdr") == "dolbyvision":
+		if strmInfo.get("hdr") == "dolbyvision":
 			continue
 
 		codecTag = dic.get("codec_tag_string")
@@ -40,15 +40,15 @@ for dic in ffprobeOutput["streams"]:
 		sideData = dic.get("side_data_list")
 
 		if codecTag in ("dva1", "dvav", "dvh1", "dvhe"):
-			mediaInfo["hdr"] = "dolbyvision"
+			strmInfo["hdr"] = "dolbyvision"
 			codecs = {"dva1": "h264", "dvav": "h264", "dvh1": "hevc", "dvhe": "hevc"}
-			mediaInfo["video_codec"] = codecs[codecTag]
+			strmInfo["video_codec"] = codecs[codecTag]
 		elif sideData and "dv_profile" in str(sideData):
-			mediaInfo["hdr"] = "dolbyvision"
+			strmInfo["hdr"] = "dolbyvision"
 		elif colourTransfer in ("smpte2084", "smpte2086", "smpte2094"):
-			mediaInfo["hdr"] = "hdr10"
+			strmInfo["hdr"] = "hdr10"
 		elif colourTransfer == "arib-std-b67":
-			mediaInfo["hdr"] = "hlg"
+			strmInfo["hdr"] = "hlg"
 
 		if video:
 			continue
@@ -58,17 +58,17 @@ for dic in ffprobeOutput["streams"]:
 		videoWidth = dic.get("width")
 		videoHeight = dic.get("height")
 
-		if videoCodec and not mediaInfo.get("video_codec"):
-			mediaInfo["video_codec"] = videoCodec
+		if videoCodec and not strmInfo.get("video_codec"):
+			strmInfo["video_codec"] = videoCodec
 
 		if videoWidth:
-			mediaInfo["video_width"] = videoWidth
+			strmInfo["video_width"] = videoWidth
 
 		if videoHeight:
-			mediaInfo["video_height"] = videoHeight
+			strmInfo["video_height"] = videoHeight
 
 		if videoWidth and videoHeight:
-			mediaInfo["aspect_ratio"] = videoWidth / videoHeight
+			strmInfo["aspect_ratio"] = videoWidth / videoHeight
 
 	elif codecType == "audio" and not audio:
 		audio = True
@@ -76,23 +76,26 @@ for dic in ffprobeOutput["streams"]:
 		audioChannels = dic.get("channels")
 
 		if audioCodec:
-			mediaInfo["audio_codec"] = audioCodec
+			strmInfo["audio_codec"] = audioCodec
 
 		if audioChannels:
-			mediaInfo["audio_channels"] = audioChannels
+			strmInfo["audio_channels"] = audioChannels
 
 filename = os.path.basename(videoPath)
 
 if re.search("[-_. ](dv|dovi|dolby[-_. ]*vision)[-_. ]", filename, re.IGNORECASE):
-	mediaInfo["hdr"] = "dolbyvision"
-elif not mediaInfo.get("hdr") and re.search("hdr10", filename, re.IGNORECASE):
-	mediaInfo["hdr"] = "hdr10"
+	strmInfo["hdr"] = "dolbyvision"
+elif not strmInfo.get("hdr") and re.search("hdr10", filename, re.IGNORECASE):
+	strmInfo["hdr"] = "hdr10"
 
 cmd = "rclone lsf --format i"
 args = shlex.split(cmd)
 args.append(encryptedFilePath)
 fileID = subprocess.check_output(args).strip().decode("utf-8")
-mediaInfo["filename"] = fileID
+strmInfo["file_id"] = fileID
+
+if driveID:
+	strmInfo["drive_id"] = driveID
 
 with open(strmPath, "w+") as strm:
 
@@ -102,9 +105,5 @@ with open(strmPath, "w+") as strm:
 	# Essential strm format for gDrive encrypted videos:
 	# plugin://plugin.video.gdrive/?mode=video&encrypted=True&file_id=7ctPNMUl4m8B4KBwY
 
-	url = "plugin://plugin.video.gdrive/?mode=video&encrypted=False" + "".join(["&{}={}".format(k, v) for k, v in mediaInfo.items()])
-
-	if driveID:
-		url += "&drive_id={}".format(driveID)
-
+	url = "plugin://plugin.video.gdrive/?mode=video&encrypted=True" + "".join(["&{}={}".format(k, v) for k, v in strmInfo.items()])
 	strm.write(url)
