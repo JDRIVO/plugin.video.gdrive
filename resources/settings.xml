@@ -58,7 +58,7 @@
 						</dependency>
 					</dependencies>
 					<control type="button" format="action">
-						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=get_accounts)</data>
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_playback_account)</data>
 					</control>
 				</setting>
 			</group>

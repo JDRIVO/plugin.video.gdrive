@@ -107,3 +107,6 @@ class AccountManager:
 
 	def exportAccounts(self, filePath):
 		self.saveAccounts(os.path.join(filePath, "gdrive_accounts.pkl"))
+
+	def getDrives(self):
+		return [driveID for driveID in self.accounts]

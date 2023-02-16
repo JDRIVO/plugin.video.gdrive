@@ -40,7 +40,7 @@ class Core:
 			"list_drive": self.createDriveMenu,
 			"list_accounts": self.createAccountsMenu,
 			"list_directory": self.listDirectory,
-			"sync": self.Sync,
+			"sync": self.sync,
 			"video": self.playVideo,
 			"resolution_priority": self.resolutionPriority,
 			"not_implemented": self.notImplemented,
@@ -49,7 +49,7 @@ class Core:
 			"search_drive": self.searchDrive,
 			"import_accounts": self.importAccounts,
 			"export_accounts": self.exportAccounts,
-			"get_accounts": self.getAccounts,
+			"set_playback_account": self.setPlaybackAccount,
 		}
 
 		if mode == "video":
@@ -360,7 +360,7 @@ class Core:
 			self.cloudService.refreshToken()
 			self.accountManager.saveAccounts()
 
-	def Sync(self):
+	def sync(self):
 		driveID = self.settings.getParameter("drive_id")
 		folderID = self.settings.getParameter("folder_id")
 		folderName = self.settings.getParameter("folder_name")
@@ -532,8 +532,8 @@ class Core:
 		self.accountManager.exportAccounts(filePath)
 		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30035))
 
-	def getAccounts(self):
-		accounts = [driveID for driveID in self.accounts]
+	def setPlaybackAccount(self):
+		accounts = self.accountManager.getDrives()
 		selection = self.dialog.select("Select an account", accounts)
 
 		if selection == -1:
