@@ -11,10 +11,10 @@ class FileProcessor:
 		self.fileOperations = fileOperations
 		self.settings = settings
 
-	def processMediaAssets(self, mediaExtras, videoFilename, newVideoFilename, fileExtension, dirPath, videoRenamed, originalPath, cachedFiles, folderID, subtitles=False):
+	def processMediaAssets(self, mediaAssets, videoFilename, newVideoFilename, fileExtension, dirPath, videoRenamed, originalPath, cachedFiles, folderID, subtitles=False):
 
-		for mediaExtra in list(mediaExtras):
-			filename = mediaExtra.name
+		for mediaAsset in list(mediaAssets):
+			filename = mediaAsset.name
 
 			if videoFilename in filename:
 
@@ -34,9 +34,9 @@ class FileProcessor:
 					originalName = True
 					originalFolder = True if originalPath else False
 
-				fileID = mediaExtra.id
+				fileID = mediaAsset.id
 				self.fileOperations.downloadFile(dirPath, filePath, fileID)
-				mediaExtras.remove(mediaExtra)
+				mediaAssets.remove(mediaAsset)
 				cachedFiles[fileID]  = {
 					"local_name": os.path.basename(filePath),
 					"remote_name": filename,

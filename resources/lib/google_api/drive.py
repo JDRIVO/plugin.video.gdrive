@@ -213,36 +213,28 @@ class GoogleDrive:
 		return dirPath, rootID, rootPath
 
 	def listDirectory(self, folderID="root", sharedWithMe=False, foldersOnly=False, starred=False, search=False):
+		params = {}
 
 		if foldersOnly:
 
 			if sharedWithMe:
-				params = {
-					"q": "mimeType='application/vnd.google-apps.folder' and sharedWithMe=true and not trashed",
-					"fields": "nextPageToken,files(id,name)",
-				}
+				params["q"] = "mimeType='application/vnd.google-apps.folder' and sharedWithMe=true and not trashed"
 			elif starred:
-				params = {
-					"q": f"mimeType='application/vnd.google-apps.folder' and starred and not trashed",
-					"fields": "nextPageToken,files(id,name)",
-				}
+				params["q"] = "mimeType='application/vnd.google-apps.folder' and starred and not trashed"
 			elif search:
-				params = {
-					"q": f"mimeType='application/vnd.google-apps.folder' and name contains '{search}' and not trashed",
-					"fields": "nextPageToken,files(id,name)",
-				}
+				params["q"] = f"mimeType='application/vnd.google-apps.folder' and name contains '{search}' and not trashed"
 			else:
-				params = {
-					"q": f"mimeType='application/vnd.google-apps.folder' and '{folderID}' in parents and not trashed",
-					"fields": "nextPageToken,files(id,name)",
-				}
+				params["q"] = f"mimeType='application/vnd.google-apps.folder' and '{folderID}' in parents and not trashed"
+
+			params["fields"] = "nextPageToken,files(id,name)"
 
 		else:
-			params = {
-				"q": f"'{folderID}' in parents and not trashed",
-				"fields": "nextPageToken,files(id,parents,name,mimeType,videoMediaMetadata,fileExtension)",
-			}
-
+			params.update(
+				{
+					"q": f"'{folderID}' in parents and not trashed",
+					"fields": "nextPageToken,files(id,parents,name,mimeType,videoMediaMetadata,fileExtension)",
+				}
+			)
 		params.update(
 			{
 				"supportsAllDrives": "true",
