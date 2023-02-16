@@ -1,5 +1,7 @@
 import os
 
+# Converts the old STRM format to the new format
+
 oldStrmPath = ""
 newStrmPath = ""
 driveID = "" # Optional - if not included you will need to manually set the playback account in settings
