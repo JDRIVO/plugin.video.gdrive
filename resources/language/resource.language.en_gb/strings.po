@@ -277,6 +277,14 @@ msgctxt "#30403"
 msgid "Subtitle Format:"
 msgstr "Subtitle Format:"
 
+msgctxt "#30404"
+msgid "Playback Account:"
+msgstr "Playback Account:"
+
+msgctxt "#30405"
+msgid "Account:"
+msgstr "Account:"
+
 msgctxt "#30500"
 msgid "Library"
 msgstr "Library"

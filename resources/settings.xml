@@ -33,6 +33,34 @@
 						<heading>30403</heading>
 					</control>
 				</setting>
+				<setting id="account_selection" type="string" label="30404" help="">
+					<level>0</level>
+					<default>Automatically selected</default>
+					<constraints>
+						<options>
+							<option>Automatically selected</option>
+							<option>Manually selected</option>
+						</options>
+					</constraints>
+					<control type="list" format="string">
+						<heading>30404</heading>
+					</control>
+				</setting>
+				<setting id="account_override" type="string" label="30405" parent="account_selection" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="account_selection">Manually selected</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=get_accounts)</data>
+					</control>
+				</setting>
 			</group>
 		</category>
 		<category id="library" label="30500" help="">

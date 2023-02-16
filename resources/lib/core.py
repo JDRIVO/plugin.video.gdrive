@@ -49,6 +49,7 @@ class Core:
 			"search_drive": self.searchDrive,
 			"import_accounts": self.importAccounts,
 			"export_accounts": self.exportAccounts,
+			"get_accounts": self.getAccounts,
 		}
 
 		if mode == "video":
@@ -531,6 +532,15 @@ class Core:
 		self.accountManager.exportAccounts(filePath)
 		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30035))
 
+	def getAccounts(self):
+		accounts = [driveID for driveID in self.accounts]
+		selection = self.dialog.select("Select an account", accounts)
+
+		if selection == -1:
+			return
+
+		self.settings.setSetting("account_override", accounts[selection])
+
 	def playVideo(self, dbID, dbType, filePath):
 
 		if (not dbID or not dbType) and not filePath:
@@ -544,8 +554,12 @@ class Core:
 
 		crypto = self.settings.getParameter("encrypted")
 		fileID = self.settings.getParameter("file_id")
-		driveID = self.settings.getParameter("drive_id")
 		driveURL = self.cloudService.getDownloadURL(fileID)
+
+		if self.settings.getSetting("account_selection") == "Manually selected":
+			driveID = self.settings.getSetting("account_override")
+		else:
+			driveID = self.settings.getParameter("drive_id")
 
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
