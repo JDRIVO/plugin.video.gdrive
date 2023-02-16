@@ -12,7 +12,7 @@ for root, dirs, files in os.walk(oldStrmPath, topdown=False):
 		if fileExt != "strm":
 			continue
 
-		newDirectory = os.path.join(root).replace(oldStrmPath, newStrmPath)
+		newDirectory = root.replace(oldStrmPath, newStrmPath)
 		newPath = os.path.join(newDirectory, name)
 		oldPath = os.path.join(root, name)
 		stInfo = os.stat(oldPath)
