@@ -91,6 +91,7 @@ class FileProcessor:
 						dirPath = os.path.join(strmRoot, "[gDrive] Movies")
 
 						if fileRenaming != "original":
+							dirPath = os.path.join(dirPath, newFilename)
 							strmPath = helpers.generateFilePath(dirPath, newFilename + ".strm")
 							videoRenamed = True
 						else:
