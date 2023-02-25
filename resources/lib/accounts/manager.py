@@ -3,7 +3,12 @@ import pickle
 import xbmcvfs
 import xbmcaddon
 
-ACCOUNTS_FILE = os.path.join(xbmcvfs.translatePath(xbmcaddon.Addon().getAddonInfo("path")), "accounts.pkl")
+ADDON_PATH = xbmcvfs.translatePath(xbmcaddon.Addon().getAddonInfo("profile"))
+
+if not os.path.exists(ADDON_PATH):
+	os.mkdir(ADDON_PATH)
+
+ACCOUNTS_FILE = os.path.join(ADDON_PATH, "accounts.pkl")
 
 
 class AccountManager:
@@ -15,9 +20,16 @@ class AccountManager:
 	def loadAccounts(self):
 
 		try:
-			self.accounts = self.loadFile()
+			self.accountData = self.loadFile()
+			self.accounts = self.accountData["drives"]
+			self.aliases = self.accountData["aliases"]
 		except Exception:
-			self.accounts = {}
+			self.accountData = {
+				"aliases": {},
+				"drives": {},
+			}
+			self.accounts = self.accountData["drives"]
+			self.aliases = self.accountData["aliases"]
 
 	@staticmethod
 	def loadFile(filePath=ACCOUNTS_FILE):
@@ -30,32 +42,39 @@ class AccountManager:
 
 		if accounts:
 			# avoid returning a service account
-			return [account for account in accounts if not account.key][0]
+			return [account for account in accounts["accounts"] if not account.key][0]
 
 	def getAccounts(self, driveID):
-		return self.accounts[driveID]
+		return self.accounts[driveID]["accounts"]
 
 	def saveAccounts(self, filePath=ACCOUNTS_FILE):
 
 		with open(filePath, "wb") as accounts:
-			pickle.dump(self.accounts, accounts)
+			pickle.dump(self.accountData, accounts)
 
-	def addAccount(self, accountInfo, driveID):
+	def addAccount(self, account, driveID):
 		accounts = self.accounts.get(driveID)
 
 		if accounts:
-			accounts.insert(0, accountInfo)
+			accounts["accounts"].insert(0, account)
 		else:
-			self.accounts[driveID] = [accountInfo]
+			self.accounts.update(
+				{
+					driveID: {
+						"accounts": [account],
+						"alias": "",
+					}
+				}
+			)
 
 		self.saveAccounts()
 
 	def renameAccount(self, driveID, accountIndex, newAccountName):
-		self.accounts[driveID][accountIndex].name = newAccountName
+		self.accounts[driveID]["accounts"][accountIndex].name = newAccountName
 		self.saveAccounts()
 
 	def deleteAccount(self, driveID, account):
-		self.accounts[driveID].remove(account)
+		self.accounts[driveID]["accounts"].remove(account)
 
 		if not self.accounts[driveID]:
 			self.deleteDrive(driveID)
@@ -67,7 +86,7 @@ class AccountManager:
 		for index in sorted(indexes, reverse=True):
 			del accounts[index]
 
-		if not self.accounts[driveID]:
+		if not self.accounts[driveID]["accounts"]:
 			self.deleteDrive(driveID)
 		else:
 			self.saveAccounts()
@@ -91,14 +110,21 @@ class AccountManager:
 			self.accounts = importedAccounts
 		else:
 
-			for driveID, accounts in importedAccounts.items():
+			for driveID, data in importedAccounts["drives"].items():
 
 				if driveID not in self.accounts:
-					self.accounts[driveID] = accounts
+					self.accounts.update(
+						{
+							driveID: {
+								"accounts": data["accounts"],
+								"alias": "",
+							}
+						}
+					)
 				else:
-					currentAccounts = self.accounts[driveID]
+					currentAccounts = self.accounts[driveID]["accounts"]
 
-					for account in accounts:
+					for account in data["accounts"]:
 
 						if account not in currentAccounts:
 							currentAccounts.append(account)
@@ -109,4 +135,12 @@ class AccountManager:
 		self.saveAccounts(os.path.join(filePath, "gdrive_accounts.pkl"))
 
 	def getDrives(self):
-		return [driveID for driveID in self.accounts]
+		return [[driveID, data["alias"] if data["alias"] else driveID] for driveID, data in self.accounts.items()]
+
+	def getAlias(self, driveID):
+		return self.accounts[driveID]["alias"]
+
+	def setAlias(self, driveID, alias):
+		self.aliases[alias] = driveID
+		self.accounts[driveID]["alias"] = alias
+		self.saveAccounts()

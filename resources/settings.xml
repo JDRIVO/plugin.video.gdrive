@@ -61,6 +61,17 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_playback_account)</data>
 					</control>
 				</setting>
+				<setting id="playback_account" type="string" label="30406" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="edit" format="string">
+						<heading>30406</heading>
+					</control>
+					<visible>false</visible>
+				</setting>
 			</group>
 		</category>
 		<category id="library" label="30500" help="">

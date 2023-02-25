@@ -4,7 +4,7 @@ import xbmc
 
 import constants
 from resources.lib.network import server
-from resources.lib.database import monitor
+from resources.lib.library import monitor
 
 if __name__ == "__main__":
 	kodiMonitor = xbmc.Monitor()

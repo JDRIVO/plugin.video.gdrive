@@ -16,7 +16,7 @@ class LibraryMonitor(xbmc.Monitor):
 	def __init__(self):
 		self.settings = constants.settings
 		self.getSettings()
-		self.fileOperations = filesystem.operations.FileOperations(None, None)
+		self.fileOperations = filesystem.operations.FileOperations()
 
 	@staticmethod
 	def jsonQuery(query):

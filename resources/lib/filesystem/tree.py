@@ -93,5 +93,3 @@ class FileTree:
 				file_.metadata = metadata
 				file_.encrypted = encrypted
 				tree[folderID]["files"][fileType].append(file_)
-
-		return tree

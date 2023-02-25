@@ -64,7 +64,7 @@ VIDEO_FILE_EXTENSIONS = (
 
 
 def removeProhibitedFSchars(name):
-	return re.sub('[<>\*\?\\/:|"]*', '', name)
+	return re.sub(r'[<>\*\?\\/:|"]*', '', name)
 
 def generateFilePath(dirPath, filename):
 	return duplicateFileCheck(dirPath, filename)
@@ -206,7 +206,7 @@ def getTMDBtitle(type, title, year):
 
 		tmdbYearInt = int(tmdbYear)
 
-		if tmdbYearInt != year + 1 and tmdbYearInt != year - 1:
+		if abs(tmdbYearInt - year) > 1:
 			return
 
 	elif not tmdbResult:
@@ -228,12 +228,12 @@ def getTMDBtitle(type, title, year):
 
 		if titleSimilarity > 0.85:
 
-			if year and tmdbYearInt != year + 1 and tmdbYearInt != year - 1:
+			if year and abs(tmdbYearInt - year) <= 1:
 				return tmdbTitle, year
 			else:
 				return tmdbTitle, tmdbYear
 
 		elif (tmdbTitleLowerCase in titleLowerCase or titleLowerCase in tmdbTitleLowerCase) and year:
 
-			if tmdbYearInt == year or tmdbYearInt == year + 1 or tmdbYearInt == year - 1:
+			if abs(tmdbYearInt - year) <= 1:
 				return tmdbTitle, tmdbYear

@@ -179,10 +179,12 @@ class GoogleDrive:
 		response = network.requester.sendPayload(url, headers=self.getHeaders())
 		return response["parents"][0]
 
-	def getDirectory(self, cachedDirectories, folders, folderID):
+	def getDirectory(self, cache, folderID):
 		dirPath = ""
+		cachedDirectory = None
+		cachedFolder = None
 
-		while folderID not in cachedDirectories and folderID not in folders:
+		while not cachedDirectory and not cachedFolder:
 
 			params = {
 				"fields": "parents,name",
@@ -195,22 +197,20 @@ class GoogleDrive:
 			try:
 				dirName, folderID = response["name"], response["parents"][0]
 			except Exception:
-				return None, None, None
+				return None, None
 
 			dirPath = os.path.join(dirName, dirPath)
+			cachedDirectory = cache.getDirectory(folderID)
+			cachedFolder = cache.getFolder(folderID)
 
-		if folderID in cachedDirectories:
-			rootID = cachedDirectories[folderID]["root_folder_id"]
-			dirPath = os.path.join(cachedDirectories[folderID]["local_path"], dirPath)
-			rootPath = False
-		elif folderID in folders:
-			rootID = folderID
-			dirPath = folders[folderID]["local_path"]
-			rootPath = True
-		else:
-			return None, None, None
-
-		return dirPath, rootID, rootPath
+		if cachedDirectory:
+			rootFolderID = cachedDirectory["root_folder_id"]
+			dirPath = os.path.join(cachedDirectory["local_path"], dirPath)
+			return dirPath, rootFolderID
+		elif cachedFolder:
+			rootFolderID = folderID
+			dirPath = os.path.join(cachedFolder["local_path"], dirPath)
+			return dirPath, rootFolderID
 
 	def listDirectory(self, folderID="root", sharedWithMe=False, foldersOnly=False, starred=False, search=False):
 		params = {}

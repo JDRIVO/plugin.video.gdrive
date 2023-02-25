@@ -13,7 +13,9 @@ import xbmcplugin
 
 import constants
 from . import ui
+from . import sync
 from . import accounts
+from . import filesystem
 from . import google_api
 
 
@@ -22,6 +24,7 @@ class Core:
 	def __init__(self):
 		self.pluginHandle = int(sys.argv[1])
 		self.settings = constants.settings
+		self.cache = sync.cache.Cache()
 		self.accountManager = accounts.manager.AccountManager(self.settings)
 		self.accounts = self.accountManager.accounts
 		self.cloudService = google_api.drive.GoogleDrive(self.accountManager)
@@ -50,6 +53,7 @@ class Core:
 			"import_accounts": self.importAccounts,
 			"export_accounts": self.exportAccounts,
 			"set_playback_account": self.setPlaybackAccount,
+			"set_alias": self.setAlias,
 		}
 
 		if mode == "video":
@@ -72,7 +76,8 @@ class Core:
 		accountName = self.settings.getParameter("account_name")
 		accountIndex = int(self.settings.getParameter("account_index"))
 		selection = self.dialog.contextmenu(options)
-		account = self.accounts[driveID][accountIndex]
+		accounts = self.accountManager.getAccounts(driveID)
+		account = accounts[accountIndex]
 
 		if selection == 0:
 			newAccountName = self.dialog.input(self.settings.getLocalizedString(30002) + ": " + accountName)
@@ -127,11 +132,11 @@ class Core:
 
 	def createMainMenu(self):
 		pluginURL = sys.argv[0]
-		syncSettings = self.settings.getSyncSettings()
+		syncRootPath = self.cache.getSyncRootPath()
 
-		if syncSettings:
+		if syncRootPath:
 			self.addMenu(
-				syncSettings["local_path"],
+				syncRootPath,
 				"[B][COLOR yellow]Browse STRM[/COLOR][/B]",
 			)
 
@@ -140,25 +145,32 @@ class Core:
 			f"[COLOR yellow][B]{self.settings.getLocalizedString(30207)}[/B][/COLOR]",
 			folder=False,
 		)
-		contextMenu = [
-			(
-				"Force Sync",
-				f"RunPlugin({pluginURL}?mode=not_implemented)",
-			),
-			(
-				"Create Alias",
-				f"RunPlugin({pluginURL}?mode=not_implemented)",
-			),
-			(
-				"Delete Drive",
-				f"RunPlugin({pluginURL}?mode=not_implemented)",
-			)
-		]
 
-		for driveID in self.accounts:
+		for driveID, accountData in self.accounts.items():
+			alias = accountData["alias"]
+
+			if alias:
+				displayName = alias
+			else:
+				displayName = driveID
+
+			contextMenu = [
+				(
+					"Force Sync",
+					f"RunPlugin({pluginURL}?mode=not_implemented&drive_id={driveID})",
+				),
+				(
+					"Rename",
+					f"RunPlugin({pluginURL}?mode=set_alias&drive_id={driveID})",
+				),
+				(
+					"Delete",
+					f"RunPlugin({pluginURL}?mode=not_implemented&drive_id={driveID})",
+				)
+			]
 			self.addMenu(
 				f"{pluginURL}?mode=list_drive&drive_id={driveID}",
-				"DRIVE: " + driveID,
+				displayName,
 				cm=contextMenu,
 			)
 
@@ -177,12 +189,7 @@ class Core:
 
 		self.cloudService.setAccount(account)
 		self.refreshAccess(account.expiry)
-		syncSettings = self.settings.getSyncSettings()
-
-		if syncSettings:
-			driveSettings = syncSettings["drives"].get(driveID)
-		else:
-			driveSettings = False
+		driveSettings = self.cache.getDrive(driveID)
 
 		if driveSettings:
 			self.addMenu(
@@ -227,12 +234,6 @@ class Core:
 
 		self.cloudService.setAccount(account)
 		self.refreshAccess(account.expiry)
-		syncSettings = self.settings.getSyncSettings()
-
-		if syncSettings:
-			driveSettings = syncSettings["drives"].get(driveID)
-		else:
-			driveSettings = False
 
 		self.addMenu(
 			f"{pluginURL}?mode=add_service_account&drive_id={driveID}",
@@ -250,7 +251,7 @@ class Core:
 			folder=False,
 		)
 
-		for index, account in enumerate(self.accounts[driveID]):
+		for index, account in enumerate(self.accountManager.getAccounts(driveID)):
 			accountName = account.name
 			self.addMenu(
 				f"{pluginURL}?mode=accounts_cm&account_name={accountName}&account_index={index}&drive_id={driveID}",
@@ -308,21 +309,11 @@ class Core:
 		self.cloudService.setAccount(account)
 		self.refreshAccess(account.expiry)
 		folders = self.cloudService.listDirectory(folderID=folderID, sharedWithMe=sharedWithMe, foldersOnly=True, starred=starred, search=search)
-		syncSettings = self.settings.getSyncSettings()
-
-		if syncSettings:
-			driveSettings = syncSettings["drives"].get(driveID)
-		else:
-			driveSettings = False
 
 		for folder in folders:
 			folderID = folder["id"]
 			folderName = folder["name"]
-
-			if driveSettings:
-				folderSettings = driveSettings["folders"].get(folderID)
-			else:
-				folderSettings = False
+			folderSettings = self.cache.getFolder(folderID)
 
 			if folderSettings:
 				contextMenu = [
@@ -449,7 +440,7 @@ class Core:
 
 	def validateAccounts(self):
 		driveID = self.settings.getParameter("drive_id")
-		accounts = self.accounts[driveID]
+		accounts = self.accountManager.getAccounts(driveID)
 		accountAmount = len(accounts)
 		pDialog = xbmcgui.DialogProgress()
 
@@ -488,7 +479,7 @@ class Core:
 
 	def accountDeletion(self):
 		driveID = self.settings.getParameter("drive_id")
-		accounts = self.accounts[driveID]
+		accounts = self.accountManager.getAccounts(driveID)
 		accountNames = self.accountManager.getAccountNames(accounts)
 		selection = self.dialog.multiselect(self.settings.getLocalizedString(30158), accountNames)
 
@@ -534,12 +525,40 @@ class Core:
 
 	def setPlaybackAccount(self):
 		accounts = self.accountManager.getDrives()
-		selection = self.dialog.select("Select an account", accounts)
+		displayNames = [account[1] for account in accounts]
+		selection = self.dialog.select("Select an account", displayNames)
 
 		if selection == -1:
 			return
 
-		self.settings.setSetting("account_override", accounts[selection])
+		self.settings.setSetting("playback_account", accounts[selection][0])
+		self.settings.setSetting("account_override", accounts[selection][1])
+
+	def setAlias(self):
+		driveID = self.settings.getParameter("drive_id")
+		alias = self.dialog.input("Drive Name:")
+
+		if not alias:
+			return
+
+		alias = filesystem.helpers.removeProhibitedFSchars(alias)
+
+		if alias in self.accountManager.aliases:
+			self.dialog.ok("gDrive", "The drive name already exists, it must be unique.")
+			return
+
+		self.accountManager.setAlias(driveID, alias)
+		driveSettings = self.cache.getDrive(driveID)
+		xbmc.executebuiltin("Container.Refresh")
+
+		if not driveSettings:
+			return
+
+		self.cache.updateDrive({"local_path": alias}, driveID)
+		syncRootPath = self.cache.getSyncRootPath()
+		drivePathOld = os.path.join(syncRootPath, driveSettings["local_path"])
+		drivePathNew = os.path.join(syncRootPath, alias)
+		filesystem.operations.FileOperations().renameFolder(syncRootPath, drivePathOld, drivePathNew)
 
 	def playVideo(self, dbID, dbType, filePath):
 
@@ -557,9 +576,10 @@ class Core:
 		driveURL = self.cloudService.getDownloadURL(fileID)
 
 		if self.settings.getSetting("account_selection") == "Manually selected":
-			driveID = self.settings.getSetting("account_override")
+			driveID = self.settings.getSetting("playback_account")
 		else:
 			driveID = self.settings.getParameter("drive_id")
+			account = self.accountManager.getAccount(driveID)
 
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
