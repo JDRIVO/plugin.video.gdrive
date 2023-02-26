@@ -1,7 +1,7 @@
 import os
 
 from . import helpers
-from .. import database
+from .. import library
 
 
 class FileProcessor:
@@ -219,7 +219,7 @@ class FileProcessor:
 			self.fileOperations.createFile(dirPath, strmPath, strmContent, mode="w+")
 
 			if refreshMetadata:
-				database.helpers.updateLibrary(strmPath, videoMetadata)
+				library.helpers.updateLibrary(strmPath, videoMetadata)
 
 			originalName = False if videoRenamed else True
 			originalFolder = True if originalPath else False
