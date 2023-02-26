@@ -5,6 +5,7 @@ import urllib.parse
 
 from .. import network
 from .. import encryption
+from .. import filesystem
 
 API_VERSION = "3"
 GDRIVE_URL = "https://www.googleapis.com/drive/v3"
@@ -199,17 +200,18 @@ class GoogleDrive:
 			except Exception:
 				return None, None
 
+			dirName = filesystem.helpers.removeProhibitedFSchars(dirName)
 			dirPath = os.path.join(dirName, dirPath)
 			cachedDirectory = cache.getDirectory(folderID)
 			cachedFolder = cache.getFolder(folderID)
 
 		if cachedDirectory:
 			rootFolderID = cachedDirectory["root_folder_id"]
-			dirPath = os.path.join(cachedDirectory["local_path"], dirPath)
+			dirPath = os.path.join(cachedDirectory["local_path"], dirPath).rstrip(os.sep)
 			return dirPath, rootFolderID
 		elif cachedFolder:
 			rootFolderID = folderID
-			dirPath = os.path.join(cachedFolder["local_path"], dirPath)
+			dirPath = os.path.join(cachedFolder["local_path"], dirPath).rstrip(os.sep)
 			return dirPath, rootFolderID
 
 	def listDirectory(self, folderID="root", sharedWithMe=False, foldersOnly=False, starred=False, search=False):
