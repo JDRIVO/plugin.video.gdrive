@@ -8,7 +8,6 @@ import datetime
 
 import xbmc
 import xbmcgui
-import xbmcaddon
 import xbmcplugin
 
 import constants
@@ -80,7 +79,7 @@ class Core:
 		account = accounts[accountIndex]
 
 		if selection == 0:
-			newAccountName = self.dialog.input(self.settings.getLocalizedString(30002) + ": " + accountName)
+			newAccountName = self.dialog.input(f"{self.settings.getLocalizedString(30002)}: {accountName}")
 
 			if not newAccountName:
 				return
@@ -141,7 +140,7 @@ class Core:
 			)
 
 		self.addMenu(
-			pluginURL + "?mode=register_account",
+			f"{pluginURL}?mode=register_account",
 			f"[COLOR yellow][B]{self.settings.getLocalizedString(30207)}[/B][/COLOR]",
 			folder=False,
 		)
@@ -193,7 +192,7 @@ class Core:
 
 		if driveSettings:
 			self.addMenu(
-				pluginURL + "?mode=not_implemented",
+				f"{pluginURL}?mode=not_implemented",
 				"[COLOR yellow][B]Synced[/B][/COLOR]",
 			)
 

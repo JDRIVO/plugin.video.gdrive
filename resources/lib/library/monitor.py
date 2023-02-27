@@ -1,10 +1,7 @@
 import os
-import re
 import json
-from sqlite3 import dbapi2 as sqlite
 
 import xbmc
-import xbmcvfs
 
 import constants
 from . import helpers

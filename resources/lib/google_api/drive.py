@@ -140,15 +140,11 @@ class GoogleDrive:
 		while pageToken:
 			url = network.helpers.addQueryString(API["drives"], params)
 			response = network.requester.sendPayload(url, headers=self.getHeaders())
-
 			pageToken = response.get("nextPageToken")
+			drives += response["drives"]
+			params["pageToken"] = pageToken
 
-			if not pageToken:
-				drives += response["drives"]
-				return drives
-			else:
-				drives += response["drives"]
-				params["pageToken"] = pageToken
+		return drives
 
 	def getDriveID(self):
 		url = network.helpers.mergePaths(API["files"], "root")
@@ -248,13 +244,10 @@ class GoogleDrive:
 			url = network.helpers.addQueryString(API["files"], params)
 			response = network.requester.sendPayload(url, headers=self.getHeaders())
 			pageToken = response.get("nextPageToken")
+			files += response["files"]
+			params["pageToken"] = pageToken
 
-			if not pageToken:
-				files += response["files"]
-				return files
-			else:
-				files += response["files"]
-				params["pageToken"] = pageToken
+		return files
 
 	def getPageToken(self):
 		params = {"supportsAllDrives": "true"}
@@ -277,13 +270,10 @@ class GoogleDrive:
 			url = network.helpers.addQueryString(API["changes"], params)
 			response = network.requester.sendPayload(url, headers=self.getHeaders())
 			nextPageToken = response.get("nextPageToken")
+			changes += response["changes"]
+			params["pageToken"] = nextPageToken
 
-			if not nextPageToken:
-				changes += response["changes"]
-				return changes, response["newStartPageToken"]
-			else:
-				changes += response["changes"]
-				params["pageToken"] = nextPageToken
+		return changes, response["newStartPageToken"]
 
 	def getAuthURL(self, clientID, port):
 		params = {

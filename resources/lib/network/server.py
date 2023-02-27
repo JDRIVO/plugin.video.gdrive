@@ -1,5 +1,4 @@
 import re
-import time
 import urllib
 import datetime
 from threading import Thread
@@ -158,14 +157,14 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 						accountChange = True
 						xbmcgui.Dialog().notification(
-							self.server.settings.getLocalizedString(30003) + ": " + self.server.settings.getLocalizedString(30006),
+							f"{self.server.settings.getLocalizedString(30003)}: {self.server.settings.getLocalizedString(30006)}",
 							self.server.settings.getLocalizedString(30007),
 						)
 						break
 
 					if not accountChange:
 						xbmcgui.Dialog().ok(
-							self.server.settings.getLocalizedString(30003) + ": " + self.server.settings.getLocalizedString(30006),
+							f"{self.server.settings.getLocalizedString(30003)}: {self.server.settings.getLocalizedString(30006)}",
 							self.server.settings.getLocalizedString(30009),
 						)
 						return
@@ -227,7 +226,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 					url,
 					headers=self.server.cloudService.getHeaders(
 						additionalHeader="Range",
-						additionalValue="bytes=" + str(start - startOffset) + "-" + str(end),
+						additionalValue=f"bytes={start - startOffset}-{end}",
 					)
 				)
 
@@ -318,7 +317,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 				redirect = "/registration_failed"
 
 			self.send_response(303)
-			self.send_header('Location', "http://localhost:" + str(self.server.port) + redirect)
+			self.send_header('Location', f"http://localhost:{self.server.port}redirect")
 			self.end_headers()
 
 		elif self.path == "/registration_succeeded":

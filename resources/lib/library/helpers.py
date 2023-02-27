@@ -14,7 +14,7 @@ def getVideoDB():
 	}
 	userAgent = xbmc.getUserAgent()
 	kodiVersion = re.findall("Kodi\/(\d+)", userAgent)[0]
-	return os.path.join(xbmcvfs.translatePath("special://database"), "MyVideos" + dbVersion[kodiVersion] + ".db")
+	return os.path.join(xbmcvfs.translatePath("special://database"), f"MyVideos{dbVersion[kodiVersion]}.db")
 
 def updateLibrary(filePath, metadata):
 	dirPath, filename = os.path.split(filePath)
