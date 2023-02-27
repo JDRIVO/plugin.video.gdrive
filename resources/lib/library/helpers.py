@@ -1,9 +1,10 @@
 import os
 import re
-from sqlite3 import dbapi2 as sqlite
 
 import xbmc
 import xbmcvfs
+
+from ..database.database import Database
 
 
 def getVideoDB():
@@ -17,31 +18,21 @@ def getVideoDB():
 
 def updateLibrary(filePath, metadata):
 	dirPath, filename = os.path.split(filePath)
-	statement = (
-		"SELECT idFile FROM files WHERE idPath=(SELECT idPath FROM path WHERE strPath=?) AND strFilename=?",
-		(dirPath + os.sep, filename),
-	)
 	dbPath = getVideoDB()
-	db = sqlite.connect(dbPath)
-	query = db.execute(*statement)
-	query = query.fetchall()
-	db.close()
+	db = Database(dbPath)
+	fileID = db.selectConditional("files", "idFile", f'idPath=(SELECT idPath FROM path WHERE strPath="{dirPath + os.sep}") AND strFilename="{filename}"')
 
-	if not query:
+	if not fileID:
 		return
 
-	fileID = query[0][0]
-	videoDuration = float(metadata["durationMillis"]) / 1000
-	videoWidth = metadata["width"]
-	videoHeight = metadata["height"]
-	aspectRatio = float(videoWidth) / videoHeight
+	data = {
+		"fVideoAspect": float(metadata["width"]) / metadata["height"],
+		"iVideoWidth": metadata["width"],
+		"iVideoHeight": metadata["height"],
+		"iVideoDuration": float(metadata["durationMillis"]) / 1000,
+	}
 
-	p1 = "INSERT INTO streamdetails (iVideoWidth, iVideoHeight, fVideoAspect, iVideoDuration, idFile, iStreamType)"
-	p2 = f"SELECT '{videoWidth}', '{videoHeight}', '{aspectRatio}', '{videoDuration}', {fileID}, '0'"
-	p3 = f"WHERE NOT EXISTS (SELECT 1 FROM streamdetails WHERE iVideoWidth='{videoWidth}' AND iVideoHeight='{videoHeight}' AND fVideoAspect='{aspectRatio}' AND iVideoDuration='{videoDuration}' AND idFile='{fileID}' AND iStreamType='0')"
-
-	insertStatement = f"{p1} {p2} {p3}"
-	db = sqlite.connect(dbPath)
-	db.execute(insertStatement)
-	db.commit()
-	db.close()
+	if db.selectAllConditional("streamdetails", f"idFile='{fileID}' AND iStreamType='0'"):
+		db.update("streamdetails", data, f"idFile='{fileID}' AND iStreamType='0'")
+	else:
+		db.insert("streamdetails", data)

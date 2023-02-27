@@ -8,15 +8,15 @@ driveID = "" # Optional - if not included you will need to manually set the play
 
 for root, dirs, files in os.walk(oldStrmPath, topdown=False):
 
-	for name in files:
-		fileExt = name.rsplit(".", 1)[-1]
+	for file in files:
+		fileExt = file.rsplit(".", 1)[-1]
 
 		if fileExt != "strm":
 			continue
 
 		newDirectory = root.replace(oldStrmPath, newStrmPath)
-		newPath = os.path.join(newDirectory, name)
-		oldPath = os.path.join(root, name)
+		newPath = os.path.join(newDirectory, file)
+		oldPath = os.path.join(root, file)
 		stInfo = os.stat(oldPath)
 
 		if not os.path.isdir(newDirectory):

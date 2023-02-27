@@ -298,11 +298,11 @@ class Syncer:
 
 		if not newFiles.get(rootFolderID):
 			newFiles[rootFolderID] = {}
-			newFiles[rootFolderID][parentFolderID] = self.fileTree.createFileTree(parentFolderID, os.path.join(drivePath, dirPath))
+			newFiles[rootFolderID][parentFolderID] = self.fileTree.getTree(parentFolderID, os.path.join(drivePath, dirPath))
 		else:
 
 			if not newFiles[rootFolderID].get(parentFolderID):
-				newFiles[rootFolderID][parentFolderID] = self.fileTree.createFileTree(parentFolderID, os.path.join(drivePath, dirPath))
+				newFiles[rootFolderID][parentFolderID] = self.fileTree.getTree(parentFolderID, os.path.join(drivePath, dirPath))
 
 		file.name = filename
 		file.id = fileID

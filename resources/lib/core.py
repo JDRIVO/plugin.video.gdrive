@@ -27,7 +27,7 @@ class Core:
 		self.cache = sync.cache.Cache()
 		self.accountManager = accounts.manager.AccountManager(self.settings)
 		self.accounts = self.accountManager.accounts
-		self.cloudService = google_api.drive.GoogleDrive(self.accountManager)
+		self.cloudService = google_api.drive.GoogleDrive()
 		self.dialog = xbmcgui.Dialog()
 
 	def run(self, dbID, dbType, filePath):

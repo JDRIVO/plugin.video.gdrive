@@ -1,1 +1,1 @@
-Refer to branch "Old-GDrive-V0.8.66" for the original code.
+A Kodi addon for playing videos stored on Google Drive.

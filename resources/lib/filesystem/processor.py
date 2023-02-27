@@ -63,7 +63,7 @@ class FileProcessor:
 					"original_name": originalName,
 					"original_folder": originalFolder,
 				}
-				self.cache.insert("files", file)
+				self.cache.addFile(file)
 
 	def processFiles(
 		self,
@@ -235,7 +235,7 @@ class FileProcessor:
 				"original_name": originalName,
 				"original_folder": originalFolder,
 			}
-			self.cache.insert("files", file)
+			self.cache.addFile(file)
 
 		unaccountedFiles = []
 
@@ -280,4 +280,4 @@ class FileProcessor:
 					"original_name": True,
 					"original_folder": True,
 				}
-				self.cache.insert("files", file)
+				self.cache.addFile(file)

@@ -9,11 +9,14 @@ import xbmcvfs
 import constants
 from . import helpers
 from .. import filesystem
+from ..database.database import Database
 
 
-class LibraryMonitor(xbmc.Monitor):
+class LibraryMonitor(Database, xbmc.Monitor):
 
 	def __init__(self):
+		dbPath = helpers.getVideoDB()
+		super().__init__(dbPath)
 		self.settings = constants.settings
 		self.getSettings()
 		self.fileOperations = filesystem.operations.FileOperations()
@@ -53,38 +56,42 @@ class LibraryMonitor(xbmc.Monitor):
 
 			jsonResponse = self.jsonQuery(query)
 			filePath = jsonResponse["result"][jsonKey]["file"]
-			fileName = os.path.basename(filePath)
-			fileExt = os.path.splitext(fileName)[1]
+			filename = os.path.basename(filePath)
+			fileExt = os.path.splitext(filename)[1]
 
 			if fileExt != ".strm":
 				return
 
 			fileDir = os.path.dirname(filePath) + os.sep
 			strmData = self.fileOperations.readFile(filePath)
-			mediaInfo = self.mediaInfoConversion(strmData)
-
-			if not mediaInfo:
-				return
 
 			try:
-				fileID = self.select(
-					(
-						"SELECT idFile FROM files WHERE idPath=(SELECT idPath FROM path WHERE strPath=?) AND strFilename=?",
-						(fileDir, fileName),
-					),
-				)
+				fileID = self.selectConditional("files", "idFile", f'idPath=(SELECT idPath FROM path WHERE strPath="{fileDir}") AND strFilename="{filename}"')
 			except Exception as e:
 				xbmc.log(f"gdrive error: Monitor error {e}", xbmc.LOGERROR)
+				return
 
 			if not fileID:
 				return
 
-			fileID = fileID[0][0]
-			self.insertMultiple(self.statementConstructor(mediaInfo, fileID))
+			mediaData = self.mediaDataConversion(strmData, fileID)
 
-	@staticmethod
-	def mediaInfoConversion(strmData):
-		videoInfo = {
+			for data in mediaData:
+
+				if not data:
+					continue
+
+				type, values = data
+
+				if type == "video" and self.selectAllConditional("streamdetails", f"idFile='{fileID}' AND iStreamType='0'"):
+					self.update("streamdetails", values, f"idFile='{fileID}' AND iStreamType='0'")
+				elif type == "audio" and self.selectAllConditional("streamdetails", f"idFile='{fileID}' AND iStreamType='1'"):
+					self.update("streamdetails", values, f"idFile='{fileID}' AND iStreamType='1'")
+				else:
+					self.insert("streamdetails", values)
+
+	def mediaDataConversion(self, strmData, fileID):
+		videoData = {
 			"video_codec": "strVideoCodec",
 			"hdr": "strHdrType",
 			"aspect_ratio": "fVideoAspect",
@@ -92,91 +99,26 @@ class LibraryMonitor(xbmc.Monitor):
 			"video_height": "iVideoHeight",
 			"video_duration": "iVideoDuration",
 		}
-		audioInfo = {
+		audioData = {
 			"audio_codec": "strAudioCodec",
 			"audio_channels": "iAudioChannels",
 		}
-		videoNames, videoValues, audioNames, audioValues = [], [], [], []
-		strmData = strmData.split("&")
+		strmData = self.settings.parseQuery(strmData)
+		video = {videoData[k]: v for k, v in strmData.items() if videoData.get(k)}
+		audio = {audioData[k]: v for k, v in strmData.items() if audioData.get(k)}
 
-		try:
+		if video:
+			video.update({"idFile": fileID, "iStreamType": "0"})
+			video = ["video", video]
 
-			for params in strmData:
-				name, value = params.split("=")
+		if audio:
+			audio.update({"idFile": fileID, "iStreamType": "1"})
+			audio = ["audio", audio]
 
-				if not value:
-					continue
-
-				if name in videoInfo:
-					videoNames.append(videoInfo[name])
-					videoValues.append(value)
-				elif name in audioInfo:
-					audioNames.append(audioInfo[name])
-					audioValues.append(value)
-
-		except Exception:
-			return
-
-		converted = []
-
-		if videoNames:
-			videoNames.append("iStreamType")
-			videoValues.append("0")
-			converted.append((videoNames, videoValues))
-
-		if audioNames:
-			audioNames.append("iStreamType")
-			audioValues.append("1")
-			converted.append((audioNames, audioValues))
-
-		if converted:
-			return converted
-
-	@staticmethod
-	def statementConstructor(mediaInfo, fileID):
-		statements = []
-
-		for names, values in mediaInfo:
-			names.append("idFile")
-			values.append(fileID)
-			condition = "".join(
-				[
-					f"{name}='{values[count]}' AND "
-					if name != names[-1]
-					else f"{name}='{values[count]}'"
-					for count, name in enumerate(names)
-				]
-			)
-			names = ", ".join(names)
-			values = str(values)[1:-1]
-			statements.append(
-				f"INSERT INTO streamdetails ({names}) SELECT {values} WHERE NOT EXISTS (SELECT 1 FROM streamdetails WHERE {condition})"
-			)
-
-		return statements
-
-	def select(self, statement):
-		db = sqlite.connect(self.dbPath)
-		query = db.execute(*statement)
-		query = query.fetchall()
-		db.close()
-		return query
-
-	def insert(self, statement):
-		db = sqlite.connect(self.dbPath)
-		db.execute(statement)
-		db.commit()
-		db.close()
-
-	def insertMultiple(self, statements):
-		db = sqlite.connect(self.dbPath)
-		[db.execute(statement) for statement in statements]
-		db.commit()
-		db.close()
+		return video, audio
 
 	def onSettingsChanged(self):
 		self.getSettings()
 
 	def getSettings(self):
 		self.enabled = self.settings.getSetting("library_monitor")
-		self.dbPath = helpers.getVideoDB()

@@ -75,17 +75,17 @@ class Cache(Database):
 	def getFiles(self, value, column="parent_folder_id"):
 		return self.selectAllConditional("files", f"{column}='{value}'")
 
-	def deleteFile(self, fileID):
-		self.delete("files", f"file_id='{fileID}'")
+	def deleteFile(self, value, column="file_id"):
+		self.delete("files", f"{column}='{value}'")
 
-	def deleteDirectory(self, folderID):
-		self.delete("directories", f"folder_id='{folderID}'")
+	def deleteDirectory(self, value, column="folder_id"):
+		self.delete("directories", f"{column}='{value}'")
 
-	def deleteFolder(self, folderID):
-		self.delete("folders", f"folder_id='{folderID}'")
+	def deleteFolder(self, value, column="folder_id"):
+		self.delete("folders", f"{column}='{value}'")
 
-	def deleteDrive(self, driveID):
-		self.delete("drives", f"drive_id='{driveID}'")
+	def deleteDrive(self, value, column="drive_id"):
+		self.delete("drives", f"{column}='{value}'")
 
 	def updateSyncRootPath(self, path):
 		self.update("global", {"local_path": path}, "local_path=TEXT")
@@ -136,8 +136,8 @@ class Cache(Database):
 
 					fileOperations.deleteFile(syncRootPath, filePath=filePath)
 
-			self.delete("files", f"parent_folder_id='{folderID}'")
-			self.delete("directories", f"folder_id='{folderID}'")
+			self.deleteFile(folderID, "parent_folder_id")
+			self.deleteDirectory(folderID)
 			self.cleanCache(syncRootPath, drivePath, folderID, fileOperations, directoryColumn="parent_folder_id")
 
 	def createGlobalTable(self):

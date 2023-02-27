@@ -20,7 +20,7 @@ class Tasker:
 		self.settings = settings
 		self.accountManager = accountManager
 		self.accounts = self.accountManager.accounts
-		self.cloudService = google_api.drive.GoogleDrive(self.accountManager)
+		self.cloudService = google_api.drive.GoogleDrive()
 		self.encrypter = encryption.encrypter.Encrypter(settings=self.settings)
 		self.cache = cache.Cache()
 		self.fileOperations = filesystem.operations.FileOperations(cloud_service=self.cloudService, encryption=self.encrypter)

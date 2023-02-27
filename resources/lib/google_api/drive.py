@@ -22,9 +22,6 @@ API = {
 
 class GoogleDrive:
 
-	def __init__(self, accountManager):
-		self.accountManager = accountManager
-
 	def setAccount(self, account):
 		self.account = account
 
@@ -121,7 +118,7 @@ class GoogleDrive:
 		for r in re.finditer("\@([^\@]+)", urls):
 			videoURL = r.group(1)
 			itag = re.findall("itag=([\d]+)", videoURL)[0]
-			streams[itag]["url"] = "https://" + videoURL + "|" + self.getHeadersEncoded()
+			streams[itag]["url"] = f"https://{videoURL}|{self.getHeadersEncoded()}"
 
 		if streams and resolutionPriority:
 
@@ -183,7 +180,7 @@ class GoogleDrive:
 	def getDirectory(self, cache, folderID):
 		dirPath = ""
 		cachedDirectory = None
-		cachedFolder = None
+		cachedFolder = cache.getFolder(folderID)
 
 		while not cachedDirectory and not cachedFolder:
 
@@ -291,12 +288,11 @@ class GoogleDrive:
 	def getAuthURL(self, clientID, port):
 		params = {
 			"client_id": clientID,
-			"redirect_uri": "http://localhost:" + str(port) + "/status",
+			"redirect_uri": f"http://localhost:{port}/status",
 			"response_type": "code",
 			"scope": SCOPE_URL,
 			"access_type": "offline",
 			"prompt": "consent",
-
 		}
 		return network.helpers.addQueryString(GOOGLE_AUTH_URL, params)
 
@@ -306,6 +302,6 @@ class GoogleDrive:
 			"client_secret": clientSecret,
 			"code": code,
 			"grant_type": "authorization_code",
-			"redirect_uri": "http://localhost:" + str(port) + "/status",
+			"redirect_uri": f"http://localhost:{port}/status",
 		}
 		return network.requester.sendPayload(GOOGLE_TOKEN_URL, data, method="POST")

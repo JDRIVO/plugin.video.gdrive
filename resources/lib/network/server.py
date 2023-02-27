@@ -29,7 +29,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 
 		self.monitor = xbmc.Monitor()
 		self.accountManager = accounts.manager.AccountManager(self.settings)
-		self.cloudService = google_api.drive.GoogleDrive(self.accountManager)
+		self.cloudService = google_api.drive.GoogleDrive()
 		self.taskManager = sync.tasker.Tasker(self.settings, self.accountManager)
 		self.taskManager.run()
 

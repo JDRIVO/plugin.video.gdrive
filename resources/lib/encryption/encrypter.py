@@ -90,13 +90,13 @@ class Encrypter:
 		text = paddedText[:-paddingSize]
 		return text
 
-	def encryptFilename(fileName):
-		return base64.b64encode(fileName)
+	def encryptFilename(filename):
+		return base64.b64encode(filename)
 
-	def decrypt(fileName):
+	def decrypt(filename):
 
 		try:
-			return base64.b64decode(fileName)
+			return base64.b64decode(filename)
 		except Exception:
 			return ""
 

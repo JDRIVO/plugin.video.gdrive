@@ -95,11 +95,11 @@ def identifyFileType(filename, fileExtension, mimeType):
 	elif fileExtension == "nfo":
 		return "nfo"
 	elif fileExtension == "jpg":
-		fileNameLowerCase = filename.lower()
+		filenameLowerCase = filename.lower()
 
-		if "poster" in fileNameLowerCase:
+		if "poster" in filenameLowerCase:
 			return "poster"
-		elif "fanart" in fileNameLowerCase:
+		elif "fanart" in filenameLowerCase:
 			return "fanart"
 
 	elif fileExtension in SUBTITLES:

@@ -13,7 +13,7 @@ class FileTree:
 		self.encrypter = encrypter
 
 	@staticmethod
-	def createFileTree(parentFolderID, remotePath):
+	def getTree(parentFolderID, remotePath):
 		return {
 			"parent_folder_id": parentFolderID,
 			"path": remotePath,
@@ -61,13 +61,13 @@ class FileTree:
 				synced.append(fileID)
 
 			if not folderDic:
-				tree[folderID] = self.createFileTree(parentFolderID, path)
+				tree[folderID] = self.getTree(parentFolderID, path)
 
 			if fileType == "folder":
 				parentFolderID = file["parents"][0]
 				newPath = os.path.join(path, filename)
 				tree[folderID]["dirs"].append(fileID)
-				tree[fileID] = self.createFileTree(parentFolderID, newPath)
+				tree[fileID] = self.getTree(parentFolderID, newPath)
 				self.buildTree(fileID, parentFolderID, newPath, tree, hasEncryptedFiles, synced)
 			else:
 				metadata = file.get("videoMediaMetadata")
