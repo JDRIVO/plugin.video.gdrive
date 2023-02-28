@@ -14,9 +14,9 @@ GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 SCOPE_URL = "https://www.googleapis.com/auth/drive.readonly"
 
 API = {
-	"changes": GDRIVE_URL + "/changes",
-	"drives": GDRIVE_URL + "/drives",
-	"files": GDRIVE_URL + "/files",
+	"changes": f"{GDRIVE_URL}/changes",
+	"drives": f"{GDRIVE_URL}/drives",
+	"files": f"{GDRIVE_URL}/files",
 }
 
 
@@ -65,23 +65,21 @@ class GoogleDrive:
 		if not accessToken: accessToken = ""
 		if not cookie: cookie = ""
 
+		headers = {
+			"Cookie": f"DRIVE_STREAM={cookie}",
+			"Authorization": f"Bearer {accessToken}",
+		}
+
 		if additionalHeader:
-			return {
-				"Cookie": "DRIVE_STREAM=" + cookie,
-				"Authorization": "Bearer " + accessToken,
-				additionalHeader: additionalValue,
-			}
-		else:
-			return {
-				"Cookie": "DRIVE_STREAM=" + cookie,
-				"Authorization": "Bearer " + accessToken,
-			}
+			headers[additionalHeader] = additionalValue
+
+		return headers
 
 	def getHeadersEncoded(self):
 		return urllib.parse.urlencode(self.getHeaders())
 
 	def getStreams(self, fileID, resolutionPriority=None):
-		url = "https://drive.google.com/get_video_info?docid=" + fileID
+		url = f"https://drive.google.com/get_video_info?docid={fileID}"
 		self.account.driveStream = None
 		responseData, cookie = network.requester.sendPayload(url, headers=self.getHeaders(), cookie=True)
 		self.account.driveStream = re.findall("DRIVE_STREAM=(.*?);", cookie)[0]
@@ -111,7 +109,7 @@ class GoogleDrive:
 				elif resolutionInt > 720:
 					resolution = "1080"
 
-			resolution = resolution + "P"
+			resolution = f"{resolution}P"
 			resolutions[resolution] = itag
 			streams[itag] = {"resolution": resolution}
 

@@ -69,14 +69,14 @@ class Episode(Video):
 		# Produces a conventional name that can be understood by library scrapers
 
 		if int(self.season) < 10:
-			season = "0" + self.season
+			season = f"0{self.season}"
 		else:
 			season = self.season
 
 		if isinstance(self.episode, int):
 
 			if self.episode < 10:
-				episode = "0" + str(self.episode)
+				episode = f"0{self.episode}"
 			else:
 				episode = str(self.episode)
 
@@ -86,7 +86,7 @@ class Episode(Video):
 			for e in self.episode:
 
 				if e < 10:
-					append = "0" + str(e)
+					append = f"0{e}"
 				else:
 					append = e
 

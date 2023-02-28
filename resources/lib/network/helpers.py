@@ -2,7 +2,7 @@ import urllib.parse
 
 
 def addQueryString(url, params):
-	return url + "?" + urllib.parse.urlencode(params)
+	return f"{url}?{urllib.parse.urlencode(params)}"
 
 def mergePaths(baseURL, paths):
 

@@ -19,8 +19,8 @@ class FileProcessor:
 		newVideoFilename,
 		fileExtension,
 		dirPath,
-		videoRenamed,
-		originalPath,
+		originalName,
+		originalFolder,
 		driveID,
 		folderID,
 		rootFolderID,
@@ -33,21 +33,14 @@ class FileProcessor:
 
 			if videoFilename in filename:
 
-				if videoRenamed:
+				if not originalName:
 
 					if subtitles:
 						_, fileExtension = os.path.splitext(filename)
-						newFilename = f"{newVideoFilename}{fileExtension}"
-					else:
-						newFilename = newVideoFilename + fileExtension
 
-					filePath = helpers.generateFilePath(dirPath, newFilename)
-					originalName = False
-					originalFolder = True if originalPath else False
+					filePath = helpers.generateFilePath(dirPath, f"{newVideoFilename}{fileExtension}")
 				else:
 					filePath = helpers.generateFilePath(dirPath, filename)
-					originalName = True
-					originalFolder = True if originalPath else False
 
 				fileID = mediaAsset.id
 				self.fileOperations.downloadFile(dirPath, filePath, fileID)
@@ -103,8 +96,8 @@ class FileProcessor:
 			strmContent = helpers.createSTRMContents(driveID, fileID, video.encrypted, video.contents)
 
 			dirPath = remotePath
-			newFilename = videoRenamed = strmPath = False
-			originalPath = True
+			newFilename = strmPath = False
+			originalName = originalFolder = True
 
 			if folderRestructure or fileRenaming:
 
@@ -121,34 +114,34 @@ class FileProcessor:
 							dirPath = os.path.join(dirPath, newFilename)
 							strmPath = helpers.generateFilePath(
 								dirPath,
-								newFilename + ".strm",
+								f"{newFilename}.strm",
 							)
-							videoRenamed = True
+							originalName = False
 						else:
 							strmPath = helpers.generateFilePath(
 								dirPath,
-								filenameWithoutExtension + ".strm",
+								f"{filenameWithoutExtension}.strm",
 							)
 
 					elif str(video) == "Episode":
 						dirPath = os.path.join(
 							syncRootPath,
-							"[gDrive] TV",
+							"[gDrive] Series",
 							modifiedName["title"],
-							"Season " + video.season,
+							f"Season {video.season}",
 						)
 
 						if fileRenaming:
-							strmPath = helpers.generateFilePath(dirPath, newFilename + ".strm")
-							videoRenamed = True
+							strmPath = helpers.generateFilePath(dirPath, f"{newFilename}.strm")
+							originalName = False
 						else:
-							strmPath = helpers.generateFilePath(dirPath, filenameWithoutExtension + ".strm")
+							strmPath = helpers.generateFilePath(dirPath, f"{filenameWithoutExtension}.strm")
 
-					originalPath = False
+					originalFolder = False
 
 				elif fileRenaming and newFilename:
-					strmPath = helpers.generateFilePath(dirPath, newFilename + ".strm")
-					videoRenamed = True
+					strmPath = helpers.generateFilePath(dirPath, f"{newFilename}.strm")
+					originalName = False
 
 				if syncSubtitles and subtitles:
 					self.processMediaAssets(
@@ -157,8 +150,8 @@ class FileProcessor:
 						newFilename,
 						None,
 						dirPath,
-						videoRenamed,
-						originalPath,
+						originalName,
+						originalFolder,
 						driveID,
 						parentFolderID,
 						rootFolderID,
@@ -175,8 +168,8 @@ class FileProcessor:
 							newFilename,
 							"-fanart.jpg",
 							dirPath,
-							videoRenamed,
-							originalPath,
+							originalName,
+							originalFolder,
 							driveID,
 							parentFolderID,
 							rootFolderID,
@@ -190,8 +183,8 @@ class FileProcessor:
 							newFilename,
 							"-poster.jpg",
 							dirPath,
-							videoRenamed,
-							originalPath,
+							originalName,
+							originalFolder,
 							driveID,
 							parentFolderID,
 							rootFolderID,
@@ -205,8 +198,8 @@ class FileProcessor:
 						newFilename,
 						".nfo",
 						dirPath,
-						videoRenamed,
-						originalPath,
+						originalName,
+						originalFolder,
 						driveID,
 						parentFolderID,
 						rootFolderID,
@@ -214,15 +207,12 @@ class FileProcessor:
 					)
 
 			if not strmPath:
-				strmPath = helpers.generateFilePath(dirPath, filenameWithoutExtension + ".strm")
+				strmPath = helpers.generateFilePath(dirPath, f"{filenameWithoutExtension}.strm")
 
 			self.fileOperations.createFile(dirPath, strmPath, strmContent, mode="w+")
 
 			if refreshMetadata:
 				library.helpers.updateLibrary(strmPath, videoMetadata)
-
-			originalName = False if videoRenamed else True
-			originalFolder = True if originalPath else False
 
 			file = {
 				"drive_id": driveID,
