@@ -61,18 +61,6 @@ class FileProcessor:
 					parentFolderID,
 				)
 
-			# file = {
-				# "drive_id": driveID,
-				# "file_id": fileID,
-				# "local_path": False,
-				# "parent_folder_id": parentFolderID,
-				# "root_folder_id": rootFolderID,
-				# "local_name": os.path.basename(filePath),
-				# "remote_name": filename,
-				# "original_name": True,
-				# "original_folder": True,
-			# }
-
 	def processMediaAssets(
 		self,
 		mediaAssets,
