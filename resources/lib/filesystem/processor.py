@@ -1,4 +1,5 @@
 import os
+import re
 
 from . import helpers
 from .. import library
@@ -82,7 +83,17 @@ class FileProcessor:
 				if not originalName:
 
 					if assetType == "subtitles":
+						language = ""
 						_, fileExtension = os.path.splitext(filename)
+
+						if file.language:
+							language += f".{file.language}"
+
+						if re.search("forced\.[\w]*$", filename, re.IGNORECASE):
+							language += ".Forced"
+
+						fileExtension = f"{language}{fileExtension}"
+
 					elif assetType in ("poster", "fanart"):
 						fileExtension = f"-{assetType}.jpg"
 

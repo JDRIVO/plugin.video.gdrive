@@ -10,6 +10,7 @@ from .file import File
 from .. import library
 from .. import network
 from .. import filesystem
+from .subtitles import Subtitles
 
 SUBTITLES = (
 	"srt",
@@ -137,6 +138,7 @@ def getVideoInfo(filename, metadata):
 	year = videoInfo.get("year")
 	season = videoInfo.get("season")
 	episode = videoInfo.get("episode")
+	language = videoInfo.get("language")
 
 	videoCodec = videoInfo.get("codec")
 	hdr = videoInfo.get("hdr")
@@ -155,6 +157,7 @@ def getVideoInfo(filename, metadata):
 		"year": year,
 		"season": season,
 		"episode": episode,
+		"language": language,
 		"video_width": videoWidth,
 		"video_height": videoHeight,
 		"aspect_ratio": aspectRatio,
@@ -267,7 +270,9 @@ def makeFile(file, excludedTypes, encrypter):
 		videoInfo = getVideoInfo(filename, metadata)
 		mediaType = identifyMediaType(videoInfo)
 
-		if mediaType == "episode":
+		if fileType == "subtitles":
+			file = Subtitles()
+		elif mediaType == "episode":
 			file = video.Episode()
 		elif mediaType == "movie":
 			file = video.Movie()

@@ -1,1 +1,1 @@
-from . import file, helpers, operations, processor, tree, video
+from . import file, helpers, operations, processor, subtitles, tree, video
