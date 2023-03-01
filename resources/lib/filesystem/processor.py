@@ -102,11 +102,7 @@ class FileProcessor:
 					filePath = helpers.generateFilePath(dirPath, filename)
 
 				fileID = file.id
-
-				if file.encrypted:
-					self.fileOperations.downloadFile(dirPath, filePath, fileID, encrypted=True)
-				else:
-					self.fileOperations.downloadFile(dirPath, filePath, fileID)
+				self.fileOperations.downloadFile(dirPath, filePath, fileID, file.encrypted)
 
 				file = {
 					"file_id": fileID,
