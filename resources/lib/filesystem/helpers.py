@@ -5,7 +5,12 @@ import html
 import difflib
 
 from .. import ptn
+from . import video
+from .file import File
+from .. import library
 from .. import network
+from .. import filesystem
+from .artwork import Artwork
 
 SUBTITLES = (
 	"srt",
@@ -81,9 +86,6 @@ def duplicateFileCheck(dirPath, filename):
 	return filePath
 
 def identifyFileType(filename, fileExtension, mimeType):
-
-	if mimeType == "application/vnd.google-apps.folder":
-		return "folder"
 
 	if not fileExtension:
 		return
@@ -237,3 +239,73 @@ def getTMDBtitle(type, title, year):
 
 			if abs(tmdbYearInt - year) <= 1:
 				return tmdbTitle, tmdbYear
+
+def makeFile(file, excludedTypes, encrypter):
+	fileID = file["id"]
+	filename = file["name"]
+	mimeType = file["mimeType"]
+	fileExtension = file.get("fileExtension")
+	metadata = file.get("videoMediaMetadata")
+
+	if encrypter and mimeType == "application/octet-stream" and not fileExtension:
+		filename = encrypter.decryptFilename(filename)
+
+		if not filename:
+			return
+
+		fileExtension = filename.rsplit(".", 1)[-1]
+		encrypted = True
+
+	else:
+		encrypted = False
+
+	fileType = identifyFileType(filename, fileExtension, mimeType)
+
+	if not fileType or fileType in excludedTypes:
+		return
+
+	if fileType != "strm":
+		videoInfo = getVideoInfo(filename, metadata)
+		mediaType = identifyMediaType(videoInfo)
+
+		if mediaType == "episode":
+			file = video.Episode()
+		elif mediaType == "movie":
+			file = video.Movie()
+		else:
+			file = video.Video()
+
+		file.setContents(videoInfo)
+		file.metadata = metadata
+	else:
+		file = File()
+
+	filename = removeProhibitedFSchars(filename)
+	file.name = filename
+	file.id = fileID
+	file.type = fileType
+	file.encrypted = encrypted
+	file.removeFileExtension()
+	return file
+
+def getExcludedTypes(folderSettings):
+	excluded = []
+
+	if not folderSettings["sync_subtitles"]:
+		excluded.append("subtitles")
+
+	if not folderSettings["sync_artwork"]:
+		excluded.append("poster")
+		excluded.append("fanart")
+
+	if not folderSettings["sync_nfo"]:
+		excluded.append("nfo")
+
+	return excluded
+
+def refreshMetadata(metadata, strmPath):
+	fileOperations = filesystem.operations.FileOperations()
+	strmContent = fileOperations.readFile(strmPath)
+	strmContent += f"&video_width={metadata['width']}&video_height={metadata['height']}&aspect_ratio={float(metadata['width']) / metadata['height']}&video_duration={float(metadata['durationMillis']) / 1000}"
+	fileOperations.overwriteFile(strmPath, strmContent)
+	library.helpers.updateLibrary(strmPath, metadata)

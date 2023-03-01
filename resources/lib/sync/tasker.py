@@ -24,7 +24,7 @@ class Tasker:
 		self.encrypter = encryption.encrypter.Encrypter(settings=self.settings)
 		self.cache = cache.Cache()
 		self.fileOperations = filesystem.operations.FileOperations(cloud_service=self.cloudService, encryption=self.encrypter)
-		self.fileTree = filesystem.tree.FileTree(self.cloudService, self.encrypter)
+		self.fileTree = filesystem.tree.FileTree(self.cloudService)
 		self.fileProcessor = filesystem.processor.FileProcessor(self.cloudService, self.fileOperations, self.settings, self.cache)
 		self.syncer = sync.syncer.Syncer(self.accountManager, self.cloudService, self.encrypter, self.fileOperations, self.fileProcessor, self.fileTree, self.settings, self.cache)
 		self.monitor = xbmc.Monitor()

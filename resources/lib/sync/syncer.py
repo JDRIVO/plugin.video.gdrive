@@ -31,7 +31,7 @@ class Syncer:
 
 		self.deleted = False
 		newFiles = {}
-		synced = []
+		syncedIDs = []
 
 		try:
 			changes = sorted(changes, key=lambda i: i["file"]["trashed"], reverse=True)
@@ -42,10 +42,10 @@ class Syncer:
 			file = change["file"]
 			fileID = file["id"]
 
-			if fileID in synced:
+			if fileID in syncedIDs:
 				continue
 
-			synced.append(fileID)
+			syncedIDs.append(fileID)
 			parentFolderID = file.get("parents")
 
 			if not parentFolderID:
@@ -59,7 +59,7 @@ class Syncer:
 				parentFolderID = parentFolderID[0]
 
 				if file["mimeType"] == "application/vnd.google-apps.folder":
-					self.syncFolderChanges(file, parentFolderID, driveID, syncRootPath, drivePath, synced)
+					self.syncFolderChanges(file, parentFolderID, driveID, syncRootPath, drivePath, syncedIDs)
 				else:
 					self.syncFileChanges(file, parentFolderID, driveID, syncRootPath, drivePath, newFiles)
 
@@ -104,7 +104,7 @@ class Syncer:
 
 		self.deleted = True
 
-	def syncFolderChanges(self, folder, parentFolderID, driveID, syncRootPath, drivePath, synced):
+	def syncFolderChanges(self, folder, parentFolderID, driveID, syncRootPath, drivePath, syncedIDs):
 		folderID = folder["id"]
 		folderName = folder["name"]
 		cachedDirectory = self.cache.getDirectory(folderID)
@@ -124,7 +124,7 @@ class Syncer:
 				"root_folder_id": rootFolderID,
 			}
 			folderSettings = self.cache.getFolder(rootFolderID)
-			self.syncFolderAdditions(syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, synced)
+			self.syncFolderAdditions(syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, syncedIDs)
 			return
 
 		# existing folder
@@ -206,45 +206,20 @@ class Syncer:
 			cachedParentFolderID = cachedDirectory["parent_folder_id"]
 			rootFolderID = cachedDirectory["root_folder_id"]
 
-		filename = file["name"]
-		fileExtension = file.get("fileExtension")
-		mimeType = file["mimeType"]
 		folderSettings = self.cache.getFolder(rootFolderID)
-		encrypted = folderSettings["contains_encrypted"]
+		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
 
-		if encrypted and mimeType == "application/octet-stream" and not fileExtension:
-			filename = self.encrypter.decryptFilename(filename)
-
-			if not filename:
-				return
-
-			fileExtension = filename.rsplit(".", 1)[-1]
+		if folderSettings["contains_encrypted"]:
+			encrypter = self.encrypter
 		else:
-			encrypted = False
+			encrypter = None
 
-		fileType = filesystem.helpers.identifyFileType(filename, fileExtension, mimeType)
-		refreshMetadata = False
+		file = filesystem.helpers.makeFile(file, excludedTypes, encrypter)
 
-		if not fileType:
+		if not file:
 			return
 
-		metadata = file.get("videoMediaMetadata")
-
-		if fileType == "video":
-			videoInfo = filesystem.helpers.getVideoInfo(filename, metadata)
-			mediaType = filesystem.helpers.identifyMediaType(videoInfo)
-
-			if mediaType == "episode":
-				file = filesystem.video.Episode()
-			elif mediaType == "movie":
-				file = filesystem.video.Movie()
-			else:
-				file = filesystem.video.Video()
-
-			file.setContents(videoInfo)
-
-		else:
-			file = filesystem.file.File()
+		filename = file.name
 
 		if cachedFile:
 			cachedParentFolderID = cachedFile["parent_folder_id"]
@@ -258,11 +233,12 @@ class Syncer:
 				cachedFilePath = os.path.join(syncRootPath, cachedFile["local_path"])
 
 			if os.path.splitext(cachedFile["remote_name"])[0] == os.path.splitext(filename)[0] and cachedDirPath == dirPath:
-				# this needs to be done as GDRIVE creates multiple changes for a file, one before its metadata is processed and another change after the metadata is processed
-				self.fileOperations.deleteFile(syncRootPath, filePath=cachedFilePath)
-				self.cache.deleteFile(fileID)
-				self.deleted = True
-				refreshMetadata = True
+
+				if file.type != "video":
+					return
+
+				filesystem.helpers.refreshMetadata(file.metadata, cachedFilePath)
+				return
 
 			elif cachedFile["original_name"]:
 
@@ -297,23 +273,37 @@ class Syncer:
 
 		if not newFiles.get(rootFolderID):
 			newFiles[rootFolderID] = {}
-			newFiles[rootFolderID][parentFolderID] = self.fileTree.getTree(parentFolderID, os.path.join(drivePath, dirPath))
+			newFiles[rootFolderID][parentFolderID] = self.fileTree.getNode(parentFolderID, os.path.join(drivePath, dirPath))
 		else:
 
 			if not newFiles[rootFolderID].get(parentFolderID):
-				newFiles[rootFolderID][parentFolderID] = self.fileTree.getTree(parentFolderID, os.path.join(drivePath, dirPath))
+				newFiles[rootFolderID][parentFolderID] = self.fileTree.getNode(parentFolderID, os.path.join(drivePath, dirPath))
 
-		file.name = filename
-		file.id = fileID
-		file.metadata = metadata
-		file.encrypted = encrypted
-		file.refresh_metadata = refreshMetadata
-		newFiles[rootFolderID][parentFolderID]["files"][fileType].append(file)
+		if file.type in ("poster", "fanart", "subtitles", "nfo"):
+			mediaAssets = newFiles[rootFolderID][parentFolderID]["files"]["media_assets"]
 
-	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, synced=None):
-		encrypted = folderSettings["contains_encrypted"]
+			if file.ptn_name not in mediaAssets:
+				mediaAssets[file.ptn_name] = {
+					"nfo": [],
+					"subtitles": [],
+					"fanart": [],
+					"poster": [],
+				}
+
+			mediaAssets[file.ptn_name][file.type].append(file)
+		else:
+			newFiles[rootFolderID][parentFolderID]["files"][file.type].append(file)
+
+	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, syncedIDs=None):
+
+		if folderSettings["contains_encrypted"]:
+			encrypter = self.encrypter
+		else:
+			encrypter = False
+
+		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
 		fileTree = {}
-		self.fileTree.buildTree(folderID, parentFolderID, dirPath, fileTree, encrypted, synced)
+		self.fileTree.buildTree(fileTree, folderID, parentFolderID, dirPath, excludedTypes, encrypter, syncedIDs)
 
 		for folderID, folderInfo in fileTree.items():
 			parentFolderID = folderInfo["parent_folder_id"]
@@ -327,7 +317,7 @@ class Syncer:
 				"root_folder_id": rootFolderID,
 			}
 			self.cache.addDirectory(directory)
-			self.fileProcessor.processFiles(folderInfo["files"], folderSettings, directoryPath, syncRootPath, driveID, folderID, rootFolderID)
+			self.fileProcessor.processFiles(folderInfo["files"], folderSettings, directoryPath, syncRootPath, driveID, rootFolderID, folderID)
 
 	def syncFileAdditions(self, files, syncRootPath, driveID):
 
@@ -336,4 +326,4 @@ class Syncer:
 
 			for directoryID, tree in directories.items():
 				remotePath = os.path.join(syncRootPath, tree["path"])
-				self.fileProcessor.processFiles(tree["files"], folderSettings, remotePath, syncRootPath, driveID, directoryID, rootFolderID)
+				self.fileProcessor.processFiles(tree["files"], folderSettings, remotePath, syncRootPath, driveID, rootFolderID, directoryID)

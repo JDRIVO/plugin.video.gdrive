@@ -1,95 +1,62 @@
 import os
 
-from . import video
 from . import helpers
-from .file import File
 from . import processor
 
 
 class FileTree:
 
-	def __init__(self, cloudService, encrypter):
+	def __init__(self, cloudService):
 		self.cloudService = cloudService
-		self.encrypter = encrypter
 
 	@staticmethod
-	def getTree(parentFolderID, remotePath):
+	def getNode(parentFolderID, remotePath):
 		return {
 			"parent_folder_id": parentFolderID,
 			"path": remotePath,
 			"files": {
 				"strm": [],
 				"video": [],
-				"subtitles": [],
-				"nfo": [],
-				"fanart": [],
-				"posters": [],
+				"media_assets": {},
 			},
-			"dirs": [],
+			"directories": [],
 		}
 
-	def buildTree(self, folderID, parentFolderID, path, tree, hasEncryptedFiles, synced):
+	def buildTree(self, tree, folderID, parentFolderID, path, excludedTypes, encrypter, syncedIDs):
 		remoteFiles = self.cloudService.listDirectory(folderID)
+		tree[folderID] = self.getNode(parentFolderID, path)
+		files = tree[folderID]["files"]
+		mediaAssets = files["media_assets"]
 
 		for file in remoteFiles:
 			fileID = file["id"]
-			filename = file["name"]
+
+			if syncedIDs is not None:
+				syncedIDs.append(fileID)
+
 			mimeType = file["mimeType"]
-			fileExtension = file.get("fileExtension")
 
-			if hasEncryptedFiles and mimeType == "application/octet-stream" and not fileExtension:
-				filename = self.encrypter.decryptFilename(filename)
-
-				if not filename:
-					continue
-
-				fileExtension = filename.rsplit(".", 1)[-1]
-				encrypted = True
-
-			else:
-				encrypted = False
-
-			filename = helpers.removeProhibitedFSchars(filename)
-			fileType = helpers.identifyFileType(filename, fileExtension, mimeType)
-
-			if not fileType:
+			if mimeType == "application/vnd.google-apps.folder":
+				childPath = os.path.join(path, helpers.removeProhibitedFSchars(file["name"]))
+				tree[folderID]["directories"].append(fileID)
+				self.buildTree(tree, fileID, file["parents"][0], childPath, excludedTypes, encrypter, syncedIDs)
 				continue
 
-			folderDic = tree.get(folderID)
+			file = helpers.makeFile(file, excludedTypes, encrypter)
 
-			if synced is not None:
-				synced.append(fileID)
+			if not file:
+				continue
 
-			if not folderDic:
-				tree[folderID] = self.getTree(parentFolderID, path)
+			if file.type in ("poster", "fanart", "subtitles", "nfo"):
 
-			if fileType == "folder":
-				parentFolderID = file["parents"][0]
-				newPath = os.path.join(path, filename)
-				tree[folderID]["dirs"].append(fileID)
-				tree[fileID] = self.getTree(parentFolderID, newPath)
-				self.buildTree(fileID, parentFolderID, newPath, tree, hasEncryptedFiles, synced)
+				if file.ptn_name not in mediaAssets:
+					mediaAssets[file.ptn_name] = {
+						"nfo": [],
+						"subtitles": [],
+						"fanart": [],
+						"poster": [],
+					}
+
+				mediaAssets[file.ptn_name][file.type].append(file)
 			else:
-				metadata = file.get("videoMediaMetadata")
-
-				if fileType == "video":
-					videoInfo = helpers.getVideoInfo(filename, metadata)
-					mediaType = helpers.identifyMediaType(videoInfo)
-
-					if mediaType == "episode":
-						file_ = video.Episode()
-					elif mediaType == "movie":
-						file_ = video.Movie()
-					else:
-						file_ = video.Video()
-
-					file_.setContents(videoInfo)
-
-				else:
-					file_ = File()
-
-				file_.name = filename
-				file_.id = file["id"]
-				file_.metadata = metadata
-				file_.encrypted = encrypted
-				tree[folderID]["files"][fileType].append(file_)
+				files[file.type].append(file)

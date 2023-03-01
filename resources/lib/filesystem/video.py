@@ -3,7 +3,11 @@ from . import helpers
 
 
 class Video(file.File):
+	title = None
+	year = None
+	ptn_name = None
 	duration = None
+	metadata = {}
 	aspect_ratio = None
 	video_width = None
 	video_height = None
@@ -18,6 +22,7 @@ class Video(file.File):
 		year = data.get("year")
 		season = data.get("season")
 		episode = data.get("episode")
+		self.ptn_name = str((title, year, season, episode))
 
 		if title is not None:
 			self.title = title
@@ -38,8 +43,6 @@ class Video(file.File):
 		self.contents = data
 
 class Movie(Video):
-	title = None
-	year = None
 
 	def __str__(self):
 		return "Movie"
@@ -57,8 +60,6 @@ class Movie(Video):
 			}
 
 class Episode(Video):
-	title = None
-	year = None
 	season = None
 	episode = None
 

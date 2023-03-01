@@ -69,3 +69,9 @@ class FileOperations:
 
 		with open(path, "r") as file:
 			return file.read()
+
+	@staticmethod
+	def overwriteFile(filePath, content, mode="w+"):
+
+		with open(filePath, mode) as file:
+			file.write(content)
