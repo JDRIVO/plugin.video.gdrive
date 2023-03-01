@@ -10,7 +10,6 @@ from .file import File
 from .. import library
 from .. import network
 from .. import filesystem
-from .artwork import Artwork
 
 SUBTITLES = (
 	"srt",
