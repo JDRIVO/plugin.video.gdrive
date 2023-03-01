@@ -131,13 +131,8 @@ class FileProcessor:
 		for file in strm:
 			fileID = file.id
 			filename = file.name
-			encrypted = file.encrypted
 			filePath = helpers.generateFilePath(dirPath, filename)
-
-			if encrypted:
-				self.fileOperations.downloadFile(dirPath, filePath, fileID, encrypted=True)
-			else:
-				self.fileOperations.downloadFile(dirPath, filePath, fileID)
+			self.fileOperations.downloadFile(dirPath, filePath, fileID, file.encrypted)
 
 			file = {
 				"drive_id": driveID,
