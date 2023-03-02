@@ -281,6 +281,7 @@ def makeFile(file, excludedTypes, encrypter):
 
 		file.setContents(videoInfo)
 		file.metadata = metadata
+		file.media = mediaType
 	else:
 		file = File()
 

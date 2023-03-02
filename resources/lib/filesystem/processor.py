@@ -164,6 +164,7 @@ class FileProcessor:
 
 		for video in videos:
 			filename = video.name
+			mediaType = video.media
 			basename = video.basename
 			ptnName = video.ptn_name
 			fileID = video.id
@@ -173,13 +174,13 @@ class FileProcessor:
 
 			if folderRestructure or fileRenaming:
 
-				if str(video) in ("Episode", "Movie"):
+				if mediaType in ("episode", "movie"):
 					modifiedName = video.formatName()
 					newFilename = modifiedName.get("filename") if modifiedName else False
 
 				if folderRestructure and newFilename:
 
-					if str(video) == "Movie":
+					if mediaType == "movie":
 						dirPath = os.path.join(syncRootPath, "[gDrive] Movies")
 
 						if fileRenaming:
@@ -195,7 +196,7 @@ class FileProcessor:
 								f"{basename}.strm",
 							)
 
-					elif str(video) == "Episode":
+					elif mediaType == "episode":
 						dirPath = os.path.join(
 							syncRootPath,
 							"[gDrive] Series",
@@ -232,7 +233,6 @@ class FileProcessor:
 				strmPath = helpers.generateFilePath(dirPath, f"{basename}.strm")
 
 			self.fileOperations.createFile(dirPath, strmPath, strmContent, mode="w+")
-
 			file = {
 				"drive_id": driveID,
 				"file_id": fileID,

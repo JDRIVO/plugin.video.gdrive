@@ -5,6 +5,7 @@ from . import helpers
 class Video(file.File):
 	title = None
 	year = None
+	media = None
 	ptn_name = None
 	duration = None
 	metadata = {}
@@ -44,9 +45,6 @@ class Video(file.File):
 
 class Movie(Video):
 
-	def __str__(self):
-		return "Movie"
-
 	def formatName(self):
 		# Produces a conventional name that can be understood by library scrapers
 		data = helpers.getTMDBtitle("movie", self.title, self.year)
@@ -62,9 +60,6 @@ class Movie(Video):
 class Episode(Video):
 	season = None
 	episode = None
-
-	def __str__(self):
-		return "Episode"
 
 	def formatName(self):
 		# Produces a conventional name that can be understood by library scrapers
