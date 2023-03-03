@@ -152,7 +152,7 @@ class FileProcessor:
 		videos,
 		mediaAssets,
 		folderSettings,
-		dirPath,
+		remotePath,
 		syncRootPath,
 		driveID,
 		rootFolderID,
@@ -168,6 +168,7 @@ class FileProcessor:
 			basename = video.basename
 			ptnName = video.ptn_name
 			fileID = video.id
+			dirPath = remotePath
 			strmContent = helpers.createSTRMContents(driveID, fileID, video.encrypted, video.contents)
 			newFilename = strmPath = False
 			originalName = originalFolder = True
