@@ -317,7 +317,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 				redirect = "/registration_failed"
 
 			self.send_response(303)
-			self.send_header('Location', f"http://localhost:{self.server.port}redirect")
+			self.send_header("Location", f"http://localhost:{self.server.port}{redirect}")
 			self.end_headers()
 
 		elif self.path == "/registration_succeeded":
