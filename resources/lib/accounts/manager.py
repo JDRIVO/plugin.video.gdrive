@@ -92,6 +92,11 @@ class AccountManager:
 			self.saveAccounts()
 
 	def deleteDrive(self, driveID):
+		alias = self.getAlias(driveID)
+
+		if alias:
+			del self.aliases[alias]
+
 		del self.accounts[driveID]
 		self.saveAccounts()
 
@@ -107,7 +112,7 @@ class AccountManager:
 			return "failed"
 
 		if not self.accounts:
-			self.accounts = importedAccounts
+			self.accountData = importedAccounts
 		else:
 
 			for driveID, data in importedAccounts["drives"].items():
@@ -141,6 +146,11 @@ class AccountManager:
 		return self.accounts[driveID]["alias"]
 
 	def setAlias(self, driveID, alias):
+		currentAlias = self.getAlias(driveID)
+
+		if currentAlias:
+			del self.aliases[currentAlias]
+
 		self.aliases[alias] = driveID
 		self.accounts[driveID]["alias"] = alias
 		self.saveAccounts()
