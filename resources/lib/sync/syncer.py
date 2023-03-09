@@ -323,14 +323,9 @@ class Syncer:
 			self.cache.addDirectory(directory)
 			args.append((folderInfo["files"], folderSettings, directoryPath, syncRootPath, driveID, rootFolderID, folderID))
 
-
 		with ThreadPool(30) as pool:
+			results = pool.starmap(self.remoteFileProcessor.processFiles, args)
 
-			try:
-				results = pool.starmap(self.remoteFileProcessor.processFiles, args)
-			except:
-
-				quit()
 		folderRestructure = folderSettings["folder_restructure"]
 		fileRenaming = folderSettings["file_renaming"]
 
