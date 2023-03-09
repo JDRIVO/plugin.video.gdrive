@@ -1,4 +1,6 @@
+import os
 import re
+import time
 import urllib
 import datetime
 from threading import Thread
@@ -12,6 +14,7 @@ from .. import sync
 from .. import accounts
 from .. import playback
 from .. import encryption
+from .. import filesystem
 from .. import google_api
 from . import registration
 
@@ -29,8 +32,10 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		self.monitor = xbmc.Monitor()
 		self.accountManager = accounts.manager.AccountManager(self.settings)
 		self.cloudService = google_api.drive.GoogleDrive()
+		self.cache = sync.cache.Cache()
 		self.taskManager = sync.tasker.Tasker(self.settings, self.accountManager)
 		self.taskManager.run()
+		self.fileOperations = filesystem.operations.FileOperations()
 
 	def run(self):
 
@@ -93,13 +98,57 @@ class MyStreamer(BaseHTTPRequestHandler):
 			dbID, dbType, widget, trackProgress = re.findall("dbid=([\d]+)&dbtype=(.*)&widget=(\d)&track=(\d)", postData)[0]
 			Thread(target=self.server.startPlayer, args=(dbID, dbType, widget, trackProgress)).start()
 
+		elif self.path == "/set_alias":
+			contentLength = int(self.headers["Content-Length"])
+			postData = self.rfile.read(contentLength).decode("utf-8")
+			self.send_response(200)
+			self.end_headers()
+			driveID, alias = re.findall("drive_id=(.*)&alias=(.*)", postData)[0]
+			self.server.accountManager.setAlias(driveID, alias)
+			driveSettings = self.server.cache.getDrive(driveID)
+
+			if not driveSettings:
+				xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
+				xbmc.executebuiltin("Container.Refresh")
+				return
+
+			syncRootPath = self.server.cache.getSyncRootPath()
+			drivePathOld = os.path.join(syncRootPath, driveSettings["local_path"])
+			drivePathNew = os.path.join(syncRootPath, alias)
+
+			while driveID in self.server.taskManager.activeTasks:
+				time.sleep(0.1)
+
+			self.server.cache.updateDrive({"local_path": alias}, driveID)
+			self.server.fileOperations.renameFolder(syncRootPath, drivePathOld, drivePathNew)
+			xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
+			xbmc.executebuiltin("Container.Refresh")
+
+		elif self.path == "/delete_drive":
+			contentLength = int(self.headers["Content-Length"])
+			postData = self.rfile.read(contentLength).decode("utf-8")
+			self.send_response(200)
+			self.end_headers()
+			driveID = re.findall("drive_id=(.*)", postData)[0]
+			self.server.taskManager.removeTask(driveID)
+
+			while driveID in self.server.taskManager.activeTasks:
+				time.sleep(0.1)
+
+			self.server.cache.deleteDrive(driveID)
+			self.server.accountManager.deleteDrive(driveID)
+			xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
+			xbmc.executebuiltin("Container.Refresh")
+
 		elif self.path == "/add_sync_task":
 			contentLength = int(self.headers["Content-Length"])
 			postData = self.rfile.read(contentLength).decode("utf-8")
 			self.send_response(200)
 			self.end_headers()
 			driveID, folderID, folderName = re.findall("drive_id=(.*)&folder_id=(.*)&folder_name=(.*)", postData)[0]
+			self.server.taskManager.activeTasks.append(driveID)
 			self.server.taskManager.createTask(driveID, folderID, folderName)
+			self.server.taskManager.activeTasks.remove(driveID)
 
 		elif self.path == "/register":
 			contentLength = int(self.headers["Content-Length"]) # <--- Gets the size of data

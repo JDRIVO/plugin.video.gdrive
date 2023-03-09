@@ -25,13 +25,12 @@ class Tasker:
 		self.cache = cache.Cache()
 		self.fileOperations = filesystem.operations.FileOperations(cloud_service=self.cloudService, encryption=self.encrypter)
 		self.fileTree = filesystem.tree.FileTree(self.cloudService)
-		self.fileProcessor = filesystem.processor.FileProcessor(self.cloudService, self.fileOperations, self.settings, self.cache)
-		self.syncer = sync.syncer.Syncer(self.accountManager, self.cloudService, self.encrypter, self.fileOperations, self.fileProcessor, self.fileTree, self.settings, self.cache)
+		self.fileProcessor = filesystem.processor.RemoteFileProcessor(self.cloudService, self.fileOperations, self.settings)
+		self.localFileProcessor = filesystem.processor.LocalFileProcessor(self.cloudService, self.fileOperations, self.settings)
+		self.syncer = sync.syncer.Syncer(self.accountManager, self.cloudService, self.encrypter, self.fileOperations, self.fileProcessor, self.localFileProcessor, self.fileTree, self.settings)
 		self.monitor = xbmc.Monitor()
 		self.dialog = xbmcgui.Dialog()
-		self.tasks = {}
-		self.taskIDs = []
-		self.id = 0
+		self.tasks, self.activeTasks = [], []
 
 	def run(self):
 		drives = self.cache.getDrives()
@@ -54,41 +53,32 @@ class Tasker:
 	def removeTask(self, driveID):
 
 		if driveID in self.tasks:
-			del self.tasks[driveID]
+			self.tasks.remove(driveID)
 
 	def spawnTask(self, driveSettings, startUpRun=True):
 		driveID = driveSettings["drive_id"]
 		taskMode = driveSettings["task_mode"]
 		taskFrequency = driveSettings["task_frequency"]
 		startupSync = driveSettings["startup_sync"]
-		self.removeTask(driveID)
-		self.id += 1
-		id = self.id
-		self.taskIDs.append(id)
-		self.tasks[driveID] = id
+		self.tasks.append(driveID)
 
 		if taskMode == "schedule":
 			taskFrequency = self.strptime(taskFrequency.lstrip(), "%H:%M").time()
-			Thread(target=self.scheduledTask, args=(startupSync, taskFrequency, driveID, id, startUpRun)).start()
+			Thread(target=self.startScheduledTask, args=(startupSync, taskFrequency, driveID, startUpRun)).start()
 		else:
 			taskFrequency = int(taskFrequency) * 60
-			Thread(target=self.intervalTask, args=(startupSync, taskFrequency, driveID, id, startUpRun)).start()
+			Thread(target=self.startIntervalTask, args=(startupSync, taskFrequency, driveID, startUpRun)).start()
 
-	def intervalTask(self, startupSync, taskFrequency, driveID, taskID, startUpRun=True):
+	def startIntervalTask(self, startupSync, taskFrequency, driveID, startUpRun=True):
 		lastUpdate = time.time()
 
 		while True and not self.monitor.abortRequested():
-
-			if taskID not in self.taskIDs:
-				return
 
 			if not startupSync and startUpRun:
 				startUpRun = False
 				continue
 
-			currentTime = time.time()
-
-			if currentTime - lastUpdate < taskFrequency and not startUpRun:
+			if time.time() - lastUpdate < taskFrequency and not startUpRun:
 
 				if self.monitor.waitForAbort(1):
 					# self.saveSyncSettings()
@@ -96,16 +86,24 @@ class Tasker:
 
 				continue
 
-			startUpRun = False
-			self.syncer.syncChanges(driveID)
-			lastUpdate = time.time()
+			if driveID not in self.tasks:
+				return
 
-	def scheduledTask(self, startupSync, taskFrequency, driveID, taskID, startUpRun=True):
+			self.activeTasks.append(driveID)
+
+			try:
+				self.syncer.syncChanges(driveID)
+			except Exception as e:
+				self.activeTasks.remove(driveID)
+				continue
+
+			self.activeTasks.remove(driveID)
+			lastUpdate = time.time()
+			startUpRun = False
+
+	def startScheduledTask(self, startupSync, taskFrequency, driveID, startUpRun=True):
 
 		while True and not self.monitor.abortRequested():
-
-			if taskID not in self.taskIDs:
-				return
 
 			if not startupSync and startUpRun:
 				startUpRun = False
@@ -121,18 +119,26 @@ class Tasker:
 
 				continue
 
-			startUpRun = False
-			self.syncer.syncChanges(driveID)
+			if driveID not in self.tasks:
+				return
 
-			if self.monitor.waitForAbort(60):
-				# self.saveSyncSettings()
-				break
+			self.activeTasks.append(driveID)
+
+			try:
+				self.syncer.syncChanges(driveID)
+			except Exception as e:
+				self.activeTasks.remove(driveID)
+				continue
+
+			self.activeTasks.remove(driveID)
+			startUpRun = False
 
 	def createTask(self, driveID, folderID, folderName):
 		self.encrypter.setup(settings=self.settings)
 		self.accountManager.loadAccounts()
 		self.accounts = self.accountManager.accounts
 		syncRootPath = self.cache.select("global", "local_path")
+		xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
 
 		if syncRootPath:
 			driveSettings = self.cache.getDrive(driveID)

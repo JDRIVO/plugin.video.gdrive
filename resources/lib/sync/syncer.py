@@ -1,21 +1,24 @@
 import os
+from multiprocessing.pool import ThreadPool
 
 import xbmc
 
+from . import cache
 from .. import filesystem
 
 
 class Syncer:
 
-	def __init__(self, accountManager, cloudService, encrypter, fileOperations, fileProcessor, fileTree, settings, cache):
+	def __init__(self, accountManager, cloudService, encrypter, fileOperations, remoteFileProcessor, localFileProcessor, fileTree, settings):
 		self.encrypter = encrypter
 		self.cloudService = cloudService
 		self.accountManager = accountManager
-		self.fileProcessor = fileProcessor
+		self.remoteFileProcessor = remoteFileProcessor
+		self.localFileProcessor = localFileProcessor
 		self.fileTree = fileTree
 		self.fileOperations = fileOperations
 		self.settings = settings
-		self.cache = cache
+		self.cache = cache.Cache()
 
 	def syncChanges(self, driveID):
 		account = self.accountManager.getAccount(driveID)
@@ -304,11 +307,12 @@ class Syncer:
 		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
 		fileTree = {}
 		self.fileTree.buildTree(fileTree, folderID, parentFolderID, dirPath, excludedTypes, encrypter, syncedIDs)
+		args = []
 
 		for folderID, folderInfo in fileTree.items():
 			parentFolderID = folderInfo["parent_folder_id"]
 			remotePath = folderInfo["path"]
-			directoryPath = os.path.join(syncRootPath, drivePath, remotePath)
+			directoryPath = os.path.join(drivePath, remotePath)
 			directory = {
 				"drive_id": driveID,
 				"folder_id": folderID,
@@ -317,13 +321,46 @@ class Syncer:
 				"root_folder_id": rootFolderID,
 			}
 			self.cache.addDirectory(directory)
-			self.fileProcessor.processFiles(folderInfo["files"], folderSettings, directoryPath, syncRootPath, driveID, rootFolderID, folderID)
+			args.append((folderInfo["files"], folderSettings, directoryPath, syncRootPath, driveID, rootFolderID, folderID))
+
+
+		with ThreadPool(30) as pool:
+
+			try:
+				results = pool.starmap(self.remoteFileProcessor.processFiles, args)
+			except:
+
+				quit()
+		folderRestructure = folderSettings["folder_restructure"]
+		fileRenaming = folderSettings["file_renaming"]
+
+		if not folderRestructure and not fileRenaming:
+			return
+
+		with ThreadPool(30) as pool:
+			results = pool.starmap(self.localFileProcessor.processFiles, args)
 
 	def syncFileAdditions(self, files, syncRootPath, driveID):
+		data = {}
 
 		for rootFolderID, directories in files.items():
 			folderSettings = self.cache.getFolder(rootFolderID)
+			folderRestructure = folderSettings["folder_restructure"]
+			fileRenaming = folderSettings["file_renaming"]
+			args = []
 
-			for directoryID, tree in directories.items():
-				remotePath = os.path.join(syncRootPath, tree["path"])
-				self.fileProcessor.processFiles(tree["files"], folderSettings, remotePath, syncRootPath, driveID, rootFolderID, directoryID)
+			for folderID, tree in directories.items():
+				remotePath = tree["path"]
+				args.append((tree["files"], folderSettings, remotePath, syncRootPath, driveID, rootFolderID, folderID))
+
+			data[folderID] = {"args": args, "folder_restructure": folderRestructure, "file_renaming": fileRenaming}
+
+		args = [data["args"][0] for data in data.values()]
+
+		with ThreadPool(30) as pool:
+			results = pool.starmap(self.remoteFileProcessor.processFiles, args)
+
+		args = [data["args"][0] for data in data.values() if data["file_renaming"] or data["folder_restructure"]]
+
+		with ThreadPool(30) as pool:
+			results = pool.starmap(self.localFileProcessor.processFiles, args)

@@ -28,6 +28,7 @@ class Core:
 		self.accounts = self.accountManager.accounts
 		self.cloudService = google_api.drive.GoogleDrive()
 		self.dialog = xbmcgui.Dialog()
+		self.succeeded = True
 
 	def run(self, dbID, dbType, filePath):
 		mode = self.settings.getParameter("mode", "main").lower()
@@ -53,6 +54,7 @@ class Core:
 			"export_accounts": self.exportAccounts,
 			"set_playback_account": self.setPlaybackAccount,
 			"set_alias": self.setAlias,
+			"delete_drive": self.deleteDrive,
 		}
 
 		if mode == "video":
@@ -60,7 +62,7 @@ class Core:
 		else:
 			modes[mode]()
 
-		xbmcplugin.endOfDirectory(self.pluginHandle)
+		xbmcplugin.endOfDirectory(self.pluginHandle, self.succeeded)
 
 	def notImplemented(self):
 		self.dialog.notification("gDrive", "Not implemented")
@@ -164,7 +166,7 @@ class Core:
 				),
 				(
 					"Delete",
-					f"RunPlugin({pluginURL}?mode=not_implemented&drive_id={driveID})",
+					f"RunPlugin({pluginURL}?mode=delete_drive&drive_id={driveID})",
 				)
 			]
 			self.addMenu(
@@ -267,6 +269,7 @@ class Core:
 		searchQuery = xbmcgui.Dialog().input("Search Query")
 
 		if not searchQuery:
+			self.succeeded = False
 			return
 
 		self.listDirectory(search=searchQuery)
@@ -351,6 +354,7 @@ class Core:
 			self.accountManager.saveAccounts()
 
 	def sync(self):
+		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
 		driveID = self.settings.getParameter("drive_id")
 		folderID = self.settings.getParameter("folder_id")
 		folderName = self.settings.getParameter("folder_name")
@@ -546,18 +550,32 @@ class Core:
 			self.dialog.ok("gDrive", "The drive name already exists, it must be unique.")
 			return
 
-		self.accountManager.setAlias(driveID, alias)
-		driveSettings = self.cache.getDrive(driveID)
-		xbmc.executebuiltin("Container.Refresh")
+		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
+		serverPort = self.settings.getSettingInt("server_port", 8011)
+		url = f"http://localhost:{serverPort}/set_alias"
+		data = f"drive_id={driveID}&alias={alias}"
+		req = urllib.request.Request(url, data.encode("utf-8"))
+		response = urllib.request.urlopen(req)
+		response.close()
 
-		if not driveSettings:
+	def deleteDrive(self):
+
+		confirmation = self.dialog.yesno(
+			self.settings.getLocalizedString(30000),
+			f"Are you sure you want to delete this Drive?",
+		)
+
+		if not confirmation:
 			return
 
-		self.cache.updateDrive({"local_path": alias}, driveID)
-		syncRootPath = self.cache.getSyncRootPath()
-		drivePathOld = os.path.join(syncRootPath, driveSettings["local_path"])
-		drivePathNew = os.path.join(syncRootPath, alias)
-		filesystem.operations.FileOperations().renameFolder(syncRootPath, drivePathOld, drivePathNew)
+		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
+		driveID = self.settings.getParameter("drive_id")
+		serverPort = self.settings.getSettingInt("server_port", 8011)
+		url = f"http://localhost:{serverPort}/delete_drive"
+		data = f"drive_id={driveID}"
+		req = urllib.request.Request(url, data.encode("utf-8"))
+		response = urllib.request.urlopen(req)
+		response.close()
 
 	def playVideo(self, dbID, dbType, filePath):
 

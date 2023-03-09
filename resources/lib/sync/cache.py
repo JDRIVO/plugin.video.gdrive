@@ -3,6 +3,7 @@ import os
 import xbmcvfs
 import xbmcaddon
 
+from ..filesystem import operations
 from ..database.database import Database
 
 ADDON_PATH = xbmcvfs.translatePath(xbmcaddon.Addon().getAddonInfo("profile"))
@@ -18,6 +19,7 @@ class Cache(Database):
 	def __init__(self):
 		newDB = not os.path.exists(CACHE_PATH)
 		super().__init__(CACHE_PATH)
+		self.fileOperations = operations.FileOperations()
 
 		if newDB:
 			self.createTables()
@@ -46,8 +48,32 @@ class Cache(Database):
 	def addDirectory(self, data):
 		self.insert("directories", data)
 
+	def addDirectories(self, values):
+		columns = (
+			"drive_id",
+			"folder_id",
+			"local_path",
+			"parent_folder_id",
+			"root_folder_id",
+		)
+		self.insertMany("directories", columns, values)
+
 	def addFile(self, data):
 		self.insert("files", data)
+
+	def addFiles(self, values):
+		columns = (
+			"drive_id",
+			"root_folder_id",
+			"parent_folder_id",
+			"file_id",
+			"local_path",
+			"local_name",
+			"remote_name",
+			"original_name",
+			"original_folder",
+		)
+		self.insertMany("files", columns, values)
 
 	def getDrives(self):
 		drives = self.selectAll("drives")
@@ -69,6 +95,9 @@ class Cache(Database):
 		file = self.selectAllConditional("files", f"{column}='{value}'")
 		if file: return file[0]
 
+	def getFolders(self, value, column="drive_id"):
+		return self.selectAllConditional("directories", f"{column}='{value}'")
+
 	def getDirectories(self, value, column="parent_folder_id"):
 		return self.selectAllConditional("directories", f"{column}='{value}'")
 
@@ -84,8 +113,22 @@ class Cache(Database):
 	def deleteFolder(self, value, column="folder_id"):
 		self.delete("folders", f"{column}='{value}'")
 
-	def deleteDrive(self, value, column="drive_id"):
-		self.delete("drives", f"{column}='{value}'")
+	def deleteDrive(self, driveID):
+		syncRootPath = self.getSyncRootPath()
+		drive = self.getDrive(driveID)
+
+		if not drive:
+			return
+
+		drivePath = os.path.join(syncRootPath, drive["local_path"])
+		folders = self.getFolders(driveID)
+
+		for folder in folders:
+			folderID = folder["folder_id"]
+			self.cleanCache(syncRootPath, drivePath, folder["folder_id"])
+
+		self.deleteFolder(driveID, "drive_id")
+		self.delete("drives", f"drive_id='{driveID}'")
 
 	def updateSyncRootPath(self, path):
 		self.update("global", {"local_path": path}, "local_path=TEXT")
@@ -113,7 +156,7 @@ class Cache(Database):
 			self.updateDirectory(directory, cahedfolderID)
 			self.updateChildPaths(oldPath, newPath, cahedfolderID, directoryColumn="parent_folder_id")
 
-	def cleanCache(self, syncRootPath, drivePath, folderID, fileOperations, directoryColumn="folder_id"):
+	def cleanCache(self, syncRootPath, drivePath, folderID, directoryColumn="folder_id"):
 		directories = self.getDirectories(folderID, directoryColumn)
 
 		if not directories:
@@ -132,13 +175,13 @@ class Cache(Database):
 					if file["original_folder"]:
 						filePath = os.path.join(directoryPath, file["local_name"])
 					else:
-						filePath = file["local_path"]
+						filePath = os.path.join(syncRootPath, file["local_path"])
 
-					fileOperations.deleteFile(syncRootPath, filePath=filePath)
+					self.fileOperations.deleteFile(syncRootPath, filePath=filePath)
 
 			self.deleteFile(folderID, "parent_folder_id")
 			self.deleteDirectory(folderID)
-			self.cleanCache(syncRootPath, drivePath, folderID, fileOperations, directoryColumn="parent_folder_id")
+			self.cleanCache(syncRootPath, drivePath, folderID, directoryColumn="parent_folder_id")
 
 	def createGlobalTable(self):
 		columns = [

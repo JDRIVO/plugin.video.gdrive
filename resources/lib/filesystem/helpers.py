@@ -9,63 +9,9 @@ from . import video
 from .file import File
 from .. import library
 from .. import network
+from .constants import *
 from .. import filesystem
 from .subtitles import Subtitles
-
-SUBTITLES = (
-	"srt",
-	"ssa",
-	"vtt",
-	"sub",
-	"ttml",
-	"sami",
-	"ass",
-	"idx",
-	"sbv",
-	"stl",
-	"smi",
-)
-
-VIDEO_FILE_EXTENSIONS = (
-	"webm",
-	"mkv",
-	"flv",
-	"vob",
-	"ogv",
-	"ogg",
-	"rrc",
-	"gifv",
-	"mng",
-	"mov",
-	"avi",
-	"qt",
-	"wmv",
-	"yuv",
-	"rm",
-	"asf",
-	"amv",
-	"mp4",
-	"m4p",
-	"m4v",
-	"mpg",
-	"mp2",
-	"mpeg",
-	"mpe",
-	"mpv",
-	"m4v",
-	"svi",
-	"3gp",
-	"3g2",
-	"mxf",
-	"roq",
-	"nsv",
-	"flv",
-	"f4v",
-	"f4p",
-	"f4a",
-	"f4b",
-	"mod",
-)
 
 
 def removeProhibitedFSchars(name):
@@ -232,14 +178,14 @@ def getTMDBtitle(type, title, year):
 
 		if titleSimilarity > 0.85:
 
-			if year and abs(tmdbYearInt - year) <= 1:
+			if year and abs(tmdbYearInt - year) > 1:
 				return tmdbTitle, year
 			else:
 				return tmdbTitle, tmdbYear
 
 		elif (tmdbTitleLowerCase in titleLowerCase or titleLowerCase in tmdbTitleLowerCase) and year:
 
-			if abs(tmdbYearInt - year) <= 1:
+			if abs(tmdbYearInt - year) < 2:
 				return tmdbTitle, tmdbYear
 
 def makeFile(file, excludedTypes, encrypter):

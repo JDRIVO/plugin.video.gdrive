@@ -45,11 +45,15 @@ class FileOperations:
 			os.makedirs(dirPath)
 
 	def renameFile(self, syncRootPath, oldPath, dirPath, newName):
-		self.createDirs(dirPath)
-		newPath = helpers.duplicateFileCheck(dirPath, newName)
-		shutil.move(oldPath, newPath)
-		self.deleteEmptyDirs(syncRootPath, os.path.dirname(oldPath))
-		return newPath
+
+		try:
+			self.createDirs(dirPath)
+			newPath = helpers.duplicateFileCheck(dirPath, newName)
+			shutil.move(oldPath, newPath)
+			self.deleteEmptyDirs(syncRootPath, os.path.dirname(oldPath))
+			return newPath
+		except FileExistsError:
+			return
 
 	def renameFolder(self, syncRootPath, oldPath, newPath):
 
@@ -60,9 +64,14 @@ class FileOperations:
 	@staticmethod
 	def deleteEmptyDirs(syncRootPath, dirPath):
 
-		while dirPath != syncRootPath and os.path.exists(dirPath) and not os.listdir(dirPath):
-			os.rmdir(dirPath)
-			dirPath = dirPath.rsplit(os.sep, 1)[0]
+		try:
+
+			while dirPath != syncRootPath and os.path.exists(dirPath) and not os.listdir(dirPath):
+				os.rmdir(dirPath)
+				dirPath = dirPath.rsplit(os.sep, 1)[0]
+
+		except Exception as e:
+			return
 
 	@staticmethod
 	def readFile(path):

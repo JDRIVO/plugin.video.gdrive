@@ -15,7 +15,7 @@ class Database:
 			return []
 
 	def connect(self):
-		self.conn = sqlite3.connect(self.database, timeout=15)
+		self.conn = sqlite3.connect(self.database, check_same_thread=False, timeout=15)
 		self.conn.row_factory = sqlite3.Row
 		self.cursor = self.conn.cursor()
 
@@ -36,6 +36,14 @@ class Database:
 		query = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
 		self.connect()
 		self.cursor.execute(query, data)
+		self.conn.commit()
+		self.close()
+
+	def insertMany(self, table, columns, data):
+		placeholders = ", ".join("?" * len(columns))
+		query = f"INSERT INTO {table} {columns} VALUES ({placeholders})"
+		self.connect()
+		self.cursor.executemany(query, data)
 		self.conn.commit()
 		self.close()
 
