@@ -305,8 +305,7 @@ class Syncer:
 			encrypter = False
 
 		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
-		fileTree = {}
-		self.fileTree.buildTree(fileTree, folderID, parentFolderID, dirPath, excludedTypes, encrypter, syncedIDs)
+		fileTree = self.fileTree.buildTree(folderID, dirPath, excludedTypes, encrypter, syncedIDs)
 		args = []
 
 		for folderID, folderInfo in fileTree.items():

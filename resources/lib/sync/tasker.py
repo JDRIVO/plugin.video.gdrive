@@ -203,6 +203,17 @@ class Tasker:
 
 		syncChoices = syncOptions.settings
 		del syncOptions
+
+		containsEncrypted = syncChoices["contains_encrypted"]
+
+		if containsEncrypted:
+			cryptoSalt = self.settings.getSetting("crypto_salt")
+			cryptoPassword = self.settings.getSetting("crypto_password")
+
+			if not cryptoSalt or not cryptoPassword:
+				self.dialog.ok("gDrive Error", "Your encryption settings are incomplete.")
+				return
+
 		self.dialog.notification("gDrive", "Syncing files. A notification will appear when this task has completed.")
 
 		if startupSyncPrompt:
@@ -215,7 +226,7 @@ class Tasker:
 			"local_path": folderName,
 			"file_renaming": False if not syncChoices["file_renaming"] else True,
 			"folder_restructure": False if not syncChoices["folder_structure"] else True,
-			"contains_encrypted": syncChoices["contains_encrypted"],
+			"contains_encrypted": containsEncrypted,
 			"sync_artwork": syncChoices["sync_artwork"],
 			"sync_nfo": syncChoices["sync_nfos"],
 			"sync_subtitles": syncChoices["sync_subtitles"],

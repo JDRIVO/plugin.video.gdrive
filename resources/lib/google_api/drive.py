@@ -205,10 +205,14 @@ class GoogleDrive:
 			dirPath = os.path.join(cachedFolder["local_path"], dirPath).rstrip(os.sep)
 			return dirPath, rootFolderID
 
-	def listDirectory(self, folderID="root", sharedWithMe=False, foldersOnly=False, starred=False, search=False):
+	def listDirectory(self, folderID="root", sharedWithMe=False, foldersOnly=False, starred=False, search=False, customQuery=False):
 		params = {}
 
-		if foldersOnly:
+		if customQuery:
+			params["q"] = customQuery
+			params["fields"] = "nextPageToken,files(id,parents,name,mimeType,videoMediaMetadata,fileExtension)"
+
+		elif foldersOnly:
 
 			if sharedWithMe:
 				params["q"] = "mimeType='application/vnd.google-apps.folder' and sharedWithMe=true and not trashed"
@@ -221,13 +225,6 @@ class GoogleDrive:
 
 			params["fields"] = "nextPageToken,files(id,name)"
 
-		else:
-			params.update(
-				{
-					"q": f"'{folderID}' in parents and not trashed",
-					"fields": "nextPageToken,files(id,parents,name,mimeType,videoMediaMetadata,fileExtension)",
-				}
-			)
 		params.update(
 			{
 				"supportsAllDrives": "true",

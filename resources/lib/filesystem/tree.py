@@ -22,30 +22,48 @@ class FileTree:
 			"directories": [],
 		}
 
-	def buildTree(self, tree, folderID, parentFolderID, path, excludedTypes, encrypter, syncedIDs):
-		remoteFiles = self.cloudService.listDirectory(folderID)
-		tree[folderID] = self.getNode(parentFolderID, path)
-		files = tree[folderID]["files"]
-		mediaAssets = files["media_assets"]
+	def buildTree(self, folderID, path, excludedTypes, encrypter, syncedIDs):
+		fileTree = dict()
+		fileTree[folderID] = self.getNode(folderID, path)
+		self.getContents(fileTree, [folderID], excludedTypes, encrypter, syncedIDs)
+		return fileTree
 
-		for file in remoteFiles:
-			fileID = file["id"]
+	def getContents(self, fileTree, folderIDs, excludedTypes, encrypter, syncedIDs):
+		maxIDs = 299
+		queries = []
+
+		while folderIDs:
+			ids = folderIDs[:maxIDs]
+			queries.append("not trashed and " + " or ".join(f"'{id}' in parents" for id in ids))
+			folderIDs = folderIDs[maxIDs:]
+
+		items = []
+
+		for query in queries:
+			items += self.cloudService.listDirectory(customQuery=query)
+
+		for item in items:
+			id = item["id"]
+			parentFolderID = item["parents"][0]
+			mimeType = item["mimeType"]
 
 			if syncedIDs is not None:
-				syncedIDs.append(fileID)
-
-			mimeType = file["mimeType"]
+				syncedIDs.append(id)
 
 			if mimeType == "application/vnd.google-apps.folder":
-				childPath = os.path.join(path, helpers.removeProhibitedFSchars(file["name"]))
-				tree[folderID]["directories"].append(fileID)
-				self.buildTree(tree, fileID, file["parents"][0], childPath, excludedTypes, encrypter, syncedIDs)
+				path = os.path.join(fileTree[parentFolderID]["path"], helpers.removeProhibitedFSchars(item["name"]))
+				fileTree[parentFolderID]["directories"].append(id)
+				fileTree[id] = self.getNode(parentFolderID, path)
+				folderIDs.append(id)
 				continue
 
-			file = helpers.makeFile(file, excludedTypes, encrypter)
+			file = helpers.makeFile(item, excludedTypes, encrypter)
 
 			if not file:
 				continue
+
+			files = fileTree[parentFolderID]["files"]
+			mediaAssets = files["media_assets"]
 
 			if file.type in ("poster", "fanart", "subtitles", "nfo"):
 
@@ -60,3 +78,6 @@ class FileTree:
 				mediaAssets[file.ptn_name][file.type].append(file)
 			else:
 				files[file.type].append(file)
+
+		if folderIDs:
+			self.getContents(fileTree, folderIDs, excludedTypes, encrypter, syncedIDs)
