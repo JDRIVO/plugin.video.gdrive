@@ -1,4 +1,5 @@
 import os
+from threading import Thread
 
 from . import helpers
 from . import processor
@@ -37,10 +38,21 @@ class FileTree:
 			queries.append("not trashed and " + " or ".join(f"'{id}' in parents" for id in ids))
 			folderIDs = folderIDs[maxIDs:]
 
-		items = []
+		threads = []
 
 		for query in queries:
-			items += self.cloudService.listDirectory(customQuery=query)
+			items = self.cloudService.listDirectory(customQuery=query)
+			t = Thread(target=self.filterContents, args=(fileTree, items, folderIDs, excludedTypes, encrypter, syncedIDs))
+			t.start()
+			threads.append(t)
+
+		for t in threads:
+			t.join()
+
+		if folderIDs:
+			self.getContents(fileTree, folderIDs, excludedTypes, encrypter, syncedIDs)
+
+	def filterContents(self, fileTree, items, folderIDs, excludedTypes, encrypter, syncedIDs):
 
 		for item in items:
 			id = item["id"]
@@ -78,6 +90,3 @@ class FileTree:
 				mediaAssets[file.ptn_name][file.type].append(file)
 			else:
 				files[file.type].append(file)
-
-		if folderIDs:
-			self.getContents(fileTree, folderIDs, excludedTypes, encrypter, syncedIDs)
