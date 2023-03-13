@@ -49,9 +49,9 @@ class GoogleDrive:
 				"refresh_token": self.account.refreshToken,
 				"grant_type": "refresh_token",
 			}
-		response = network.requester.sendPayload(GOOGLE_TOKEN_URL, data, method="POST")
+		response = network.requester.makeRequest(GOOGLE_TOKEN_URL, data, method="POST")
 
-		if "failed" in response:
+		if not response:
 			return "failed"
 
 		response["access_token"].rstrip(".")
@@ -81,7 +81,7 @@ class GoogleDrive:
 	def getStreams(self, fileID, resolutionPriority=None):
 		url = f"https://drive.google.com/get_video_info?docid={fileID}"
 		self.account.driveStream = None
-		responseData, cookie = network.requester.sendPayload(url, headers=self.getHeaders(), cookie=True)
+		responseData, cookie = network.requester.makeRequest(url, headers=self.getHeaders(), cookie=True)
 		self.account.driveStream = re.findall("DRIVE_STREAM=(.*?);", cookie)[0]
 
 		for _ in range(5):
@@ -137,7 +137,7 @@ class GoogleDrive:
 
 		while pageToken:
 			url = network.helpers.addQueryString(API["drives"], params)
-			response = network.requester.sendPayload(url, headers=self.getHeaders())
+			response = network.requester.makeRequest(url, headers=self.getHeaders())
 			pageToken = response.get("nextPageToken")
 			drives += response["drives"]
 			params["pageToken"] = pageToken
@@ -146,17 +146,15 @@ class GoogleDrive:
 
 	def getDriveID(self):
 		url = network.helpers.mergePaths(API["files"], "root")
-		response = network.requester.sendPayload(url, headers=self.getHeaders())
+		response = network.requester.makeRequest(url, headers=self.getHeaders())
 
-		if "failed" in response:
-			return response
-
-		return response.get("id")
+		if response:
+			return response.get("id")
 
 	def downloadFile(self, fileID):
 		params = {"alt": "media"}
 		url = network.helpers.addQueryString(network.helpers.mergePaths(API["files"], fileID), params)
-		file = network.requester.sendPayload(url, headers=self.getHeaders(), download=True)
+		file = network.requester.makeRequest(url, headers=self.getHeaders(), download=True)
 
 		if file:
 			return file
@@ -168,7 +166,7 @@ class GoogleDrive:
 			"includeItemsFromAllDrives": "true",
 		}
 		url = network.helpers.addQueryString(network.helpers.mergePaths(API["files"], fileID), params)
-		response = network.requester.sendPayload(url, headers=self.getHeaders())
+		response = network.requester.makeRequest(url, headers=self.getHeaders())
 		return response["parents"][0]
 
 	def getDirectory(self, cache, folderID):
@@ -184,7 +182,7 @@ class GoogleDrive:
 				"includeItemsFromAllDrives": "true",
 			}
 			url = network.helpers.addQueryString(network.helpers.mergePaths(API["files"], folderID), params)
-			response = network.requester.sendPayload(url, headers=self.getHeaders())
+			response = network.requester.makeRequest(url, headers=self.getHeaders())
 
 			try:
 				dirName, folderID = response["name"], response["parents"][0]
@@ -237,7 +235,7 @@ class GoogleDrive:
 
 		while pageToken:
 			url = network.helpers.addQueryString(API["files"], params)
-			response = network.requester.sendPayload(url, headers=self.getHeaders())
+			response = network.requester.makeRequest(url, headers=self.getHeaders())
 			pageToken = response.get("nextPageToken")
 			files += response["files"]
 			params["pageToken"] = pageToken
@@ -247,7 +245,7 @@ class GoogleDrive:
 	def getPageToken(self):
 		params = {"supportsAllDrives": "true"}
 		url = network.helpers.addQueryString(network.helpers.mergePaths(API["changes"], "startPageToken"), params)
-		response = network.requester.sendPayload(url, headers=self.getHeaders())
+		response = network.requester.makeRequest(url, headers=self.getHeaders())
 		return response.get("startPageToken")
 
 	def getChanges(self, pageToken):
@@ -263,7 +261,7 @@ class GoogleDrive:
 
 		while nextPageToken:
 			url = network.helpers.addQueryString(API["changes"], params)
-			response = network.requester.sendPayload(url, headers=self.getHeaders())
+			response = network.requester.makeRequest(url, headers=self.getHeaders())
 			nextPageToken = response.get("nextPageToken")
 			changes += response["changes"]
 			params["pageToken"] = nextPageToken
@@ -289,4 +287,4 @@ class GoogleDrive:
 			"grant_type": "authorization_code",
 			"redirect_uri": f"http://localhost:{port}/status",
 		}
-		return network.requester.sendPayload(GOOGLE_TOKEN_URL, data, method="POST")
+		return network.requester.makeRequest(GOOGLE_TOKEN_URL, data, method="POST")

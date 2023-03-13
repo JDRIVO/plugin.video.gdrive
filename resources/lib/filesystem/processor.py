@@ -59,7 +59,6 @@ class RemoteFileProcessor:
 			originalFolder = True
 
 		if videos:
-			videos.reverse()
 
 			with ThreadPoolExecutor(30) as executor:
 				futures = [
@@ -211,7 +210,7 @@ class LocalFileProcessor:
 		self.settings = settings
 		self.cache = cache.Cache()
 		self.tmdbLock = threading.Lock()
-		self.CacheLock = threading.Lock()
+		self.cacheLock = threading.Lock()
 		self.fileLock = threading.Lock()
 
 	def processFiles(
@@ -231,7 +230,6 @@ class LocalFileProcessor:
 		mediaAssets = files.get("media_assets")
 
 		if videos:
-			videos.reverse()
 			folderRestructure = folderSettings["folder_restructure"]
 			fileRenaming = folderSettings["file_renaming"]
 
@@ -330,7 +328,7 @@ class LocalFileProcessor:
 					"original_folder": originalFolder,
 				}
 
-				with self.CacheLock:
+				with self.cacheLock:
 					self.cache.updateFile(file, fileID)
 
 			del mediaAssets[assetType]
@@ -416,5 +414,5 @@ class LocalFileProcessor:
 			"original_folder": originalFolder,
 		}
 
-		with self.CacheLock:
+		with self.cacheLock:
 			self.cache.updateFile(file, fileID)

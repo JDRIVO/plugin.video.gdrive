@@ -2,6 +2,7 @@ import os
 import re
 import math
 import html
+import time
 import difflib
 
 from .. import ptn
@@ -121,6 +122,25 @@ def createSTRMContents(driveID, fileID, encrypted, contents):
 	return "plugin://plugin.video.gdrive/?mode=video" + "".join([f"&{k}={v}"for k, v in contents.items() if v])
 
 def getTMDBtitle(type, title, year):
+
+	def getMatches(url, params):
+		delay = 2
+		attempts = 3
+		query = network.helpers.addQueryString(url, params)
+
+		for _ in range(attempts):
+
+			try:
+				response = network.requester.makeRequest(query)
+
+				if response:
+					return response
+
+			except Exception as e:
+				pass
+
+			time.sleep(delay)
+
 	url = "https://www.themoviedb.org/search/"
 
 	if year:
@@ -133,21 +153,21 @@ def getTMDBtitle(type, title, year):
 	else:
 		url += "movie"
 
-	response = network.requester.sendPayload(network.helpers.addQueryString(url, params))
+	matches = getMatches(url, params)
 
-	try:
-		tmdbResult = re.findall('class="result".*?<h2>(.*?)</h2></a>.*?([\d]{4})', response, re.DOTALL)
-	except Exception:
+	if not matches:
 		return
+
+	tmdbResult = re.findall('class="result".*?<h2>(.*?)</h2></a>.*?([\d]{4})', matches, re.DOTALL)
 
 	if not tmdbResult and year:
 		params = {"query": title}
-		response = network.requester.sendPayload(network.helpers.addQueryString(url, params))
+		matches = getMatches(url, params)
 
-		try:
-			tmdbResult = re.findall('class="result".*?<h2>(.*?)</h2></a>.*?([\d]{4})', response, re.DOTALL)
-		except Exception:
+		if not matches:
 			return
+
+		tmdbResult = re.findall('class="result".*?<h2>(.*?)</h2></a>.*?([\d]{4})', matches, re.DOTALL)
 
 		try:
 			tmdbTitle, tmdbYear = tmdbResult[0]

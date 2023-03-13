@@ -2,7 +2,6 @@ import os
 from threading import Thread
 
 from . import helpers
-from . import processor
 
 
 class FileTree:

@@ -191,9 +191,9 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 					for account in accounts:
 						self.server.cloudService.setAccount(account)
-						refreshToken = self.server.cloudService.refreshToken()
+						tokenRefresh = self.server.cloudService.refreshToken()
 
-						if refreshToken == "failed":
+						if tokenRefresh == "failed":
 							continue
 
 						req = urllib.request.Request(url, headers=self.server.cloudService.getHeaders())

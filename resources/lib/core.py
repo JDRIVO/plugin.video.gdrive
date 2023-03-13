@@ -33,7 +33,6 @@ class Core:
 	def run(self, dbID, dbType, filePath):
 		mode = self.settings.getParameter("mode", "main").lower()
 		pluginQueries = self.settings.parseQuery(sys.argv[2][1:])
-
 		modes = {
 			"main": self.createMainMenu,
 			"register_account": self.registerAccount,
@@ -90,9 +89,9 @@ class Core:
 
 		elif selection == 1:
 			self.cloudService.setAccount(account)
-			validation = self.cloudService.refreshToken()
+			tokenRefresh = self.cloudService.refreshToken()
 
-			if validation == "failed":
+			if tokenRefresh == "failed":
 				selection = self.dialog.yesno(
 					self.settings.getLocalizedString(30000),
 					f"{accountName} {self.settings.getLocalizedString(30019)}",
@@ -432,9 +431,9 @@ class Core:
 		account.email = email
 		account.key = key
 		self.cloudService.setAccount(account)
-		outcome = self.cloudService.refreshToken()
+		tokenRefresh = self.cloudService.refreshToken()
 
-		if outcome == "failed":
+		if tokenRefresh == "failed":
 			return
 
 		driveID = self.settings.getParameter("drive_id")
@@ -458,11 +457,11 @@ class Core:
 				return
 
 			self.cloudService.setAccount(account)
-			validation = self.cloudService.refreshToken()
+			tokenRefresh = self.cloudService.refreshToken()
 			pDialog.update(int(round(count / accountAmount * 100)), accountName)
 			count += 1
 
-			if validation == "failed":
+			if tokenRefresh == "failed":
 				selection = self.dialog.yesno(
 					self.settings.getLocalizedString(30000),
 					"{accountName} {self.settings.getLocalizedString(30019)}",

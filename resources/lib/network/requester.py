@@ -17,7 +17,7 @@ HEADERS_FORM_ENCODED = {
 }
 
 
-def sendPayload(url, data=None, headers=HEADERS, cookie=None, download=False, method="GET"):
+def makeRequest(url, data=None, headers=HEADERS, cookie=None, download=False, method="GET"):
 
 	if method == "POST":
 		headers = HEADERS_FORM_ENCODED
@@ -31,7 +31,7 @@ def sendPayload(url, data=None, headers=HEADERS, cookie=None, download=False, me
 		response = urllib.request.urlopen(req)
 	except urllib.error.URLError as e:
 		xbmc.log("gdrive error: " + str(e))
-		return {"failed": str(e)}
+		return
 
 	if download:
 		return response
