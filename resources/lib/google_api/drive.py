@@ -139,7 +139,7 @@ class GoogleDrive:
 			url = network.helpers.addQueryString(API["drives"], params)
 			response = network.requester.makeRequest(url, headers=self.getHeaders())
 			pageToken = response.get("nextPageToken")
-			drives += response["drives"]
+			drives += response.get("drives")
 			params["pageToken"] = pageToken
 
 		return drives
@@ -155,9 +155,7 @@ class GoogleDrive:
 		params = {"alt": "media"}
 		url = network.helpers.addQueryString(network.helpers.mergePaths(API["files"], fileID), params)
 		file = network.requester.makeRequest(url, headers=self.getHeaders(), download=True)
-
-		if file:
-			return file
+		return file
 
 	def getParentDirectoryID(self, fileID):
 		params = {
@@ -167,7 +165,10 @@ class GoogleDrive:
 		}
 		url = network.helpers.addQueryString(network.helpers.mergePaths(API["files"], fileID), params)
 		response = network.requester.makeRequest(url, headers=self.getHeaders())
-		return response["parents"][0]
+		id = response.get("parents")
+
+		if id:
+			return id[0]
 
 	def getDirectory(self, cache, folderID):
 		dirPath = ""
@@ -175,7 +176,6 @@ class GoogleDrive:
 		cachedFolder = cache.getFolder(folderID)
 
 		while not cachedDirectory and not cachedFolder:
-
 			params = {
 				"fields": "parents,name",
 				"supportsAllDrives": "true",
@@ -237,7 +237,7 @@ class GoogleDrive:
 			url = network.helpers.addQueryString(API["files"], params)
 			response = network.requester.makeRequest(url, headers=self.getHeaders())
 			pageToken = response.get("nextPageToken")
-			files += response["files"]
+			files += response.get("files")
 			params["pageToken"] = pageToken
 
 		return files
@@ -263,10 +263,10 @@ class GoogleDrive:
 			url = network.helpers.addQueryString(API["changes"], params)
 			response = network.requester.makeRequest(url, headers=self.getHeaders())
 			nextPageToken = response.get("nextPageToken")
-			changes += response["changes"]
+			changes += response.get("changes")
 			params["pageToken"] = nextPageToken
 
-		return changes, response["newStartPageToken"]
+		return changes, response.get("newStartPageToken")
 
 	def getAuthURL(self, clientID, port):
 		params = {
