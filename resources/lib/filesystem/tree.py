@@ -1,7 +1,7 @@
 import os
-from threading import Thread
 
 from . import helpers
+from ..threadpool import threadpool
 
 
 class FileTree:
@@ -37,16 +37,11 @@ class FileTree:
 			queries.append("not trashed and " + " or ".join(f"'{id}' in parents" for id in ids))
 			folderIDs = folderIDs[maxIDs:]
 
-		threads = []
+		with threadpool.ThreadPool(30) as pool:
 
-		for query in queries:
-			items = self.cloudService.listDirectory(customQuery=query)
-			t = Thread(target=self.filterContents, args=(fileTree, items, folderIDs, excludedTypes, encrypter, syncedIDs))
-			t.start()
-			threads.append(t)
-
-		for t in threads:
-			t.join()
+			for query in queries:
+				items = self.cloudService.listDirectory(customQuery=query)
+				pool.submit(self.filterContents, fileTree, items, folderIDs, excludedTypes, encrypter, syncedIDs)
 
 		if folderIDs:
 			self.getContents(fileTree, folderIDs, excludedTypes, encrypter, syncedIDs)

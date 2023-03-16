@@ -1,7 +1,7 @@
 import os
 import re
 import threading
-from concurrent.futures import ThreadPoolExecutor
+from ..threadpool import threadpool
 
 from . import helpers
 from .. import library
@@ -39,9 +39,9 @@ class RemoteFileProcessor:
 
 		if strm:
 
-			with ThreadPoolExecutor(30) as executor:
+			with threadpool.ThreadPool(30) as pool:
 				futures = [
-					executor.submit(
+					pool.submit(
 						self.processSTRM,
 						file,
 						localDirPath,
@@ -60,9 +60,9 @@ class RemoteFileProcessor:
 
 		if videos:
 
-			with ThreadPoolExecutor(30) as executor:
-				futures = [
-					executor.submit(
+			with threadpool.ThreadPool(30) as pool:
+				[
+					pool.submit(
 						self.processVideo,
 						video,
 						mediaAssets,
@@ -79,9 +79,9 @@ class RemoteFileProcessor:
 
 		if mediaAssets:
 
-			with ThreadPoolExecutor(30) as executor:
-				futures = [
-					executor.submit(
+			with threadpool.ThreadPool(30) as pool:
+				[
+					pool.submit(
 						self.processMediaAssets,
 						assets,
 						syncRootPath,
@@ -233,9 +233,9 @@ class LocalFileProcessor:
 			folderRestructure = folderSettings["folder_restructure"]
 			fileRenaming = folderSettings["file_renaming"]
 
-			with ThreadPoolExecutor(30) as executor:
-				futures = [
-					executor.submit(
+			with threadpool.ThreadPool(30) as pool:
+				[
+					pool.submit(
 						self.processVideo,
 						video,
 						mediaAssets,
@@ -253,9 +253,9 @@ class LocalFileProcessor:
 
 		if mediaAssets:
 
-			with ThreadPoolExecutor(30) as executor:
-				futures = [
-					executor.submit(
+			with threadpool.ThreadPool(30) as pool:
+				[
+					pool.submit(
 						self.processMediaAssets,
 						assets,
 						syncRootPath,

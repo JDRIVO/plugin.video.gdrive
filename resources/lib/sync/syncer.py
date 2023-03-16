@@ -1,10 +1,10 @@
 import os
-from multiprocessing.pool import ThreadPool
 
 import xbmc
 
 from . import cache
 from .. import filesystem
+from ..threadpool import threadpool
 
 
 class Syncer:
@@ -322,8 +322,8 @@ class Syncer:
 			self.cache.addDirectory(directory)
 			args.append((folderInfo["files"], folderSettings, directoryPath, syncRootPath, driveID, rootFolderID, folderID))
 
-		with ThreadPool(30) as pool:
-			results = pool.starmap(self.remoteFileProcessor.processFiles, args)
+		with threadpool.ThreadPool(30) as pool:
+			pool.map(self.remoteFileProcessor.processFiles, args)
 
 		folderRestructure = folderSettings["folder_restructure"]
 		fileRenaming = folderSettings["file_renaming"]
@@ -331,8 +331,8 @@ class Syncer:
 		if not folderRestructure and not fileRenaming:
 			return
 
-		with ThreadPool(30) as pool:
-			results = pool.starmap(self.localFileProcessor.processFiles, args)
+		with threadpool.ThreadPool(30) as pool:
+			pool.map(self.localFileProcessor.processFiles, args)
 
 	def syncFileAdditions(self, files, syncRootPath, driveID):
 		data = {}
@@ -351,10 +351,13 @@ class Syncer:
 
 		args = [data["args"][0] for data in data.values()]
 
-		with ThreadPool(30) as pool:
-			results = pool.starmap(self.remoteFileProcessor.processFiles, args)
+		with threadpool.ThreadPool(30) as pool:
+			pool.map(self.remoteFileProcessor.processFiles, args)
+
+		if not folderRestructure and not fileRenaming:
+			return
 
 		args = [data["args"][0] for data in data.values() if data["file_renaming"] or data["folder_restructure"]]
 
-		with ThreadPool(30) as pool:
-			results = pool.starmap(self.localFileProcessor.processFiles, args)
+		with threadpool.ThreadPool(30) as pool:
+			pool.map(self.localFileProcessor.processFiles, args)
