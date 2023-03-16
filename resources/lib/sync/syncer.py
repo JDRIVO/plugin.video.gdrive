@@ -354,10 +354,10 @@ class Syncer:
 		with threadpool.ThreadPool(30) as pool:
 			pool.map(self.remoteFileProcessor.processFiles, args)
 
-		if not folderRestructure and not fileRenaming:
-			return
-
 		args = [data["args"][0] for data in data.values() if data["file_renaming"] or data["folder_restructure"]]
+
+		if not args:
+			return
 
 		with threadpool.ThreadPool(30) as pool:
 			pool.map(self.localFileProcessor.processFiles, args)
