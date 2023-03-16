@@ -40,7 +40,7 @@ class RemoteFileProcessor:
 		if strm:
 
 			with threadpool.ThreadPool(30) as pool:
-				futures = [
+				[
 					pool.submit(
 						self.processSTRM,
 						file,
