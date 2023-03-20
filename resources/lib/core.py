@@ -29,6 +29,7 @@ class Core:
 		self.cloudService = google_api.drive.GoogleDrive()
 		self.dialog = xbmcgui.Dialog()
 		self.succeeded = True
+		self.cacheToDisk = True
 
 	def run(self, dbID, dbType, filePath):
 		mode = self.settings.getParameter("mode", "main").lower()
@@ -61,7 +62,7 @@ class Core:
 		else:
 			modes[mode]()
 
-		xbmcplugin.endOfDirectory(self.pluginHandle, self.succeeded)
+		xbmcplugin.endOfDirectory(self.pluginHandle, succeeded=self.succeeded, cacheToDisc=self.cacheToDisk)
 
 	def notImplemented(self):
 		self.dialog.notification("gDrive", "Not implemented")
@@ -178,6 +179,7 @@ class Core:
 		# xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_FILE)
 		# xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL_IGNORE_FOLDERS)
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL_IGNORE_FOLDERS)
+		self.cacheToDisk = False
 
 	def createDriveMenu(self):
 		pluginURL = sys.argv[0]
