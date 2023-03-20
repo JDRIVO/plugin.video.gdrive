@@ -616,15 +616,19 @@ class Core:
 				streams = self.cloudService.getStreams(fileID)
 
 				if streams:
-					resolutions = ["Original"] + [s[0] for s in streams]
-					selection = self.dialog.select(self.settings.getLocalizedString(30031), resolutions)
+					resolutionSelector = ui.resolution_selector.ResolutionSelector(resolutions=streams)
+					resolutionSelector.doModal()
 
-					if selection == -1:
+					if resolutionSelector.closed:
+						del resolutionSelector
 						return
 
-					if resolutions[selection] != "Original":
-						driveURL = streams[selection - 1][1]
-						transcoded = resolutions[selection]
+					selection = resolutionSelector.resolution
+					del resolutionSelector
+
+					if selection != "Original":
+						driveURL = streams[selection]
+						transcoded = selection
 
 			elif resolutionPriority[0] != "Original":
 				stream = self.cloudService.getStreams(fileID, resolutionPriority)

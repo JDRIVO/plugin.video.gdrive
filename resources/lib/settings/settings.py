@@ -1,5 +1,4 @@
 import sys
-import json
 import urllib.parse
 
 import xbmcaddon
@@ -15,79 +14,46 @@ class Settings(xbmcaddon.Addon):
 			self.pluginQueries = None
 
 	@staticmethod
-	def parseQuery(query):
-		queries = {}
+	def parseQuery(queries):
 
 		try:
-			queries = urllib.parse.parse_qs(query)
+			queries = urllib.parse.parse_qs(queries)
 		except Exception:
 			return
 
-		q = {key: value[0] for key, value in queries.items()}
-		q["mode"] = q.get("mode", "main")
-		return q
+		query = {key: value[0] for key, value in queries.items()}
+		query["mode"] = query.get("mode", "main")
+		return query
 
-	def getParameter(self, key, default=""):
+	@staticmethod
+	def parseValue(value, default):
 
-		try:
-			value = self.pluginQueries[key]
-
-			if value == "true" or value == "True":
-				return True
-			elif value == "false" or value == "False":
-				return False
-			else:
-				return value
-
-		except Exception:
+		if value is None:
 			return default
 
-	def getParameterInt(self, key, default=0):
+		valueLowerCase = value.lower()
+
+		if valueLowerCase in ("true", "false"):
+			return valueLowerCase == "true"
+		else:
+			return value
+
+	def getParameter(self, key, default=None):
+		return self.parseValue(self.pluginQueries.get(key), default)
+
+	def getSetting(self, key, default=None):
+		return self.parseValue(super().getSetting(key), default)
+
+	def getParameterInt(self, key, default=None):
 
 		try:
-			value = self.pluginQueries[key]
-
-			if value == "true" or value == "True":
-				return True
-			elif value == "false" or value == "False":
-				return False
-			else:
-				return value
-
-		except Exception:
+			return int(self.getParameter(key))
+		except ValueError:
 			return default
 
-	def getSetting(self, key, default=""):
-
-		try:
-			value = super().getSetting(key)
-
-			if value == "true" or value == "True":
-				return True
-			elif value == "false" or value == "False":
-				return False
-			elif value is None:
-				return default
-			else:
-				return value
-
-		except Exception:
-			return default
-
-	def getSettingInt(self, key, default=0):
+	def getSettingInt(self, key, default=None):
 
 		try:
 			return int(self.getSetting(key))
-		except Exception:
+		except ValueError:
 			return default
-
-	def getSyncSettings(self):
-		SyncSettings = self.getSetting("sync")
-
-		if not SyncSettings:
-			return {}
-		else:
-			return json.loads(SyncSettings)
-
-	def saveSyncSettings(self, SyncSettings):
-		self.setSetting("sync", json.dumps(SyncSettings))

@@ -1,1 +1,1 @@
-from . import resolution_order, sync_settings
+from . import resolution_order, resolution_selector, sync_settings

@@ -87,8 +87,6 @@ class GoogleDrive:
 		for _ in range(5):
 			responseData = urllib.parse.unquote(responseData)
 
-		# urls = re.sub("\\\\u003d", "=", urls)
-		# urls = re.sub("\\\\u0026", "&", urls)
 		urls = re.sub("\&url\=https://", "\@", responseData)
 		streams = {}
 		resolutions = {}
@@ -106,7 +104,7 @@ class GoogleDrive:
 					resolution = "480"
 				elif resolutionInt > 480 and resolutionInt < 720:
 					resolution = "720"
-				elif resolutionInt > 720:
+				else:
 					resolution = "1080"
 
 			resolution = f"{resolution}P"
@@ -128,7 +126,9 @@ class GoogleDrive:
 					return resolution, streams[resolutions[resolution]]["url"]
 
 		elif streams:
-			return sorted([(v["resolution"], v["url"]) for k, v in streams.items()], key=lambda x: int(x[0][:-1]), reverse=True)
+			d = {"Original": None}
+			d.update({v["resolution"]: v["url"] for k, v in streams.items()})
+			return d
 
 	def getDrives(self):
 		params = {"pageSize": "100"}
@@ -174,13 +174,13 @@ class GoogleDrive:
 		dirPath = ""
 		cachedDirectory = None
 		cachedFolder = cache.getFolder(folderID)
+		params = {
+			"fields": "parents,name",
+			"supportsAllDrives": "true",
+			"includeItemsFromAllDrives": "true",
+		}
 
 		while not cachedDirectory and not cachedFolder:
-			params = {
-				"fields": "parents,name",
-				"supportsAllDrives": "true",
-				"includeItemsFromAllDrives": "true",
-			}
 			url = network.helpers.addQueryString(network.helpers.mergePaths(API["files"], folderID), params)
 			response = network.requester.makeRequest(url, headers=self.getHeaders())
 
