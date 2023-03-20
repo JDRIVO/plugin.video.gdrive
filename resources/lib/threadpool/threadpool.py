@@ -1,5 +1,4 @@
 import os
-import time
 import queue
 import threading
 
@@ -15,10 +14,8 @@ class ThreadPool(queue.Queue, xbmc.Monitor):
 			maxWorkers = min(32, (os.cpu_count() or 1) + 4)
 
 		self.maxWorkers = maxWorkers
-		self.threadShutdown = False
 		self.tasksRemaining = {"tasks": 0}
 		self.createWorkers()
-		threading.Thread(target=self.abortChecker).start()
 
 	def __enter__(self):
 		return self
@@ -26,17 +23,10 @@ class ThreadPool(queue.Queue, xbmc.Monitor):
 	def __exit__(self, exc_type, exc_val, exc_tb):
 		self.shutdown()
 
-	def abortChecker(self):
-
-		while not self.abortRequested() and not self.threadShutdown:
-
-			if self.waitForAbort(0.1):
-				self.threadShutdown = True
-
 	def createWorkers(self):
 
 		for _ in range(self.maxWorkers):
-			threading.Thread(target=self.worker, daemon=True).start()
+			threading.Thread(target=self.worker).start()
 
 	def decrementTasks(self):
 		self.tasksRemaining["tasks"] -= 1
@@ -49,7 +39,7 @@ class ThreadPool(queue.Queue, xbmc.Monitor):
 
 	def worker(self):
 
-		while not self.threadShutdown:
+		while not self.abortRequested():
 
 			try:
 				data = self.get_nowait()
@@ -61,7 +51,10 @@ class ThreadPool(queue.Queue, xbmc.Monitor):
 				func, args = data
 				func(*args)
 			except queue.Empty:
-				time.sleep(0.1)
+
+				if self.waitForAbort(0.1):
+					return
+
 				continue
 
 			except Exception as e:
@@ -79,7 +72,9 @@ class ThreadPool(queue.Queue, xbmc.Monitor):
 
 	def shutdown(self):
 
-		while self.tasksRemaining["tasks"] and not self.threadShutdown:
-			time.sleep(0.1)
+		while self.tasksRemaining["tasks"] and not self.abortRequested():
+
+			if self.waitForAbort(0.1):
+				break
 
 		self.put(None)
