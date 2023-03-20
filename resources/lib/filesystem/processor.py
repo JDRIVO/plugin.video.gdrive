@@ -353,7 +353,6 @@ class LocalFileProcessor:
 		ptnName = video.ptn_name
 		fileID = video.id
 		strmPath = os.path.join(processingDirPath, f"{basename}.strm")
-		strmContent = helpers.createSTRMContents(driveID, fileID, video.encrypted, video.contents)
 		originalName = originalFolder = True
 		newFilename = False
 
