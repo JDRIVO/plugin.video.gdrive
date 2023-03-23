@@ -113,6 +113,32 @@ class Cache(Database):
 	def deleteFolder(self, value, column="folder_id"):
 		self.delete("folders", f"{column}='{value}'")
 
+	# def deleteDrive(self, driveID):
+		# syncRootPath = self.getSyncRootPath()
+		# drive = self.getDrive(driveID)
+
+		# if not drive:
+			# return
+
+		# drivePath = os.path.join(syncRootPath, drive["local_path"])
+		# files = self.getFiles(driveID, "drive_id")
+		# directories = {d["folder_id"]: d for d in self.getDirectories(driveID, "drive_id")}
+
+		# for file in files:
+
+			# if file["original_folder"]:
+				# parentFolderID = file["parent_folder_id"]
+				# filePath = os.path.join(syncRootPath, drivePath, directories[parentFolderID]["local_path"], file["local_name"])
+			# else:
+				# filePath = os.path.join(syncRootPath, file["local_path"])
+
+			# self.fileOperations.deleteFile(syncRootPath, filePath=filePath)
+
+		# self.deleteFile(driveID, "drive_id")
+		# self.deleteFolder(driveID, "drive_id")
+		# self.deleteDirectory(driveID, "drive_id")
+		# self.delete("drives", f"drive_id='{driveID}'")
+
 	def deleteDrive(self, driveID):
 		syncRootPath = self.getSyncRootPath()
 		drive = self.getDrive(driveID)
@@ -163,7 +189,7 @@ class Cache(Database):
 			return
 
 		for directory in directories:
-			folderID = directory["folder_id"]
+			newFolderID = directory["folder_id"]
 			files = self.getFiles(folderID)
 
 			if files:
@@ -181,7 +207,9 @@ class Cache(Database):
 
 			self.deleteFile(folderID, "parent_folder_id")
 			self.deleteDirectory(folderID)
-			self.cleanCache(syncRootPath, drivePath, folderID, directoryColumn="parent_folder_id")
+
+			if newFolderID != folderID:
+				self.cleanCache(syncRootPath, drivePath, newFolderID, directoryColumn="parent_folder_id")
 
 	def createGlobalTable(self):
 		columns = [

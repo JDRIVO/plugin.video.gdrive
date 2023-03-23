@@ -72,7 +72,7 @@ class Tasker:
 	def startIntervalTask(self, startupSync, taskFrequency, driveID, startUpRun=True):
 		lastUpdate = time.time()
 
-		while True and not self.monitor.abortRequested():
+		while not self.monitor.abortRequested():
 
 			if not startupSync and startUpRun:
 				startUpRun = False
@@ -89,21 +89,22 @@ class Tasker:
 			if driveID not in self.tasks:
 				return
 
+			startUpRun = False
 			self.activeTasks.append(driveID)
 
 			try:
 				self.syncer.syncChanges(driveID)
 			except Exception as e:
+				xbmc.log("gdrive error: " + str(e), xbmc.LOGERROR)
 				self.activeTasks.remove(driveID)
 				continue
 
 			self.activeTasks.remove(driveID)
 			lastUpdate = time.time()
-			startUpRun = False
 
 	def startScheduledTask(self, startupSync, taskFrequency, driveID, startUpRun=True):
 
-		while True and not self.monitor.abortRequested():
+		while not self.monitor.abortRequested():
 
 			if not startupSync and startUpRun:
 				startUpRun = False
@@ -122,16 +123,17 @@ class Tasker:
 			if driveID not in self.tasks:
 				return
 
+			startUpRun = False
 			self.activeTasks.append(driveID)
 
 			try:
 				self.syncer.syncChanges(driveID)
 			except Exception as e:
+				xbmc.log("gdrive error: " + str(e), xbmc.LOGERROR)
 				self.activeTasks.remove(driveID)
 				continue
 
 			self.activeTasks.remove(driveID)
-			startUpRun = False
 
 	def createTask(self, driveID, folderID, folderName):
 		self.encrypter.setup(settings=self.settings)

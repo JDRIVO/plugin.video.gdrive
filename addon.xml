@@ -2,7 +2,6 @@
 <addon id="plugin.video.gdrive" version="2.0.0" name="gDrive" provider-name="JDRIVO">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
-		<import addon="script.module.pyxbmct" version="1.3.0"/>
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="addon.py">
 		<provides>video programs</provides>

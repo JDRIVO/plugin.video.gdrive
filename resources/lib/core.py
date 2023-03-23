@@ -589,7 +589,7 @@ class Core:
 				dbType = xbmc.getInfoLabel("ListItem.DBTYPE")
 				filePath = xbmc.getInfoLabel("ListItem.FileNameAndPath")
 
-		crypto = self.settings.getParameter("encrypted")
+		encrypted = self.settings.getParameter("encrypted")
 		fileID = self.settings.getParameter("file_id")
 		driveURL = self.cloudService.getDownloadURL(fileID)
 
@@ -604,7 +604,7 @@ class Core:
 		self.refreshAccess(account.expiry)
 		transcoded = False
 
-		if crypto:
+		if encrypted:
 
 			if not self.settings.getSetting("crypto_password") or not self.settings.getSetting("crypto_salt"):
 				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30208))
@@ -617,7 +617,7 @@ class Core:
 			if resolutionPrompt:
 				streams = self.cloudService.getStreams(fileID)
 
-				if streams:
+				if streams and len(streams) > 1:
 					resolutionSelector = ui.resolution_selector.ResolutionSelector(resolutions=streams)
 					resolutionSelector.doModal()
 
@@ -641,7 +641,7 @@ class Core:
 		self.accountManager.saveAccounts()
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/play_url"
-		data = f"encrypted={crypto}&url={driveURL}&driveid={driveID}&fileid={fileID}&transcoded={transcoded}"
+		data = f"encrypted={encrypted}&url={driveURL}&driveid={driveID}"
 		req = urllib.request.Request(url, data.encode("utf-8"))
 
 		try:
@@ -661,10 +661,9 @@ class Core:
 			item.setSubtitles(subtitles)
 
 		if dbID:
-			widget = 0 if xbmc.getInfoLabel("Container.Content") else 1
-			data = f"dbid={dbID}&dbtype={dbType}&widget={widget}&track=1"
+			data = f"fileid={fileID}&dbid={dbID}&dbtype={dbType}&transcoded={transcoded}"
 		else:
-			data = "dbid=0&dbtype=0&widget=0&track=0"
+			data = f"fileid={fileID}&dbid=False&dbtype=False&transcoded={transcoded}"
 
 		xbmcplugin.setResolvedUrl(self.pluginHandle, True, item)
 		url = f"http://localhost:{serverPort}/start_player"

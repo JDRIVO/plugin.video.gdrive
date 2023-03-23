@@ -1,20 +1,18 @@
-from threading import Thread
-
 import xbmc
 
-import constants
-from resources.lib.network import server
-from resources.lib.library import monitor
+from resources.lib.network.server import ServerRunner
+from resources.lib.library.monitor import LibraryMonitor
+
 
 if __name__ == "__main__":
-	kodiMonitor = xbmc.Monitor()
-	libraryMonitor = monitor.LibraryMonitor()
-	server = server.MyHTTPServer(constants.settings)
-	Thread(target=server.run, daemon=True).start()
+	monitor = xbmc.Monitor()
+	LibraryMonitor()
+	server = ServerRunner()
+	server.start()
 
-	while not kodiMonitor.abortRequested():
+	while not monitor.abortRequested():
 
-		if kodiMonitor.waitForAbort(1):
+		if monitor.waitForAbort(0.1):
 			break
 
 	server.shutdown()

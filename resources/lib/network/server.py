@@ -10,6 +10,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import xbmc
 import xbmcgui
 
+import constants
 from .. import sync
 from .. import accounts
 from .. import playback
@@ -19,16 +20,31 @@ from .. import google_api
 from . import registration
 
 
+class ServerRunner(Thread):
+
+	def __init__(self):
+		super().__init__()
+
+	def run(self):
+		self._server = ThreadedHTTPServer(("", constants.settings.getSettingInt("server_port", 8011)), ServerHandler)
+		self._server.daemon_threads = True
+
+		try:
+			self._server.serve_forever()
+		except Exception:
+			self.shutdown()
+			self.server_close()
+
+	def shutdown(self):
+		self._server.shutdown()
+		self._server.server_close()
+
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
-	"""Handle requests in a separate thread."""
 
-class MyHTTPServer(ThreadingMixIn, HTTPServer):
-
-	def __init__(self, settings):
-		self.settings = settings
-		self.port = self.settings.getSettingInt("server_port", 8011)
-		super().__init__(("", self.port), MyStreamer)
-
+	def __init__(self, *args, **kwargs):
+		HTTPServer.__init__(self, *args, **kwargs)
+		self.shutdownRequest = False
+		self.settings = constants.settings
 		self.monitor = xbmc.Monitor()
 		self.accountManager = accounts.manager.AccountManager(self.settings)
 		self.cloudService = google_api.drive.GoogleDrive()
@@ -37,32 +53,7 @@ class MyHTTPServer(ThreadingMixIn, HTTPServer):
 		self.taskManager.run()
 		self.fileOperations = filesystem.operations.FileOperations()
 
-	def run(self):
-
-		try:
-			self.serve_forever()
-		except Exception:
-			self.server_close()
-
-	def startPlayer(self, dbID, dbType, widget, trackProgress):
-		vPlayer = playback.player.Player(dbID, dbType, int(widget), int(trackProgress), self.settings)
-		expiry = self.cloudService.account.expiry
-
-		while not self.monitor.abortRequested() and not vPlayer.close:
-
-			if datetime.datetime.now() >= expiry:
-
-				self.cloudService.refreshToken()
-
-				if self.transcoded:
-					self.playbackURL = self.cloudService.getStreams(self.fileID, (self.transcoded,))[1]
-
-				self.accountManager.saveAccounts()
-
-			if self.monitor.waitForAbort(1):
-				break
-
-class MyStreamer(BaseHTTPRequestHandler):
+class ServerHandler(BaseHTTPRequestHandler):
 
 	def do_POST(self):
 
@@ -70,22 +61,16 @@ class MyStreamer(BaseHTTPRequestHandler):
 			self.server.failed = False
 			contentLength = int(self.headers["Content-Length"]) # <--- Gets the size of data
 			postData = self.rfile.read(contentLength).decode("utf-8") # <--- Gets the data itself
-			encrypted, self.server.playbackURL, self.server.driveID, fileID, transcoded = re.findall("encrypted=(.*)&url=(.*)&driveid=(.*)&fileid=(.*)&transcoded=(.*)", postData)[0]
+			encrypted, self.server.playbackURL, self.server.driveID = re.findall("encrypted=(.*)&url=(.*)&driveid=(.*)", postData)[0]
+
+			if encrypted == "True":
+					self.server.encrypted = True
+			else:
+					self.server.encrypted = False
+
 			self.server.accountManager.loadAccounts()
 			account = self.server.accountManager.getAccount(self.server.driveID)
 			self.server.cloudService.setAccount(account)
-
-			if encrypted == "True":
-				self.server.crypto = True
-			else:
-				self.server.crypto = False
-
-			if transcoded == "False":
-				self.server.transcoded = False
-			else:
-				self.server.transcoded = transcoded
-				self.server.fileID = fileID
-
 			self.send_response(200)
 			self.end_headers()
 
@@ -93,10 +78,33 @@ class MyStreamer(BaseHTTPRequestHandler):
 			contentLength = int(self.headers["Content-Length"])
 			postData = self.rfile.read(contentLength).decode("utf-8")
 			self.send_response(200)
-
 			self.end_headers()
-			dbID, dbType, widget, trackProgress = re.findall("dbid=([\d]+)&dbtype=(.*)&widget=(\d)&track=(\d)", postData)[0]
-			Thread(target=self.server.startPlayer, args=(dbID, dbType, widget, trackProgress)).start()
+
+			fileID, dbID, dbType, transcoded = re.findall("fileid=(.*)&dbid=(.*)&dbtype=(.*)&transcoded=(.*)", postData)[0]
+			
+			if dbID == "False":
+				dbID = False
+				dbType = False
+				trackProgress = False
+			else:
+				trackProgress = True
+
+			if transcoded == "False":
+				transcoded = False
+
+			player = playback.player.Player(dbID, dbType, trackProgress)
+
+			while not self.server.monitor.abortRequested() and not player.close:
+
+				if datetime.datetime.now() >= self.server.cloudService.account.expiry:
+
+					self.server.cloudService.refreshToken()
+
+					if transcoded:
+						self.server.playbackURL = self.server.cloudService.getStreams(fileID, (transcoded,))[1]
+
+				if self.server.monitor.waitForAbort(1):
+					break
 
 		elif self.path == "/set_alias":
 			contentLength = int(self.headers["Content-Length"])
@@ -155,7 +163,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			postData = self.rfile.read(contentLength).decode("utf-8") # <--- Gets the data itself
 
 			accountName, clientID, clientSecret = re.findall("account=(.*)&client_id=(.*)&client_secret=(.*)", postData)[0]
-			authURL = self.server.cloudService.getAuthURL(clientID, self.server.port)
+			authURL = self.server.cloudService.getAuthURL(clientID, self.server.server_port)
 			self.server.account = accounts.account.Account()
 			self.server.account.name = urllib.parse.unquote_plus(accountName)
 			self.server.account.clientID = clientID
@@ -256,7 +264,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			end = int(end) if end else ""
 			startOffset = 0
 
-			if self.server.crypto and start != "" and start > 16 and end == "":
+			if self.server.encrypted and start != "" and start > 16 and end == "":
 				# start = start - (16 - (end % 16))
 				xbmc.log("START = " + str(start))
 				startOffset = 16 - ((int(self.server.length) - start) % 16) + 8
@@ -314,7 +322,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 			# may want to add more granular control over chunk fetches
 			# self.wfile.write(response.read())
 
-			if self.server.crypto:
+			if self.server.encrypted:
 				decrypt = encryption.encrypter.Encrypter(self.server.settings.getSetting("crypto_salt"), self.server.settings.getSetting("crypto_password"))
 
 				try:
@@ -350,7 +358,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 
 			try:
 				code = re.findall("code=(.*)&", self.path)[0]
-				token = self.server.cloudService.getToken(self.server.account.clientID, self.server.account.clientSecret, code, self.server.port)
+				token = self.server.cloudService.getToken(self.server.account.clientID, self.server.account.clientSecret, code, self.server.server_port)
 				self.server.account.accessToken = token["access_token"]
 				self.server.account.refreshToken = token["refresh_token"]
 				self.server.cloudService.setAccount(self.server.account)
@@ -366,7 +374,7 @@ class MyStreamer(BaseHTTPRequestHandler):
 				redirect = "/registration_failed"
 
 			self.send_response(303)
-			self.send_header("Location", f"http://localhost:{self.server.port}{redirect}")
+			self.send_header("Location", f"http://localhost:{self.server.server_port}{redirect}")
 			self.end_headers()
 
 		elif self.path == "/registration_succeeded":
