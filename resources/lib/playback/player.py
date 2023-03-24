@@ -37,13 +37,11 @@ class Player(xbmc.Player):
 
 	def onPlayBackStopped(self):
 
-		if self.trackProgress:
+		if self.trackProgress and self.dbType in ("movie", "episode"):
 
-			if self.dbType in ("movie", "episode"):
-
-				for _ in range(3):
-					self.markVideoWatched()
-					xbmc.sleep(1000)
+			for _ in range(3):
+				self.markVideoWatched()
+				xbmc.sleep(1000)
 
 		self.close = True
 
