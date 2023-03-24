@@ -6,7 +6,7 @@ from resources.lib.library.monitor import LibraryMonitor
 
 if __name__ == "__main__":
 	monitor = xbmc.Monitor()
-	LibraryMonitor()
+	libaryMonitor = LibraryMonitor()
 	server = ServerRunner()
 	server.start()
 
