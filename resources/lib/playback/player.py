@@ -40,6 +40,7 @@ class Player(xbmc.Player):
 		if self.trackProgress:
 
 			if self.dbType not in ("movie", "episode"):
+				self.close = True
 				return
 
 			for _ in range(3):
