@@ -39,13 +39,11 @@ class Player(xbmc.Player):
 
 		if self.trackProgress:
 
-			if self.dbType not in ("movie", "episode"):
-				self.close = True
-				return
+			if self.dbType in ("movie", "episode"):
 
-			for _ in range(3):
-				self.markVideoWatched()
-				xbmc.sleep(1000)
+				for _ in range(3):
+					self.markVideoWatched()
+					xbmc.sleep(1000)
 
 		self.close = True
 
