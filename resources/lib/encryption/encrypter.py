@@ -131,7 +131,7 @@ class Encrypter:
 
 				outFile.truncate(origSize)
 
-	def decryptStream(self, response, outFilename, chunkSize=24 * 1024):
+	def decryptStream(self, response, outFilename, modifiedTime=None, chunkSize=24 * 1024):
 		# with open(inFilename, "rb") as inFile:
 			origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
 			decryptor = AES.new(self.key, AES.MODE_ECB)
@@ -147,6 +147,9 @@ class Encrypter:
 					outFile.write(decryptor.decrypt(chunk))
 
 				outFile.truncate(origSize)
+
+			if modifiedTime:
+				os.utime(outFilename, (modifiedTime, modifiedTime))
 
 	def decryptStreamChunkOld(self, response, wfile, chunkSize=24 * 1024, startOffset=0):
 		# with open(inFilename, "rb") as inFile:

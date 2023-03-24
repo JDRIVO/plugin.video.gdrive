@@ -112,12 +112,13 @@ class RemoteFileProcessor:
 		for assetType, assets in list(mediaAssets.items()):
 
 			for file in assets:
-				remoteName = file.name
 				fileID = file.id
+				remoteName = file.name
+				modifiedTime = file.modifiedTime
 
 				with self.fileLock:
 					filePath = helpers.generateFilePath(localDirPath, remoteName)
-					self.fileOperations.downloadFile(localDirPath, filePath, fileID, file.encrypted)
+					self.fileOperations.downloadFile(localDirPath, filePath, fileID, modifiedTime=modifiedTime, encrypted=file.encrypted)
 
 				localName = os.path.basename(filePath)
 				file.name = localName
@@ -145,10 +146,11 @@ class RemoteFileProcessor:
 	):
 		fileID = file.id
 		remoteName = file.name
+		modifiedTime = file.modifiedTime
 
 		with self.fileLock:
 			strmPath = helpers.generateFilePath(localDirPath, remoteName)
-			self.fileOperations.downloadFile(localDirPath, strmPath, fileID, file.encrypted)
+			self.fileOperations.downloadFile(localDirPath, strmPath, fileID, modifiedTime=modifiedTime, encrypted=file.encrypted)
 
 		file = (
 			driveID,
@@ -179,13 +181,14 @@ class RemoteFileProcessor:
 		remoteName = video.name
 		mediaType = video.media
 		basename = video.basename
+		modifiedTime = video.modifiedTime
 		fileID = video.id
 		strmContent = helpers.createSTRMContents(driveID, fileID, video.encrypted, video.contents)
 		strmName = f"{basename}.strm"
 
 		with self.fileLock:
 			strmPath = helpers.generateFilePath(localDirPath, strmName)
-			self.fileOperations.createFile(localDirPath, strmPath, strmContent, mode="w+")
+			self.fileOperations.createFile(localDirPath, strmPath, strmContent, modifiedTime=modifiedTime, mode="w+")
 
 		localName = os.path.basename(strmPath)
 		video.basename = localName.replace(".strm", "")

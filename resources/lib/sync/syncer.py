@@ -235,15 +235,16 @@ class Syncer:
 			else:
 				cachedFilePath = os.path.join(syncRootPath, cachedFile["local_path"])
 
-			if os.path.splitext(cachedFile["remote_name"])[0] == os.path.splitext(filename)[0] and cachedDirPath == dirPath:
+			if cachedFile["remote_name"] == filename and cachedDirPath == dirPath:
+				# GDrive creates a change after a newly uploaded vids metadata has been processed
 
-				if file.type != "video":
+				if file.type != "video" or not file.metadata:
 					return
 
 				filesystem.helpers.refreshMetadata(file.metadata, cachedFilePath)
 				return
 
-			elif cachedFile["original_name"]:
+			if cachedFile["original_name"]:
 
 				if not os.path.exists(cachedFilePath):
 					# file doesn't exist locally - redownload it

@@ -208,7 +208,7 @@ class GoogleDrive:
 
 		if customQuery:
 			params["q"] = customQuery
-			params["fields"] = "nextPageToken,files(id,parents,name,mimeType,videoMediaMetadata,fileExtension)"
+			params["fields"] = "nextPageToken,files(id,parents,name,mimeType,videoMediaMetadata,fileExtension,modifiedTime)"
 
 		elif foldersOnly:
 
@@ -251,7 +251,7 @@ class GoogleDrive:
 	def getChanges(self, pageToken):
 		params = {
 			"pageToken": pageToken,
-			"fields": "nextPageToken,newStartPageToken,changes(file(id,name,parents,trashed,mimeType,fileExtension,videoMediaMetadata))",
+			"fields": "nextPageToken,newStartPageToken,changes(file(id,name,parents,trashed,mimeType,fileExtension,videoMediaMetadata,modifiedTime))",
 			"supportsAllDrives": "true",
 			"includeItemsFromAllDrives": "true",
 			"pageSize": "1000",

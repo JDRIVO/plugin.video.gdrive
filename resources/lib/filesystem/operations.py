@@ -10,22 +10,25 @@ class FileOperations:
 		self.cloudService = kwargs.get("cloud_service")
 		self.encryption = kwargs.get("encryption")
 
-	def downloadFile(self, dirPath, filePath, fileID, encrypted=False):
+	def downloadFile(self, dirPath, filePath, fileID, modifiedTime=None, encrypted=False):
 		self.createDirs(dirPath)
 		file = self.cloudService.downloadFile(fileID)
 
 		if file:
 
 			if encrypted:
-				self.encryption.decryptStream(file, filePath)
+				self.encryption.decryptStream(file, filePath, modifiedTime=modifiedTime)
 			else:
-				self.createFile(dirPath, filePath, file.read())
+				self.createFile(dirPath, filePath, file.read(), modifiedTime=modifiedTime)
 
-	def createFile(self, dirPath, filePath, content, mode="wb"):
+	def createFile(self, dirPath, filePath, content, modifiedTime=None, mode="wb"):
 		self.createDirs(dirPath)
 
 		with open(filePath, mode) as file:
 			file.write(content)
+
+		if modifiedTime:
+			os.utime(filePath, (modifiedTime, modifiedTime))
 
 	def deleteFile(self, syncRootPath, dirPath=None, filename=None, filePath=None):
 
@@ -81,6 +84,9 @@ class FileOperations:
 
 	@staticmethod
 	def overwriteFile(filePath, content, mode="w+"):
+		stInfo = os.stat(filePath)
 
 		with open(filePath, mode) as file:
 			file.write(content)
+
+		os.utime(filePath, (stInfo.st_atime, stInfo.st_mtime))

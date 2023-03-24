@@ -4,6 +4,7 @@ import math
 import html
 import time
 import difflib
+import datetime
 
 from .. import ptn
 from . import video
@@ -14,6 +15,10 @@ from .constants import *
 from .. import filesystem
 from .subtitles import Subtitles
 
+
+def convertTime(time):
+	# RFC 3339 to timestamp
+	return datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=datetime.timezone.utc).timestamp()
 
 def removeProhibitedFSchars(name):
 	return re.sub(r'[<>\*\?\\/:|"]*', '', name)
@@ -212,6 +217,7 @@ def makeFile(file, excludedTypes, encrypter):
 	fileID = file["id"]
 	filename = file["name"]
 	mimeType = file["mimeType"]
+	modifiedTime = file["modifiedTime"]
 	fileExtension = file.get("fileExtension")
 	metadata = file.get("videoMediaMetadata")
 
@@ -256,6 +262,7 @@ def makeFile(file, excludedTypes, encrypter):
 	file.id = fileID
 	file.type = fileType
 	file.encrypted = encrypted
+	file.modifiedTime = convertTime(modifiedTime)
 	file.removeFileExtension()
 	return file
 
