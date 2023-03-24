@@ -39,6 +39,9 @@ class Player(xbmc.Player):
 
 		if self.trackProgress:
 
+			if self.dbType not in ("movie", "episode"):
+				return
+
 			for _ in range(3):
 				self.markVideoWatched()
 				xbmc.sleep(1000)
@@ -61,9 +64,6 @@ class Player(xbmc.Player):
 				break
 
 	def markVideoWatched(self):
-
-		if self.dbType not in ("movie", "episode"):
-			return
 
 		try:
 			videoProgress = self.time / self.videoDuration * 100
