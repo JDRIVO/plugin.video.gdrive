@@ -28,7 +28,9 @@ class Player(xbmc.Player):
 				pass
 
 			if self.monitor.waitForAbort(0.1):
-				break
+				return
+
+		Thread(target=self.updateTime).start()
 
 	def onPlayBackEnded(self):
 		self.close = True
