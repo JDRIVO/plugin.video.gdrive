@@ -65,10 +65,8 @@ class RemoteFileProcessor:
 					pool.submit(
 						self.processVideo,
 						video,
-						mediaAssets,
-						folderSettings,
-						dirPath,
 						syncRootPath,
+						dirPath,
 						driveID,
 						rootFolderID,
 						parentFolderID,
@@ -167,10 +165,8 @@ class RemoteFileProcessor:
 	def processVideo(
 		self,
 		file,
-		mediaAssets,
-		folderSettings,
-		dirPath,
 		syncRootPath,
+		dirPath,
 		driveID,
 		rootFolderID,
 		parentFolderID,
@@ -239,11 +235,11 @@ class LocalFileProcessor:
 						video,
 						mediaAssets,
 						folderSettings,
-						dirPath,
 						syncRootPath,
+						dirPath,
+						processingDirPath,
 						folderRestructure,
 						fileRenaming,
-						processingDirPath,
 					) for video in videos
 				]
 
@@ -323,11 +319,11 @@ class LocalFileProcessor:
 		file,
 		mediaAssets,
 		folderSettings,
-		dirPath,
 		syncRootPath,
+		dirPath,
+		processingDirPath,
 		folderRestructure,
 		fileRenaming,
-		processingDirPath,
 	):
 		fileID = file.id
 		mediaType = file.media
