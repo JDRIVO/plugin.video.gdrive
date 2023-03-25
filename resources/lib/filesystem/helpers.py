@@ -263,7 +263,6 @@ def makeFile(file, excludedTypes, encrypter):
 	file.type = fileType
 	file.encrypted = encrypted
 	file.modifiedTime = convertTime(modifiedTime)
-	file.removeFileExtension()
 	return file
 
 def getExcludedTypes(folderSettings):

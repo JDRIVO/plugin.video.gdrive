@@ -29,7 +29,7 @@ class RemoteFileProcessor:
 		parentFolderID,
 	):
 		syncRootPath = syncRootPath + os.sep
-		localDirPath = os.path.join(syncRootPath, remoteDirPath)
+		dirPath = os.path.join(syncRootPath, remoteDirPath)
 		folderRestructure = folderSettings["folder_restructure"]
 		fileRenaming = folderSettings["file_renaming"]
 		videos = files.get("video")
@@ -44,7 +44,7 @@ class RemoteFileProcessor:
 					pool.submit(
 						self.processSTRM,
 						file,
-						localDirPath,
+						dirPath,
 						driveID,
 						rootFolderID,
 						parentFolderID,
@@ -53,7 +53,7 @@ class RemoteFileProcessor:
 				]
 
 		if folderRestructure or fileRenaming:
-			localDirPath = os.path.join(syncRootPath, "[gDrive] Processing", remoteDirPath)
+			dirPath = os.path.join(syncRootPath, "[gDrive] Processing", remoteDirPath)
 			originalFolder = False
 		else:
 			originalFolder = True
@@ -67,7 +67,7 @@ class RemoteFileProcessor:
 						video,
 						mediaAssets,
 						folderSettings,
-						localDirPath,
+						dirPath,
 						syncRootPath,
 						driveID,
 						rootFolderID,
@@ -85,7 +85,7 @@ class RemoteFileProcessor:
 						self.processMediaAssets,
 						assets,
 						syncRootPath,
-						localDirPath,
+						dirPath,
 						driveID,
 						rootFolderID,
 						parentFolderID,
@@ -101,7 +101,7 @@ class RemoteFileProcessor:
 		self,
 		mediaAssets,
 		syncRootPath,
-		localDirPath,
+		dirPath,
 		driveID,
 		rootFolderID,
 		parentFolderID,
@@ -114,11 +114,10 @@ class RemoteFileProcessor:
 			for file in assets:
 				fileID = file.id
 				remoteName = file.name
-				modifiedTime = file.modifiedTime
 
 				with self.fileLock:
-					filePath = helpers.generateFilePath(localDirPath, remoteName)
-					self.fileOperations.downloadFile(localDirPath, filePath, fileID, modifiedTime=modifiedTime, encrypted=file.encrypted)
+					filePath = helpers.generateFilePath(dirPath, remoteName)
+					self.fileOperations.downloadFile(dirPath, filePath, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
 
 				localName = os.path.basename(filePath)
 				file.name = localName
@@ -138,7 +137,7 @@ class RemoteFileProcessor:
 	def processSTRM(
 		self,
 		file,
-		localDirPath,
+		dirPath,
 		driveID,
 		rootFolderID,
 		parentFolderID,
@@ -146,19 +145,19 @@ class RemoteFileProcessor:
 	):
 		fileID = file.id
 		remoteName = file.name
-		modifiedTime = file.modifiedTime
 
 		with self.fileLock:
-			strmPath = helpers.generateFilePath(localDirPath, remoteName)
-			self.fileOperations.downloadFile(localDirPath, strmPath, fileID, modifiedTime=modifiedTime, encrypted=file.encrypted)
+			filePath = helpers.generateFilePath(dirPath, remoteName)
+			self.fileOperations.downloadFile(dirPath, filePath, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
 
+		localName = os.path.basename(filePath)
 		file = (
 			driveID,
 			rootFolderID,
 			parentFolderID,
 			fileID,
 			False,
-			os.path.basename(strmPath),
+			localName,
 			remoteName,
 			True,
 			True,
@@ -167,10 +166,10 @@ class RemoteFileProcessor:
 
 	def processVideo(
 		self,
-		video,
+		file,
 		mediaAssets,
 		folderSettings,
-		localDirPath,
+		dirPath,
 		syncRootPath,
 		driveID,
 		rootFolderID,
@@ -178,26 +177,23 @@ class RemoteFileProcessor:
 		cachedFiles,
 		originalFolder,
 	):
-		remoteName = video.name
-		mediaType = video.media
-		basename = video.basename
-		modifiedTime = video.modifiedTime
-		fileID = video.id
-		strmContent = helpers.createSTRMContents(driveID, fileID, video.encrypted, video.contents)
-		strmName = f"{basename}.strm"
+		fileID = file.id
+		remoteName = file.name
+		filename = f"{file.basename}.strm"
+		strmContent = helpers.createSTRMContents(driveID, fileID, file.encrypted, file.contents)
 
 		with self.fileLock:
-			strmPath = helpers.generateFilePath(localDirPath, strmName)
-			self.fileOperations.createFile(localDirPath, strmPath, strmContent, modifiedTime=modifiedTime, mode="w+")
+			filePath = helpers.generateFilePath(dirPath, filename)
+			self.fileOperations.createFile(dirPath, filePath, strmContent, modifiedTime=file.modifiedTime, mode="w+")
 
-		localName = os.path.basename(strmPath)
-		video.basename = localName.replace(".strm", "")
+		localName = os.path.basename(filePath)
+		file.name = localName
 		file = (
 			driveID,
 			rootFolderID,
 			parentFolderID,
 			fileID,
-			strmPath.replace(syncRootPath, "") if not originalFolder else False,
+			filePath.replace(syncRootPath, "") if not originalFolder else False,
 			localName,
 			remoteName,
 			True,
@@ -228,7 +224,7 @@ class LocalFileProcessor:
 	):
 		syncRootPath = syncRootPath + os.sep
 		processingDirPath = os.path.join(syncRootPath, "[gDrive] Processing", remoteDirPath)
-		localDirPath = os.path.join(syncRootPath, remoteDirPath)
+		dirPath = os.path.join(syncRootPath, remoteDirPath)
 		videos = files.get("video")
 		mediaAssets = files.get("media_assets")
 
@@ -243,11 +239,8 @@ class LocalFileProcessor:
 						video,
 						mediaAssets,
 						folderSettings,
-						localDirPath,
+						dirPath,
 						syncRootPath,
-						driveID,
-						rootFolderID,
-						parentFolderID,
 						folderRestructure,
 						fileRenaming,
 						processingDirPath,
@@ -262,14 +255,11 @@ class LocalFileProcessor:
 						self.processMediaAssets,
 						assets,
 						syncRootPath,
-						localDirPath,
+						dirPath,
+						processingDirPath,
 						None,
 						True,
 						True,
-						driveID,
-						rootFolderID,
-						parentFolderID,
-						processingDirPath,
 					) for assetName, assets in mediaAssets.items() if assets
 				]
 
@@ -277,32 +267,29 @@ class LocalFileProcessor:
 		self,
 		mediaAssets,
 		syncRootPath,
-		localDirPath,
+		dirPath,
+		processingDirPath,
 		videoFilename,
 		originalName,
 		originalFolder,
-		driveID,
-		rootFolderID,
-		parentFolderID,
-		processingDirPath,
 	):
 
 		for assetType, assets in list(mediaAssets.items()):
 
 			for file in assets:
-				remoteFilename = file.name
 				fileID = file.id
+				remoteName = file.name
 
 				if not originalName:
 
 					if assetType == "subtitles":
 						language = ""
-						_, fileExtension = os.path.splitext(remoteFilename)
+						_, fileExtension = os.path.splitext(remoteName)
 
 						if file.language:
 							language += f".{file.language}"
 
-						if re.search("forced\.[\w]*$", remoteFilename, re.IGNORECASE):
+						if re.search("forced\.[\w]*$", remoteName, re.IGNORECASE):
 							language += ".Forced"
 
 						fileExtension = f"{language}{fileExtension}"
@@ -310,23 +297,18 @@ class LocalFileProcessor:
 					elif assetType in ("poster", "fanart"):
 						fileExtension = f"-{assetType}.jpg"
 
-					localFilename = f"{videoFilename}{fileExtension}"
+					filename = f"{videoFilename}{fileExtension}"
 				else:
-					localFilename = remoteFilename
+					filename = remoteName
 
-				filePath = os.path.join(processingDirPath, remoteFilename)
+				filePath = os.path.join(processingDirPath, remoteName)
 
 				with self.fileLock:
-					filePath = self.fileOperations.renameFile(syncRootPath, filePath, localDirPath, localFilename)
+					filePath = self.fileOperations.renameFile(syncRootPath, filePath, dirPath, filename)
 
 				file = {
-					"drive_id": driveID,
-					"root_folder_id": rootFolderID,
-					"parent_folder_id": parentFolderID,
-					"file_id": fileID,
 					"local_path": filePath.replace(syncRootPath, "") if not originalFolder else False,
 					"local_name": os.path.basename(filePath),
-					"remote_name": remoteFilename,
 					"original_name": originalName,
 					"original_folder": originalFolder,
 				}
@@ -338,80 +320,67 @@ class LocalFileProcessor:
 
 	def processVideo(
 		self,
-		video,
+		file,
 		mediaAssets,
 		folderSettings,
-		localDirPath,
+		dirPath,
 		syncRootPath,
-		driveID,
-		rootFolderID,
-		parentFolderID,
 		folderRestructure,
 		fileRenaming,
 		processingDirPath,
 	):
-		remoteName = video.name
-		mediaType = video.media
-		basename = video.basename
-		ptnName = video.ptn_name
-		fileID = video.id
-		strmPath = os.path.join(processingDirPath, f"{basename}.strm")
+		fileID = file.id
+		mediaType = file.media
+		remoteName = file.name
+		ptnName = file.ptn_name
+		filename = f"{file.basename}.strm"
+		filePath = os.path.join(processingDirPath, filename)
 		originalName = originalFolder = True
 		newFilename = False
 
 		if mediaType in ("episode", "movie"):
 
 			with self.tmdbLock:
-				modifiedName = video.formatName()
+				modifiedName = file.formatName()
 
 			newFilename = modifiedName.get("filename") if modifiedName else False
 
 		if folderRestructure and newFilename:
 
 			if mediaType == "movie":
-				localDirPath = os.path.join(syncRootPath, "[gDrive] Movies", newFilename)
+				dirPath = os.path.join(syncRootPath, "[gDrive] Movies", newFilename)
 
 			elif mediaType == "episode":
-				localDirPath = os.path.join(
+				dirPath = os.path.join(
 					syncRootPath,
 					"[gDrive] Series",
 					modifiedName["title"],
-					f"Season {video.season}",
+					f"Season {file.season}",
 				)
 
 			originalFolder = False
 
 		if fileRenaming and newFilename:
-			strmName = f"{newFilename}.strm"
+			filename = f"{newFilename}.strm"
 			originalName = False
-		else:
-			strmName = f"{basename}.strm"
 
 		if ptnName in mediaAssets:
 			self.processMediaAssets(
 				mediaAssets[ptnName],
 				syncRootPath,
-				localDirPath,
+				dirPath,
+				processingDirPath,
 				newFilename,
 				originalName,
 				originalFolder,
-				driveID,
-				rootFolderID,
-				parentFolderID,
-				processingDirPath,
 			)
 
 		with self.fileLock:
-			strmPath = self.fileOperations.renameFile(syncRootPath, strmPath, localDirPath, strmName)
+			filePath = self.fileOperations.renameFile(syncRootPath, filePath, dirPath, filename)
 
 		file = {
-			"drive_id": driveID,
-			"root_folder_id": rootFolderID,
-			"parent_folder_id": parentFolderID,
-			"file_id": fileID,
-			"local_path": strmPath.replace(syncRootPath, "") if not originalFolder else False,
-			"local_name": os.path.basename(strmPath),
-			"remote_name": remoteName,
+			"local_path": filePath.replace(syncRootPath, "") if not originalFolder else False,
+			"local_name": os.path.basename(filePath),
 			"original_name": originalName,
 			"original_folder": originalFolder,
 		}
