@@ -20,7 +20,7 @@ class Syncer:
 		self.settings = settings
 		self.cache = cache.Cache()
 
-	def sortChanges(self, changes, driveID):
+	def sortChanges(self, changes):
 		trashed, oldFolders, newFolders, files = [], [], [], []
 
 		for change in changes:
@@ -57,7 +57,7 @@ class Syncer:
 		if not changes:
 			return
 
-		changes = self.sortChanges(changes, driveID)
+		changes = self.sortChanges(changes)
 		self.deleted = False
 		newFiles = {}
 		syncedIDs = []
