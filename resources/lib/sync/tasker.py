@@ -153,6 +153,7 @@ class Tasker:
 
 			syncRootPath = os.path.join(syncRootPath, "gDrive")
 			self.cache.addGlobalData({"local_path": syncRootPath, "operating_system": os.name})
+			self.fileOperations.createDirs(syncRootPath)
 
 		if not driveSettings:
 			modes = ["Sync at set inverval", "Sync at set time of day"]
