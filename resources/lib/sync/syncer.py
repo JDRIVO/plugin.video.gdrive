@@ -20,6 +20,31 @@ class Syncer:
 		self.settings = settings
 		self.cache = cache.Cache()
 
+	def sortChanges(self, changes, driveID):
+		trashed, oldFolders, newFolders, files = [], [], [], []
+
+		for change in changes:
+			file = change["file"]
+
+			if file["trashed"]:
+				trashed.append(file)
+				continue
+
+			file["name"] = filesystem.helpers.removeProhibitedFSchars(file["name"])
+
+			if file["mimeType"] == "application/vnd.google-apps.folder":
+				cachedDirectory = self.cache.getDirectory(file["id"])
+
+				if cachedDirectory:
+					oldFolders.append(file)
+				else:
+					newFolders.append(file)
+
+			else:
+				files.append(file)
+
+		return trashed + oldFolders + newFolders + files
+
 	def syncChanges(self, driveID):
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
@@ -32,39 +57,32 @@ class Syncer:
 		if not changes:
 			return
 
+		changes = self.sortChanges(changes, driveID)
 		self.deleted = False
 		newFiles = {}
 		syncedIDs = []
 
-		try:
-			changes = sorted(changes, key=lambda i: i["file"]["trashed"], reverse=True)
-		except KeyError:
-			pass
-
-		for change in changes:
-			file = change["file"]
+		for file in changes:
 			fileID = file["id"]
 
 			if fileID in syncedIDs:
 				continue
 
 			syncedIDs.append(fileID)
-			parentFolderID = file.get("parents")
-
-			if not parentFolderID:
-				# file not inside a folder
-				continue
 
 			if file["trashed"]:
 				self.syncDeletions(file, syncRootPath, drivePath)
-			else:
-				file["name"] = filesystem.helpers.removeProhibitedFSchars(file["name"])
-				parentFolderID = parentFolderID[0]
+				continue
 
-				if file["mimeType"] == "application/vnd.google-apps.folder":
-					self.syncFolderChanges(file, parentFolderID, driveID, syncRootPath, drivePath, syncedIDs)
-				else:
-					self.syncFileChanges(file, parentFolderID, driveID, syncRootPath, drivePath, newFiles)
+			try:
+				parentFolderID = file["parents"][0]
+			except:
+				parentFolderID = None
+
+			if file["mimeType"] == "application/vnd.google-apps.folder":
+				self.syncFolderChanges(file, parentFolderID, driveID, syncRootPath, drivePath, syncedIDs)
+			else:
+				self.syncFileChanges(file, parentFolderID, driveID, syncRootPath, drivePath, newFiles)
 
 		if newFiles:
 			self.syncFileAdditions(newFiles, syncRootPath, driveID)
@@ -119,13 +137,6 @@ class Syncer:
 			if not rootFolderID:
 				return
 
-			directory = {
-				"drive_id": driveID,
-				"folder_id": folderID,
-				"local_path": dirPath,
-				"parent_folder_id": parentFolderID if parentFolderID != driveID else folderID,
-				"root_folder_id": rootFolderID,
-			}
 			folderSettings = self.cache.getFolder(rootFolderID)
 			self.syncFolderAdditions(syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, syncedIDs)
 			return
@@ -140,11 +151,24 @@ class Syncer:
 			dirPath, rootFolderID = self.cloudService.getDirectory(self.cache, folderID)
 
 			if dirPath:
+				syncedIDs.append(parentFolderID)
+				self.cache.updateDirectory({"parent_folder_id": parentFolderID}, folderID)
+				cachedDirectory = self.cache.getDirectory(parentFolderID)
+
+				if not cachedDirectory:
+					parentsParentFolderID = self.cloudService.getParentDirectoryID(parentFolderID)
+					directory = {
+						"drive_id": driveID,
+						"folder_id": parentFolderID,
+						"local_path": os.path.split(dirPath)[0],
+						"parent_folder_id": parentsParentFolderID if parentsParentFolderID != driveID else parentsParentFolderID,
+						"root_folder_id": rootFolderID,
+					}
+					self.cache.addDirectory(directory)
+
 				oldPath = os.path.join(syncRootPath, drivePath, cachedDirectoryPath)
 				newPath = os.path.join(syncRootPath, drivePath, dirPath)
 				self.fileOperations.renameFolder(syncRootPath, oldPath, newPath)
-				cachedDirectory["local_path"] = dirPath
-				cachedDirectory["parent_folder_id"] = parentFolderID
 				self.cache.updateChildPaths(cachedDirectoryPath, dirPath, folderID)
 			else:
 				# folder moved to another root folder != existing root folder - delete current folder
@@ -154,12 +178,11 @@ class Syncer:
 
 			return
 
-		cachedDirectoryPathHead, directoryName = os.path.split(cachedDirectoryPath.rstrip(os.sep))
+		cachedDirectoryPathHead, cachedFolderName = os.path.split(cachedDirectoryPath.rstrip(os.sep))
 
-		if directoryName != folderName:
+		if cachedFolderName != folderName:
 			# folder renamed
 			newDirectoryPath = os.path.join(cachedDirectoryPathHead, folderName)
-			cachedDirectory["local_path"] = newDirectoryPath
 			oldPath = os.path.join(syncRootPath, drivePath, cachedDirectoryPath)
 			newPath = os.path.join(syncRootPath, drivePath, newDirectoryPath)
 			self.fileOperations.renameFolder(syncRootPath, oldPath, newPath)

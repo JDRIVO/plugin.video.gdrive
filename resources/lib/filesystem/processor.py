@@ -124,7 +124,7 @@ class RemoteFileProcessor:
 					rootFolderID,
 					parentFolderID,
 					fileID,
-					filePath.replace(syncRootPath, "") if originalFolder else False,
+					filePath.replace(syncRootPath, "") if not originalFolder else False,
 					localName,
 					remoteName,
 					True,
@@ -341,24 +341,25 @@ class LocalFileProcessor:
 
 			newFilename = modifiedName.get("filename") if modifiedName else False
 
-		if folderRestructure and newFilename:
+			if newFilename:
 
-			if mediaType == "movie":
-				dirPath = os.path.join(syncRootPath, "[gDrive] Movies", newFilename)
+				if fileRenaming:
+					filename = f"{newFilename}.strm"
+					originalName = False
 
-			elif mediaType == "episode":
-				dirPath = os.path.join(
-					syncRootPath,
-					"[gDrive] Series",
-					modifiedName["title"],
-					f"Season {file.season}",
-				)
+				if folderRestructure:
 
-			originalFolder = False
+					if mediaType == "movie":
+						dirPath = os.path.join(syncRootPath, "[gDrive] Movies", newFilename)
+					else:
+						dirPath = os.path.join(
+							syncRootPath,
+							"[gDrive] Series",
+							modifiedName["title"],
+							f"Season {file.season}",
+						)
 
-		if fileRenaming and newFilename:
-			filename = f"{newFilename}.strm"
-			originalName = False
+					originalFolder = False
 
 		if ptnName in mediaAssets:
 			self.processMediaAssets(
