@@ -168,19 +168,23 @@ class Cache(Database):
 	def addGlobalData(self, data):
 		self.insert("global", data)
 
-	def updateChildPaths(self, oldPath, newPath, folderID, directoryColumn="folder_id"):
-		directories = self.getDirectories(folderID, directoryColumn)
+	def updateChildPaths(self, oldPath, newPath, folderID):
+		directories = self.getDirectories(folderID, "folder_id")
+		processedIDs = set()
 
-		if not directories:
-			return
-
-		for directory in directories:
-			cahedfolderID = directory["folder_id"]
+		while directories:
+			directory = directories.pop()
 			cachedDirectoryPath = directory["local_path"]
 			modifiedPath = cachedDirectoryPath.replace(oldPath, newPath)
 			directory["local_path"] = modifiedPath
-			self.updateDirectory(directory, cahedfolderID)
-			self.updateChildPaths(oldPath, newPath, cahedfolderID, directoryColumn="parent_folder_id")
+			self.updateDirectory(directory, directory["folder_id"])
+			folderID = directory["folder_id"]
+
+			if folderID in processedIDs:
+				continue
+
+			processedIDs.add(folderID)
+			directories += self.getDirectories(folderID, "parent_folder_id")
 
 	def cleanCache(self, syncRootPath, drivePath, folderID, directoryColumn="folder_id"):
 		directories = self.getDirectories(folderID, directoryColumn)
