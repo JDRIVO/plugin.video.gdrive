@@ -175,9 +175,7 @@ class Cache(Database):
 		while directories:
 			directory = directories.pop()
 			folderID = directory["folder_id"]
-			cachedDirectoryPath = directory["local_path"]
-			modifiedPath = cachedDirectoryPath.replace(oldPath, newPath)
-			directory["local_path"] = modifiedPath
+			directory["local_path"] = directory["local_path"].replace(oldPath, newPath)
 			self.updateDirectory(directory, folderID)
 
 			if folderID in processedIDs:
