@@ -64,9 +64,9 @@ class ServerHandler(BaseHTTPRequestHandler):
 			encrypted, self.server.playbackURL, self.server.driveID = re.findall("encrypted=(.*)&url=(.*)&driveid=(.*)", postData)[0]
 
 			if encrypted == "True":
-					self.server.encrypted = True
+				self.server.encrypted = True
 			else:
-					self.server.encrypted = False
+				self.server.encrypted = False
 
 			self.server.accountManager.loadAccounts()
 			account = self.server.accountManager.getAccount(self.server.driveID)
