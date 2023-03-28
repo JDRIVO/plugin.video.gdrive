@@ -173,7 +173,7 @@ class Syncer:
 			else:
 				# folder moved to another root folder != existing root folder - delete current folder
 				drivePath = os.path.join(syncRootPath, drivePath)
-				self.cache.cleanCache(syncRootPath, drivePath, folderID, self.fileOperations)
+				self.cache.cleanCache(syncRootPath, drivePath, folderID)
 				self.deleted = True
 
 			return
