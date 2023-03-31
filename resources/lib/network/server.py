@@ -79,9 +79,8 @@ class ServerHandler(BaseHTTPRequestHandler):
 			postData = self.rfile.read(contentLength).decode("utf-8")
 			self.send_response(200)
 			self.end_headers()
-
 			fileID, dbID, dbType, transcoded = re.findall("fileid=(.*)&dbid=(.*)&dbtype=(.*)&transcoded=(.*)", postData)[0]
-			
+
 			if dbID == "False":
 				dbID = False
 				dbType = False
@@ -123,10 +122,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 			syncRootPath = self.server.cache.getSyncRootPath()
 			drivePathOld = os.path.join(syncRootPath, driveSettings["local_path"])
 			drivePathNew = os.path.join(syncRootPath, alias)
-
-			while driveID in self.server.taskManager.activeTasks:
-				time.sleep(0.1)
-
 			self.server.cache.updateDrive({"local_path": alias}, driveID)
 			self.server.fileOperations.renameFolder(syncRootPath, drivePathOld, drivePathNew)
 			xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
@@ -139,10 +134,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.end_headers()
 			driveID = re.findall("drive_id=(.*)", postData)[0]
 			self.server.taskManager.removeTask(driveID)
-
-			while driveID in self.server.taskManager.activeTasks:
-				time.sleep(0.1)
-
 			self.server.cache.deleteDrive(driveID)
 			self.server.accountManager.deleteDrive(driveID)
 			xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
@@ -161,17 +152,48 @@ class ServerHandler(BaseHTTPRequestHandler):
 		elif self.path == "/register":
 			contentLength = int(self.headers["Content-Length"]) # <--- Gets the size of data
 			postData = self.rfile.read(contentLength).decode("utf-8") # <--- Gets the data itself
-
 			accountName, clientID, clientSecret = re.findall("account=(.*)&client_id=(.*)&client_secret=(.*)", postData)[0]
 			authURL = self.server.cloudService.getAuthURL(clientID, self.server.server_port)
 			self.server.account = accounts.account.Account()
 			self.server.account.name = urllib.parse.unquote_plus(accountName)
 			self.server.account.clientID = clientID
 			self.server.account.clientSecret = clientSecret
-
 			self.send_response(303)
-			self.send_header('Location', authURL)
+			self.send_header("Location", authURL)
 			self.end_headers()
+
+		elif self.path == "/stop_folder_sync":
+			contentLength = int(self.headers["Content-Length"])
+			postData = self.rfile.read(contentLength).decode("utf-8")
+			self.send_response(200)
+			self.end_headers()
+			folderID, delete = re.findall("folder_id=(.*)&delete=(.*)", postData)[0]
+			delete = True if delete == "True" else False
+			self.server.cache.removeFolder(folderID, deleteFiles=delete)
+
+			if delete:
+				xbmcgui.Dialog().notification("gDrive", "Files have been deleted.")
+
+		elif self.path == "/stop_all_folders_sync":
+			contentLength = int(self.headers["Content-Length"])
+			postData = self.rfile.read(contentLength).decode("utf-8")
+			self.send_response(200)
+			self.end_headers()
+			driveID, delete = re.findall("drive_id=(.*)&delete=(.*)", postData)[0]
+			delete = True if delete == "True" else False
+			self.server.cache.removeAllFolders(driveID, deleteFiles=delete)
+
+			if delete:
+				xbmcgui.Dialog().notification("gDrive", "Files have been deleted.")
+
+		elif self.path == "/renew_task":
+			contentLength = int(self.headers["Content-Length"])
+			postData = self.rfile.read(contentLength).decode("utf-8")
+			self.send_response(200)
+			self.end_headers()
+			driveID = re.findall("drive_id=(.*)", postData)[0]
+			self.server.taskManager.removeTask(driveID)
+			self.server.taskManager.spawnTask(self.server.cache.getDrive(driveID), startUpRun=False)
 
 	def do_HEAD(self):
 

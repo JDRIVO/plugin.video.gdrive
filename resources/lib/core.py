@@ -43,8 +43,9 @@ class Core:
 			"list_drive": self.createDriveMenu,
 			"list_accounts": self.createAccountsMenu,
 			"list_directory": self.listDirectory,
-			"sync": self.sync,
+			"list_synced_folders": self.listSyncedFolders,
 			"video": self.playVideo,
+			"display_sync_settings": self.displaySyncSettings,
 			"resolution_priority": self.resolutionPriority,
 			"not_implemented": self.notImplemented,
 			"accounts_cm": self.accountsContextMenu,
@@ -195,7 +196,7 @@ class Core:
 
 		if driveSettings:
 			self.addMenu(
-				f"{pluginURL}?mode=not_implemented",
+				f"{pluginURL}?mode=list_synced_folders&drive_id={driveID}",
 				"[COLOR yellow][B]Synced[/B][/COLOR]",
 			)
 
@@ -334,7 +335,7 @@ class Core:
 				contextMenu = [
 					(
 						"Sync folder",
-						f"RunPlugin({pluginURL}?mode=sync&drive_id={driveID}&folder_id={folderID if folderID else driveID}&folder_name={folderName})",
+						f"RunPlugin({pluginURL}?mode=display_sync_settings&sync_mode=new&drive_id={driveID}&folder_id={folderID if folderID else driveID}&folder_name={folderName})",
 					)
 				]
 
@@ -347,6 +348,29 @@ class Core:
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
 
+
+	def listSyncedFolders(self):
+		pluginURL = sys.argv[0]
+		driveID = self.settings.getParameter("drive_id")
+		folders = self.cache.getFolders(driveID)	
+		self.addMenu(
+			f"{pluginURL}?mode=display_sync_settings&drive_id={driveID}&sync_mode=drive",
+			"[B][COLOR yellow]Drive Settings[/COLOR][/B]",
+			folder=False,
+		)
+
+		for folder in folders:
+			folderName = folder["local_path"]
+			folderID = folder["folder_id"]
+			self.addMenu(
+				f"{pluginURL}?mode=display_sync_settings&drive_id={driveID}&folder_id={folderID}&sync_mode=folder",
+				folderName,
+				folder=False,
+			)
+
+		xbmcplugin.setContent(self.pluginHandle, "files")
+		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
+
 	def refreshAccess(self, expiry):
 		timeNow = datetime.datetime.now()
 
@@ -354,18 +378,15 @@ class Core:
 			self.cloudService.refreshToken()
 			self.accountManager.saveAccounts()
 
-	def sync(self):
-		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
+	def displaySyncSettings(self):
 		driveID = self.settings.getParameter("drive_id")
 		folderID = self.settings.getParameter("folder_id")
 		folderName = self.settings.getParameter("folder_name")
-		serverPort = self.settings.getSettingInt("server_port", 8011)
+		mode = self.settings.getParameter("sync_mode")
 
-		data = f"drive_id={driveID}&folder_id={folderID}&folder_name={folderName}"
-		url = f"http://localhost:{serverPort}/add_sync_task"
-		req = urllib.request.Request(url, data.encode("utf-8"))
-		response = urllib.request.urlopen(req)
-		response.close()
+		syncOptions = ui.sync_settings.SyncOptions(drive_id=driveID, folder_id=folderID, accounts=self.accounts, folder_name=folderName, mode=mode)
+		syncOptions.doModal()
+		del syncOptions
 
 	def registerAccount(self):
 		selection = self.dialog.ok(

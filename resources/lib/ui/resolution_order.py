@@ -19,6 +19,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 		mediaPath = os.path.join(addon.getAddonInfo("path"), "resources", "media")
 		self.blueTexture = os.path.join(mediaPath, "blue.png")
 		self.grayTexture = os.path.join(mediaPath, "gray.png")
+		self.dGrayTexture = os.path.join(mediaPath, "dgray.png")
 
 		self.priorityList = None
 		self.shift = False
@@ -32,7 +33,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 		self.x = int((viewportWidth - w) / 2)
 		self.y = int((viewportHeight - h) / 2)
 
-		background = xbmcgui.ControlImage(self.x, self.y, w, h, os.path.join(mediaPath, "black.png"))
+		background = xbmcgui.ControlImage(self.x, self.y, w, h, self.grayTexture)
 		bar = xbmcgui.ControlImage(self.x, self.y, w, 40, self.blueTexture)
 		label = xbmcgui.ControlLabel(self.x + 10, self.y + 5, 0, 0, "Resolution Priority")
 
@@ -141,8 +142,9 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 			buttonHeight,
 			"OK",
 			font=font,
-			noFocusTexture=self.grayTexture,
+			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.blueTexture,
+			alignment=2 + 4,
 		)
 		self.buttonClose = xbmcgui.ControlButton(
 			self.x + buttonWidth + 20,
@@ -151,8 +153,9 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 			buttonHeight,
 			"Close",
 			font=font,
-			noFocusTexture=self.grayTexture,
+			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.blueTexture,
+			alignment=2 + 4,
 		)
 
 		for res in self.resolutions:
@@ -163,9 +166,10 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 					buttonWidth,
 					buttonHeight,
 					res,
-					noFocusTexture=self.grayTexture,
+					noFocusTexture=self.dGrayTexture,
 					focusTexture=self.blueTexture,
 					font=font,
+					alignment=2 + 4,
 				)
 			)
 			spacing += 30
