@@ -355,7 +355,7 @@ class Core:
 		folders = self.cache.getFolders(driveID)	
 		self.addMenu(
 			f"{pluginURL}?mode=display_sync_settings&drive_id={driveID}&sync_mode=drive",
-			"[B][COLOR yellow]Drive Settings[/COLOR][/B]",
+			"[B][COLOR yellow]Drive settings[/COLOR][/B]",
 			folder=False,
 		)
 
