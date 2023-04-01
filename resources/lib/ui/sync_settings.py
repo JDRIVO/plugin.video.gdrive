@@ -446,8 +446,9 @@ class SyncOptions(xbmcgui.WindowDialog):
 				self.dialog.ok("gDrive", "You must assign a sync frequency")
 				return
 
+		self.close()
+
 		if self.displayMode == "new":
-			self.close()
 			self.dialog.notification("gDrive", "Syncing files. A notification will appear when this task has completed.")
 
 			if globalSettings:
@@ -484,7 +485,6 @@ class SyncOptions(xbmcgui.WindowDialog):
 			xbmc.executebuiltin("Container.Refresh")
 
 		else:
-			self.close()
 
 			if driveSettings:
 				self.cache.updateDrive(driveSettings, self.driveID)
