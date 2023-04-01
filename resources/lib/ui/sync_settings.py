@@ -481,6 +481,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 			req = urllib.request.Request(url, data.encode("utf8"))
 			response = urllib.request.urlopen(req)
 			response.close()
+			xbmc.executebuiltin("Container.Refresh")
 
 		else:
 			self.close()
