@@ -157,7 +157,6 @@ class Tasker:
 			self.activeTasks.remove(driveID)
 
 	def createTask(self, driveID, folderID, folderName):
-		self.dialog.notification("gDrive", "Syncing files. A notification will appear when this task has completed.")
 		self.encrypter.setup(settings=self.settings)
 		self.accountManager.loadAccounts()
 		self.accounts = self.accountManager.accounts
