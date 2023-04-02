@@ -348,7 +348,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 		self.close()
 		data = f"folder_id={self.folderID}&delete=False"
 		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_folder_sync"
-		req = urllib.request.Request(url, data.encode("utf8"))
+		req = urllib.request.Request(url, data.encode("utf-8"))
 		response = urllib.request.urlopen(req)
 		response.close()
 		xbmc.executebuiltin("Container.Refresh")
@@ -362,7 +362,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 		self.close()
 		data = f"drive_id={self.driveID}&delete=False"
 		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_all_folders_sync"
-		req = urllib.request.Request(url, data.encode("utf8"))
+		req = urllib.request.Request(url, data.encode("utf-8"))
 		response = urllib.request.urlopen(req)
 		response.close()
 		xbmc.executebuiltin("Container.Refresh")
@@ -377,7 +377,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 		self.dialog.notification("gDrive", "Files are now being deleted. A notication will appear when they've been deleted.")
 		data = f"folder_id={self.folderID}&delete=True"
 		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_folder_sync"
-		req = urllib.request.Request(url, data.encode("utf8"))
+		req = urllib.request.Request(url, data.encode("utf-8"))
 		response = urllib.request.urlopen(req)
 		response.close()
 		xbmc.executebuiltin("Container.Refresh")
@@ -392,7 +392,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 		self.dialog.notification("gDrive", "Files are now being deleted. A notication will appear when they've been deleted.")
 		data = f"drive_id={self.driveID}&delete=True"
 		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_all_folders_sync"
-		req = urllib.request.Request(url, data.encode("utf8"))
+		req = urllib.request.Request(url, data.encode("utf-8"))
 		response = urllib.request.urlopen(req)
 		response.close()
 		xbmc.executebuiltin("Container.Refresh")
@@ -479,7 +479,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 			self.cache.addFolder(folderSettings)
 			data = f"drive_id={self.driveID}&folder_id={self.folderID}&folder_name={self.folderName}"
 			url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/add_sync_task"
-			req = urllib.request.Request(url, data.encode("utf8"))
+			req = urllib.request.Request(url, data.encode("utf-8"))
 			response = urllib.request.urlopen(req)
 			response.close()
 			xbmc.executebuiltin("Container.Refresh")
@@ -490,7 +490,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 				self.cache.updateDrive(driveSettings, self.driveID)
 				data = f"drive_id={self.driveID}"
 				url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/renew_task"
-				req = urllib.request.Request(url, data.encode("utf8"))
+				req = urllib.request.Request(url, data.encode("utf-8"))
 				response = urllib.request.urlopen(req)
 				response.close()
 
