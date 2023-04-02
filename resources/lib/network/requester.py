@@ -23,7 +23,7 @@ def makeRequest(url, data=None, headers=HEADERS, cookie=None, download=False, me
 		headers = HEADERS_FORM_ENCODED
 
 	if data:
-		data = urllib.parse.urlencode(data).encode("utf8")
+		data = urllib.parse.urlencode(data).encode("utf-8")
 
 	req = urllib.request.Request(url, data, headers)
 
