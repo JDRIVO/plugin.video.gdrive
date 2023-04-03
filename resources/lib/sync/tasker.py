@@ -54,6 +54,19 @@ class Tasker:
 		replace = (dt.minute // interval)*interval
 		return dt.replace(minute = replace, second=0, microsecond=0)
 
+	def sync(self, driveID):
+		self.activeTasks.append(driveID)
+
+		try:
+
+			with self.taskLock:
+				self.syncer.syncChanges(driveID)
+
+		except Exception as e:
+			xbmc.log("gdrive error: " + str(e), xbmc.LOGERROR)
+
+		self.activeTasks.remove(driveID)
+
 	def createTaskID(self):
 
 		with self.idLock:
@@ -111,19 +124,7 @@ class Tasker:
 				continue
 
 			startUpRun = False
-			self.activeTasks.append(driveID)
-
-			try:
-
-				with self.taskLock:
-					self.syncer.syncChanges(driveID)
-
-			except Exception as e:
-				xbmc.log("gdrive error: " + str(e), xbmc.LOGERROR)
-				self.activeTasks.remove(driveID)
-				continue
-
-			self.activeTasks.remove(driveID)
+			self.sync(driveID)
 			lastUpdate = time.time()
 
 	def startScheduledTask(self, startupSync, taskFrequency, driveID, taskID, startUpRun=True):
@@ -149,19 +150,7 @@ class Tasker:
 				continue
 
 			startUpRun = False
-			self.activeTasks.append(driveID)
-
-			try:
-
-				with self.taskLock:
-					self.syncer.syncChanges(driveID)
-
-			except Exception as e:
-				xbmc.log("gdrive error: " + str(e), xbmc.LOGERROR)
-				self.activeTasks.remove(driveID)
-				continue
-
-			self.activeTasks.remove(driveID)
+			self.sync(driveID)
 
 	def createTask(self, driveID, folderID, folderName):
 		self.encrypter.setup(settings=self.settings)

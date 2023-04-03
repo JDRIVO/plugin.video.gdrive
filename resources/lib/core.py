@@ -47,6 +47,7 @@ class Core:
 			"video": self.playVideo,
 			"display_sync_settings": self.displaySyncSettings,
 			"resolution_priority": self.resolutionPriority,
+			"force_sync": self.forceSync,
 			"not_implemented": self.notImplemented,
 			"accounts_cm": self.accountsContextMenu,
 			"list_shared_drives": self.listSharedDrives,
@@ -158,8 +159,8 @@ class Core:
 
 			contextMenu = [
 				(
-					"Force Sync",
-					f"RunPlugin({pluginURL}?mode=not_implemented&drive_id={driveID})",
+					"Force sync",
+					f"RunPlugin({pluginURL}?mode=force_sync&drive_id={driveID})",
 				),
 				(
 					"Rename",
@@ -380,6 +381,15 @@ class Core:
 		if timeNow >= expiry:
 			self.cloudService.refreshToken()
 			self.accountManager.saveAccounts()
+
+	def forceSync(self):
+		driveID = self.settings.getParameter("drive_id")
+		serverPort = self.settings.getSettingInt("server_port", 8011)
+		url = f"http://localhost:{serverPort}/force_sync"
+		data = f"drive_id={driveID}"
+		req = urllib.request.Request(url, data.encode("utf-8"))
+		response = urllib.request.urlopen(req)
+		response.close()
 
 	def displaySyncSettings(self):
 		driveID = self.settings.getParameter("drive_id")
@@ -665,7 +675,7 @@ class Core:
 		self.accountManager.saveAccounts()
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/play_url"
-		data = f"encrypted={encrypted}&url={driveURL}&driveid={driveID}"
+		data = f"encrypted={encrypted}&url={driveURL}&drive_id={driveID}"
 		req = urllib.request.Request(url, data.encode("utf-8"))
 
 		try:
@@ -685,9 +695,9 @@ class Core:
 			item.setSubtitles(subtitles)
 
 		if dbID:
-			data = f"fileid={fileID}&dbid={dbID}&dbtype={dbType}&transcoded={transcoded}"
+			data = f"file_id={fileID}&db_id={dbID}&db_type={dbType}&transcoded={transcoded}"
 		else:
-			data = f"fileid={fileID}&dbid=False&dbtype=False&transcoded={transcoded}"
+			data = f"file_id={fileID}&db_id=False&db_type=False&transcoded={transcoded}"
 
 		xbmcplugin.setResolvedUrl(self.pluginHandle, True, item)
 		url = f"http://localhost:{serverPort}/start_player"

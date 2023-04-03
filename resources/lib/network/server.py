@@ -61,7 +61,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.server.failed = False
 			contentLength = int(self.headers["Content-Length"]) # <--- Gets the size of data
 			postData = self.rfile.read(contentLength).decode("utf-8") # <--- Gets the data itself
-			encrypted, self.server.playbackURL, self.server.driveID = re.findall("encrypted=(.*)&url=(.*)&driveid=(.*)", postData)[0]
+			encrypted, self.server.playbackURL, self.server.driveID = re.findall("encrypted=(.*)&url=(.*)&drive_id=(.*)", postData)[0]
 
 			if encrypted == "True":
 				self.server.encrypted = True
@@ -79,7 +79,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			postData = self.rfile.read(contentLength).decode("utf-8")
 			self.send_response(200)
 			self.end_headers()
-			fileID, dbID, dbType, transcoded = re.findall("fileid=(.*)&dbid=(.*)&dbtype=(.*)&transcoded=(.*)", postData)[0]
+			fileID, dbID, dbType, transcoded = re.findall("file_id=(.*)&db_id=(.*)&db_type=(.*)&transcoded=(.*)", postData)[0]
 
 			if dbID == "False":
 				dbID = False
@@ -194,6 +194,14 @@ class ServerHandler(BaseHTTPRequestHandler):
 			driveID = re.findall("drive_id=(.*)", postData)[0]
 			self.server.taskManager.removeTask(driveID)
 			self.server.taskManager.spawnTask(self.server.cache.getDrive(driveID), startUpRun=False)
+
+		elif self.path == "/force_sync":
+			contentLength = int(self.headers["Content-Length"])
+			postData = self.rfile.read(contentLength).decode("utf-8")
+			self.send_response(200)
+			self.end_headers()
+			driveID = re.findall("drive_id=(.*)", postData)[0]
+			self.server.taskManager.sync(driveID)
 
 	def do_HEAD(self):
 
