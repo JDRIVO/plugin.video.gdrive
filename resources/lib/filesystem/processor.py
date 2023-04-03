@@ -17,7 +17,6 @@ class RemoteFileProcessor:
 		self.settings = settings
 		self.cache = cache.Cache()
 		self.fileLock = threading.Lock()
-		self.cacheLock = threading.Lock()
 
 	def processFiles(
 		self,
@@ -93,8 +92,7 @@ class RemoteFileProcessor:
 					) for assetName, assets in mediaAssets.items() if assets
 				]
 
-		with self.cacheLock:
-			self.cache.addFiles(cachedFiles)
+		self.cache.addFiles(cachedFiles)
 
 	def processMediaAssets(
 		self,
@@ -204,7 +202,6 @@ class LocalFileProcessor:
 		self.settings = settings
 		self.cache = cache.Cache()
 		self.tmdbLock = threading.Lock()
-		self.cacheLock = threading.Lock()
 		self.fileLock = threading.Lock()
 
 	def processFiles(
@@ -307,9 +304,7 @@ class LocalFileProcessor:
 				"original_name": originalName,
 				"original_folder": originalFolder,
 			}
-
-			with self.cacheLock:
-				self.cache.updateFile(file, fileID)
+			self.cache.updateFile(file, fileID)
 
 	def processVideo(
 		self,
@@ -378,6 +373,4 @@ class LocalFileProcessor:
 			"original_name": originalName,
 			"original_folder": originalFolder,
 		}
-
-		with self.cacheLock:
-			self.cache.updateFile(file, fileID)
+		self.cache.updateFile(file, fileID)
