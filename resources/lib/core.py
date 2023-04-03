@@ -369,11 +369,11 @@ class Core:
 			self.addMenu(
 				f"{pluginURL}?mode=display_sync_settings&drive_id={driveID}&folder_id={folderID}&sync_mode=folder",
 				f"[COLOR lime][B]{folderName}[/B][/COLOR]",
-				folder=False,
+				folder=True,
 			)
 
 		xbmcplugin.setContent(self.pluginHandle, "files")
-		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
+		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_FILE)
 
 	def refreshAccess(self, expiry):
 		timeNow = datetime.datetime.now()
@@ -396,6 +396,7 @@ class Core:
 		folderID = self.settings.getParameter("folder_id")
 		folderName = self.settings.getParameter("folder_name")
 		mode = self.settings.getParameter("sync_mode")
+		self.succeeded=False
 
 		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, folder_id=folderID, accounts=self.accounts, folder_name=folderName, mode=mode)
 		syncSettings.doModal()
