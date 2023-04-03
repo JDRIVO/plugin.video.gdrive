@@ -23,11 +23,6 @@ class ThreadPool(queue.Queue, xbmc.Monitor):
 	def __exit__(self, exc_type, exc_val, exc_tb):
 		self.shutdown()
 
-	def createWorkers(self):
-
-		for _ in range(self.maxWorkers):
-			threading.Thread(target=self.worker).start()
-
 	def decrementTasks(self):
 		self.tasksRemaining["tasks"] -= 1
 
@@ -36,6 +31,11 @@ class ThreadPool(queue.Queue, xbmc.Monitor):
 
 	def setTasks(self, taskNumber):
 		self.tasksRemaining["tasks"] = taskNumber
+
+	def createWorkers(self):
+
+		for _ in range(self.maxWorkers):
+			threading.Thread(target=self.worker).start()
 
 	def worker(self):
 
