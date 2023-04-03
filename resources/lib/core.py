@@ -397,9 +397,9 @@ class Core:
 		folderName = self.settings.getParameter("folder_name")
 		mode = self.settings.getParameter("sync_mode")
 
-		syncOptions = ui.sync_settings.SyncOptions(drive_id=driveID, folder_id=folderID, accounts=self.accounts, folder_name=folderName, mode=mode)
-		syncOptions.doModal()
-		del syncOptions
+		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, folder_id=folderID, accounts=self.accounts, folder_name=folderName, mode=mode)
+		syncSettings.doModal()
+		del syncSettings
 
 	def registerAccount(self):
 		selection = self.dialog.ok(

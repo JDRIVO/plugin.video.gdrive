@@ -10,7 +10,7 @@ import constants
 from .. import sync
 
 
-class SyncOptions(xbmcgui.WindowDialog):
+class SyncSettings(xbmcgui.WindowDialog):
 	ACTION_MOVE_LEFT = 1
 	ACTION_MOVE_RIGHT = 2
 	ACTION_MOVE_UP = 3
@@ -346,12 +346,14 @@ class SyncOptions(xbmcgui.WindowDialog):
 			return
 
 		self.close()
+		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
 		data = f"folder_id={self.folderID}&delete=False"
 		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_folder_sync"
 		req = urllib.request.Request(url, data.encode("utf-8"))
 		response = urllib.request.urlopen(req)
 		response.close()
 		xbmc.executebuiltin("Container.Refresh")
+		xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
 
 	def stopAllFoldersSync(self, *args):
 		selection = self.dialog.yesno("gDrive", "Are you sure you want to stop syncing all folders?")
@@ -360,12 +362,14 @@ class SyncOptions(xbmcgui.WindowDialog):
 			return
 
 		self.close()
+		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
 		data = f"drive_id={self.driveID}&delete=False"
 		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_all_folders_sync"
 		req = urllib.request.Request(url, data.encode("utf-8"))
 		response = urllib.request.urlopen(req)
 		response.close()
 		xbmc.executebuiltin("Container.Refresh")
+		xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
 
 	def stopFolderSyncAndDelete(self, *args):
 		selection = self.dialog.yesno("gDrive", "Are you sure you want to stop syncing this folder and delete its files?")
@@ -374,6 +378,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 			return
 
 		self.close()
+		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
 		self.dialog.notification("gDrive", "Files are now being deleted. A notication will appear when they've been deleted.")
 		data = f"folder_id={self.folderID}&delete=True"
 		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_folder_sync"
@@ -381,6 +386,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 		response = urllib.request.urlopen(req)
 		response.close()
 		xbmc.executebuiltin("Container.Refresh")
+		xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
 
 	def stopAllFoldersSyncAndDelete(self, *args):
 		selection = self.dialog.yesno("gDrive", "Are you sure you want to stop syncing all folders and delete their files?")
@@ -389,6 +395,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 			return
 
 		self.close()
+		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
 		self.dialog.notification("gDrive", "Files are now being deleted. A notication will appear when they've been deleted.")
 		data = f"drive_id={self.driveID}&delete=True"
 		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_all_folders_sync"
@@ -396,6 +403,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 		response = urllib.request.urlopen(req)
 		response.close()
 		xbmc.executebuiltin("Container.Refresh")
+		xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
 
 	def setSyncPath(self, button):
 		syncRootPath = self.dialog.browse(0, "Select the folder that your files will be stored in", "files")
@@ -449,6 +457,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 		self.close()
 
 		if self.displayMode == "new":
+			xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
 			self.dialog.notification("gDrive", "Syncing files. A notification will appear when this task has completed.")
 
 			if globalSettings:
@@ -483,6 +492,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 			response = urllib.request.urlopen(req)
 			response.close()
 			xbmc.executebuiltin("Container.Refresh")
+			xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
 
 		else:
 
