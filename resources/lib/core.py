@@ -41,7 +41,7 @@ class Core:
 			"validate_accounts": self.validateAccounts,
 			"delete_accounts": self.accountDeletion,
 			"list_drive": self.createDriveMenu,
-			"list_accounts": self.createAccountsMenu,
+			"list_accounts": self.listAccounts,
 			"list_directory": self.listDirectory,
 			"list_synced_folders": self.listSyncedFolders,
 			"video": self.playVideo,
@@ -227,7 +227,7 @@ class Core:
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
 
-	def createAccountsMenu(self):
+	def listAccounts(self):
 		pluginURL = sys.argv[0]
 		driveID = self.settings.getParameter("drive_id")
 		account = self.accountManager.getAccount(driveID)
@@ -250,7 +250,7 @@ class Core:
 		)
 		self.addMenu(
 			f"{pluginURL}?mode=delete_accounts&drive_id={driveID}",
-			f"[COLOR yellow][B]{self.settings.getLocalizedString(30022)}[/B][/COLOR]",
+			f"[B][COLOR yellow]{self.settings.getLocalizedString(30022)}[/COLOR][/B]",
 			folder=False,
 		)
 
@@ -258,7 +258,7 @@ class Core:
 			accountName = account.name
 			self.addMenu(
 				f"{pluginURL}?mode=accounts_cm&account_name={accountName}&account_index={index}&drive_id={driveID}",
-				accountName,
+				f"[COLOR lime][B]{accountName}[/B][/COLOR]",
 				folder=False,
 			)
 
@@ -322,22 +322,25 @@ class Core:
 			if folderSettings:
 				contextMenu = [
 					(
-						"Folders Sync Settings",
-						f"RunPlugin({pluginURL}?mode=not_implemented&drive_id={driveID}&folder_id={folderID if folderID else driveID}&folder_name={folderName})",
+						"Sync settings",
+						f"RunPlugin({pluginURL}?mode=display_sync_settings&sync_mode=folder&drive_id={driveID}&folder_id={folderID if folderID else driveID}&folder_name={folderName})",
 					),
-					(
-						"Stop Folder Sync",
-						f"RunPlugin({pluginURL}?mode=not_implemented&drive_id={driveID}&folder_id={folderID if folderID else driveID}&folder_name={folderName})",
-					)
+
 				]
-				folderName = f"[COLOR crimson][B]{folderName}[/B][/COLOR]"
+				folderName = f"[COLOR lime][B]{folderName}[/B][/COLOR]"
 			else:
-				contextMenu = [
-					(
-						"Sync folder",
-						f"RunPlugin({pluginURL}?mode=display_sync_settings&sync_mode=new&drive_id={driveID}&folder_id={folderID if folderID else driveID}&folder_name={folderName})",
-					)
-				]
+				directory = self.cache.getDirectory(folderID)
+
+				if directory:
+					folderName = f"[COLOR springgreen][B]{folderName}[/B][/COLOR]"
+					contextMenu = False
+				else:
+					contextMenu = [
+						(
+							"Sync folder",
+							f"RunPlugin({pluginURL}?mode=display_sync_settings&sync_mode=new&drive_id={driveID}&folder_id={folderID if folderID else driveID}&folder_name={folderName})",
+						)
+					]
 
 			self.addMenu(
 				f"{pluginURL}?mode=list_directory&drive_id={driveID}&folder_id={folderID}",
@@ -352,7 +355,7 @@ class Core:
 	def listSyncedFolders(self):
 		pluginURL = sys.argv[0]
 		driveID = self.settings.getParameter("drive_id")
-		folders = self.cache.getFolders(driveID)	
+		folders = self.cache.getFolders(driveID)
 		self.addMenu(
 			f"{pluginURL}?mode=display_sync_settings&drive_id={driveID}&sync_mode=drive",
 			"[B][COLOR yellow]Drive settings[/COLOR][/B]",
@@ -364,7 +367,7 @@ class Core:
 			folderID = folder["folder_id"]
 			self.addMenu(
 				f"{pluginURL}?mode=display_sync_settings&drive_id={driveID}&folder_id={folderID}&sync_mode=folder",
-				folderName,
+				f"[COLOR lime][B]{folderName}[/B][/COLOR]",
 				folder=False,
 			)
 

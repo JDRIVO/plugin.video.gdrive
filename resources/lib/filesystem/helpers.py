@@ -13,6 +13,7 @@ from .. import library
 from .. import network
 from .constants import *
 from .. import filesystem
+from .folder import Folder
 from .subtitles import Subtitles
 
 
@@ -44,19 +45,18 @@ def identifyFileType(filename, fileExtension, mimeType):
 
 	fileExtension = fileExtension.lower()
 
-	if "video" in mimeType or fileExtension in VIDEO_FILE_EXTENSIONS:
+	if "video" in mimeType or fileExtension in VIDEO_EXTENSIONS:
 		return "video"
 	elif fileExtension == "nfo":
 		return "nfo"
-	elif fileExtension == "jpg":
+	elif fileExtension in ("jpg", "png"):
 		filenameLowerCase = filename.lower()
+		artwork = [type for type in MEDIA_ASSETS if type in filenameLowerCase]
 
-		if "poster" in filenameLowerCase:
-			return "poster"
-		elif "fanart" in filenameLowerCase:
-			return "fanart"
+		if artwork:
+			return artwork[0]
 
-	elif fileExtension in SUBTITLES:
+	elif fileExtension in SUBTITLE_EXTENSIONS:
 		return "subtitles"
 	elif fileExtension == "strm":
 		return "strm"
@@ -262,6 +262,7 @@ def makeFile(file, excludedTypes, encrypter):
 	file.id = fileID
 	file.type = fileType
 	file.encrypted = encrypted
+	file.extension = fileExtension
 	file.modifiedTime = convertTime(modifiedTime)
 	return file
 
@@ -272,8 +273,7 @@ def getExcludedTypes(folderSettings):
 		excluded.append("subtitles")
 
 	if not folderSettings["sync_artwork"]:
-		excluded.append("poster")
-		excluded.append("fanart")
+		excluded += list(ARTWORK)
 
 	if not folderSettings["sync_nfo"]:
 		excluded.append("nfo")

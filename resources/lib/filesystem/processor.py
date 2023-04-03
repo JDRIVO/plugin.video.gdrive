@@ -5,6 +5,7 @@ from ..threadpool import threadpool
 
 from . import helpers
 from .. import library
+from .constants import *
 from ..sync import cache
 
 
@@ -107,30 +108,28 @@ class RemoteFileProcessor:
 		originalFolder,
 	):
 
-		for assetType, assets in list(mediaAssets.items()):
+		for file in mediaAssets:
+			fileID = file.id
+			remoteName = file.name
 
-			for file in assets:
-				fileID = file.id
-				remoteName = file.name
+			with self.fileLock:
+				filePath = helpers.generateFilePath(dirPath, remoteName)
+				self.fileOperations.downloadFile(dirPath, filePath, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
 
-				with self.fileLock:
-					filePath = helpers.generateFilePath(dirPath, remoteName)
-					self.fileOperations.downloadFile(dirPath, filePath, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
-
-				localName = os.path.basename(filePath)
-				file.name = localName
-				file = (
-					driveID,
-					rootFolderID,
-					parentFolderID,
-					fileID,
-					filePath.replace(syncRootPath, "") if not originalFolder else False,
-					localName,
-					remoteName,
-					True,
-					originalFolder,
-				)
-				cachedFiles.append(file)
+			localName = os.path.basename(filePath)
+			file.name = localName
+			file = (
+				driveID,
+				rootFolderID,
+				parentFolderID,
+				fileID,
+				filePath.replace(syncRootPath, "") if not originalFolder else False,
+				localName,
+				remoteName,
+				True,
+				originalFolder,
+			)
+			cachedFiles.append(file)
 
 	def processSTRM(
 		self,
@@ -270,49 +269,47 @@ class LocalFileProcessor:
 		originalFolder,
 	):
 
-		for assetType, assets in list(mediaAssets.items()):
+		for file in list(mediaAssets):
+			fileID = file.id
+			remoteName = file.name
+			assetType = file.type
+			fileExtension = f".{file.extension}"
 
-			for file in assets:
-				fileID = file.id
-				remoteName = file.name
+			if not originalName:
 
-				if not originalName:
+				if assetType == "subtitles":
+					language = ""
 
-					if assetType == "subtitles":
-						language = ""
-						_, fileExtension = os.path.splitext(remoteName)
+					if file.language:
+						language += f".{file.language}"
 
-						if file.language:
-							language += f".{file.language}"
+					if re.search("forced\.[\w]*$", remoteName, re.IGNORECASE):
+						language += ".Forced"
 
-						if re.search("forced\.[\w]*$", remoteName, re.IGNORECASE):
-							language += ".Forced"
+					fileExtension = f"{language}{fileExtension}"
 
-						fileExtension = f"{language}{fileExtension}"
+				elif assetType in ARTWORK:
+					fileExtension = f"-{assetType}{fileExtension}"
 
-					elif assetType in ("poster", "fanart"):
-						fileExtension = f"-{assetType}.jpg"
+				filename = f"{videoFilename}{fileExtension}"
+			else:
+				filename = remoteName
 
-					filename = f"{videoFilename}{fileExtension}"
-				else:
-					filename = remoteName
+			filePath = os.path.join(processingDirPath, remoteName)
 
-				filePath = os.path.join(processingDirPath, remoteName)
+			with self.fileLock:
+				filePath = self.fileOperations.renameFile(syncRootPath, filePath, dirPath, filename)
 
-				with self.fileLock:
-					filePath = self.fileOperations.renameFile(syncRootPath, filePath, dirPath, filename)
+			mediaAssets.remove(file)
+			file = {
+				"local_path": filePath.replace(syncRootPath, "") if not originalFolder else False,
+				"local_name": os.path.basename(filePath),
+				"original_name": originalName,
+				"original_folder": originalFolder,
+			}
 
-				file = {
-					"local_path": filePath.replace(syncRootPath, "") if not originalFolder else False,
-					"local_name": os.path.basename(filePath),
-					"original_name": originalName,
-					"original_folder": originalFolder,
-				}
-
-				with self.cacheLock:
-					self.cache.updateFile(file, fileID)
-
-			del mediaAssets[assetType]
+			with self.cacheLock:
+				self.cache.updateFile(file, fileID)
 
 	def processVideo(
 		self,

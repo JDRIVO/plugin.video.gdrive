@@ -27,7 +27,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 		"Create a Kodi friendly directory structure?": {"type": "folder", "name": "folder_restructure"},
 		"Sync NFOs?": {"type": "folder", "name": "sync_nfo"},
 		"Sync Subtitles?": {"type": "folder", "name": "sync_subtitles"},
-		"Sync Fanart/Posters?": {"type": "folder", "name": "sync_artwork"},
+		"Sync Artwork?": {"type": "folder", "name": "sync_artwork"},
 	}
 
 	def __init__(self, *args, **kwargs):
@@ -226,7 +226,7 @@ class SyncOptions(xbmcgui.WindowDialog):
 				"Create a Kodi friendly directory structure?": folderSettings["folder_restructure"] if folderSettings else False,
 				"Sync NFOs?": folderSettings["sync_nfo"] if folderSettings else False,
 				"Sync Subtitles?": folderSettings["sync_subtitles"] if folderSettings else False,
-				"Sync Fanart/Posters?": folderSettings["sync_artwork"] if folderSettings else False,
+				"Sync Artwork?": folderSettings["sync_artwork"] if folderSettings else False,
 			}
 		)
 		self.setup(len(self.functions) + len(settings))

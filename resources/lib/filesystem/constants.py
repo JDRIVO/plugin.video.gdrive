@@ -1,4 +1,19 @@
-SUBTITLES = (
+ARTWORK = (
+	"banner",
+	"characterart",
+	"clearart",
+	"clearlogo",
+	"discart",
+	"fanart",
+	"thumb",
+	"keyart",
+	"landscape",
+	"poster",
+)
+
+MEDIA_ASSETS = ("subtitles", "nfo") + ARTWORK
+
+SUBTITLE_EXTENSIONS = (
 	"srt",
 	"ssa",
 	"vtt",
@@ -12,7 +27,7 @@ SUBTITLES = (
 	"smi",
 )
 
-VIDEO_FILE_EXTENSIONS = (
+VIDEO_EXTENSIONS = (
 	"webm",
 	"mkv",
 	"flv",

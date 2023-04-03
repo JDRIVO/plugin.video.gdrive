@@ -31,6 +31,7 @@ class Tasker:
 		self.syncer = sync.syncer.Syncer(self.accountManager, self.cloudService, self.encrypter, self.fileOperations, self.fileProcessor, self.localFileProcessor, self.fileTree, self.settings)
 		self.monitor = xbmc.Monitor()
 		self.dialog = xbmcgui.Dialog()
+		self.taskLock = threading.Lock()
 		self.idLock = threading.Lock()
 		self.tasks = {}
 		self.ids, self.activeTasks = [], []
@@ -54,13 +55,13 @@ class Tasker:
 		return dt.replace(minute = replace, second=0, microsecond=0)
 
 	def createTaskID(self):
-		
+
 		with self.idLock:
 			id = random.random()
 
 			while id in self.ids:
 				id = random.random()
- 
+
 			self.ids.append(id)
 			return id
 
@@ -113,7 +114,10 @@ class Tasker:
 			self.activeTasks.append(driveID)
 
 			try:
-				self.syncer.syncChanges(driveID)
+
+				with self.taskLock:
+					self.syncer.syncChanges(driveID)
+
 			except Exception as e:
 				xbmc.log("gdrive error: " + str(e), xbmc.LOGERROR)
 				self.activeTasks.remove(driveID)
@@ -148,7 +152,10 @@ class Tasker:
 			self.activeTasks.append(driveID)
 
 			try:
-				self.syncer.syncChanges(driveID)
+
+				with self.taskLock:
+					self.syncer.syncChanges(driveID)
+
 			except Exception as e:
 				xbmc.log("gdrive error: " + str(e), xbmc.LOGERROR)
 				self.activeTasks.remove(driveID)
@@ -171,7 +178,9 @@ class Tasker:
 
 		driveSettings = self.cache.getDrive(driveID)
 		folderSettings = self.cache.getFolder(folderID)
-		self.syncer.syncFolderAdditions(syncRootPath, driveSettings["local_path"], folderName, folderSettings, folderID, folderID, folderID, driveID)
+
+		with self.taskLock:
+			self.syncer.syncFolderAdditions(syncRootPath, driveSettings["local_path"], folderName, folderSettings, folderID, folderID, folderID, driveID)
 
 		if not driveSettings["page_token"]:
 			self.cache.updateDrive({"page_token": self.cloudService.getPageToken()}, driveID)

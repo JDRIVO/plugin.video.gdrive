@@ -1,6 +1,8 @@
 import os
 
 from . import helpers
+from .constants import *
+from .folder import Folder
 from ..threadpool import threadpool
 
 
@@ -9,22 +11,9 @@ class FileTree:
 	def __init__(self, cloudService):
 		self.cloudService = cloudService
 
-	@staticmethod
-	def getNode(parentFolderID, remotePath):
-		return {
-			"parent_folder_id": parentFolderID,
-			"path": remotePath,
-			"files": {
-				"strm": [],
-				"video": [],
-				"media_assets": {},
-			},
-			"directories": [],
-		}
-
-	def buildTree(self, folderID, path, excludedTypes, encrypter, syncedIDs):
+	def buildTree(self, folderID, parentFolderID, path, excludedTypes, encrypter, syncedIDs):
 		fileTree = dict()
-		fileTree[folderID] = self.getNode(folderID, path)
+		fileTree[folderID] = Folder(folderID, parentFolderID, path, path)
 		self.getContents(fileTree, [folderID], excludedTypes, encrypter, syncedIDs)
 		return fileTree
 
@@ -57,9 +46,9 @@ class FileTree:
 				syncedIDs.append(id)
 
 			if mimeType == "application/vnd.google-apps.folder":
-				path = os.path.join(fileTree[parentFolderID]["path"], helpers.removeProhibitedFSchars(item["name"]))
-				fileTree[parentFolderID]["directories"].append(id)
-				fileTree[id] = self.getNode(parentFolderID, path)
+				folderName = item["name"]
+				path = os.path.join(fileTree[parentFolderID].path, helpers.removeProhibitedFSchars(folderName))
+				fileTree[id] = Folder(id, parentFolderID, folderName, path)
 				folderIDs.append(id)
 				continue
 
@@ -68,19 +57,14 @@ class FileTree:
 			if not file:
 				continue
 
-			files = fileTree[parentFolderID]["files"]
-			mediaAssets = files["media_assets"]
+			files = fileTree[parentFolderID].files
 
-			if file.type in ("poster", "fanart", "subtitles", "nfo"):
+			if file.type in MEDIA_ASSETS:
+				mediaAssets = files["media_assets"]
 
 				if file.ptn_name not in mediaAssets:
-					mediaAssets[file.ptn_name] = {
-						"nfo": [],
-						"subtitles": [],
-						"fanart": [],
-						"poster": [],
-					}
+					mediaAssets[file.ptn_name] = []
 
-				mediaAssets[file.ptn_name][file.type].append(file)
+				mediaAssets[file.ptn_name].append(file)
 			else:
 				files[file.type].append(file)

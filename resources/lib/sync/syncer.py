@@ -5,6 +5,8 @@ import xbmc
 from . import cache
 from .. import filesystem
 from ..threadpool import threadpool
+from ..filesystem.constants import *
+from ..filesystem.folder import Folder
 
 
 class Syncer:
@@ -300,26 +302,21 @@ class Syncer:
 
 		if not newFiles.get(rootFolderID):
 			newFiles[rootFolderID] = {}
-			newFiles[rootFolderID][parentFolderID] = self.fileTree.getNode(parentFolderID, os.path.join(drivePath, dirPath))
+			newFiles[rootFolderID][parentFolderID] = Folder(parentFolderID, parentFolderID, dirPath, os.path.join(drivePath, dirPath))
 		else:
 
 			if not newFiles[rootFolderID].get(parentFolderID):
-				newFiles[rootFolderID][parentFolderID] = self.fileTree.getNode(parentFolderID, os.path.join(drivePath, dirPath))
+				newFiles[rootFolderID][parentFolderID] = Folder(parentFolderID, parentFolderID, dirPath, os.path.join(drivePath, dirPath))
 
-		if file.type in ("poster", "fanart", "subtitles", "nfo"):
-			mediaAssets = newFiles[rootFolderID][parentFolderID]["files"]["media_assets"]
+		if file.type in MEDIA_ASSETS:
+			mediaAssets = newFiles[rootFolderID][parentFolderID].files["media_assets"]
 
 			if file.ptn_name not in mediaAssets:
-				mediaAssets[file.ptn_name] = {
-					"nfo": [],
-					"subtitles": [],
-					"fanart": [],
-					"poster": [],
-				}
+				mediaAssets[file.ptn_name] = []
 
-			mediaAssets[file.ptn_name][file.type].append(file)
+			mediaAssets[file.ptn_name].append(file)
 		else:
-			newFiles[rootFolderID][parentFolderID]["files"][file.type].append(file)
+			newFiles[rootFolderID][parentFolderID].files[file.type].append(file)
 
 	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, syncedIDs=None):
 
@@ -329,22 +326,21 @@ class Syncer:
 			encrypter = False
 
 		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
-		fileTree = self.fileTree.buildTree(folderID, dirPath, excludedTypes, encrypter, syncedIDs)
+		fileTree = self.fileTree.buildTree(folderID, parentFolderID, dirPath, excludedTypes, encrypter, syncedIDs)
 		args = []
 
-		for folderID, folderInfo in fileTree.items():
-			parentFolderID = folderInfo["parent_folder_id"]
-			remotePath = folderInfo["path"]
+		for folderID, folder in fileTree.items():
+			remotePath = folder.path
 			directoryPath = os.path.join(drivePath, remotePath)
 			directory = {
 				"drive_id": driveID,
 				"folder_id": folderID,
 				"local_path": remotePath,
-				"parent_folder_id": parentFolderID,
+				"parent_folder_id": folder.parentID,
 				"root_folder_id": rootFolderID,
 			}
 			self.cache.addDirectory(directory)
-			args.append((folderInfo["files"], folderSettings, directoryPath, syncRootPath, driveID, rootFolderID, folderID))
+			args.append((folder.files, folderSettings, directoryPath, syncRootPath, driveID, rootFolderID, folderID))
 
 		with threadpool.ThreadPool(30) as pool:
 			pool.map(self.remoteFileProcessor.processFiles, args)
@@ -367,9 +363,8 @@ class Syncer:
 			fileRenaming = folderSettings["file_renaming"]
 			args = []
 
-			for folderID, tree in directories.items():
-				remotePath = tree["path"]
-				args.append((tree["files"], folderSettings, remotePath, syncRootPath, driveID, rootFolderID, folderID))
+			for folderID, folder in directories.items():
+				args.append((folder.files, folderSettings, folder.path, syncRootPath, driveID, rootFolderID, folderID))
 
 			data[folderID] = {"args": args, "folder_restructure": folderRestructure, "file_renaming": fileRenaming}
 
