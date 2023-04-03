@@ -28,6 +28,7 @@ SUBTITLE_EXTENSIONS = (
 )
 
 VIDEO_EXTENSIONS = (
+	"iso",
 	"webm",
 	"mkv",
 	"flv",
