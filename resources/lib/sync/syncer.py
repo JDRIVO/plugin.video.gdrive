@@ -326,7 +326,8 @@ class Syncer:
 			encrypter = False
 
 		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
-		fileTree = self.fileTree.buildTree(folderID, parentFolderID, dirPath, excludedTypes, encrypter, syncedIDs)
+		threadCount = self.settings.getSettingInt("thread_count", 1)
+		fileTree = self.fileTree.buildTree(folderID, parentFolderID, dirPath, excludedTypes, encrypter, syncedIDs, threadCount)
 		args = []
 
 		for folderID, folder in fileTree.items():
@@ -340,9 +341,9 @@ class Syncer:
 				"root_folder_id": rootFolderID,
 			}
 			self.cache.addDirectory(directory)
-			args.append((folder.files, folderSettings, directoryPath, syncRootPath, driveID, rootFolderID, folderID))
+			args.append((folder.files, folderSettings, directoryPath, syncRootPath, driveID, rootFolderID, folderID, threadCount))
 
-		with threadpool.ThreadPool(30) as pool:
+		with threadpool.ThreadPool(threadCount) as pool:
 			pool.map(self.remoteFileProcessor.processFiles, args)
 
 		folderRestructure = folderSettings["folder_restructure"]
@@ -351,10 +352,11 @@ class Syncer:
 		if not folderRestructure and not fileRenaming:
 			return
 
-		with threadpool.ThreadPool(30) as pool:
+		with threadpool.ThreadPool(threadCount) as pool:
 			pool.map(self.localFileProcessor.processFiles, args)
 
 	def syncFileAdditions(self, files, syncRootPath, driveID):
+		threadCount = self.settings.getSettingInt("thread_count", 1)
 		data = {}
 
 		for rootFolderID, directories in files.items():
@@ -364,13 +366,13 @@ class Syncer:
 			args = []
 
 			for folderID, folder in directories.items():
-				args.append((folder.files, folderSettings, folder.path, syncRootPath, driveID, rootFolderID, folderID))
+				args.append((folder.files, folderSettings, folder.path, syncRootPath, driveID, rootFolderID, folderID, threadCount))
 
 			data[folderID] = {"args": args, "folder_restructure": folderRestructure, "file_renaming": fileRenaming}
 
 		args = [data["args"][0] for data in data.values()]
 
-		with threadpool.ThreadPool(30) as pool:
+		with threadpool.ThreadPool(threadCount) as pool:
 			pool.map(self.remoteFileProcessor.processFiles, args)
 
 		args = [data["args"][0] for data in data.values() if data["file_renaming"] or data["folder_restructure"]]
@@ -378,5 +380,5 @@ class Syncer:
 		if not args:
 			return
 
-		with threadpool.ThreadPool(30) as pool:
+		with threadpool.ThreadPool(threadCount) as pool:
 			pool.map(self.localFileProcessor.processFiles, args)

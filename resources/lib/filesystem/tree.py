@@ -11,13 +11,13 @@ class FileTree:
 	def __init__(self, cloudService):
 		self.cloudService = cloudService
 
-	def buildTree(self, folderID, parentFolderID, path, excludedTypes, encrypter, syncedIDs):
+	def buildTree(self, folderID, parentFolderID, path, excludedTypes, encrypter, syncedIDs, threadCount):
 		fileTree = dict()
 		fileTree[folderID] = Folder(folderID, parentFolderID, path, path)
-		self.getContents(fileTree, [folderID], excludedTypes, encrypter, syncedIDs)
+		self.getContents(fileTree, [folderID], excludedTypes, encrypter, syncedIDs, threadCount)
 		return fileTree
 
-	def getContents(self, fileTree, folderIDs, excludedTypes, encrypter, syncedIDs):
+	def getContents(self, fileTree, folderIDs, excludedTypes, encrypter, syncedIDs, threadCount):
 		maxIDs = 299
 		queries = []
 
@@ -26,14 +26,14 @@ class FileTree:
 			queries.append("not trashed and " + " or ".join(f"'{id}' in parents" for id in ids))
 			folderIDs = folderIDs[maxIDs:]
 
-		with threadpool.ThreadPool(30) as pool:
+		with threadpool.ThreadPool(threadCount) as pool:
 
 			for query in queries:
 				items = self.cloudService.listDirectory(customQuery=query)
 				pool.submit(self.filterContents, fileTree, items, folderIDs, excludedTypes, encrypter, syncedIDs)
 
 		if folderIDs:
-			self.getContents(fileTree, folderIDs, excludedTypes, encrypter, syncedIDs)
+			self.getContents(fileTree, folderIDs, excludedTypes, encrypter, syncedIDs, threadCount)
 
 	def filterContents(self, fileTree, items, folderIDs, excludedTypes, encrypter, syncedIDs):
 

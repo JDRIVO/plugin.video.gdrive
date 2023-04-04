@@ -340,3 +340,11 @@ msgstr "Import Accounts"
 msgctxt "#30702"
 msgid "Export Accounts"
 msgstr "Export Accounts"
+
+msgctxt "#30800"
+msgid "Sync"
+msgstr "Sync"
+
+msgctxt "#30801"
+msgid "Thread Count"
+msgstr "Thread Count"

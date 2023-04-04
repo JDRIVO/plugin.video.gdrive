@@ -27,6 +27,7 @@ class RemoteFileProcessor:
 		driveID,
 		rootFolderID,
 		parentFolderID,
+		threadCount,
 	):
 		syncRootPath = syncRootPath + os.sep
 		dirPath = os.path.join(syncRootPath, remoteDirPath)
@@ -39,7 +40,7 @@ class RemoteFileProcessor:
 
 		if strm:
 
-			with threadpool.ThreadPool(30) as pool:
+			with threadpool.ThreadPool(threadCount) as pool:
 				[
 					pool.submit(
 						self.processSTRM,
@@ -60,7 +61,7 @@ class RemoteFileProcessor:
 
 		if videos:
 
-			with threadpool.ThreadPool(30) as pool:
+			with threadpool.ThreadPool(threadCount) as pool:
 				[
 					pool.submit(
 						self.processVideo,
@@ -77,7 +78,7 @@ class RemoteFileProcessor:
 
 		if mediaAssets:
 
-			with threadpool.ThreadPool(30) as pool:
+			with threadpool.ThreadPool(threadCount) as pool:
 				[
 					pool.submit(
 						self.processMediaAssets,
@@ -213,6 +214,7 @@ class LocalFileProcessor:
 		driveID,
 		rootFolderID,
 		parentFolderID,
+		threadCount,
 	):
 		syncRootPath = syncRootPath + os.sep
 		processingDirPath = os.path.join(syncRootPath, "[gDrive] Processing", remoteDirPath)
@@ -224,7 +226,7 @@ class LocalFileProcessor:
 			folderRestructure = folderSettings["folder_restructure"]
 			fileRenaming = folderSettings["file_renaming"]
 
-			with threadpool.ThreadPool(30) as pool:
+			with threadpool.ThreadPool(threadCount) as pool:
 				[
 					pool.submit(
 						self.processVideo,
@@ -241,7 +243,7 @@ class LocalFileProcessor:
 
 		if mediaAssets:
 
-			with threadpool.ThreadPool(30) as pool:
+			with threadpool.ThreadPool(threadCount) as pool:
 				[
 					pool.submit(
 						self.processMediaAssets,
