@@ -6,13 +6,13 @@ class Database:
 
 	def __init__(self, database):
 		self.database = database
-		self.cacheLock = threading.Lock()
+		self.dbLock = threading.Lock()
 
 	def lock(func):
 
 		def wrapper(self, *args, **kwargs):
 
-			with self.cacheLock:
+			with self.dbLock:
 				return func(self, *args, **kwargs)
 
 		return wrapper
