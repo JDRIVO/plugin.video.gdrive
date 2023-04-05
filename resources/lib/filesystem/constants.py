@@ -11,7 +11,7 @@ ARTWORK = (
 	"thumb",
 )
 
-MEDIA_ASSETS = ("subtitles", "nfo") + ARTWORK
+MEDIA_ASSETS = ("nfo", "subtitles") + ARTWORK
 
 SUBTITLE_EXTENSIONS = (
 	"ass",
