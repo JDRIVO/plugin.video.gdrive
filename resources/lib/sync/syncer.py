@@ -325,35 +325,35 @@ class Syncer:
 		else:
 			encrypter = False
 
-		folders = []
 		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
 		threadCount = self.settings.getSettingInt("thread_count", 1)
+		fileTree = self.fileTree.buildTree(folderID, parentFolderID, dirPath, excludedTypes, encrypter, syncedIDs, threadCount)
+		args = []
+
+		for folderID, folder in fileTree.items():
+			remotePath = folder.path
+			directoryPath = os.path.join(drivePath, remotePath)
+			directory = {
+				"drive_id": driveID,
+				"folder_id": folderID,
+				"local_path": remotePath,
+				"parent_folder_id": folder.parentID,
+				"root_folder_id": rootFolderID,
+			}
+			self.cache.addDirectory(directory)
+			args.append((folder.files, folderSettings, directoryPath, syncRootPath, driveID, rootFolderID, folderID, threadCount))
+
+		with threadpool.ThreadPool(threadCount) as pool:
+			pool.map(self.remoteFileProcessor.processFiles, args)
+
 		folderRestructure = folderSettings["folder_restructure"]
 		fileRenaming = folderSettings["file_renaming"]
-		fileTree = self.fileTree.buildTree(folderID, parentFolderID, dirPath, excludedTypes, encrypter, syncedIDs, threadCount)
+
+		if not folderRestructure and not fileRenaming:
+			return
 
 		with threadpool.ThreadPool(threadCount) as pool:
-
-			for folder in fileTree:
-				remotePath = folder.path
-				directoryPath = os.path.join(drivePath, remotePath)
-				directory = {
-					"drive_id": driveID,
-					"folder_id": folder.id,
-					"local_path": remotePath,
-					"parent_folder_id": folder.parentID,
-					"root_folder_id": rootFolderID,
-				}
-				self.cache.addDirectory(directory)
-				pool.submit(self.remoteFileProcessor.processFiles, folder.files, folderSettings, directoryPath, syncRootPath, driveID, rootFolderID, folder.id, threadCount)
-
-				if folderRestructure or fileRenaming:
-					folders.append(folder)
-
-		with threadpool.ThreadPool(threadCount) as pool:
-
-			for folder in folders:
-				pool.submit(self.localFileProcessor.processFiles, folder.files, folderSettings, directoryPath, syncRootPath, driveID, rootFolderID, folder.id, threadCount)
+			pool.map(self.localFileProcessor.processFiles, args)
 
 	def syncFileAdditions(self, files, syncRootPath, driveID):
 		threadCount = self.settings.getSettingInt("thread_count", 1)

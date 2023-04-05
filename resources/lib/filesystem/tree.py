@@ -14,7 +14,8 @@ class FileTree:
 	def buildTree(self, folderID, parentFolderID, path, excludedTypes, encrypter, syncedIDs, threadCount):
 		fileTree = dict()
 		fileTree[folderID] = Folder(folderID, parentFolderID, path, path)
-		yield from self.getContents(fileTree, [folderID], excludedTypes, encrypter, syncedIDs, threadCount)
+		self.getContents(fileTree, [folderID], excludedTypes, encrypter, syncedIDs, threadCount)
+		return fileTree
 
 	def getContents(self, fileTree, folderIDs, excludedTypes, encrypter, syncedIDs, threadCount):
 		maxIDs = 299
@@ -29,13 +30,12 @@ class FileTree:
 
 			for query in queries:
 				items = self.cloudService.listDirectory(customQuery=query)
-				yield from self.filterContents(fileTree, items, folderIDs, excludedTypes, encrypter, syncedIDs)
+				pool.submit(self.filterContents, fileTree, items, folderIDs, excludedTypes, encrypter, syncedIDs)
 
 		if folderIDs:
-			yield from self.getContents(fileTree, folderIDs, excludedTypes, encrypter, syncedIDs, threadCount)
+			self.getContents(fileTree, folderIDs, excludedTypes, encrypter, syncedIDs, threadCount)
 
 	def filterContents(self, fileTree, items, folderIDs, excludedTypes, encrypter, syncedIDs):
-		parentFolderIDs = set()
 
 		for item in items:
 			id = item["id"]
@@ -50,7 +50,6 @@ class FileTree:
 				path = os.path.join(fileTree[parentFolderID].path, helpers.removeProhibitedFSchars(folderName))
 				fileTree[id] = Folder(id, parentFolderID, folderName, path)
 				folderIDs.append(id)
-				parentFolderIDs.add(parentFolderID)
 				continue
 
 			file = helpers.makeFile(item, excludedTypes, encrypter)
@@ -58,7 +57,6 @@ class FileTree:
 			if not file:
 				continue
 
-			parentFolderIDs.add(parentFolderID)
 			files = fileTree[parentFolderID].files
 
 			if file.type in MEDIA_ASSETS:
@@ -70,6 +68,3 @@ class FileTree:
 				mediaAssets[file.ptn_name].append(file)
 			else:
 				files[file.type].append(file)
-
-		for id in parentFolderIDs:
-			yield fileTree[id]
