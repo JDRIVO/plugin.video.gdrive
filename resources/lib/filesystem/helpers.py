@@ -22,7 +22,7 @@ def convertTime(time):
 	return datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=datetime.timezone.utc).timestamp()
 
 def removeProhibitedFSchars(name):
-	return re.sub(r'[<>\*\?\\/:|"]*', '', name)
+	return re.sub(r'[<>\*\?\\/:|"]*', '', name.rstrip())
 
 def generateFilePath(dirPath, filename):
 	return duplicateFileCheck(dirPath, filename)
