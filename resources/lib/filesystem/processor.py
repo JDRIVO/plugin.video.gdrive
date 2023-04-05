@@ -20,15 +20,16 @@ class RemoteFileProcessor:
 
 	def processFiles(
 		self,
-		files,
+		folder,
 		folderSettings,
 		remoteDirPath,
 		syncRootPath,
 		driveID,
 		rootFolderID,
-		parentFolderID,
 		threadCount,
 	):
+		files = folder.files
+		parentFolderID = folder.id
 		syncRootPath = syncRootPath + os.sep
 		dirPath = os.path.join(syncRootPath, remoteDirPath)
 		folderRestructure = folderSettings["folder_restructure"]
@@ -110,14 +111,10 @@ class RemoteFileProcessor:
 		for file in mediaAssets:
 			fileID = file.id
 			remoteName = file.name
-
-			with self.fileLock:
-				filePath = helpers.generateFilePath(dirPath, remoteName)
-				self.fileOperations.downloadFile(dirPath, filePath, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
-
+			filePath = helpers.generateFilePath(dirPath, remoteName)
 			localName = os.path.basename(filePath)
 			file.name = localName
-			file = (
+			cacheData = (
 				driveID,
 				rootFolderID,
 				parentFolderID,
@@ -128,7 +125,10 @@ class RemoteFileProcessor:
 				True,
 				originalFolder,
 			)
-			cachedFiles.append(file)
+			cachedFiles.append(cacheData)
+
+			with self.fileLock:
+				self.fileOperations.downloadFile(dirPath, filePath, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
 
 	def processSTRM(
 		self,
@@ -141,13 +141,9 @@ class RemoteFileProcessor:
 	):
 		fileID = file.id
 		remoteName = file.name
-
-		with self.fileLock:
-			filePath = helpers.generateFilePath(dirPath, remoteName)
-			self.fileOperations.downloadFile(dirPath, filePath, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
-
+		filePath = helpers.generateFilePath(dirPath, remoteName)
 		localName = os.path.basename(filePath)
-		file = (
+		cacheData = (
 			driveID,
 			rootFolderID,
 			parentFolderID,
@@ -158,7 +154,10 @@ class RemoteFileProcessor:
 			True,
 			True,
 		)
-		cachedFiles.append(file)
+		cachedFiles.append(cacheData)
+
+		with self.fileLock:
+			self.fileOperations.downloadFile(dirPath, filePath, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
 
 	def processVideo(
 		self,
@@ -175,14 +174,10 @@ class RemoteFileProcessor:
 		remoteName = file.name
 		filename = f"{file.basename}.strm"
 		strmContent = helpers.createSTRMContents(driveID, fileID, file.encrypted, file.contents)
-
-		with self.fileLock:
-			filePath = helpers.generateFilePath(dirPath, filename)
-			self.fileOperations.createFile(dirPath, filePath, strmContent, modifiedTime=file.modifiedTime, mode="w+")
-
+		filePath = helpers.generateFilePath(dirPath, filename)
 		localName = os.path.basename(filePath)
 		file.name = localName
-		file = (
+		cacheData = (
 			driveID,
 			rootFolderID,
 			parentFolderID,
@@ -193,7 +188,10 @@ class RemoteFileProcessor:
 			True,
 			originalFolder,
 		)
-		cachedFiles.append(file)
+		cachedFiles.append(cacheData)
+
+		with self.fileLock:
+			self.fileOperations.createFile(dirPath, filePath, strmContent, modifiedTime=file.modifiedTime, mode="w+")
 
 class LocalFileProcessor:
 
@@ -207,15 +205,13 @@ class LocalFileProcessor:
 
 	def processFiles(
 		self,
-		files,
+		folder,
 		folderSettings,
 		remoteDirPath,
 		syncRootPath,
-		driveID,
-		rootFolderID,
-		parentFolderID,
 		threadCount,
 	):
+		files = folder.files
 		syncRootPath = syncRootPath + os.sep
 		processingDirPath = os.path.join(syncRootPath, "[gDrive] Processing", remoteDirPath)
 		dirPath = os.path.join(syncRootPath, remoteDirPath)

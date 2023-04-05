@@ -281,8 +281,15 @@ def getExcludedTypes(folderSettings):
 	return excluded
 
 def refreshMetadata(metadata, strmPath):
+	width = metadata['width']
+	height = metadata['height']
+	duration = metadata['durationMillis']
+
+	if not width or not height or not duration:
+		return
+
 	fileOperations = filesystem.operations.FileOperations()
 	strmContent = fileOperations.readFile(strmPath)
-	strmContent += f"&video_width={metadata['width']}&video_height={metadata['height']}&aspect_ratio={float(metadata['width']) / metadata['height']}&video_duration={float(metadata['durationMillis']) / 1000}"
+	strmContent += f"&video_width={width}&video_height={height}&aspect_ratio={float(width) / height}&video_duration={float(duration) / 1000}"
 	fileOperations.overwriteFile(strmPath, strmContent)
 	library.helpers.updateLibrary(strmPath, metadata)

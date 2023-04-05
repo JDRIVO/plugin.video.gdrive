@@ -327,58 +327,53 @@ class Syncer:
 
 		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
 		threadCount = self.settings.getSettingInt("thread_count", 1)
-		fileTree = self.fileTree.buildTree(folderID, parentFolderID, dirPath, excludedTypes, encrypter, syncedIDs, threadCount)
-		args = []
-
-		for folderID, folder in fileTree.items():
-			remotePath = folder.path
-			directoryPath = os.path.join(drivePath, remotePath)
-			directory = {
-				"drive_id": driveID,
-				"folder_id": folderID,
-				"local_path": remotePath,
-				"parent_folder_id": folder.parentID,
-				"root_folder_id": rootFolderID,
-			}
-			self.cache.addDirectory(directory)
-			args.append((folder.files, folderSettings, directoryPath, syncRootPath, driveID, rootFolderID, folderID, threadCount))
-
-		with threadpool.ThreadPool(threadCount) as pool:
-			pool.map(self.remoteFileProcessor.processFiles, args)
-
 		folderRestructure = folderSettings["folder_restructure"]
 		fileRenaming = folderSettings["file_renaming"]
-
-		if not folderRestructure and not fileRenaming:
-			return
+		fileTree = self.fileTree.buildTree(folderID, parentFolderID, dirPath, excludedTypes, encrypter, syncedIDs, threadCount)
+		folders = []
 
 		with threadpool.ThreadPool(threadCount) as pool:
-			pool.map(self.localFileProcessor.processFiles, args)
+
+			for folder in fileTree:
+				remotePath = folder.path
+				dirPath = os.path.join(drivePath, remotePath)
+				folder.path = dirPath
+				directory = {
+					"drive_id": driveID,
+					"folder_id": folder.id,
+					"local_path": remotePath,
+					"parent_folder_id": folder.parentID,
+					"root_folder_id": rootFolderID,
+				}
+				self.cache.addDirectory(directory)
+				pool.submit(self.remoteFileProcessor.processFiles, folder, folderSettings, dirPath, syncRootPath, driveID, rootFolderID, threadCount)
+
+				if folderRestructure or fileRenaming:
+					folders.append(folder)
+
+		with threadpool.ThreadPool(threadCount) as pool:
+
+			for folder in folders:
+				pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, folder.path, syncRootPath, threadCount)
 
 	def syncFileAdditions(self, files, syncRootPath, driveID):
 		threadCount = self.settings.getSettingInt("thread_count", 1)
-		data = {}
-
-		for rootFolderID, directories in files.items():
-			folderSettings = self.cache.getFolder(rootFolderID)
-			folderRestructure = folderSettings["folder_restructure"]
-			fileRenaming = folderSettings["file_renaming"]
-			args = []
-
-			for folderID, folder in directories.items():
-				args.append((folder.files, folderSettings, folder.path, syncRootPath, driveID, rootFolderID, folderID, threadCount))
-
-			data[folderID] = {"args": args, "folder_restructure": folderRestructure, "file_renaming": fileRenaming}
-
-		args = [data["args"][0] for data in data.values()]
+		folders = []
 
 		with threadpool.ThreadPool(threadCount) as pool:
-			pool.map(self.remoteFileProcessor.processFiles, args)
 
-		args = [data["args"][0] for data in data.values() if data["file_renaming"] or data["folder_restructure"]]
+			for rootFolderID, directories in files.items():
+				folderSettings = self.cache.getFolder(rootFolderID)
+				folderRestructure = folderSettings["folder_restructure"]
+				fileRenaming = folderSettings["file_renaming"]
 
-		if not args:
-			return
+				for folderID, folder in directories.items():
+					pool.submit(self.remoteFileProcessor.processFiles, folder, folderSettings, folder.path, syncRootPath, driveID, rootFolderID, threadCount)
+
+					if folderRestructure or fileRenaming:
+						folders.append((folder, folderSettings))
 
 		with threadpool.ThreadPool(threadCount) as pool:
-			pool.map(self.localFileProcessor.processFiles, args)
+
+			for folder, folderSettings in folders:
+				pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, folder.path, syncRootPath, threadCount)
