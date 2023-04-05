@@ -111,7 +111,10 @@ class RemoteFileProcessor:
 		for file in mediaAssets:
 			fileID = file.id
 			remoteName = file.name
-			filePath = helpers.generateFilePath(dirPath, remoteName)
+
+			with self.fileLock:
+				filePath = helpers.generateFilePath(dirPath, remoteName)
+
 			localName = os.path.basename(filePath)
 			file.name = localName
 			cacheData = (
@@ -141,7 +144,10 @@ class RemoteFileProcessor:
 	):
 		fileID = file.id
 		remoteName = file.name
-		filePath = helpers.generateFilePath(dirPath, remoteName)
+
+		with self.fileLock:
+			filePath = helpers.generateFilePath(dirPath, remoteName)
+
 		localName = os.path.basename(filePath)
 		cacheData = (
 			driveID,
@@ -174,7 +180,10 @@ class RemoteFileProcessor:
 		remoteName = file.name
 		filename = f"{file.basename}.strm"
 		strmContent = helpers.createSTRMContents(driveID, fileID, file.encrypted, file.contents)
-		filePath = helpers.generateFilePath(dirPath, filename)
+
+		with self.fileLock:
+			filePath = helpers.generateFilePath(dirPath, filename)
+
 		localName = os.path.basename(filePath)
 		file.name = localName
 		cacheData = (
