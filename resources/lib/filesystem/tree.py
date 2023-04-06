@@ -22,20 +22,24 @@ class FileTree:
 
 		while folderIDs:
 			ids = folderIDs[:maxIDs]
-			queries.append("not trashed and " + " or ".join(f"'{id}' in parents" for id in ids))
+			queries.append(
+				(
+					"not trashed and " + " or ".join(f"'{id}' in parents" for id in ids),
+					ids,
+				)
+			)
 			folderIDs = folderIDs[maxIDs:]
 
 		with threadpool.ThreadPool(threadCount) as pool:
 
-			for query in queries:
+			for query, parentFolderIDs in queries:
 				items = self.cloudService.listDirectory(customQuery=query)
-				yield from self.filterContents(fileTree, items, folderIDs, excludedTypes, encrypter, syncedIDs)
+				yield from self.filterContents(fileTree, items, parentFolderIDs, folderIDs, excludedTypes, encrypter, syncedIDs)
 
 		if folderIDs:
 			yield from self.getContents(fileTree, folderIDs, excludedTypes, encrypter, syncedIDs, threadCount)
 
-	def filterContents(self, fileTree, items, folderIDs, excludedTypes, encrypter, syncedIDs):
-		parentFolderIDs = set()
+	def filterContents(self, fileTree, items, parentFolderIDs, folderIDs, excludedTypes, encrypter, syncedIDs):
 
 		for item in items:
 			id = item["id"]
@@ -50,7 +54,6 @@ class FileTree:
 				path = os.path.join(fileTree[parentFolderID].path, helpers.removeProhibitedFSchars(folderName))
 				fileTree[id] = Folder(id, parentFolderID, folderName, path)
 				folderIDs.append(id)
-				parentFolderIDs.add(parentFolderID)
 				continue
 
 			file = helpers.makeFile(item, excludedTypes, encrypter)
@@ -58,7 +61,6 @@ class FileTree:
 			if not file:
 				continue
 
-			parentFolderIDs.add(parentFolderID)
 			files = fileTree[parentFolderID].files
 
 			if file.type in MEDIA_ASSETS:
