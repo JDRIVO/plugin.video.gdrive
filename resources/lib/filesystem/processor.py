@@ -113,7 +113,7 @@ class RemoteFileProcessor:
 			filePath = self.fileOperations.downloadFile(dirPath, remoteName, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
 			localName = os.path.basename(filePath)
 			file.name = localName
-			cacheData = (
+			file = (
 				driveID,
 				rootFolderID,
 				parentFolderID,
@@ -124,7 +124,7 @@ class RemoteFileProcessor:
 				True,
 				originalFolder,
 			)
-			cachedFiles.append(cacheData)
+			cachedFiles.append(file)
 
 	def processSTRM(
 		self,
@@ -139,7 +139,7 @@ class RemoteFileProcessor:
 		remoteName = file.name
 		filePath = self.fileOperations.downloadFile(dirPath, remoteName, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
 		localName = os.path.basename(filePath)
-		cacheData = (
+		file = (
 			driveID,
 			rootFolderID,
 			parentFolderID,
@@ -150,7 +150,7 @@ class RemoteFileProcessor:
 			True,
 			True,
 		)
-		cachedFiles.append(cacheData)
+		cachedFiles.append(file)
 
 	def processVideo(
 		self,
@@ -170,7 +170,7 @@ class RemoteFileProcessor:
 		filePath = self.fileOperations.createFile(dirPath, filename, strmContent, modifiedTime=file.modifiedTime, mode="w+")
 		localName = os.path.basename(filePath)
 		file.name = localName
-		cacheData = (
+		file = (
 			driveID,
 			rootFolderID,
 			parentFolderID,
@@ -181,7 +181,7 @@ class RemoteFileProcessor:
 			True,
 			originalFolder,
 		)
-		cachedFiles.append(cacheData)
+		cachedFiles.append(file)
 
 class LocalFileProcessor:
 
