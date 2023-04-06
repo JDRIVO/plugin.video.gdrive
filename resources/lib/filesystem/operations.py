@@ -94,9 +94,9 @@ class FileOperations:
 			return
 
 	@staticmethod
-	def readFile(path):
+	def readFile(filePath):
 
-		with open(path, "r") as file:
+		with open(filePath, "r") as file:
 			return file.read()
 
 	@staticmethod
