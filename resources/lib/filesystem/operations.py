@@ -1,5 +1,6 @@
 import os
 import shutil
+import threading
 
 from . import helpers
 
@@ -9,26 +10,38 @@ class FileOperations:
 	def __init__(self, **kwargs):
 		self.cloudService = kwargs.get("cloud_service")
 		self.encryption = kwargs.get("encryption")
+		self.fileLock = threading.Lock()
 
-	def downloadFile(self, dirPath, filePath, fileID, modifiedTime=None, encrypted=False):
+	def downloadFile(self, dirPath, filename, fileID, modifiedTime=None, encrypted=False):
 		self.createDirs(dirPath)
 		file = self.cloudService.downloadFile(fileID)
 
 		if file:
 
 			if encrypted:
-				self.encryption.decryptStream(file, filePath, modifiedTime=modifiedTime)
-			else:
-				self.createFile(dirPath, filePath, file.read(), modifiedTime=modifiedTime)
 
-	def createFile(self, dirPath, filePath, content, modifiedTime=None, mode="wb"):
+				with self.fileLock:
+					filePath = helpers.generateFilePath(dirPath, filename)
+					self.encryption.decryptStream(file, filePath, modifiedTime=modifiedTime)
+
+			else:
+				filePath = self.createFile(dirPath, filename, file.read(), modifiedTime=modifiedTime)
+
+			return filePath
+
+	def createFile(self, dirPath, filename, content, modifiedTime=None, mode="wb"):
 		self.createDirs(dirPath)
 
-		with open(filePath, mode) as file:
-			file.write(content)
+		with self.fileLock:
+			filePath = helpers.generateFilePath(dirPath, filename)
+
+			with open(filePath, mode) as file:
+				file.write(content)
 
 		if modifiedTime:
 			os.utime(filePath, (modifiedTime, modifiedTime))
+
+		return filePath
 
 	def deleteFile(self, syncRootPath, dirPath=None, filename=None, filePath=None):
 
@@ -52,10 +65,13 @@ class FileOperations:
 		except FileExistsError:
 			return
 
-	def renameFile(self, syncRootPath, oldPath, dirPath, newName):
+	def renameFile(self, syncRootPath, oldPath, dirPath, filename):
 		self.createDirs(dirPath)
-		newPath = helpers.duplicateFileCheck(dirPath, newName)
-		shutil.move(oldPath, newPath)
+
+		with self.fileLock:
+			newPath = helpers.duplicateFileCheck(dirPath, filename)
+			shutil.move(oldPath, newPath)
+
 		self.deleteEmptyDirs(syncRootPath, os.path.dirname(oldPath))
 		return newPath
 

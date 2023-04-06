@@ -16,7 +16,6 @@ class RemoteFileProcessor:
 		self.fileOperations = fileOperations
 		self.settings = settings
 		self.cache = cache.Cache()
-		self.fileLock = threading.Lock()
 
 	def processFiles(
 		self,
@@ -111,10 +110,7 @@ class RemoteFileProcessor:
 		for file in mediaAssets:
 			fileID = file.id
 			remoteName = file.name
-
-			with self.fileLock:
-				filePath = helpers.generateFilePath(dirPath, remoteName)
-
+			filePath = self.fileOperations.downloadFile(dirPath, remoteName, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
 			localName = os.path.basename(filePath)
 			file.name = localName
 			cacheData = (
@@ -129,7 +125,6 @@ class RemoteFileProcessor:
 				originalFolder,
 			)
 			cachedFiles.append(cacheData)
-			self.fileOperations.downloadFile(dirPath, filePath, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
 
 	def processSTRM(
 		self,
@@ -142,10 +137,7 @@ class RemoteFileProcessor:
 	):
 		fileID = file.id
 		remoteName = file.name
-
-		with self.fileLock:
-			filePath = helpers.generateFilePath(dirPath, remoteName)
-
+		filePath = self.fileOperations.downloadFile(dirPath, remoteName, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
 		localName = os.path.basename(filePath)
 		cacheData = (
 			driveID,
@@ -159,7 +151,6 @@ class RemoteFileProcessor:
 			True,
 		)
 		cachedFiles.append(cacheData)
-		self.fileOperations.downloadFile(dirPath, filePath, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
 
 	def processVideo(
 		self,
@@ -176,10 +167,7 @@ class RemoteFileProcessor:
 		remoteName = file.name
 		filename = f"{file.basename}.strm"
 		strmContent = helpers.createSTRMContents(driveID, fileID, file.encrypted, file.contents)
-
-		with self.fileLock:
-			filePath = helpers.generateFilePath(dirPath, filename)
-
+		filePath = self.fileOperations.createFile(dirPath, filename, strmContent, modifiedTime=file.modifiedTime, mode="w+")
 		localName = os.path.basename(filePath)
 		file.name = localName
 		cacheData = (
@@ -195,9 +183,6 @@ class RemoteFileProcessor:
 		)
 		cachedFiles.append(cacheData)
 
-		with self.fileLock:
-			self.fileOperations.createFile(dirPath, filePath, strmContent, modifiedTime=file.modifiedTime, mode="w+")
-
 class LocalFileProcessor:
 
 	def __init__(self, cloudService, fileOperations, settings):
@@ -206,7 +191,6 @@ class LocalFileProcessor:
 		self.settings = settings
 		self.cache = cache.Cache()
 		self.tmdbLock = threading.Lock()
-		self.fileLock = threading.Lock()
 
 	def processFiles(
 		self,
@@ -296,10 +280,7 @@ class LocalFileProcessor:
 				filename = remoteName
 
 			filePath = os.path.join(processingDirPath, remoteName)
-
-			with self.fileLock:
-				filePath = self.fileOperations.renameFile(syncRootPath, filePath, dirPath, filename)
-
+			filePath = self.fileOperations.renameFile(syncRootPath, filePath, dirPath, filename)
 			mediaAssets.remove(file)
 			file = {
 				"local_path": filePath.replace(syncRootPath, "") if not originalFolder else False,
@@ -367,9 +348,7 @@ class LocalFileProcessor:
 				originalFolder,
 			)
 
-		with self.fileLock:
-			filePath = self.fileOperations.renameFile(syncRootPath, filePath, dirPath, filename)
-
+		filePath = self.fileOperations.renameFile(syncRootPath, filePath, dirPath, filename)
 		file = {
 			"local_path": filePath.replace(syncRootPath, "") if not originalFolder else False,
 			"local_name": os.path.basename(filePath),
