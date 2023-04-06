@@ -129,9 +129,7 @@ class RemoteFileProcessor:
 				originalFolder,
 			)
 			cachedFiles.append(cacheData)
-
-			with self.fileLock:
-				self.fileOperations.downloadFile(dirPath, filePath, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
+			self.fileOperations.downloadFile(dirPath, filePath, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
 
 	def processSTRM(
 		self,
@@ -161,9 +159,7 @@ class RemoteFileProcessor:
 			True,
 		)
 		cachedFiles.append(cacheData)
-
-		with self.fileLock:
-			self.fileOperations.downloadFile(dirPath, filePath, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
+		self.fileOperations.downloadFile(dirPath, filePath, fileID, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
 
 	def processVideo(
 		self,
