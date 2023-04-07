@@ -6,15 +6,15 @@ class Video(file.File):
 	title = None
 	year = None
 	media = None
-	ptn_name = None
+	ptnName = None
 	duration = None
 	metadata = {}
-	aspect_ratio = None
-	video_width = None
-	video_height = None
-	video_codec = None
-	audio_codec = None
-	audio_channels = None
+	aspectRatio = None
+	videoWidth = None
+	videoHeight = None
+	videoCodec = None
+	audioCodec = None
+	audioChannels = None
 	contents = None
 	hdr = None
 
@@ -23,7 +23,7 @@ class Video(file.File):
 		year = data.get("year")
 		season = data.get("season")
 		episode = data.get("episode")
-		self.ptn_name = str((title, year, season, episode))
+		self.ptnName = str((title, year, season, episode))
 
 		if title is not None:
 			self.title = title

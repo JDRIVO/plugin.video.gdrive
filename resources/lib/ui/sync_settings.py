@@ -269,9 +269,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 	def createButtons(self):
 		self.buttonSpacing = 60
-		self.radioButtons = {}
-		self.pushButtons = {}
-		self.functions = {}
+		self.radioButtons, self.pushButtons, self.functions = {}, {}, {}
 
 		if self.displayMode in ("new", "folder"):
 			self.createFolderSettingsButtons()

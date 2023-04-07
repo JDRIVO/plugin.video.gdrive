@@ -304,7 +304,7 @@ class LocalFileProcessor:
 		fileID = file.id
 		mediaType = file.media
 		remoteName = file.name
-		ptnName = file.ptn_name
+		ptnName = file.ptnName
 		filename = f"{file.basename}.strm"
 		filePath = os.path.join(processingDirPath, filename)
 		originalName = originalFolder = True

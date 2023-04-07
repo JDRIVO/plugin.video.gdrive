@@ -47,7 +47,7 @@ class Tasker:
 
 	@staticmethod
 	def strptime(dateString, format):
-		return datetime.datetime(*(time.strptime(dateString, format)[0:6]))
+		return datetime.datetime(*(time.strptime(dateString, format)[:6]))
 
 	@staticmethod
 	def floorDT(dt, interval):

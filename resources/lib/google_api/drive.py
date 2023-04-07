@@ -88,8 +88,7 @@ class GoogleDrive:
 			responseData = urllib.parse.unquote(responseData)
 
 		urls = re.sub("\&url\=https://", "\@", responseData)
-		streams = {}
-		resolutions = {}
+		streams, resolutions = {}, {}
 		resolutionList = ["360", "480", "720", "1080"]
 
 		for r in re.finditer("([\d]+)/[\d]+x([\d]+)", urls, re.DOTALL):

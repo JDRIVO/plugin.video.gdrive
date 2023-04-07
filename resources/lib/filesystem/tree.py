@@ -82,10 +82,10 @@ class FileTree:
 			if file.type in MEDIA_ASSETS:
 				mediaAssets = files["media_assets"]
 
-				if file.ptn_name not in mediaAssets:
-					mediaAssets[file.ptn_name] = []
+				if file.ptnName not in mediaAssets:
+					mediaAssets[file.ptnName] = []
 
-				mediaAssets[file.ptn_name].append(file)
+				mediaAssets[file.ptnName].append(file)
 			else:
 				files[file.type].append(file)
 

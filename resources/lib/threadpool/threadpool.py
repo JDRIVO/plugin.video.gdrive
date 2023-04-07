@@ -1,6 +1,7 @@
 import os
 import queue
 import threading
+import traceback
 
 import xbmc
 
@@ -58,7 +59,7 @@ class ThreadPool(queue.Queue, xbmc.Monitor):
 				continue
 
 			except Exception as e:
-				xbmc.log("gdrive error: " + str(e), xbmc.LOGERROR)
+				xbmc.log(f"gdrive error: {e}: {''.join(traceback.format_tb(e.__traceback__))}", xbmc.LOGERROR)
 
 			self.decrementTasks()
 

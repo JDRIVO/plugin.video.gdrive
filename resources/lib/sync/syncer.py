@@ -23,7 +23,7 @@ class Syncer:
 		self.cache = cache.Cache()
 
 	def sortChanges(self, changes):
-		trashed, oldFolders, newFolders, files = [], [], [], []
+		trashed, existingFolders, newFolders, files = [], [], [], []
 
 		for change in changes:
 			file = change["file"]
@@ -38,14 +38,14 @@ class Syncer:
 				cachedDirectory = self.cache.getDirectory(file["id"])
 
 				if cachedDirectory:
-					oldFolders.append(file)
+					existingFolders.append(file)
 				else:
 					newFolders.append(file)
 
 			else:
 				files.append(file)
 
-		return trashed + oldFolders + newFolders + files
+		return trashed + existingFolders + newFolders + files
 
 	def syncChanges(self, driveID):
 		account = self.accountManager.getAccount(driveID)
@@ -290,9 +290,7 @@ class Syncer:
 					self.deleted = True
 				else:
 					# rename/move file
-					filenameWithoutExt = os.path.splitext(filename)[0]
-					fileExtension = os.path.splitext(cachedFile["local_name"])[1]
-					newFilename = filenameWithoutExt + fileExtension
+					newFilename = file.basename + os.path.splitext(cachedFile["local_name"])[1]
 
 					if cachedFile["original_folder"]:
 						dirPath = os.path.join(syncRootPath, drivePath, dirPath)
@@ -324,10 +322,10 @@ class Syncer:
 		if file.type in MEDIA_ASSETS:
 			mediaAssets = newFiles[rootFolderID][parentFolderID].files["media_assets"]
 
-			if file.ptn_name not in mediaAssets:
-				mediaAssets[file.ptn_name] = []
+			if file.ptnName not in mediaAssets:
+				mediaAssets[file.ptnName] = []
 
-			mediaAssets[file.ptn_name].append(file)
+			mediaAssets[file.ptnName].append(file)
 		else:
 			newFiles[rootFolderID][parentFolderID].files[file.type].append(file)
 
