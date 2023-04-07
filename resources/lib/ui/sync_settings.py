@@ -495,7 +495,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				}
 			)
 			self.cache.addFolder(folderSettings)
-			data = f"drive_id={self.driveID}&folder_id={self.folderID}&folder_name={self.folderName}"
+			data = f"drive_id={self.driveID}&folder_id={self.folderID}&folder_name={remoteName}"
 			url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/add_sync_task"
 			req = urllib.request.Request(url, data.encode("utf-8"))
 			response = urllib.request.urlopen(req)
