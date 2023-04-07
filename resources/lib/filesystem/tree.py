@@ -8,12 +8,20 @@ from ..threadpool import threadpool
 
 class FileTree:
 
-	def __init__(self, cloudService):
+	def __init__(self, cloudService, cache):
 		self.cloudService = cloudService
+		self.cache = cache
 
 	def buildTree(self, folderID, parentFolderID, path, excludedTypes, encrypter, syncedIDs, threadCount):
 		fileTree = dict()
-		fileTree[folderID] = Folder(folderID, parentFolderID, path, path)
+		remoteName = os.path.basename(path)
+		copy = 1
+
+		while self.cache.getDirectory(path, column="local_path"):
+			path = f"{path.split(' (')[0]} ({copy})"
+			copy += 1
+
+		fileTree[folderID] = Folder(folderID, parentFolderID, remoteName, path)
 		yield from self.getContents(fileTree, [folderID], excludedTypes, encrypter, syncedIDs, threadCount)
 
 	def getContents(self, fileTree, folderIDs, excludedTypes, encrypter, syncedIDs, threadCount):
@@ -40,6 +48,7 @@ class FileTree:
 			yield from self.getContents(fileTree, folderIDs, excludedTypes, encrypter, syncedIDs, threadCount)
 
 	def filterContents(self, fileTree, items, parentFolderIDs, folderIDs, excludedTypes, encrypter, syncedIDs):
+		paths = []
 
 		for item in items:
 			id = item["id"]
@@ -52,6 +61,13 @@ class FileTree:
 			if mimeType == "application/vnd.google-apps.folder":
 				folderName = item["name"]
 				path = os.path.join(fileTree[parentFolderID].path, helpers.removeProhibitedFSchars(folderName))
+				copy = 1
+
+				while path in paths:
+					path = f"{path.split(' (')[0]} ({copy})"
+					copy += 1
+
+				paths.append(path)
 				fileTree[id] = Folder(id, parentFolderID, folderName, path)
 				folderIDs.append(id)
 				continue

@@ -156,6 +156,7 @@ class Syncer:
 				syncedIDs.append(parentFolderID)
 				self.cache.updateDirectory({"parent_folder_id": parentFolderID}, folderID)
 				cachedDirectory = self.cache.getDirectory(parentFolderID)
+				copy = 1
 
 				if not cachedDirectory:
 					parentsParentFolderID = self.cloudService.getParentDirectoryID(parentFolderID)
@@ -167,6 +168,10 @@ class Syncer:
 						"root_folder_id": rootFolderID,
 					}
 					self.cache.addDirectory(directory)
+
+				while self.cache.getDirectory(dirPath, column="local_path"):
+					dirPath = f"{dirPath.split(' (')[0]} ({copy})"
+					copy += 1
 
 				oldPath = os.path.join(syncRootPath, drivePath, cachedDirectoryPath)
 				newPath = os.path.join(syncRootPath, drivePath, dirPath)
@@ -180,18 +185,26 @@ class Syncer:
 
 			return
 
-		cachedDirectoryPathHead, cachedFolderName = os.path.split(cachedDirectoryPath.rstrip(os.sep))
+		cachedRemoteName = cachedDirectory["remote_name"]
 
-		if cachedFolderName != folderName:
+		if cachedRemoteName != folderName:
 			# folder renamed
+			cachedDirectoryPathHead, _ = os.path.split(cachedDirectoryPath)
 			newDirectoryPath = os.path.join(cachedDirectoryPathHead, folderName)
+			copy = 1
+
+			while self.cache.getDirectory(newDirectoryPath, column="local_path"):
+				newDirectoryPath = f"{newDirectoryPath.split(' (')[0]} ({copy})"
+				copy += 1
+
 			oldPath = os.path.join(syncRootPath, drivePath, cachedDirectoryPath)
 			newPath = os.path.join(syncRootPath, drivePath, newDirectoryPath)
 			self.fileOperations.renameFolder(syncRootPath, oldPath, newPath)
 			self.cache.updateChildPaths(cachedDirectoryPath, newDirectoryPath, folderID)
+			self.cache.updateDirectory({"remote_name": folderName}, folderID)
 
 			if folderID == cachedRootFolderID:
-				self.cache.updateFolder({"local_path": newDirectoryPath}, cachedRootFolderID)
+				self.cache.updateFolder({"local_path": newDirectoryPath, "remote_name": folderName}, folderID)
 
 	def syncFileChanges(self, file, parentFolderID, driveID, syncRootPath, drivePath, newFiles):
 		fileID = file["id"]
@@ -342,6 +355,7 @@ class Syncer:
 					"drive_id": driveID,
 					"folder_id": folder.id,
 					"local_path": remotePath,
+					"remote_name": folder.name,
 					"parent_folder_id": folder.parentID,
 					"root_folder_id": rootFolderID,
 				}

@@ -33,7 +33,7 @@ def duplicateFileCheck(dirPath, filename):
 	copy = 1
 
 	while os.path.exists(filePath):
-		filePath = os.path.join(dirPath, f"{filename} ({copy}){fileExtension}")
+		filePath = os.path.join(dirPath, f"{filename.split(' (')[0]} ({copy}){fileExtension}")
 		copy += 1
 
 	return filePath

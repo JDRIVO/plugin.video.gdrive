@@ -25,7 +25,7 @@ class Tasker:
 		self.encrypter = encryption.encrypter.Encrypter(settings=self.settings)
 		self.cache = cache.Cache()
 		self.fileOperations = filesystem.operations.FileOperations(cloud_service=self.cloudService, encryption=self.encrypter)
-		self.fileTree = filesystem.tree.FileTree(self.cloudService)
+		self.fileTree = filesystem.tree.FileTree(self.cloudService, self.cache)
 		self.fileProcessor = filesystem.processor.RemoteFileProcessor(self.cloudService, self.fileOperations, self.settings)
 		self.localFileProcessor = filesystem.processor.LocalFileProcessor(self.cloudService, self.fileOperations, self.settings)
 		self.syncer = sync.syncer.Syncer(self.accountManager, self.cloudService, self.encrypter, self.fileOperations, self.fileProcessor, self.localFileProcessor, self.fileTree, self.settings)

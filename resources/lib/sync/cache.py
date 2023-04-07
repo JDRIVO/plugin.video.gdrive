@@ -246,6 +246,7 @@ class Cache(Database):
 			"drive_id TEXT",
 			"folder_id TEXT",
 			"local_path TEXT",
+			"remote_name TEXT",
 			"file_renaming INTEGER",
 			"folder_restructure INTEGER",
 			"contains_encrypted INTEGER",
@@ -262,6 +263,7 @@ class Cache(Database):
 			"parent_folder_id TEXT",
 			"folder_id TEXT",
 			"local_path TEXT",
+			"remote_name TEXT",
 		]
 		self.createTable("directories", columns)
 
