@@ -32,7 +32,7 @@ class FileTree:
 			ids = folderIDs[:maxIDs]
 			queries.append(
 				(
-					"not trashed and " + " or ".join(f"'{id}' in parents" for id in ids),
+					"not trashed and (" + " or ".join(f"'{id}' in parents" for id in ids) + ")",
 					ids,
 				)
 			)
