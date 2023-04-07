@@ -26,24 +26,24 @@ class Syncer:
 		trashed, existingFolders, newFolders, files = [], [], [], []
 
 		for change in changes:
-			file = change["file"]
+			item = change["file"]
 
-			if file["trashed"]:
-				trashed.append(file)
+			if item["trashed"]:
+				trashed.append(item)
 				continue
 
-			file["name"] = filesystem.helpers.removeProhibitedFSchars(file["name"])
+			item["name"] = filesystem.helpers.removeProhibitedFSchars(item["name"])
 
-			if file["mimeType"] == "application/vnd.google-apps.folder":
-				cachedDirectory = self.cache.getDirectory(file["id"])
+			if item["mimeType"] == "application/vnd.google-apps.folder":
+				cachedDirectory = self.cache.getDirectory(item["id"])
 
 				if cachedDirectory:
-					existingFolders.append(file)
+					existingFolders.append(item)
 				else:
-					newFolders.append(file)
+					newFolders.append(item)
 
 			else:
-				files.append(file)
+				files.append(item)
 
 		return trashed + existingFolders + newFolders + files
 
@@ -64,27 +64,27 @@ class Syncer:
 		newFiles = {}
 		syncedIDs = []
 
-		for file in changes:
-			fileID = file["id"]
+		for item in changes:
+			fileID = item["id"]
 
 			if fileID in syncedIDs:
 				continue
 
 			syncedIDs.append(fileID)
 
-			if file["trashed"]:
-				self.syncDeletions(file, syncRootPath, drivePath)
+			if item["trashed"]:
+				self.syncDeletions(item, syncRootPath, drivePath)
 				continue
 
 			try:
-				parentFolderID = file["parents"][0]
+				parentFolderID = item["parents"][0]
 			except:
 				parentFolderID = None
 
-			if file["mimeType"] == "application/vnd.google-apps.folder":
-				self.syncFolderChanges(file, parentFolderID, driveID, syncRootPath, drivePath, syncedIDs)
+			if item["mimeType"] == "application/vnd.google-apps.folder":
+				self.syncFolderChanges(item, parentFolderID, driveID, syncRootPath, drivePath, syncedIDs)
 			else:
-				self.syncFileChanges(file, parentFolderID, driveID, syncRootPath, drivePath, newFiles)
+				self.syncFileChanges(item, parentFolderID, driveID, syncRootPath, drivePath, newFiles)
 
 		if newFiles:
 			self.syncFileAdditions(newFiles, syncRootPath, driveID)
