@@ -331,7 +331,7 @@ class LocalFileProcessor:
 						dirPath = os.path.join(
 							syncRootPath,
 							"[gDrive] Series",
-							modifiedName["title"],
+							f"{modifiedName['title']} ({modifiedName['year']})",
 							f"Season {file.season}",
 						)
 
