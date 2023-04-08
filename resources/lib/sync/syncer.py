@@ -156,6 +156,7 @@ class Syncer:
 				syncedIDs.append(parentFolderID)
 				self.cache.updateDirectory({"parent_folder_id": parentFolderID}, folderID)
 				cachedDirectory = self.cache.getDirectory(parentFolderID)
+				dirPath_ = dirPath
 				copy = 1
 
 				if not cachedDirectory:
@@ -170,7 +171,7 @@ class Syncer:
 					self.cache.addDirectory(directory)
 
 				while self.cache.getDirectory(dirPath, column="local_path"):
-					dirPath = f"{dirPath.split(' (')[0]} ({copy})"
+					dirPath = f"{dirPath_} ({copy})"
 					copy += 1
 
 				oldPath = os.path.join(syncRootPath, drivePath, cachedDirectoryPath)
@@ -190,11 +191,11 @@ class Syncer:
 		if cachedRemoteName != folderName:
 			# folder renamed
 			cachedDirectoryPathHead, _ = os.path.split(cachedDirectoryPath)
-			newDirectoryPath = os.path.join(cachedDirectoryPathHead, folderName)
+			newDirectoryPath = newDirectoryPath_ = os.path.join(cachedDirectoryPathHead, folderName)
 			copy = 1
 
 			while self.cache.getDirectory(newDirectoryPath, column="local_path"):
-				newDirectoryPath = f"{newDirectoryPath.split(' (')[0]} ({copy})"
+				newDirectoryPath = f"{newDirectoryPath_} ({copy})"
 				copy += 1
 
 			oldPath = os.path.join(syncRootPath, drivePath, cachedDirectoryPath)

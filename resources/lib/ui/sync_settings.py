@@ -458,12 +458,12 @@ class SyncSettings(xbmcgui.WindowDialog):
 		if self.displayMode == "new":
 			xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
 			self.dialog.notification("gDrive", "Syncing files. A notification will appear when this task has completed.")
-			self.folderName = helpers.removeProhibitedFSchars(self.folderName)
+			self.folderName = self.folderName_ = helpers.removeProhibitedFSchars(self.folderName)
 			remoteName = self.folderName
 			copy = 1
 
 			while self.cache.getFolder(self.folderName, column="local_path"):
-				self.folderName = f"{self.folderName.split(' (')[0]} ({copy})"
+				self.folderName = f"{self.folderName_} ({copy})"
 				copy += 1
 
 			if globalSettings:

@@ -15,10 +15,11 @@ class FileTree:
 	def buildTree(self, folderID, parentFolderID, path, excludedTypes, encrypter, syncedIDs, threadCount):
 		fileTree = dict()
 		remoteName = os.path.basename(path)
+		path_ = path
 		copy = 1
 
 		while self.cache.getDirectory(path, column="local_path"):
-			path = f"{path.split(' (')[0]} ({copy})"
+			path = f"{path_} ({copy})"
 			copy += 1
 
 		fileTree[folderID] = Folder(folderID, parentFolderID, remoteName, path)
@@ -60,11 +61,11 @@ class FileTree:
 
 			if mimeType == "application/vnd.google-apps.folder":
 				folderName = item["name"]
-				path = os.path.join(fileTree[parentFolderID].path, helpers.removeProhibitedFSchars(folderName))
+				path = path_ = os.path.join(fileTree[parentFolderID].path, helpers.removeProhibitedFSchars(folderName))
 				copy = 1
 
 				while path in paths:
-					path = f"{path.split(' (')[0]} ({copy})"
+					path = f"{path_} ({copy})"
 					copy += 1
 
 				paths.append(path)
