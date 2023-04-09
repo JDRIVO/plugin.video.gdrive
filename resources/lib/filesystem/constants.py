@@ -23,6 +23,7 @@ SUBTITLE_EXTENSIONS = (
 	"ssa",
 	"stl",
 	"sub",
+	"sup",
 	"ttml",
 	"vtt",
 )
