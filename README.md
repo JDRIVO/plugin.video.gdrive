@@ -1,1 +1,1 @@
-A Kodi addon for playing videos stored on Google Drive.
+A Kodi Add-On for playing videos stored on Google Drive.
