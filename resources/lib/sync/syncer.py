@@ -65,12 +65,12 @@ class Syncer:
 		syncedIDs = []
 
 		for item in changes:
-			fileID = item["id"]
+			id = item["id"]
 
-			if fileID in syncedIDs:
+			if id in syncedIDs:
 				continue
 
-			syncedIDs.append(fileID)
+			syncedIDs.append(id)
 
 			if item["trashed"]:
 				self.syncDeletions(item, syncRootPath, drivePath)
@@ -78,7 +78,7 @@ class Syncer:
 
 			try:
 				# Shared items that google automatically adds to an account don't have parentFolderIDs
-				parentFolderID = file["parents"][0]
+				parentFolderID = item["parents"][0]
 			except:
 				continue
 
@@ -100,16 +100,16 @@ class Syncer:
 
 		self.cache.updateDrive({"page_token": pageToken}, driveID)
 
-	def syncDeletions(self, file, syncRootPath, drivePath):
-		fileID = file["id"]
+	def syncDeletions(self, item, syncRootPath, drivePath):
+		id = item["id"]
 		cachedFiles = True
 
-		if file["mimeType"] == "application/vnd.google-apps.folder":
-			cachedFiles = self.cache.getFile(fileID, "parent_folder_id")
-			folderID = fileID
+		if item["mimeType"] == "application/vnd.google-apps.folder":
+			cachedFiles = self.cache.getFile(id, "parent_folder_id")
+			folderID = id
 		else:
-			cachedFile = self.cache.getFile(fileID)
-			self.cache.deleteFile(fileID)
+			cachedFile = self.cache.getFile(id)
+			self.cache.deleteFile(id)
 
 			if cachedFile:
 				folderID = cachedFile["parent_folder_id"]
