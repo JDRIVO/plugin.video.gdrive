@@ -3,6 +3,7 @@ import time
 import random
 import datetime
 import threading
+import traceback
 
 import xbmc
 import xbmcgui
@@ -63,7 +64,7 @@ class Tasker:
 				self.syncer.syncChanges(driveID)
 
 		except Exception as e:
-			xbmc.log("gdrive error: " + str(e), xbmc.LOGERROR)
+			xbmc.log(f"gdrive error: {e}: {''.join(traceback.format_tb(e.__traceback__))}", xbmc.LOGERROR)
 
 		self.activeTasks.remove(driveID)
 

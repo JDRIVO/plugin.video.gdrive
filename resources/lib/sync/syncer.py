@@ -77,9 +77,10 @@ class Syncer:
 				continue
 
 			try:
-				parentFolderID = item["parents"][0]
+				# Shared items that google automatically adds to an account don't have parentFolderIDs
+				parentFolderID = file["parents"][0]
 			except:
-				parentFolderID = None
+				continue
 
 			if item["mimeType"] == "application/vnd.google-apps.folder":
 				self.syncFolderChanges(item, parentFolderID, driveID, syncRootPath, drivePath, syncedIDs)
