@@ -22,12 +22,16 @@ msgid " "
 msgstr " "
 
 msgctxt "#30002"
-msgid "Rename account"
-msgstr "Rename account"
+msgid "Rename"
+msgstr "Rename"
 
 msgctxt "#30003"
 msgid "gDrive error"
 msgstr "gDrive error"
+
+msgctxt "#30004"
+msgid "Drive Name"
+msgstr "Drive Name"
 
 msgctxt "#30005"
 msgid "Please set a default playback account in the gDrive settings."
@@ -66,16 +70,16 @@ msgid "Delete account(s)"
 msgstr "Delete account(s)"
 
 msgctxt "#30023"
-msgid "Validate account"
-msgstr "Validate account"
+msgid "Validate"
+msgstr "Validate"
 
 msgctxt "#30024"
 msgid "Account Validation"
 msgstr "Account Validation"
 
 msgctxt "#30025"
-msgid "Account name:"
-msgstr "Account name:"
+msgid "Account Name"
+msgstr "Account Name"
 
 msgctxt "#30026"
 msgid "Google Service Account Key (JSON) File"
@@ -150,8 +154,8 @@ msgid "Account Deletion"
 msgstr "Account Deletion"
 
 msgctxt "#30159"
-msgid "Delete account"
-msgstr "Delete account"
+msgid "Delete"
+msgstr "Delete"
 
 msgctxt "#30160"
 msgid "The account(s) will be deleted when you click OK in the settings."

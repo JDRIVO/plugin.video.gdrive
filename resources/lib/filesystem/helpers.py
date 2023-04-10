@@ -13,7 +13,6 @@ from .. import library
 from .. import network
 from .constants import *
 from .. import filesystem
-from .folder import Folder
 from .subtitles import Subtitles
 
 

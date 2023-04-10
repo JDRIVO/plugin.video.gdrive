@@ -8,7 +8,6 @@ import traceback
 import xbmc
 import xbmcgui
 
-from .. import ui
 from . import cache
 from .. import sync
 from .. import google_api

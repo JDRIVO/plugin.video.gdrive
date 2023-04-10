@@ -1,6 +1,5 @@
 import os
 import re
-import time
 import urllib
 import datetime
 from threading import Thread

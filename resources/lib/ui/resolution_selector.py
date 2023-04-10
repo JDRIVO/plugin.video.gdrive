@@ -68,7 +68,6 @@ class ResolutionSelector(xbmcgui.WindowDialog):
 			if newIndex == len(self.buttonIds):
 				newIndex = 0
 
-		currentButton = self.getButton(self.buttonIds[currentIndex])
 		newButton = self.getButton(self.buttonIds[newIndex])
 		self.setFocus(newButton)
 

@@ -133,7 +133,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 			if newIndex == len(self.menuButtonIDs):
 				newIndex = 0
 
-		currentButton = self.getButton(self.menuButtonIDs[currentIndex])
 		newButton = self.getButton(self.menuButtonIDs[newIndex])
 		self.setFocus(newButton)
 

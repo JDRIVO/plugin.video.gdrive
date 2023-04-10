@@ -83,7 +83,7 @@ class Core:
 		account = accounts[accountIndex]
 
 		if selection == 0:
-			newAccountName = self.dialog.input(f"{self.settings.getLocalizedString(30002)}: {accountName}")
+			newAccountName = self.dialog.input(self.settings.getLocalizedString(30025))
 
 			if not newAccountName:
 				return
@@ -267,8 +267,6 @@ class Core:
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
 
 	def searchDrive(self):
-		pluginURL = sys.argv[0]
-		driveID = self.settings.getParameter("drive_id")
 		searchQuery = xbmcgui.Dialog().input("Search Query")
 
 		if not searchQuery:
@@ -575,7 +573,7 @@ class Core:
 
 	def setAlias(self):
 		driveID = self.settings.getParameter("drive_id")
-		alias = self.dialog.input("Drive Name:")
+		alias = self.dialog.input(self.settings.getLocalizedString(30004))
 
 		if not alias:
 			return

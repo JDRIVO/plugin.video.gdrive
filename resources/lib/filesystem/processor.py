@@ -4,7 +4,6 @@ import threading
 from ..threadpool import threadpool
 
 from . import helpers
-from .. import library
 from .constants import *
 from ..sync import cache
 
@@ -303,7 +302,6 @@ class LocalFileProcessor:
 	):
 		fileID = file.id
 		mediaType = file.media
-		remoteName = file.name
 		ptnName = file.ptnName
 		filename = f"{file.basename}.strm"
 		filePath = os.path.join(processingDirPath, filename)
