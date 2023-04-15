@@ -172,7 +172,6 @@ def getTMDBtitle(type, title, year, tmdbSettings):
 	if not tmdbResults:
 		return
 
-	titleLowerCase = title.lower()
 	yearStr = str(year)
 	matches = {}
 
@@ -184,8 +183,7 @@ def getTMDBtitle(type, title, year, tmdbSettings):
 			return
 
 		tmdbTitle = removeProhibitedFSchars(html.unescape(tmdbTitle))
-		tmdbTitleLowerCase = tmdbTitle.lower()
-		titleSimilarity = difflib.SequenceMatcher(None, titleLowerCase, tmdbTitleLowerCase).ratio()
+		titleSimilarity = difflib.SequenceMatcher(None, title, tmdbTitle).ratio()
 		tmdbYearInt = int(tmdbYear)
 
 		if titleSimilarity in matches:
@@ -200,7 +198,7 @@ def getTMDBtitle(type, title, year, tmdbSettings):
 			else:
 				matches[titleSimilarity] = tmdbTitle, tmdbYear
 
-		elif (tmdbTitleLowerCase in titleLowerCase or titleLowerCase in tmdbTitleLowerCase):
+		elif (tmdbTitle in title or title in tmdbTitle):
 
 			if year and abs(tmdbYearInt - year) < 2 or not year:
 				matches[titleSimilarity] = tmdbTitle, tmdbYear
