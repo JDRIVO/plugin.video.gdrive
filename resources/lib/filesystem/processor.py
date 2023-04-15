@@ -209,6 +209,12 @@ class LocalFileProcessor:
 		if videos:
 			folderRestructure = folderSettings["folder_restructure"]
 			fileRenaming = folderSettings["file_renaming"]
+			tmdbSettings = {
+				"api_key": "98d275ee6cbf27511b53b1ede8c50c67",
+				"region": folderSettings["tmdb_region"],
+				"language": folderSettings["tmdb_language"],
+				"include_adult": folderSettings["tmdb_adult"],
+			}
 
 			with threadpool.ThreadPool(threadCount) as pool:
 				[
@@ -222,6 +228,7 @@ class LocalFileProcessor:
 						processingDirPath,
 						folderRestructure,
 						fileRenaming,
+						tmdbSettings,
 					) for video in videos
 				]
 
@@ -299,6 +306,7 @@ class LocalFileProcessor:
 		processingDirPath,
 		folderRestructure,
 		fileRenaming,
+		tmdbSettings,
 	):
 		fileID = file.id
 		mediaType = file.media
@@ -309,10 +317,7 @@ class LocalFileProcessor:
 		newFilename = False
 
 		if mediaType in ("episode", "movie"):
-
-			with self.tmdbLock:
-				modifiedName = file.formatName()
-
+			modifiedName = file.formatName(tmdbSettings)
 			newFilename = modifiedName.get("filename") if modifiedName else False
 
 			if newFilename:

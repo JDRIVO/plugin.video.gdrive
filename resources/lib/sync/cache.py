@@ -253,6 +253,9 @@ class Cache(Database):
 			"sync_artwork INTEGER",
 			"sync_nfo INTEGER",
 			"sync_subtitles INTEGER",
+			"tmdb_language TEXT",
+			"tmdb_region TEXT",
+			"tmdb_adult TEXT",
 		]
 		self.createTable("folders", columns)
 

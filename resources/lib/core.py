@@ -48,7 +48,6 @@ class Core:
 			"display_sync_settings": self.displaySyncSettings,
 			"resolution_priority": self.resolutionPriority,
 			"force_sync": self.forceSync,
-			"not_implemented": self.notImplemented,
 			"accounts_cm": self.accountsContextMenu,
 			"list_shared_drives": self.listSharedDrives,
 			"search_drive": self.searchDrive,
@@ -65,9 +64,6 @@ class Core:
 			modes[mode]()
 
 		xbmcplugin.endOfDirectory(self.pluginHandle, succeeded=self.succeeded, cacheToDisc=self.cacheToDisk)
-
-	def notImplemented(self):
-		self.dialog.notification("gDrive", "Not implemented")
 
 	def accountsContextMenu(self):
 		options = [

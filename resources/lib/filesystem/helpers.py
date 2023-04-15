@@ -126,70 +126,57 @@ def createSTRMContents(driveID, fileID, encrypted, contents):
 	contents["encrypted"] = str(encrypted)
 	return "plugin://plugin.video.gdrive/?mode=video" + "".join([f"&{k}={v}"for k, v in contents.items() if v])
 
-def getTMDBtitle(type, title, year):
+def getTMDBtitle(type, title, year, tmdbSettings):
 
-	def getMatches(url, params):
-		delay = 2
-		attempts = 3
-		query = network.helpers.addQueryString(url, params)
+	def getMatches(url, queries, movie):
+		matches = set()
 
-		for _ in range(attempts):
+		for query in queries:
+			response = network.requester.makeRequest(query)
 
-			try:
-				response = network.requester.makeRequest(query)
+			for result in response["results"][:3]:
 
-				if response:
-					return response
+				if movie:
+					title = result["title"]
+					year = result["release_date"][:4]
+					originalTitle = result["original_title"]
+				else:
+					title = result["name"]
+					year = result["first_air_date"][:4]
+					originalTitle = result["original_name"]
 
-			except Exception as e:
-				pass
+				if not title or not year:
+					continue
 
-			time.sleep(delay)
+				matches.add((title, year))
+				matches.add((originalTitle, year))
 
-	url = "https://www.themoviedb.org/search/"
+		return matches
+
+	url = "https://api.themoviedb.org/3/search/"
+
+	if type == "movie":
+		url += "movie"
+		movie = True
+	else:
+		url += "tv"
+		movie = False
+
+	queries = [network.helpers.addQueryString(url, {"query": title, **tmdbSettings})]
 
 	if year:
-		params = {"query": f"{title} y:{year}"}
-	else:
-		params = {"query": title}
+		queries.insert(0, network.helpers.addQueryString(url, {"query": title, "year" if movie else "first_air_date": year, **tmdbSettings}))
 
-	if type == "episode":
-		url += "tv"
-	else:
-		url += "movie"
+	tmdbResults = getMatches(url, queries, movie)
 
-	matches = getMatches(url, params)
-
-	if not matches:
-		return
-
-	tmdbResult = re.findall('class="result".*?<h2>(.*?)</h2></a>.*?([\d]{4})', matches, re.DOTALL)
-
-	if not tmdbResult and year:
-		params = {"query": title}
-		matches = getMatches(url, params)
-
-		if not matches:
-			return
-
-		tmdbResult = re.findall('class="result".*?<h2>(.*?)</h2></a>.*?([\d]{4})', matches, re.DOTALL)
-
-		try:
-			tmdbTitle, tmdbYear = tmdbResult[0]
-		except ValueError:
-			return
-
-		tmdbYearInt = int(tmdbYear)
-
-		if abs(tmdbYearInt - year) > 1:
-			return
-
-	elif not tmdbResult:
+	if not tmdbResults:
 		return
 
 	titleLowerCase = title.lower()
+	yearStr = str(year)
+	matches = {}
 
-	for result in tmdbResult[:3]:
+	for result in tmdbResults:
 
 		try:
 			tmdbTitle, tmdbYear = result
@@ -201,17 +188,25 @@ def getTMDBtitle(type, title, year):
 		titleSimilarity = difflib.SequenceMatcher(None, titleLowerCase, tmdbTitleLowerCase).ratio()
 		tmdbYearInt = int(tmdbYear)
 
+		if titleSimilarity in matches:
+
+			if matches[titleSimilarity][1] == yearStr:
+				continue
+
 		if titleSimilarity > 0.85:
 
 			if year and abs(tmdbYearInt - year) > 1:
-				return tmdbTitle, year
+				matches[titleSimilarity] = tmdbTitle, yearStr
 			else:
-				return tmdbTitle, tmdbYear
+				matches[titleSimilarity] = tmdbTitle, tmdbYear
 
-		elif (tmdbTitleLowerCase in titleLowerCase or titleLowerCase in tmdbTitleLowerCase) and year:
+		elif (tmdbTitleLowerCase in titleLowerCase or titleLowerCase in tmdbTitleLowerCase):
 
-			if abs(tmdbYearInt - year) < 2:
-				return tmdbTitle, tmdbYear
+			if year and abs(tmdbYearInt - year) < 2 or not year:
+				matches[titleSimilarity] = tmdbTitle, tmdbYear
+
+	if matches:
+		return matches[max(matches)]
 
 def makeFile(file, excludedTypes, encrypter):
 	fileID = file["id"]

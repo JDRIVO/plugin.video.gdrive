@@ -8,7 +8,7 @@ import xbmcaddon
 
 import constants
 from .. import sync
-from ..filesystem import helpers
+from .. import filesystem
 
 
 class SyncSettings(xbmcgui.WindowDialog):
@@ -29,8 +29,10 @@ class SyncSettings(xbmcgui.WindowDialog):
 		"Sync NFOs?": {"type": "folder", "name": "sync_nfo"},
 		"Sync Subtitles?": {"type": "folder", "name": "sync_subtitles"},
 		"Sync Artwork?": {"type": "folder", "name": "sync_artwork"},
+		"Search language": {"type": "folder", "name": "tmdb_language"},
+		"Region": {"type": "folder", "name": "tmdb_region"},
+		"Adult content": {"type": "folder", "name": "tmdb_adult"},
 	}
-
 	def __init__(self, *args, **kwargs):
 		self.displayMode = kwargs.get("mode")
 		self.driveID = kwargs.get("drive_id")
@@ -39,6 +41,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.accounts = kwargs.get("accounts")
 		self.cache = sync.cache.Cache()
 
+		self.folders = False
 		self.syncMode = None
 		self.syncFrequency = None
 
@@ -60,7 +63,12 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.viewportWidth = self.getWidth()
 		self.viewportHeight = self.getHeight()
 		self.windowWidth = int(1000 * self.viewportWidth / 1920)
-		self.buttonWidth = self.windowWidth - 50
+
+		if self.folders:
+			self.buttonWidth = self.windowWidth - 200
+		else:
+			self.buttonWidth = self.windowWidth - 50
+
 		self.buttonHeight = 40
 		self.windowHeight = int((400 + self.buttonHeight * buttonAmount) * self.viewportHeight / 1080)
 		self.windowBottom = int((self.viewportHeight + self.windowHeight) / 2)
@@ -86,7 +94,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				self.setFocus(self.buttonOK)
 			elif self.buttonID in (self.buttonCloseID, self.buttonOKID):
 				self.setFocusId(self.menuButtonIDs[-1])
-			else:
+			elif self.buttonID in self.menuButtonIDs:
 				self.updateList("up")
 
 		elif action == self.ACTION_MOVE_DOWN:
@@ -95,22 +103,46 @@ class SyncSettings(xbmcgui.WindowDialog):
 				self.setFocus(self.buttonOK)
 			elif self.buttonID in (self.buttonCloseID, self.buttonOKID):
 				self.setFocusId(self.menuButtonIDs[0])
-			else:
+			elif self.buttonID in self.menuButtonIDs:
 				self.updateList("down")
 
 		elif action == self.ACTION_MOVE_RIGHT:
 
-			if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonOKID:
-				self.setFocus(self.buttonClose)
-			elif self.buttonID == self.buttonCloseID:
-				self.setFocusId(self.menuButtonIDs[0])
+			if self.folders:
+
+				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonOKID:
+					self.setFocus(self.buttonClose)
+				elif self.buttonID in self.buttonSwitchesIDs:
+					self.setFocusId(self.menuButtonIDs[0])
+				elif self.buttonID == self.buttonCloseID:
+					self.setFocusId(self.menuButtonIDs[0])
+
+			else:
+
+				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonOKID:
+					self.setFocus(self.buttonClose)
+				elif self.buttonID == self.buttonCloseID:
+					self.setFocusId(self.menuButtonIDs[0])
 
 		elif action == self.ACTION_MOVE_LEFT:
 
-			if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonCloseID:
-				self.setFocus(self.buttonOK)
-			elif self.buttonID == self.buttonOKID:
-				self.setFocusId(self.menuButtonIDs[0])
+			if self.folders:
+
+				if self.buttonID in self.menuButtonIDs:
+					self.setFocusId(self.buttonSwitchesIDs[0])
+				elif self.buttonID in self.buttonSwitchesIDs:
+					self.setFocus(self.buttonOK)
+				elif self.buttonID == self.buttonCloseID:
+					self.setFocus(self.buttonOK)
+				elif self.buttonID == self.buttonOKID:
+					self.setFocusId(self.menuButtonIDs[0])
+
+			else:
+
+				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonCloseID:
+					self.setFocus(self.buttonOK)
+				elif self.buttonID == self.buttonOKID:
+					self.setFocusId(self.menuButtonIDs[0])
 
 	def onControl(self, control):
 		self.buttonID = control.getId()
@@ -121,6 +153,16 @@ class SyncSettings(xbmcgui.WindowDialog):
 			self.setSettings()
 		elif self.buttonID in self.pushButtonIDs:
 			self.functions[control.getLabel()](control)
+		elif self.buttonID in self.buttonSwitchesIDs:
+
+			if self.buttonID == self.buttonSwitchesIDs[0]:
+				[button.setVisible(False) for button in self.TMDBButtons]
+				[button.setVisible(True) for button in self.generalSettingsButtons]
+				self.menuButtonIDs = self.generalSettingsButtonIDs
+			else:
+				[button.setVisible(False) for button in self.generalSettingsButtons]
+				[button.setVisible(True) for button in self.TMDBButtons]
+				self.menuButtonIDs = self.TMDBButtonIDs
 
 	def updateList(self, direction):
 		currentIndex = self.menuButtonIDs.index(self.buttonID)
@@ -196,6 +238,10 @@ class SyncSettings(xbmcgui.WindowDialog):
 			self.addControl(button)
 			self.buttonSpacing += 40
 
+		self.generalSettingsButtons = list(self.radioButtons.keys()) + list(self.pushButtons.keys())
+		self.generalSettingsButtonIDs = [button.getId() for button in self.generalSettingsButtons]
+		self.menuButtonIDs = self.generalSettingsButtonIDs
+
 	def createFolderSettingsButtons(self):
 		settings = {}
 		folderSettings = self.cache.getFolder(self.folderID)
@@ -233,7 +279,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		for setting in self.functions:
 			button = xbmcgui.ControlButton(
-				x=self.center,
+				x=self.center + 80,
 				y=self.y + self.buttonSpacing,
 				width=self.buttonWidth,
 				height=self.buttonHeight,
@@ -248,7 +294,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		for setting, value in settings.items():
 			button = xbmcgui.ControlRadioButton(
-				x=self.center,
+				x=self.center + 80,
 				y=self.y + self.buttonSpacing,
 				width=self.buttonWidth,
 				height=self.buttonHeight,
@@ -266,25 +312,99 @@ class SyncSettings(xbmcgui.WindowDialog):
 			button.setSelected(value)
 			self.buttonSpacing += 40
 
+		self.generalSettingsButtons = list(self.pushButtons.keys()) + list(self.radioButtons.keys())
+		self.generalSettingsButtonIDs = [button.getId() for button in self.generalSettingsButtons]
+		self.menuButtonIDs = self.generalSettingsButtonIDs
+
+	def createFolderSettingsTMDBButtons(self):
+		functions = {
+			"Search language": self.setSearchLanguage,
+			"Region": self.setCountry,
+			"Adult content": self.setAdultContent,
+		}
+		self.functions.update(functions)
+		self.buttonSwitchesIDs = []
+		buttonGeneral = xbmcgui.ControlButton(
+			x=self.center - 80,
+			y=self.y + 60,
+			width=140,
+			height=self.buttonHeight,
+			label="General",
+			font=self.font,
+			focusTexture=self.buttonFocusTexture,
+			noFocusTexture=self.dGrayTexture,
+			alignment=2 + 4,
+		)
+		self.addControl(buttonGeneral)
+		self.buttonSwitchesIDs.append(buttonGeneral.getId())
+
+		buttonTMDB = xbmcgui.ControlButton(
+			x=self.center - 80,
+			y=self.y + 100,
+			width=140,
+			height=self.buttonHeight,
+			label="TMDB",
+			font=self.font,
+			focusTexture=self.buttonFocusTexture,
+			noFocusTexture=self.dGrayTexture,
+			alignment=2 + 4,
+		)
+		self.addControl(buttonTMDB)
+		self.buttonSwitchesIDs.append(buttonTMDB.getId())
+		buttonGeneral.controlUp(buttonTMDB)
+		buttonGeneral.controlDown(buttonTMDB)
+		buttonTMDB.controlUp(buttonGeneral)
+		buttonTMDB.controlDown(buttonGeneral)
+		buttonSpacing = 60
+
+		self.TMDBButtonIDs = []
+		self.TMDBButtons = []
+		folderSettings = self.cache.getFolder(self.folderID)
+
+		if folderSettings:
+			values = [
+				folderSettings["tmdb_language"],
+				folderSettings["tmdb_region"],
+				folderSettings["tmdb_adult"],
+			]
+		else:
+			values = ["en-US", "US", "false"]
+
+		for func, value in zip(functions, values):
+			button = xbmcgui.ControlButton(
+				x=self.center + 80,
+				y=self.y + buttonSpacing,
+				width=self.buttonWidth,
+				height=self.buttonHeight,
+				label=func,
+				font=self.font,
+				focusTexture=self.buttonFocusTexture,
+				noFocusTexture=self.dGrayTexture,
+			)
+			button.setVisible(False)
+			button.setLabel(label2=value)
+			self.pushButtons[button] = func
+			self.addControl(button)
+			buttonSpacing += 40
+			self.TMDBButtonIDs.append(button.getId())
+			self.TMDBButtons.append(button)
+
 	def createButtons(self):
 		self.buttonSpacing = 60
 		self.radioButtons, self.pushButtons, self.functions = {}, {}, {}
 
 		if self.displayMode in ("new", "folder"):
+			self.folders = True
 			self.createFolderSettingsButtons()
+			self.createFolderSettingsTMDBButtons()
 		else:
 			self.createDriveSettingsButtons()
 
 		self.pushButtonIDs = [button.getId() for button in self.pushButtons]
 		self.radioButtonIDs = [button.getId() for button in self.radioButtons]
 
-		if self.displayMode in ("new", "folder"):
-			self.menuButtonIDs = self.pushButtonIDs + self.radioButtonIDs
-		else:
-			self.menuButtonIDs = self.radioButtonIDs + self.pushButtonIDs
-
 		self.buttonOK = xbmcgui.ControlButton(
-			x=self.center,
+			x=self.center + 80 if self.folders else self.center,
 			y=self.windowBottom - 60,
 			width=100,
 			height=self.buttonHeight,
@@ -295,7 +415,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			alignment=2 + 4,
 		)
 		self.buttonClose = xbmcgui.ControlButton(
-			x=self.center + 120,
+			x=self.center + 200 if self.folders else self.center + 120,
 			y=self.windowBottom - 60,
 			width=100,
 			height=self.buttonHeight,
@@ -457,7 +577,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		if self.displayMode == "new":
 			xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
 			self.dialog.notification("gDrive", "Syncing files. A notification will appear when this task has completed.")
-			self.folderName = self.folderName_ = helpers.removeProhibitedFSchars(self.folderName)
+			self.folderName = self.folderName_ = filesystem.helpers.removeProhibitedFSchars(self.folderName)
 			remoteName = self.folderName
 			copy = 1
 
@@ -512,3 +632,28 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 			if folderSettings:
 				self.cache.updateFolder(folderSettings, self.folderID)
+
+	def setSearchLanguage(self, button):
+		selection = self.dialog.select("TMDB Search Language", filesystem.constants.TMDB_LANGUAGES)
+
+		if selection == -1:
+			return
+
+		button.setLabel(label2=filesystem.constants.TMDB_LANGUAGES[selection])
+
+	def setCountry(self, button):
+		selection = self.dialog.select("TMDB Region", filesystem.constants.TMDB_REGIONS)
+
+		if selection == -1:
+			return
+
+		button.setLabel(label2=filesystem.constants.TMDB_REGIONS[selection])
+
+	def setAdultContent(self, button):
+		options = ["true", "false"]
+		selection = self.dialog.select("TMDB Adult Content", options)
+
+		if selection == -1:
+			return
+
+		button.setLabel(label2=options[selection])

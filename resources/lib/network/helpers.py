@@ -10,3 +10,6 @@ def mergePaths(baseURL, paths):
 		return f'{baseURL}/{paths}'
 	else:
 		return f'{baseURL}/{"/".join(paths)}'
+
+def quote(string):
+	return urllib.parse.quote(string)
