@@ -129,7 +129,7 @@ def createSTRMContents(driveID, fileID, encrypted, contents):
 def getTMDBtitle(type, title, year, tmdbSettings):
 
 	def getMatches(url, queries, movie):
-		matches = set()
+		matches = []
 
 		for query in queries:
 			response = network.requester.makeRequest(query)
@@ -148,8 +148,11 @@ def getTMDBtitle(type, title, year, tmdbSettings):
 				if not title or not year:
 					continue
 
-				matches.add((title, year))
-				matches.add((originalTitle, year))
+				if (title, year) not in matches:
+					matches.append((title, year))
+
+				if (originalTitle, year) not in matches:
+					matches.append((originalTitle, year))
 
 		return matches
 
@@ -188,7 +191,7 @@ def getTMDBtitle(type, title, year, tmdbSettings):
 
 		if titleSimilarity in matches:
 
-			if matches[titleSimilarity][1] == yearStr:
+			if matches[titleSimilarity][1] == yearStr or not year:
 				continue
 
 		if titleSimilarity > 0.85:
