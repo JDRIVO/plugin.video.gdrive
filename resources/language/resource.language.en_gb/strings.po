@@ -352,3 +352,15 @@ msgstr "Sync"
 msgctxt "#30801"
 msgid "Thread Count"
 msgstr "Thread Count"
+
+msgctxt "#30802"
+msgid "TMDB Search Language"
+msgstr "TMDB Search Language"
+
+msgctxt "#30803"
+msgid "TMDB Region"
+msgstr "TMDB Region"
+
+msgctxt "#30804"
+msgid "TMDB Adult Content"
+msgstr "TMDB Adult Content"

@@ -209,12 +209,12 @@ class LocalFileProcessor:
 		if videos:
 			folderRestructure = folderSettings["folder_restructure"]
 			fileRenaming = folderSettings["file_renaming"]
-			tmdbSettings = {
-				"api_key": "98d275ee6cbf27511b53b1ede8c50c67",
-				"region": folderSettings["tmdb_region"],
-				"language": folderSettings["tmdb_language"],
-				"include_adult": folderSettings["tmdb_adult"],
-			}
+			tmdbSettings = {"api_key": "98d275ee6cbf27511b53b1ede8c50c67"}
+
+			for key, value in {"tmdb_language": "language", "tmdb_region": "region", "tmdb_adult": "include_adult"}.items():
+
+				if folderSettings[key]:
+					tmdbSettings[value] = folderSettings[key]
 
 			with threadpool.ThreadPool(threadCount) as pool:
 				[

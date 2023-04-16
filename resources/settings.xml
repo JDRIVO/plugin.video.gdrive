@@ -175,6 +175,38 @@
 						<popup>false</popup>
 					</control>
 				</setting>
+				<setting id="tmdb_language" type="string" label="30802" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_language)</data>
+					</control>
+				</setting>
+				<setting id="tmdb_region" type="string" label="30803" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_region)</data>
+					</control>
+				</setting>
+				<setting id="tmdb_adult" type="string" label="30804" help="">
+					<level>0</level>
+					<default>false</default>
+					<constraints>
+						<options>
+							<option>true</option>
+							<option>false</option>
+						</options>
+					</constraints>
+					<control type="list" format="string">
+						<heading>30804</heading>
+					</control>
+				</setting>
 			</group>
 		</category>
 	</section>

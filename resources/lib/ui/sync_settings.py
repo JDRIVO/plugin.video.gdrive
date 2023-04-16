@@ -368,7 +368,11 @@ class SyncSettings(xbmcgui.WindowDialog):
 				folderSettings["tmdb_adult"],
 			]
 		else:
-			values = ["en-US", "US", "false"]
+			values = [
+				constants.settings.getSetting("tmdb_language") if constants.settings.getSetting("tmdb_language") else "",
+				constants.settings.getSetting("tmdb_region") if constants.settings.getSetting("tmdb_region") else "",
+				constants.settings.getSetting("tmdb_adult") if constants.settings.getSetting("tmdb_adult") else "false",
+			]
 
 		for func, value in zip(functions, values):
 			button = xbmcgui.ControlButton(

@@ -56,6 +56,8 @@ class Core:
 			"set_playback_account": self.setPlaybackAccount,
 			"set_alias": self.setAlias,
 			"delete_drive": self.deleteDrive,
+			"set_tmdb_language": self.setTMDBlanguage,
+			"set_tmdb_region": self.setTMDBregion,
 		}
 
 		if mode == "video":
@@ -606,6 +608,22 @@ class Core:
 		req = urllib.request.Request(url, data.encode("utf-8"))
 		response = urllib.request.urlopen(req)
 		response.close()
+
+	def setTMDBlanguage(self):
+		selection = self.dialog.select("TMDB Language", filesystem.helpers.TMDB_LANGUAGES)
+
+		if selection == -1:
+			return
+
+		self.settings.setSetting("tmdb_language", filesystem.helpers.TMDB_LANGUAGES[selection])
+
+	def setTMDBregion(self):
+		selection = self.dialog.select("TMDB Region", filesystem.helpers.TMDB_REGIONS)
+
+		if selection == -1:
+			return
+
+		self.settings.setSetting("tmdb_region", filesystem.helpers.TMDB_REGIONS[selection])
 
 	def playVideo(self, dbID, dbType, filePath):
 
