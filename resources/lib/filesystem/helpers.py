@@ -128,33 +128,63 @@ def createSTRMContents(driveID, fileID, encrypted, contents):
 
 def getTMDBtitle(type, title, year, tmdbSettings):
 
-	def getMatches(url, queries, movie):
-		matches = []
+	def findMatch():
 
-		for query in queries:
-			response = network.requester.makeRequest(query)
+		for result in tmdbMatches:
 
-			for result in response["results"][:3]:
+			try:
+				tmdbTitle, tmdbYear = result
+			except ValueError:
+				return
 
-				if movie:
-					title = result["title"]
-					year = result["release_date"][:4]
-					originalTitle = result["original_title"]
-				else:
-					title = result["name"]
-					year = result["first_air_date"][:4]
-					originalTitle = result["original_name"]
+			tmdbTitle = removeProhibitedFSchars(html.unescape(tmdbTitle))
+			titleSimilarity = difflib.SequenceMatcher(None, title, tmdbTitle).ratio()
+			tmdbYearInt = int(tmdbYear)
 
-				if not title or not year:
+			if titleSimilarity in matches:
+				matchesYear = matches[titleSimilarity][1]
+
+				if not year or matchesYear == yearStr or abs(int(matchesYear) - year) < 2:
 					continue
 
-				if (title, year) not in matches:
-					matches.append((title, year))
+			if titleSimilarity > 0.85:
 
-				if (originalTitle, year) not in matches:
-					matches.append((originalTitle, year))
+				if year and abs(tmdbYearInt - year) > 1:
+					matches[titleSimilarity] = tmdbTitle, yearStr
+				else:
+					matches[titleSimilarity] = tmdbTitle, tmdbYear
 
-		return matches
+			elif tmdbTitle in title or title in tmdbTitle:
+
+				if year and abs(tmdbYearInt - year) < 2 or not year:
+					matches[titleSimilarity] = tmdbTitle, tmdbYear
+
+	def getMatches(url, query, movie):
+		matches = []
+		response = network.requester.makeRequest(query)
+		totalResults = response["total_results"]
+
+		for result in response["results"][:3]:
+
+			if movie:
+				title = result["title"]
+				year = result["release_date"][:4]
+				originalTitle = result["original_title"]
+			else:
+				title = result["name"]
+				year = result["first_air_date"][:4]
+				originalTitle = result["original_name"]
+
+			if not title or not year:
+				continue
+
+			if (title, year) not in matches:
+				matches.append((title, year))
+
+			if (originalTitle, year) not in matches:
+				matches.append((originalTitle, year))
+
+		return totalResults, matches
 
 	url = "https://api.themoviedb.org/3/search/"
 
@@ -165,48 +195,31 @@ def getTMDBtitle(type, title, year, tmdbSettings):
 		url += "tv"
 		movie = False
 
-	queries = [network.helpers.addQueryString(url, {"query": title, **tmdbSettings})]
+	queries = (
+		network.helpers.addQueryString(url, {"query": title, "year" if movie else "first_air_date": year, **tmdbSettings}),
+		network.helpers.addQueryString(url, {"query": title, **tmdbSettings}),
+	)
 
 	if year:
-		queries.insert(0, network.helpers.addQueryString(url, {"query": title, "year" if movie else "first_air_date": year, **tmdbSettings}))
+		query = queries[0]
+	else:
+		query = queries[1]
 
-	tmdbResults = getMatches(url, queries, movie)
+	totalResults, tmdbMatches = getMatches(url, query, movie)
 
-	if not tmdbResults:
+	if not tmdbMatches:
 		return
 
 	yearStr = str(year)
 	matches = {}
-
-	for result in tmdbResults:
-
-		try:
-			tmdbTitle, tmdbYear = result
-		except ValueError:
-			return
-
-		tmdbTitle = removeProhibitedFSchars(html.unescape(tmdbTitle))
-		titleSimilarity = difflib.SequenceMatcher(None, title, tmdbTitle).ratio()
-		tmdbYearInt = int(tmdbYear)
-
-		if titleSimilarity in matches:
-
-			if matches[titleSimilarity][1] == yearStr or not year:
-				continue
-
-		if titleSimilarity > 0.85:
-
-			if year and abs(tmdbYearInt - year) > 1:
-				matches[titleSimilarity] = tmdbTitle, yearStr
-			else:
-				matches[titleSimilarity] = tmdbTitle, tmdbYear
-
-		elif (tmdbTitle in title or title in tmdbTitle):
-
-			if year and abs(tmdbYearInt - year) < 2 or not year:
-				matches[titleSimilarity] = tmdbTitle, tmdbYear
+	findMatch()
 
 	if matches:
+
+		if year and totalResults > 1 and max(matches) < 0.85:
+			totalResults, tmdbMatches = getMatches(url, queries[1], movie)
+			findMatch()
+
 		return matches[max(matches)]
 
 def makeFile(file, excludedTypes, encrypter):
