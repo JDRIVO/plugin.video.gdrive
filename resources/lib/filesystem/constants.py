@@ -69,6 +69,7 @@ VIDEO_EXTENSIONS = (
 )
 
 TMDB_LANGUAGES = (
+	"",
 	"ar-AE",
 	"ar-SA",
 	"be-BY",
@@ -126,6 +127,7 @@ TMDB_LANGUAGES = (
 )
 
 TMDB_REGIONS = (
+	"",
 	"AU",
 	"BG",
 	"BR",
