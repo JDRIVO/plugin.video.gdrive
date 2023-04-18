@@ -129,6 +129,7 @@ def createSTRMContents(driveID, fileID, encrypted, contents):
 def getTMDBtitle(type, title, year, tmdbSettings):
 
 	def findMatch():
+		titleLowerCase = title.lower()
 
 		for result in tmdbMatches:
 
@@ -138,6 +139,7 @@ def getTMDBtitle(type, title, year, tmdbSettings):
 				return
 
 			tmdbTitle = removeProhibitedFSchars(html.unescape(tmdbTitle))
+			tmdbTitleLowerCase = tmdbTitle.lower()
 			titleSimilarity = difflib.SequenceMatcher(None, title, tmdbTitle).ratio()
 			tmdbYearInt = int(tmdbYear)
 
@@ -154,7 +156,7 @@ def getTMDBtitle(type, title, year, tmdbSettings):
 				else:
 					matches[titleSimilarity] = tmdbTitle, tmdbYear
 
-			elif tmdbTitle in title or title in tmdbTitle:
+			elif tmdbTitleLowerCase in titleLowerCase or titleLowerCase in tmdbTitleLowerCase:
 
 				if year and abs(tmdbYearInt - year) < 2 or not year:
 					matches[titleSimilarity] = tmdbTitle, tmdbYear
