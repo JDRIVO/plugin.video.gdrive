@@ -189,7 +189,7 @@ class LocalFileProcessor:
 		self.fileOperations = fileOperations
 		self.settings = settings
 		self.cache = cache.Cache()
-		self.tmdbLock = threading.Lock()
+		self.imdbLock = threading.Lock()
 
 	def processFiles(
 		self,
@@ -317,7 +317,7 @@ class LocalFileProcessor:
 		newFilename = False
 
 		if mediaType in ("episode", "movie"):
-			modifiedName = file.formatName(tmdbSettings)
+			modifiedName = file.formatName(tmdbSettings, self.imdbLock)
 			newFilename = modifiedName.get("filename") if modifiedName else False
 
 			if newFilename:

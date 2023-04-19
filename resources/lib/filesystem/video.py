@@ -45,9 +45,9 @@ class Video(file.File):
 
 class Movie(Video):
 
-	def formatName(self, tmdbSettings):
+	def formatName(self, tmdbSettings, imdbLock):
 		# Produces a conventional name that can be understood by library scrapers
-		data = helpers.getTMDBtitle("movie", self.title, self.year, tmdbSettings)
+		data = helpers.getTMDBtitle("movie", self.title, self.year, tmdbSettings, imdbLock)
 
 		if data:
 			title, year = data
@@ -61,7 +61,7 @@ class Episode(Video):
 	season = None
 	episode = None
 
-	def formatName(self, tmdbSettings):
+	def formatName(self, tmdbSettings, imdbLock):
 		# Produces a conventional name that can be understood by library scrapers
 
 		if int(self.season) < 10:
@@ -93,7 +93,7 @@ class Episode(Video):
 
 			episode = modifiedEpisode
 
-		data = helpers.getTMDBtitle("episode", self.title, self.year, tmdbSettings)
+		data = helpers.getTMDBtitle("episode", self.title, self.year, tmdbSettings, imdbLock)
 
 		if data:
 			title, year = data

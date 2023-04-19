@@ -126,21 +126,17 @@ def createSTRMContents(driveID, fileID, encrypted, contents):
 	contents["encrypted"] = str(encrypted)
 	return "plugin://plugin.video.gdrive/?mode=video" + "".join([f"&{k}={v}"for k, v in contents.items() if v])
 
-def getTMDBtitle(type, title, year, tmdbSettings):
+def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 
 	def findMatch():
-		titleLowerCase = title.casefold()
+		titleLowerCase = title.replace(" ", "").casefold()
 
-		for result in tmdbMatches:
+		for result in apiMatches:
 
-			try:
-				tmdbTitle, tmdbYear = result
-			except ValueError:
-				return
-
+			tmdbTitle, tmdbYear = result
 			tmdbTitle = removeProhibitedFSchars(html.unescape(tmdbTitle))
-			tmdbTitleLowerCase = tmdbTitle.casefold()
-			titleSimilarity = difflib.SequenceMatcher(None, title, tmdbTitle).ratio()
+			tmdbTitleLowerCase = tmdbTitle.replace(" ", "").casefold()
+			titleSimilarity = difflib.SequenceMatcher(None, f"{titleLowerCase}", f"{tmdbTitleLowerCase}").ratio()
 			tmdbYearInt = int(tmdbYear)
 
 			if titleSimilarity in matches:
@@ -149,9 +145,13 @@ def getTMDBtitle(type, title, year, tmdbSettings):
 				if not year or matchesYear == yearStr or abs(int(matchesYear) - year) < 2:
 					continue
 
-			if titleSimilarity > 0.85:
+			if titleSimilarity >= 0.5 or totalResults == 1:
 
 				if year and abs(tmdbYearInt - year) > 1:
+
+					if matches and max(matches) >= 0.8:
+						continue
+
 					matches[titleSimilarity] = tmdbTitle, yearStr
 				else:
 					matches[titleSimilarity] = tmdbTitle, tmdbYear
@@ -163,7 +163,20 @@ def getTMDBtitle(type, title, year, tmdbSettings):
 
 	def getMatches(url, query, movie):
 		matches = []
-		response = network.requester.makeRequest(query)
+		response = None
+		retries = 3
+		delay = 2
+
+		while not response and retries:
+			response = network.requester.makeRequest(query)
+
+			if not response:
+				retries -= 1
+				time.sleep(delay)
+
+		if not response:
+			return
+
 		totalResults = response["total_results"]
 
 		for result in response["results"][:3]:
@@ -207,21 +220,52 @@ def getTMDBtitle(type, title, year, tmdbSettings):
 	else:
 		query = queries[1]
 
-	totalResults, tmdbMatches = getMatches(url, query, movie)
-
-	if not tmdbMatches:
-		return
-
+	totalResults, apiMatches = getMatches(url, query, movie)
 	yearStr = str(year)
 	matches = {}
-	findMatch()
+
+	if apiMatches:
+		findMatch()
+
+	if year and (not matches or totalResults > 1 and max(matches) < 0.85):
+		totalResults, apiMatches = getMatches(url, queries[1], movie)
+		findMatch()
 
 	if matches:
+		highestTitleSimilarity = max(matches)
 
-		if year and totalResults > 1 and max(matches) < 0.85:
-			totalResults, tmdbMatches = getMatches(url, queries[1], movie)
-			findMatch()
+		if not movie or highestTitleSimilarity >= 0.85:
+			return matches[highestTitleSimilarity]
 
+	if not movie:
+		return
+
+	url = "https://www.imdb.com/find/"
+	queries = []
+	params = {
+		"s": "tt",
+		"ttype": "ft",
+		"ref_": "fn_ft",
+	}
+	queries.append(network.helpers.addQueryString(url, {"q": f"{title} {year}", **params}))
+	queries.append(network.helpers.addQueryString(url, {"q": f"{title}", **params}))
+	apiMatches = []
+
+	with imdbLock:
+
+		for query in queries:
+			response = network.requester.makeRequest(query)
+
+			if not response:
+				continue
+
+			apiMatches += re.findall('"titleNameText":"(.*?)".*?"titleReleaseText":"(.*?)"', response, re.DOTALL)[:1]
+			time.sleep(0.1)
+
+	if apiMatches:
+		findMatch()
+
+	if matches:
 		return matches[max(matches)]
 
 def makeFile(file, excludedTypes, encrypter):
