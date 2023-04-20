@@ -136,7 +136,7 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 			tmdbTitle, tmdbYear = result
 			tmdbTitle = removeProhibitedFSchars(html.unescape(tmdbTitle))
 			tmdbTitleLowerCase = tmdbTitle.replace(" ", "").casefold()
-			titleSimilarity = difflib.SequenceMatcher(None, f"{titleLowerCase}", f"{tmdbTitleLowerCase}").ratio()
+			titleSimilarity = difflib.SequenceMatcher(None, titleLowerCase, tmdbTitleLowerCase).ratio()
 			tmdbYearInt = int(tmdbYear)
 
 			if titleSimilarity in matches:
@@ -244,7 +244,7 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 		"ref_": "fn_ft",
 	}
 	queries.append(network.helpers.addQueryString(url, {"q": f"{title} {year}", **params}))
-	queries.append(network.helpers.addQueryString(url, {"q": f"{title}", **params}))
+	queries.append(network.helpers.addQueryString(url, {"q": title, **params}))
 	apiMatches = []
 
 	with imdbLock:
