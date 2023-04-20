@@ -148,11 +148,7 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 			if titleSimilarity >= 0.5 or totalResults == 1:
 
 				if year and abs(tmdbYearInt - year) > 1:
-
-					if matches and max(matches) >= 0.8:
-						continue
-
-					matches[titleSimilarity] = tmdbTitle, yearStr
+					continue
 				else:
 					matches[titleSimilarity] = tmdbTitle, tmdbYear
 
