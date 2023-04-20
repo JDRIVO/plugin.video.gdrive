@@ -207,7 +207,7 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 		movie = False
 
 	queries = (
-		network.helpers.addQueryString(url, {"query": title, "year" if movie else "first_air_date": year, **tmdbSettings}),
+		network.helpers.addQueryString(url, {"query": title, "year" if movie else "first_air_date_year": year, **tmdbSettings}),
 		network.helpers.addQueryString(url, {"query": title, **tmdbSettings}),
 	)
 
