@@ -129,12 +129,10 @@ def createSTRMContents(driveID, fileID, encrypted, contents):
 def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 
 	def findMatch():
-		titleLowerCase = title.replace(" ", "").casefold()
 
 		for result in apiMatches:
-
 			tmdbTitle, tmdbYear = result
-			tmdbTitle = removeProhibitedFSchars(html.unescape(tmdbTitle))
+			tmdbTitle = removeProhibitedFSchars(tmdbTitle)
 			tmdbTitleLowerCase = tmdbTitle.replace(" ", "").casefold()
 			titleSimilarity = difflib.SequenceMatcher(None, titleLowerCase, tmdbTitleLowerCase).ratio()
 			tmdbYearInt = int(tmdbYear)
@@ -159,16 +157,21 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 
 	def getMatches(url, query, movie):
 		matches = []
-		response = None
-		retries = 3
 		delay = 2
+		attempts = 3
 
-		while not response and retries:
-			response = network.requester.makeRequest(query)
+		for _ in range(attempts):
 
-			if not response:
-				retries -= 1
-				time.sleep(delay)
+			try:
+				response = network.requester.makeRequest(query)
+
+				if response:
+					break
+
+			except Exception as e:
+				pass
+
+			time.sleep(delay)
 
 		if not response:
 			return
@@ -217,6 +220,7 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 		query = queries[1]
 
 	totalResults, apiMatches = getMatches(url, query, movie)
+	titleLowerCase = title.replace(" ", "").casefold()
 	yearStr = str(year)
 	matches = {}
 
@@ -243,22 +247,22 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 		"ttype": "ft",
 		"ref_": "fn_ft",
 	}
-	queries.append(network.helpers.addQueryString(url, {"q": f"{title} {year}", **params}))
-	queries.append(network.helpers.addQueryString(url, {"q": title, **params}))
-	apiMatches = []
+	query = network.helpers.addQueryString(url, {"q": f"{title} {year}", **params})
+	apiMatches = None
 
 	with imdbLock:
 
-		for query in queries:
+		try:
 			response = network.requester.makeRequest(query)
+			apiMatches = re.findall('"titleNameText":"(.*?)".*?"titleReleaseText":"(.*?)"', response, re.DOTALL)[:1]
+		except Exception:
+			pass
 
-			if not response:
-				continue
-
-			apiMatches += re.findall('"titleNameText":"(.*?)".*?"titleReleaseText":"(.*?)"', response, re.DOTALL)[:1]
-			time.sleep(0.1)
+		time.sleep(1)
 
 	if apiMatches:
+		imdbTitle, imdbYear = apiMatches[0]
+		apiMatches[0] = re.sub(r"\\u([0-9a-fA-F]{4})", lambda x: chr(int(x.group(1), 16)), imdbTitle), imdbYear
 		findMatch()
 
 	if matches:
