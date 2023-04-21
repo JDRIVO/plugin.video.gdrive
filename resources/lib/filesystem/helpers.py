@@ -254,7 +254,7 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 
 		try:
 			response = network.requester.makeRequest(query)
-			apiMatches = re.findall('"titleNameText":"(.*?)".*?"titleReleaseText":"(.*?)"', response, re.DOTALL)[:1]
+			apiMatches = re.findall('"titleNameText":"(.*?)".*?"titleReleaseText":"(.*?)"', response)[:1]
 		except Exception:
 			pass
 
