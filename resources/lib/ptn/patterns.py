@@ -328,8 +328,8 @@ patterns["readnfo"] = "READNFO"
 # patterns["hdr"] = "HDR(?:10)?"
 patterns["hdr"] = [
     ("DV|DoVi|Dolby[-_. ]*Vision", "dolbyvision"),
-    ("HDR10", "hdr10"),
     ("HLG", "hlg"),
+    ("HDR(?:10)?", "hdr10"),
 ]
 patterns["documentary"] = "DOCU(?:menta?ry)?"
 patterns["limited"] = "LIMITED"
