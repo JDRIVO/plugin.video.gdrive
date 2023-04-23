@@ -254,15 +254,15 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 
 		try:
 			response = network.requester.makeRequest(query)
-			apiMatches = re.findall('"titleNameText":"(.*?)".*?"titleReleaseText":"(.*?)"', response)[:1]
+			apiMatches = re.search('"titleNameText":"(.*?)".*?"titleReleaseText":"(.*?)"', response)
 		except Exception:
 			pass
 
 		time.sleep(1)
 
 	if apiMatches:
-		imdbTitle, imdbYear = apiMatches[0]
-		apiMatches[0] = re.sub(r"\\u([0-9a-fA-F]{4})", lambda x: chr(int(x.group(1), 16)), imdbTitle), imdbYear
+		imdbTitle, imdbYear = apiMatches.group(1, 2)
+		apiMatches = [(re.sub(r"\\u([0-9a-fA-F]{4})", lambda x: chr(int(x.group(1), 16)), imdbTitle), imdbYear)]
 		findMatch()
 
 	if matches:
