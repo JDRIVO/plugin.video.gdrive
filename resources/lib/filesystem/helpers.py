@@ -159,6 +159,7 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 		matches = []
 		delay = 2
 		attempts = 3
+		response = None
 
 		for _ in range(attempts):
 
