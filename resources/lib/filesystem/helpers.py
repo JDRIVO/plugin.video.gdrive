@@ -164,10 +164,7 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 
 			try:
 				response = network.requester.makeRequest(query)
-
-				if response:
-					break
-
+				break
 			except Exception:
 				time.sleep(delay)
 
