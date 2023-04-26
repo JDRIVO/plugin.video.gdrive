@@ -168,7 +168,7 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 				if response:
 					break
 
-			except Exception as e:
+			except Exception:
 				pass
 
 			time.sleep(delay)

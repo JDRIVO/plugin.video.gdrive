@@ -45,9 +45,45 @@ msgctxt "#30007"
 msgid "Switching to fallback account"
 msgstr "Switching to fallback account"
 
+msgctxt "#30008"
+msgid "Browse STRM"
+msgstr "Browse STRM"
+
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
 msgstr "Daily quota limit exceeded. Ban will lift within 24 hours."
+
+msgctxt "#30010"
+msgid "Force sync"
+msgstr "Force sync"
+
+msgctxt "#30011"
+msgid "Synced"
+msgstr "Synced"
+
+msgctxt "#30012"
+msgid "Sync Settings"
+msgstr "Sync Settings"
+
+msgctxt "#30013"
+msgid "Sync folder"
+msgstr "Sync folder"
+
+msgctxt "#30014"
+msgid "Select an account"
+msgstr "Select an account"
+
+msgctxt "#30015"
+msgid "The drive name already exists, it must be unique."
+msgstr "The drive name already exists, it must be unique."
+
+msgctxt "#30016"
+msgid "Are you sure you want to delete this Drive?"
+msgstr "Are you sure you want to delete this Drive?"
+
+msgctxt "#30017"
+msgid "Drive settings"
+msgstr "Drive settings"
 
 msgctxt "#30018"
 msgid "The default playback accounts credentials are no longer valid. Consider deleting this account."
@@ -128,6 +164,194 @@ msgstr "Accounts imported"
 msgctxt "#30037"
 msgid "Account import failed"
 msgstr "Account import failed"
+
+msgctxt "#30038"
+msgid "My Drive"
+msgstr "My Drive"
+
+msgctxt "#30039"
+msgid "Shared With Me"
+msgstr "Shared With Me"
+
+msgctxt "#30040"
+msgid "Shared Drives"
+msgstr "Shared Drives"
+
+msgctxt "#30041"
+msgid "Search"
+msgstr "Search"
+
+msgctxt "#30042"
+msgid "Starred"
+msgstr "Starred"
+
+msgctxt "#30043"
+msgid "Search Query"
+msgstr "Search Query"
+
+msgctxt "#30044"
+msgid "Sync completed"
+msgstr "Sync completed"
+
+msgctxt "#30045"
+msgid "Files have been deleted."
+msgstr "Files have been deleted."
+
+msgctxt "#30046"
+msgid "Account registration succeeded"
+msgstr "Account registration succeeded"
+
+msgctxt "#30047"
+msgid "Account registration failed"
+msgstr "Account registration failed"
+
+msgctxt "#30048"
+msgid "Sync path"
+msgstr "Sync path"
+
+msgctxt "#30049"
+msgid "Sync mode"
+msgstr "Sync mode"
+
+msgctxt "#30050"
+msgid "Sync frequency"
+msgstr "Sync frequency"
+
+msgctxt "#30051"
+msgid "Sync on startup?"
+msgstr "Sync on startup?"
+
+msgctxt "#30052"
+msgid "Does this folder contain gDrive encrypted files?"
+msgstr "Does this folder contain gDrive encrypted files?"
+
+msgctxt "#30053"
+msgid "Rename videos to a Kodi friendly format?"
+msgstr "Rename videos to a Kodi friendly format?"
+
+msgctxt "#30054"
+msgid "Create a Kodi friendly directory structure?"
+msgstr "Create a Kodi friendly directory structure?"
+
+msgctxt "#30055"
+msgid "Sync NFOs?"
+msgstr "Sync NFOs?"
+
+msgctxt "#30056"
+msgid "Sync Subtitles?"
+msgstr "Sync Subtitles?"
+
+msgctxt "#30057"
+msgid "Sync Artwork?"
+msgstr "Sync Artwork?"
+
+msgctxt "#30058"
+msgid "Search language"
+msgstr "Search language"
+
+msgctxt "#30059"
+msgid "Region"
+msgstr "Region"
+
+msgctxt "#30060"
+msgid "Adult content"
+msgstr "Adult content"
+
+msgctxt "#30061"
+msgid "Stop syncing all folders?"
+msgstr "Stop syncing all folders?"
+
+msgctxt "#30062"
+msgid "Stop syncing all folders and delete local files?"
+msgstr "Stop syncing all folders and delete local files?"
+
+msgctxt "#30063"
+msgid "Stop syncing folder?"
+msgstr "Stop syncing folder?"
+
+msgctxt "#30064"
+msgid "Stop syncing folder and delete local files?"
+msgstr "Stop syncing folder and delete local files?"
+
+msgctxt "#30065"
+msgid "General"
+msgstr "General"
+
+msgctxt "#30066"
+msgid "OK"
+msgstr "OK"
+
+msgctxt "#30067"
+msgid "Cancel"
+msgstr "Cancel"
+
+msgctxt "#30068"
+msgid "interval"
+msgstr "interval"
+
+msgctxt "#30069"
+msgid "schedule"
+msgstr "schedule"
+
+msgctxt "#30070"
+msgid "Enter the sync interval in minutes"
+msgstr "Enter the sync interval in minutes"
+
+msgctxt "#30071"
+msgid "Enter the time to sync files"
+msgstr "Enter the time to sync files"
+
+msgctxt "#30072"
+msgid "Are you sure you want to stop syncing this folder?"
+msgstr "Are you sure you want to stop syncing this folder?"
+
+msgctxt "#30073"
+msgid "Are you sure you want to stop syncing all folders?"
+msgstr "Are you sure you want to stop syncing all folders?"
+
+msgctxt "#30074"
+msgid "Are you sure you want to stop syncing this folder and delete its files?"
+msgstr "Are you sure you want to stop syncing this folder and delete its files?"
+
+msgctxt "#30075"
+msgid "Files are now being deleted. A notication will appear when they've been deleted."
+msgstr "Files are now being deleted. A notication will appear when they've been deleted."
+
+msgctxt "#30076"
+msgid "Are you sure you want to stop syncing all folders and delete their files?"
+msgstr "Are you sure you want to stop syncing all folders and delete their files?"
+
+msgctxt "#30077"
+msgid "Select the folder that your files will be stored in"
+msgstr "Select the folder that your files will be stored in"
+
+msgctxt "#30078"
+msgid "Your encryption settings are incomplete."
+msgstr "Your encryption settings are incomplete."
+
+msgctxt "#30079"
+msgid "You must assign a destination path"
+msgstr "You must assign a destination path"
+
+msgctxt "#30080"
+msgid "You must assign a sync mode"
+msgstr "You must assign a sync mode"
+
+msgctxt "#30081"
+msgid "You must assign a sync frequency"
+msgstr "You must assign a sync frequency"
+
+msgctxt "#30082"
+msgid "Syncing files. A notification will appear when this task has completed."
+msgstr "Syncing files. A notification will appear when this task has completed."
+
+msgctxt "#30083"
+msgid "Resolution Priority"
+msgstr "Resolution Priority"
+
+msgctxt "#30084"
+msgid "Close"
+msgstr "Close"
 
 msgctxt "#30118"
 msgid "The following account was added:"

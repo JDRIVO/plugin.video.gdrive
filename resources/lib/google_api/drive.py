@@ -54,7 +54,6 @@ class GoogleDrive:
 		if not response:
 			return "failed"
 
-		response["access_token"].rstrip(".")
 		self.account.accessToken = response["access_token"].rstrip(".")
 		expiry = datetime.datetime.now() + datetime.timedelta(seconds=response["expires_in"] - 600)
 		self.account.expiry = expiry

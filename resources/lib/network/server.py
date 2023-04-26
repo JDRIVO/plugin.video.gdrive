@@ -60,12 +60,15 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.server.failed = False
 			contentLength = int(self.headers["Content-Length"]) # <--- Gets the size of data
 			postData = self.rfile.read(contentLength).decode("utf-8") # <--- Gets the data itself
-			encrypted, self.server.playbackURL, self.server.driveID = re.findall("encrypted=(.*)&url=(.*)&drive_id=(.*)", postData)[0]
+			encrypted, self.server.url, self.server.driveID, self.server.fileID, self.server.transcoded = re.findall("encrypted=(.*)&url=(.*)&drive_id=(.*)&file_id=(.*)&transcoded=(.*)", postData)[0]
 
 			if encrypted == "True":
 				self.server.encrypted = True
 			else:
 				self.server.encrypted = False
+
+			if self.server.transcoded == "False":
+				self.server.transcoded = False
 
 			self.server.accountManager.loadAccounts()
 			account = self.server.accountManager.getAccount(self.server.driveID)
@@ -78,7 +81,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			postData = self.rfile.read(contentLength).decode("utf-8")
 			self.send_response(200)
 			self.end_headers()
-			fileID, dbID, dbType, transcoded = re.findall("file_id=(.*)&db_id=(.*)&db_type=(.*)&transcoded=(.*)", postData)[0]
+			dbID, dbType = re.findall("db_id=(.*)&db_type=(.*)", postData)[0]
 
 			if dbID == "False":
 				dbID = False
@@ -86,9 +89,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 				trackProgress = False
 			else:
 				trackProgress = True
-
-			if transcoded == "False":
-				transcoded = False
 
 			player = playback.player.Player(dbID, dbType, trackProgress)
 
@@ -98,8 +98,8 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 					self.server.cloudService.refreshToken()
 
-					if transcoded:
-						self.server.playbackURL = self.server.cloudService.getStreams(fileID, (transcoded,))[1]
+					if self.server.transcoded:
+						self.server.url = self.server.cloudService.getStreams(self.server.fileID, (self.server.transcoded,))[1]
 
 				if self.server.monitor.waitForAbort(1):
 					break
@@ -171,7 +171,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.server.cache.removeFolder(folderID, deleteFiles=delete)
 
 			if delete:
-				xbmcgui.Dialog().notification("gDrive", "Files have been deleted.")
+				xbmcgui.Dialog().notification(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30045))
 
 		elif self.path == "/stop_all_folders_sync":
 			contentLength = int(self.headers["Content-Length"])
@@ -183,7 +183,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.server.cache.removeAllFolders(driveID, deleteFiles=delete)
 
 			if delete:
-				xbmcgui.Dialog().notification("gDrive", "Files have been deleted.")
+				xbmcgui.Dialog().notification(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30045))
 
 		elif self.path == "/renew_task":
 			contentLength = int(self.headers["Content-Length"])
@@ -205,13 +205,12 @@ class ServerHandler(BaseHTTPRequestHandler):
 	def do_HEAD(self):
 
 		if self.path == "/play":
-			url = self.server.playbackURL
-			req = urllib.request.Request(url, headers=self.server.cloudService.getHeaders())
+			req = urllib.request.Request(self.server.url, headers=self.server.cloudService.getHeaders())
 			req.get_method = lambda: "HEAD"
 
 			try:
 				response = urllib.request.urlopen(req)
-			except urllib.error.URLError as e:
+			except urllib.error.URLError:
 				self.server.failed = True
 
 				if e.code == 404:
@@ -226,19 +225,22 @@ class ServerHandler(BaseHTTPRequestHandler):
 					accountChange = False
 					accounts = self.server.accountManager.getAccounts(self.server.driveID)
 
-					for account in accounts:
+					for account in accounts[1:]:
 						self.server.cloudService.setAccount(account)
 						tokenRefresh = self.server.cloudService.refreshToken()
 
 						if tokenRefresh == "failed":
 							continue
 
-						req = urllib.request.Request(url, headers=self.server.cloudService.getHeaders())
+						if self.server.transcoded:
+							self.server.url = self.server.cloudService.getStreams(self.server.fileID, (self.server.transcoded,))[1]
+
+						req = urllib.request.Request(self.server.url, headers=self.server.cloudService.getHeaders())
 						req.get_method = lambda: "HEAD"
 
 						try:
 							response = urllib.request.urlopen(req)
-						except urllib.error.URLError as e:
+						except urllib.error.URLError:
 							continue
 
 						accountChange = True
@@ -302,14 +304,13 @@ class ServerHandler(BaseHTTPRequestHandler):
 				# start = start - (16 - (end % 16))
 				# start = 23474184 - 8
 
-			url = self.server.playbackURL
-			xbmc.log("GET " + url + "\n" + self.server.cloudService.getHeadersEncoded() + "\n")
+			xbmc.log("GET " + self.server.url + "\n" + self.server.cloudService.getHeadersEncoded() + "\n")
 
 			if start == "":
-				req = urllib.request.Request(url, headers=self.server.cloudService.getHeaders())
+				req = urllib.request.Request(self.server.url, headers=self.server.cloudService.getHeaders())
 			else:
 				req = urllib.request.Request(
-					url,
+					self.server.url,
 					headers=self.server.cloudService.getHeaders(
 						additionalHeader="Range",
 						additionalValue=f"bytes={start - startOffset}-{end}",
@@ -399,7 +400,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 					driveID,
 				)
 				redirect = "/registration_succeeded"
-			except Exception as e:
+			except Exception:
 				redirect = "/registration_failed"
 
 			self.send_response(303)
@@ -409,11 +410,11 @@ class ServerHandler(BaseHTTPRequestHandler):
 		elif self.path == "/registration_succeeded":
 			self.send_response(200)
 			self.end_headers()
-			data = registration.status("Account registration succeeded")
+			data = registration.status(self.server.settings.getLocalizedString(30046))
 			self.wfile.write(data.encode("utf-8"))
 
 		elif self.path == "/registration_failed":
 			self.send_response(200)
 			self.end_headers()
-			data = registration.status("Account registration failed")
+			data = registration.status(self.server.settings.getLocalizedString(30047))
 			self.wfile.write(data.encode("utf-8"))

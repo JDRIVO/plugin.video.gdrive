@@ -138,7 +138,7 @@ class Core:
 		if syncRootPath:
 			self.addMenu(
 				syncRootPath,
-				"[B][COLOR yellow]Browse STRM[/COLOR][/B]",
+				f"[B][COLOR yellow]{self.settings.getLocalizedString(30008)}[/COLOR][/B]",
 			)
 
 		self.addMenu(
@@ -157,15 +157,15 @@ class Core:
 
 			contextMenu = [
 				(
-					"Force sync",
+					self.settings.getLocalizedString(30010),
 					f"RunPlugin({pluginURL}?mode=force_sync&drive_id={driveID})",
 				),
 				(
-					"Rename",
+					self.settings.getLocalizedString(30002),
 					f"RunPlugin({pluginURL}?mode=set_alias&drive_id={driveID})",
 				),
 				(
-					"Delete",
+					self.settings.getLocalizedString(30159),
 					f"RunPlugin({pluginURL}?mode=delete_drive&drive_id={driveID})",
 				)
 			]
@@ -196,7 +196,7 @@ class Core:
 		if driveSettings:
 			self.addMenu(
 				f"{pluginURL}?mode=list_synced_folders&drive_id={driveID}",
-				"[COLOR yellow][B]Synced[/B][/COLOR]",
+				f"[COLOR yellow][B]{self.settings.getLocalizedString(30011)}[/B][/COLOR]",
 			)
 
 		self.addMenu(
@@ -205,23 +205,23 @@ class Core:
 		)
 		self.addMenu(
 			f"{pluginURL}?mode=list_directory&drive_id={driveID}",
-			"My Drive",
+			self.settings.getLocalizedString(30038),
 		)
 		self.addMenu(
 			f"{pluginURL}?mode=list_directory&drive_id={driveID}&shared_with_me=true",
-			"Shared With Me",
+			self.settings.getLocalizedString(30039),
 		)
 		self.addMenu(
 			f"{pluginURL}?mode=list_shared_drives&drive_id={driveID}",
-			"Shared Drives",
+			self.settings.getLocalizedString(30040),
 		)
 		self.addMenu(
 			f"{pluginURL}?mode=search_drive&drive_id={driveID}",
-			"Search",
+			self.settings.getLocalizedString(30041),
 		)
 		self.addMenu(
 			f"{pluginURL}?mode=list_directory&drive_id={driveID}&starred=true",
-			"Starred",
+			self.settings.getLocalizedString(30042),
 		)
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
@@ -265,7 +265,7 @@ class Core:
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
 
 	def searchDrive(self):
-		searchQuery = xbmcgui.Dialog().input("Search Query")
+		searchQuery = xbmcgui.Dialog().input(self.settings.getLocalizedString(30043))
 
 		if not searchQuery:
 			self.succeeded = False
@@ -319,7 +319,7 @@ class Core:
 			if folderSettings:
 				contextMenu = [
 					(
-						"Sync settings",
+						self.settings.getLocalizedString(30012),
 						f"RunPlugin({pluginURL}?mode=display_sync_settings&sync_mode=folder&drive_id={driveID}&folder_id={folderID if folderID else driveID}&folder_name={folderName})",
 					),
 
@@ -334,7 +334,7 @@ class Core:
 				else:
 					contextMenu = [
 						(
-							"Sync folder",
+							self.settings.getLocalizedString(30013),
 							f"RunPlugin({pluginURL}?mode=display_sync_settings&sync_mode=new&drive_id={driveID}&folder_id={folderID if folderID else driveID}&folder_name={folderName})",
 						)
 					]
@@ -355,7 +355,7 @@ class Core:
 		folders = self.cache.getFolders(driveID)
 		self.addMenu(
 			f"{pluginURL}?mode=display_sync_settings&drive_id={driveID}&sync_mode=drive",
-			"[B][COLOR yellow]Drive settings[/COLOR][/B]",
+			f"[B][COLOR yellow]{self.settings.getLocalizedString(30017)}[/COLOR][/B]",
 			folder=False,
 		)
 
@@ -497,7 +497,7 @@ class Core:
 			if tokenRefresh == "failed":
 				selection = self.dialog.yesno(
 					self.settings.getLocalizedString(30000),
-					"{accountName} {self.settings.getLocalizedString(30019)}",
+					f"{accountName} {self.settings.getLocalizedString(30019)}",
 				)
 
 				if not selection:
@@ -561,7 +561,7 @@ class Core:
 	def setPlaybackAccount(self):
 		accounts = self.accountManager.getDrives()
 		displayNames = [account[1] for account in accounts]
-		selection = self.dialog.select("Select an account", displayNames)
+		selection = self.dialog.select(self.settings.getLocalizedString(30014), displayNames)
 
 		if selection == -1:
 			return
@@ -579,7 +579,7 @@ class Core:
 		alias = filesystem.helpers.removeProhibitedFSchars(alias)
 
 		if alias in self.accountManager.aliases:
-			self.dialog.ok("gDrive", "The drive name already exists, it must be unique.")
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30015))
 			return
 
 		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
@@ -594,7 +594,7 @@ class Core:
 
 		confirmation = self.dialog.yesno(
 			self.settings.getLocalizedString(30000),
-			f"Are you sure you want to delete this Drive?",
+			self.settings.getLocalizedString(30016),
 		)
 
 		if not confirmation:
@@ -610,7 +610,7 @@ class Core:
 		response.close()
 
 	def setTMDBlanguage(self):
-		selection = self.dialog.select("TMDB Language", filesystem.helpers.TMDB_LANGUAGES)
+		selection = self.dialog.select(self.settings.getLocalizedString(30802), filesystem.helpers.TMDB_LANGUAGES)
 
 		if selection == -1:
 			return
@@ -618,7 +618,7 @@ class Core:
 		self.settings.setSetting("tmdb_language", filesystem.helpers.TMDB_LANGUAGES[selection])
 
 	def setTMDBregion(self):
-		selection = self.dialog.select("TMDB Region", filesystem.helpers.TMDB_REGIONS)
+		selection = self.dialog.select(self.settings.getLocalizedString(30803), filesystem.helpers.TMDB_REGIONS)
 
 		if selection == -1:
 			return
@@ -688,7 +688,7 @@ class Core:
 		self.accountManager.saveAccounts()
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/play_url"
-		data = f"encrypted={encrypted}&url={driveURL}&drive_id={driveID}"
+		data = f"encrypted={encrypted}&url={driveURL}&drive_id={driveID}&file_id={fileID}&transcoded={transcoded}"
 		req = urllib.request.Request(url, data.encode("utf-8"))
 
 		try:
@@ -708,9 +708,9 @@ class Core:
 			item.setSubtitles(subtitles)
 
 		if dbID:
-			data = f"file_id={fileID}&db_id={dbID}&db_type={dbType}&transcoded={transcoded}"
+			data = f"db_id={dbID}&db_type={dbType}"
 		else:
-			data = f"file_id={fileID}&db_id=False&db_type=False&transcoded={transcoded}"
+			data = f"db_id=False&db_type=False"
 
 		xbmcplugin.setResolvedUrl(self.pluginHandle, True, item)
 		url = f"http://localhost:{serverPort}/start_player"

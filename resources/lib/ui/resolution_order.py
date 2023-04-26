@@ -3,6 +3,8 @@ import os
 import xbmcgui
 import xbmcaddon
 
+import constants
+
 
 class ResolutionOrder(xbmcgui.WindowDialog):
 	ACTION_MOVE_LEFT = 1
@@ -35,7 +37,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 
 		background = xbmcgui.ControlImage(self.x, self.y, w, h, self.grayTexture)
 		bar = xbmcgui.ControlImage(self.x, self.y, w, 40, self.blueTexture)
-		label = xbmcgui.ControlLabel(self.x + 10, self.y + 5, 0, 0, "Resolution Priority")
+		label = xbmcgui.ControlLabel(self.x + 10, self.y + 5, 0, 0, constants.settings.getLocalizedString(30083))
 
 		self.addControls([background, bar, label])
 		self.createButtons()
@@ -140,7 +142,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 			self.y + spacing,
 			80,
 			buttonHeight,
-			"OK",
+			constants.settings.getLocalizedString(30066),
 			font=font,
 			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.blueTexture,
@@ -151,7 +153,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 			self.y + spacing + 35,
 			80,
 			buttonHeight,
-			"Close",
+			constants.settings.getLocalizedString(30084),
 			font=font,
 			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.blueTexture,
