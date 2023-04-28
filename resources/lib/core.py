@@ -424,9 +424,6 @@ class Core:
 			)
 		)
 
-		if selection:
-			xbmc.executebuiltin("Container.Refresh")
-
 	def addServiceAccount(self):
 		accountName = self.dialog.input(self.settings.getLocalizedString(30025))
 

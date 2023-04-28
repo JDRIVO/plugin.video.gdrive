@@ -412,6 +412,8 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.end_headers()
 			data = registration.status(self.server.settings.getLocalizedString(30046))
 			self.wfile.write(data.encode("utf-8"))
+			xbmc.executebuiltin("Dialog.Close(all,true)")
+			xbmc.executebuiltin("Container.Refresh")
 
 		elif self.path == "/registration_failed":
 			self.send_response(200)

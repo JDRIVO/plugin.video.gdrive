@@ -390,8 +390,8 @@ msgid "Add service account"
 msgstr "Add service account"
 
 msgctxt "#30218"
-msgid "in a web browser. Click OK after completing the process."
-msgstr "in a web browser. Click OK after completing the process."
+msgid "in a web browser."
+msgstr "in a web browser."
 
 msgctxt "#30222"
 msgid "You must create an"
