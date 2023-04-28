@@ -121,10 +121,6 @@ msgctxt "#30026"
 msgid "Google Service Account Key (JSON) File"
 msgstr "Google Service Account Key (JSON) File"
 
-msgctxt "#30027"
-msgid "A JSON file must be selected."
-msgstr "A JSON file must be selected."
-
 msgctxt "#30028"
 msgid "The private key and client email weren't found in your key file."
 msgstr "The private key and client email weren't found in your key file."
