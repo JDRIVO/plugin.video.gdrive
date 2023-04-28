@@ -41,6 +41,7 @@ class Core:
 			"validate_accounts": self.validateAccounts,
 			"delete_accounts": self.accountDeletion,
 			"list_drive": self.createDriveMenu,
+			"list_drives": self.createDrivesMenu,
 			"list_accounts": self.listAccounts,
 			"list_directory": self.listDirectory,
 			"list_synced_folders": self.listSyncedFolders,
@@ -142,6 +143,16 @@ class Core:
 			)
 
 		self.addMenu(
+			f"{pluginURL}?mode=list_drives",
+			f"[COLOR yellow][B]{self.settings.getLocalizedString(30085)}[/B][/COLOR]",
+		)
+		xbmcplugin.setContent(self.pluginHandle, "files")
+		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_FILE)
+		self.cacheToDisk = False
+
+	def createDrivesMenu(self):
+		pluginURL = sys.argv[0]
+		self.addMenu(
 			f"{pluginURL}?mode=register_account",
 			f"[COLOR yellow][B]{self.settings.getLocalizedString(30207)}[/B][/COLOR]",
 			folder=False,
@@ -179,7 +190,6 @@ class Core:
 		# xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_FILE)
 		# xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL_IGNORE_FOLDERS)
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL_IGNORE_FOLDERS)
-		self.cacheToDisk = False
 
 	def createDriveMenu(self):
 		pluginURL = sys.argv[0]
@@ -348,7 +358,6 @@ class Core:
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
 
-
 	def listSyncedFolders(self):
 		pluginURL = sys.argv[0]
 		driveID = self.settings.getParameter("drive_id")
@@ -424,13 +433,9 @@ class Core:
 		if not accountName:
 			return
 
-		keyFilePath = self.dialog.browse(1, self.settings.getLocalizedString(30026), "files")
+		keyFilePath = self.dialog.browse(1, self.settings.getLocalizedString(30026), "files", mask=".json")
 
 		if not keyFilePath:
-			return
-
-		if not keyFilePath.endswith(".json"):
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30027))
 			return
 
 		with open(keyFilePath, "r") as key:
@@ -710,7 +715,7 @@ class Core:
 		if dbID:
 			data = f"db_id={dbID}&db_type={dbType}"
 		else:
-			data = f"db_id=False&db_type=False"
+			data = "db_id=False&db_type=False"
 
 		xbmcplugin.setResolvedUrl(self.pluginHandle, True, item)
 		url = f"http://localhost:{serverPort}/start_player"

@@ -46,8 +46,8 @@ msgid "Switching to fallback account"
 msgstr "Switching to fallback account"
 
 msgctxt "#30008"
-msgid "Browse STRM"
-msgstr "Browse STRM"
+msgid "Videos"
+msgstr "Videos"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
@@ -352,6 +352,10 @@ msgstr "Resolution Priority"
 msgctxt "#30084"
 msgid "Close"
 msgstr "Close"
+
+msgctxt "#30085"
+msgid "Drives"
+msgstr "Drives"
 
 msgctxt "#30118"
 msgid "The following account was added:"
