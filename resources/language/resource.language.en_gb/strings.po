@@ -17,10 +17,6 @@ msgctxt "#30000"
 msgid "gDrive"
 msgstr "gDrive"
 
-msgctxt "#30001"
-msgid " "
-msgstr " "
-
 msgctxt "#30002"
 msgid "Rename"
 msgstr "Rename"
@@ -32,10 +28,6 @@ msgstr "gDrive error"
 msgctxt "#30004"
 msgid "Drive Name"
 msgstr "Drive Name"
-
-msgctxt "#30005"
-msgid "Please set a default playback account in the gDrive settings."
-msgstr "Please set a default playback account in the gDrive settings."
 
 msgctxt "#30006"
 msgid "API Ban"
@@ -109,17 +101,13 @@ msgctxt "#30023"
 msgid "Validate"
 msgstr "Validate"
 
-msgctxt "#30024"
-msgid "Account Validation"
-msgstr "Account Validation"
-
 msgctxt "#30025"
 msgid "Account Name"
 msgstr "Account Name"
 
 msgctxt "#30026"
-msgid "Google Service Account Key (JSON) File"
-msgstr "Google Service Account Key (JSON) File"
+msgid "Google Service Account Key"
+msgstr "Google Service Account Key
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in your key file."
@@ -132,10 +120,6 @@ msgstr "The client email wasn't found in your key file."
 msgctxt "#30030"
 msgid "The private key wasn't found in your key file."
 msgstr "The private key wasn't found in your key file."
-
-msgctxt "#30031"
-msgid "Stream Quality"
-msgstr "Stream Quality"
 
 msgctxt "#30032"
 msgid "Accounts"
@@ -357,10 +341,6 @@ msgctxt "#30118"
 msgid "The following account was added:"
 msgstr "The following account was added:"
 
-msgctxt "#30119"
-msgid "The following login error was encountered:"
-msgstr "The following login error was encountered:"
-
 msgctxt "#30120"
 msgid "Account Selection"
 msgstr "Account Selection"
@@ -405,18 +385,6 @@ msgctxt "#30210"
 msgid "Navigate to"
 msgstr "Navigate to"
 
-msgctxt "#30211"
-msgid "Open gDrive settings"
-msgstr "Open gDrive settings"
-
-msgctxt "#30212"
-msgid "Remove from fallback"
-msgstr "Remove from fallback"
-
-msgctxt "#30213"
-msgid "Add to fallback"
-msgstr "Add to fallback"
-
 msgctxt "#30214"
 msgid "Add service account"
 msgstr "Add service account"
@@ -424,18 +392,6 @@ msgstr "Add service account"
 msgctxt "#30218"
 msgid "in a web browser. Click OK after completing the process."
 msgstr "in a web browser. Click OK after completing the process."
-
-msgctxt "#30219"
-msgid "Make default"
-msgstr "Make default"
-
-msgctxt "#30220"
-msgid "Set fallback account(s)"
-msgstr "Set fallback account(s)"
-
-msgctxt "#30221"
-msgid "The video database set in your gDrive library settings is incompatible with this version of Kodi."
-msgstr "The video database set in your gDrive library settings is incompatible with this version of Kodi."
 
 msgctxt "#30222"
 msgid "You must create an"
@@ -526,8 +482,8 @@ msgid "Mark Episodes as Watched at"
 msgstr "Mark Episodes as Watched at"
 
 msgctxt "#30503"
-msgid "Obtain Media Flag Information From STRM"
-msgstr "Obtain Media Flag Information From STRM"
+msgid "Import Media Flag Information From STRM"
+msgstr "Import Media Flag Information From STRM"
 
 msgctxt "#30600"
 msgid "Streamer"
