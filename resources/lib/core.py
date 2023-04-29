@@ -52,6 +52,7 @@ class Core:
 			"accounts_cm": self.accountsContextMenu,
 			"list_shared_drives": self.listSharedDrives,
 			"search_drive": self.searchDrive,
+			"import_or_export_accounts": self.accountImportOrExport,
 			"import_accounts": self.importAccounts,
 			"export_accounts": self.exportAccounts,
 			"set_playback_account": self.setPlaybackAccount,
@@ -155,6 +156,11 @@ class Core:
 		self.addMenu(
 			f"{pluginURL}?mode=register_account",
 			f"[COLOR yellow][B]{self.settings.getLocalizedString(30207)}[/B][/COLOR]",
+			folder=False,
+		)
+		self.addMenu(
+			f"{pluginURL}?mode=import_or_export_accounts",
+			f"[COLOR yellow][B]{self.settings.getLocalizedString(30086)}[/B][/COLOR]",
 			folder=False,
 		)
 
@@ -538,6 +544,18 @@ class Core:
 		if newOrder:
 			self.settings.setSetting("resolution_priority", ", ".join(newOrder))
 
+	def accountImportOrExport(self):
+		options = [self.settings.getLocalizedString(30087), self.settings.getLocalizedString(30088)]
+		selection = self.dialog.select(self.settings.getLocalizedString(30089), options)
+
+		if selection == -1:
+			return
+
+		if selection == 0:
+			self.importAccounts()
+		else:
+			self.exportAccounts()
+
 	def importAccounts(self):
 		filePath = self.dialog.browse(1, self.settings.getLocalizedString(30033), "files", mask=".pkl")
 
@@ -550,6 +568,7 @@ class Core:
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30037))
 		else:
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30036))
+			xbmc.executebuiltin("Container.Refresh")
 
 	def exportAccounts(self):
 		filePath = self.dialog.browse(0, self.settings.getLocalizedString(30034), "")

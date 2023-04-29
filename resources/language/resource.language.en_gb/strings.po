@@ -337,6 +337,22 @@ msgctxt "#30085"
 msgid "Drives"
 msgstr "Drives"
 
+msgctxt "#30086"
+msgid "Import/export accounts"
+msgstr "Import/export accounts"
+
+msgctxt "#30087"
+msgid "Import accounts"
+msgstr "Import accounts"
+
+msgctxt "#30088"
+msgid "Export accounts"
+msgstr "Export accounts"
+
+msgctxt "#30089"
+msgid "Select an operation"
+msgstr "Select an operation"
+
 msgctxt "#30118"
 msgid "The following account was added:"
 msgstr "The following account was added:"
@@ -416,10 +432,6 @@ msgstr "with this"
 msgctxt "#30227"
 msgid "Redirect URI"
 msgstr "Redirect URI"
-
-msgctxt "#30300"
-msgid "Accounts"
-msgstr "Accounts"
 
 msgctxt "#30302"
 msgid "Enable Account Fallback When API Banned"
@@ -508,18 +520,6 @@ msgstr "Password"
 msgctxt "#30605"
 msgid "Salt File"
 msgstr "Salt File"
-
-msgctxt "#30700"
-msgid "Accounts"
-msgstr "Accounts"
-
-msgctxt "#30701"
-msgid "Import Accounts"
-msgstr "Import Accounts"
-
-msgctxt "#30702"
-msgid "Export Accounts"
-msgstr "Export Accounts"
 
 msgctxt "#30800"
 msgid "Sync"
