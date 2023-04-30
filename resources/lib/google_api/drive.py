@@ -49,6 +49,7 @@ class GoogleDrive:
 				"refresh_token": self.account.refreshToken,
 				"grant_type": "refresh_token",
 			}
+
 		response = network.requester.makeRequest(GOOGLE_TOKEN_URL, data, method="POST")
 
 		if not response:
