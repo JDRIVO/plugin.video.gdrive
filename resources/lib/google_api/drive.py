@@ -124,9 +124,7 @@ class GoogleDrive:
 					return resolution, streams[resolutions[resolution]]["url"]
 
 		elif streams:
-			d = {"Original": None}
-			d.update({v["resolution"]: v["url"] for k, v in streams.items()})
-			return d
+			return {"Original": None, **{v["resolution"]: v["url"] for k, v in streams.items()}}
 
 	def getDrives(self):
 		params = {"pageSize": "100"}
@@ -202,7 +200,11 @@ class GoogleDrive:
 			return dirPath, rootFolderID
 
 	def listDirectory(self, folderID="root", sharedWithMe=False, foldersOnly=False, starred=False, search=False, customQuery=False):
-		params = {}
+		params = {
+			"supportsAllDrives": "true",
+			"includeItemsFromAllDrives": "true",
+			"pageSize": "1000",
+		}
 
 		if customQuery:
 			params["q"] = customQuery
@@ -221,13 +223,6 @@ class GoogleDrive:
 
 			params["fields"] = "nextPageToken,files(id,name)"
 
-		params.update(
-			{
-				"supportsAllDrives": "true",
-				"includeItemsFromAllDrives": "true",
-				"pageSize": "1000",
-			}
-		)
 		files = []
 		pageToken = True
 
