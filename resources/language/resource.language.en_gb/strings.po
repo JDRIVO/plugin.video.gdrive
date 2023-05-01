@@ -107,7 +107,7 @@ msgstr "Account Name"
 
 msgctxt "#30026"
 msgid "Google Service Account Key"
-msgstr "Google Service Account Key
+msgstr "Google Service Account Key"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in your key file."
