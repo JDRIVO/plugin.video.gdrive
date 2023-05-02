@@ -54,6 +54,15 @@ class Tasker:
 		replace = (dt.minute // interval)*interval
 		return dt.replace(minute = replace, second=0, microsecond=0)
 
+	def syncAll(self):
+		drives = self.cache.getDrives()
+
+		if not drives:
+			return
+
+		for driveSettings in drives:
+			self.sync(driveSettings["drive_id"])
+
 	def sync(self, driveID):
 		self.activeTasks.append(driveID)
 

@@ -46,8 +46,8 @@ msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
 msgstr "Daily quota limit exceeded. Ban will lift within 24 hours."
 
 msgctxt "#30010"
-msgid "Force sync"
-msgstr "Force sync"
+msgid "Sync all"
+msgstr "Sync all"
 
 msgctxt "#30011"
 msgid "Synced"

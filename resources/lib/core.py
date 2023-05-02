@@ -49,6 +49,7 @@ class Core:
 			"display_sync_settings": self.displaySyncSettings,
 			"resolution_priority": self.resolutionPriority,
 			"force_sync": self.forceSync,
+			"force_sync_all": self.forceSyncAll,
 			"accounts_cm": self.accountsContextMenu,
 			"list_shared_drives": self.listSharedDrives,
 			"search_drive": self.searchDrive,
@@ -143,9 +144,16 @@ class Core:
 				f"[B][COLOR yellow]{self.settings.getLocalizedString(30008)}[/COLOR][/B]",
 			)
 
+		contextMenu = [
+			(
+				self.settings.getLocalizedString(30010),
+				f"RunPlugin({pluginURL}?mode=force_sync_all)",
+			),
+		]
 		self.addMenu(
 			f"{pluginURL}?mode=list_drives",
 			f"[COLOR yellow][B]{self.settings.getLocalizedString(30085)}[/B][/COLOR]",
+			cm=contextMenu,
 		)
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_FILE)
@@ -174,7 +182,7 @@ class Core:
 
 			contextMenu = [
 				(
-					self.settings.getLocalizedString(30010),
+					self.settings.getLocalizedString(30800),
 					f"RunPlugin({pluginURL}?mode=force_sync&drive_id={driveID})",
 				),
 				(
@@ -399,6 +407,13 @@ class Core:
 		url = f"http://localhost:{serverPort}/force_sync"
 		data = f"drive_id={driveID}"
 		req = urllib.request.Request(url, data.encode("utf-8"))
+		response = urllib.request.urlopen(req)
+		response.close()
+
+	def forceSyncAll(self):
+		serverPort = self.settings.getSettingInt("server_port", 8011)
+		url = f"http://localhost:{serverPort}/force_sync_all"
+		req = urllib.request.Request(url)
 		response = urllib.request.urlopen(req)
 		response.close()
 

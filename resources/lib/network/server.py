@@ -378,6 +378,11 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 			response.close()
 
+		elif self.path == "/force_sync_all":
+			self.send_response(200)
+			self.end_headers()
+			self.server.taskManager.syncAll()
+
 		elif self.path == "/register":
 			self.send_response(200)
 			self.end_headers()

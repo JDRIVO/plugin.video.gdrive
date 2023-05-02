@@ -92,6 +92,7 @@ class AccountManager:
 			self.saveAccounts()
 
 	def deleteDrive(self, driveID):
+		self.loadAccounts()
 		alias = self.getAlias(driveID)
 
 		if alias:
