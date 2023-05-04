@@ -89,9 +89,11 @@ class Syncer:
 
 		if newFiles:
 			self.syncFileAdditions(newFiles, syncRootPath, driveID)
-			xbmc.executebuiltin(f"UpdateLibrary(video,{syncRootPath})")
 
-		if self.deleted:
+			if self.settings.getSetting("update_library"):
+				xbmc.executebuiltin(f"UpdateLibrary(video,{syncRootPath})")
+
+		if self.deleted and self.settings.getSetting("update_library"):
 
 			if os.name == "nt":
 				syncRootPath = syncRootPath.replace("\\", "\\\\")

@@ -155,16 +155,54 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="tmdb_language" type="string" label="30802" help="">
+				<setting id="update_library" type="boolean" label="30802" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+			</group>
+			<group id="2" label="30803">
+				<setting id="contains_encrypted" type="boolean" label="30804" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="file_renaming" type="boolean" label="30805" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="folder_restructure" type="boolean" label="30806" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="sync_nfo" type="boolean" label="30807" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="sync_subtitles" type="boolean" label="30808" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="sync_artwork" type="boolean" label="30809" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="tmdb_language" type="string" label="30810" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
 						<allowempty>true</allowempty>
-					</constraints>					<control type="button" format="action">
+					</constraints>
+					<control type="button" format="action">
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_language)</data>
 					</control>
 				</setting>
-				<setting id="tmdb_region" type="string" label="30803" help="">
+				<setting id="tmdb_region" type="string" label="30811" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -174,7 +212,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_region)</data>
 					</control>
 				</setting>
-				<setting id="tmdb_adult" type="string" label="30804" help="">
+				<setting id="tmdb_adult" type="string" label="30812" help="">
 					<level>0</level>
 					<default>false</default>
 					<constraints>
@@ -184,7 +222,7 @@
 						</options>
 					</constraints>
 					<control type="list" format="string">
-						<heading>30804</heading>
+						<heading>30812</heading>
 					</control>
 				</setting>
 			</group>

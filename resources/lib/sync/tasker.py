@@ -183,6 +183,8 @@ class Tasker:
 		if not driveSettings["page_token"]:
 			self.cache.updateDrive({"page_token": self.cloudService.getPageToken()}, driveID)
 
-		xbmc.executebuiltin(f"UpdateLibrary(video,{syncRootPath})")
+		if self.settings.getSetting("update_library"):
+			xbmc.executebuiltin(f"UpdateLibrary(video,{syncRootPath})")
+
 		self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30044))
 		self.spawnTask(driveSettings, startUpRun=False)

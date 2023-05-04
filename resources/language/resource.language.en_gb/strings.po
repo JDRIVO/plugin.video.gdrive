@@ -198,32 +198,8 @@ msgid "Sync frequency"
 msgstr "Sync frequency"
 
 msgctxt "#30051"
-msgid "Sync on startup?"
-msgstr "Sync on startup?"
-
-msgctxt "#30052"
-msgid "Does this folder contain gDrive encrypted files?"
-msgstr "Does this folder contain gDrive encrypted files?"
-
-msgctxt "#30053"
-msgid "Rename videos to a Kodi friendly format?"
-msgstr "Rename videos to a Kodi friendly format?"
-
-msgctxt "#30054"
-msgid "Create a Kodi friendly directory structure?"
-msgstr "Create a Kodi friendly directory structure?"
-
-msgctxt "#30055"
-msgid "Sync NFOs?"
-msgstr "Sync NFOs?"
-
-msgctxt "#30056"
-msgid "Sync Subtitles?"
-msgstr "Sync Subtitles?"
-
-msgctxt "#30057"
-msgid "Sync Artwork?"
-msgstr "Sync Artwork?"
+msgid "Sync on startup"
+msgstr "Sync on startup"
 
 msgctxt "#30058"
 msgid "Search language"
@@ -238,20 +214,20 @@ msgid "Adult content"
 msgstr "Adult content"
 
 msgctxt "#30061"
-msgid "Stop syncing all folders?"
-msgstr "Stop syncing all folders?"
+msgid "Stop syncing all folders"
+msgstr "Stop syncing all folders"
 
 msgctxt "#30062"
-msgid "Stop syncing all folders and delete local files?"
-msgstr "Stop syncing all folders and delete local files?"
+msgid "Stop syncing all folders and delete local files"
+msgstr "Stop syncing all folders and delete local files"
 
 msgctxt "#30063"
-msgid "Stop syncing folder?"
-msgstr "Stop syncing folder?"
+msgid "Stop syncing folder"
+msgstr "Stop syncing folder"
 
 msgctxt "#30064"
-msgid "Stop syncing folder and delete local files?"
-msgstr "Stop syncing folder and delete local files?"
+msgid "Stop syncing folder and delete local files"
+msgstr "Stop syncing folder and delete local files"
 
 msgctxt "#30065"
 msgid "General"
@@ -353,21 +329,9 @@ msgctxt "#30089"
 msgid "Select an operation"
 msgstr "Select an operation"
 
-msgctxt "#30118"
-msgid "The following account was added:"
-msgstr "The following account was added:"
-
-msgctxt "#30120"
-msgid "Account Selection"
-msgstr "Account Selection"
-
 msgctxt "#30121"
 msgid "Are you sure you want to delete account:"
 msgstr "Are you sure you want to delete account:"
-
-msgctxt "#30142"
-msgid "Account activated successfully"
-msgstr "Account activated successfully"
 
 msgctxt "#30158"
 msgid "Account Deletion"
@@ -376,10 +340,6 @@ msgstr "Account Deletion"
 msgctxt "#30159"
 msgid "Delete"
 msgstr "Delete"
-
-msgctxt "#30160"
-msgid "The account(s) will be deleted when you click OK in the settings."
-msgstr "The account(s) will be deleted when you click OK in the settings."
 
 msgctxt "#30161"
 msgid "Account(s) deleted."
@@ -433,22 +393,6 @@ msgctxt "#30227"
 msgid "Redirect URI"
 msgstr "Redirect URI"
 
-msgctxt "#30302"
-msgid "Enable Account Fallback When API Banned"
-msgstr "Enable Account Fallback When API Banned"
-
-msgctxt "#30303"
-msgid "Fallback Account(s)"
-msgstr "Fallback Account(s)"
-
-msgctxt "#30304"
-msgid "Validate Account(s)"
-msgstr "Validate Account(s)"
-
-msgctxt "#30305"
-msgid "Delete Account(s)"
-msgstr "Delete Account(s)"
-
 msgctxt "#30306"
 msgid "Validating"
 msgstr "Validating"
@@ -458,20 +402,20 @@ msgid "Playback"
 msgstr "Playback"
 
 msgctxt "#30401"
-msgid "Prompt Resolution Selection (If Available)"
-msgstr "Prompt Resolution Selection (If Available)"
+msgid "Prompt resolution selection (if available)"
+msgstr "Prompt resolution selection (if available)"
 
 msgctxt "#30402"
-msgid "Video Resolution Priority"
-msgstr "Video Resolution Priority"
+msgid "Video resolution priority"
+msgstr "Video resolution priority"
 
 msgctxt "#30403"
-msgid "Subtitle Format"
-msgstr "Subtitle Format"
+msgid "Subtitle format"
+msgstr "Subtitle format"
 
 msgctxt "#30404"
-msgid "Playback Account"
-msgstr "Playback Account"
+msgid "Playback account"
+msgstr "Playback account"
 
 msgctxt "#30405"
 msgid "Account"
@@ -486,16 +430,16 @@ msgid "Library"
 msgstr "Library"
 
 msgctxt "#30501"
-msgid "Mark Movies as Watched at"
-msgstr "Mark Movies as Watched at"
+msgid "Mark movies as watched at"
+msgstr "Mark movies as watched at"
 
 msgctxt "#30502"
-msgid "Mark Episodes as Watched at"
-msgstr "Mark Episodes as Watched at"
+msgid "Mark episodes as watched at"
+msgstr "Mark episodes as watched at"
 
 msgctxt "#30503"
-msgid "Import Media Flag Information From STRM"
-msgstr "Import Media Flag Information From STRM"
+msgid "Import media flag information from STRM"
+msgstr "Import media flag information from STRM"
 
 msgctxt "#30600"
 msgid "Streamer"
@@ -506,8 +450,8 @@ msgid "Server"
 msgstr "Server"
 
 msgctxt "#30602"
-msgid "Server Port (Requires Restart)"
-msgstr "Server Port (Requires Restart)"
+msgid "Server port (requires restart)"
+msgstr "Server port (requires restart)"
 
 msgctxt "#30603"
 msgid "Crypto"
@@ -518,25 +462,57 @@ msgid "Password"
 msgstr "Password"
 
 msgctxt "#30605"
-msgid "Salt File"
-msgstr "Salt File"
+msgid "Salt file"
+msgstr "Salt file"
 
 msgctxt "#30800"
 msgid "Sync"
 msgstr "Sync"
 
 msgctxt "#30801"
-msgid "Thread Count"
-msgstr "Thread Count"
+msgid "Threads"
+msgstr "Threads"
 
 msgctxt "#30802"
-msgid "TMDB Search Language"
-msgstr "TMDB Search Language"
+msgid "Automatically update library"
+msgstr "Automatically update library"
 
 msgctxt "#30803"
-msgid "TMDB Region"
-msgstr "TMDB Region"
+msgid "Sync defaults"
+msgstr "Sync defaults"
 
 msgctxt "#30804"
-msgid "TMDB Adult Content"
-msgstr "TMDB Adult Content"
+msgid "Does this folder contain gDrive encrypted files"
+msgstr "Does this folder contain gDrive encrypted files"
+
+msgctxt "#30805"
+msgid "Rename videos to a Kodi friendly format"
+msgstr "Rename videos to a Kodi friendly format"
+
+msgctxt "#30806"
+msgid "Create a Kodi friendly directory structure"
+msgstr "Create a Kodi friendly directory structure"
+
+msgctxt "#30807"
+msgid "Sync NFOs"
+msgstr "Sync NFOs"
+
+msgctxt "#30808"
+msgid "Sync subtitles"
+msgstr "Sync subtitles"
+
+msgctxt "#30809"
+msgid "Sync artwork"
+msgstr "Sync artwork"
+
+msgctxt "#30810"
+msgid "TMDB search language"
+msgstr "TMDB search language"
+
+msgctxt "#30811"
+msgid "TMDB region"
+msgstr "TMDB region"
+
+msgctxt "#30812"
+msgid "TMDB adult content"
+msgstr "TMDB adult content"

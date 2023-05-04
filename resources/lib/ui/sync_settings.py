@@ -23,12 +23,12 @@ class SyncSettings(xbmcgui.WindowDialog):
 		constants.settings.getLocalizedString(30049): {"type": "drive", "name": "task_mode"},
 		constants.settings.getLocalizedString(30050): {"type": "drive", "name": "task_frequency"},
 		constants.settings.getLocalizedString(30051): {"type": "drive", "name": "startup_sync"},
-		constants.settings.getLocalizedString(30052): {"type": "folder", "name": "contains_encrypted"},
-		constants.settings.getLocalizedString(30053): {"type": "folder", "name": "file_renaming"},
-		constants.settings.getLocalizedString(30054): {"type": "folder", "name": "folder_restructure"},
-		constants.settings.getLocalizedString(30055): {"type": "folder", "name": "sync_nfo"},
-		constants.settings.getLocalizedString(30056): {"type": "folder", "name": "sync_subtitles"},
-		constants.settings.getLocalizedString(30057): {"type": "folder", "name": "sync_artwork"},
+		constants.settings.getLocalizedString(30804): {"type": "folder", "name": "contains_encrypted"},
+		constants.settings.getLocalizedString(30805): {"type": "folder", "name": "file_renaming"},
+		constants.settings.getLocalizedString(30806): {"type": "folder", "name": "folder_restructure"},
+		constants.settings.getLocalizedString(30807): {"type": "folder", "name": "sync_nfo"},
+		constants.settings.getLocalizedString(30808): {"type": "folder", "name": "sync_subtitles"},
+		constants.settings.getLocalizedString(30809): {"type": "folder", "name": "sync_artwork"},
 		constants.settings.getLocalizedString(30058): {"type": "folder", "name": "tmdb_language"},
 		constants.settings.getLocalizedString(30059): {"type": "folder", "name": "tmdb_region"},
 		constants.settings.getLocalizedString(30060): {"type": "folder", "name": "tmdb_adult"},
@@ -267,12 +267,12 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		settings.update(
 			{
-				constants.settings.getLocalizedString(30052): folderSettings["contains_encrypted"] if folderSettings else False,
-				constants.settings.getLocalizedString(30053): folderSettings["file_renaming"] if  folderSettings else False,
-				constants.settings.getLocalizedString(30054): folderSettings["folder_restructure"] if folderSettings else False,
-				constants.settings.getLocalizedString(30055): folderSettings["sync_nfo"] if folderSettings else False,
-				constants.settings.getLocalizedString(30056): folderSettings["sync_subtitles"] if folderSettings else False,
-				constants.settings.getLocalizedString(30057): folderSettings["sync_artwork"] if folderSettings else False,
+				constants.settings.getLocalizedString(30804): folderSettings["contains_encrypted"] if folderSettings else constants.settings.getSetting("contains_encrypted"),
+				constants.settings.getLocalizedString(30805): folderSettings["file_renaming"] if  folderSettings else constants.settings.getSetting("file_renaming"),
+				constants.settings.getLocalizedString(30806): folderSettings["folder_restructure"] if folderSettings else constants.settings.getSetting("folder_restructure"),
+				constants.settings.getLocalizedString(30807): folderSettings["sync_nfo"] if folderSettings else constants.settings.getSetting("sync_nfo"),
+				constants.settings.getLocalizedString(30808): folderSettings["sync_subtitles"] if folderSettings else constants.settings.getSetting("sync_subtitles"),
+				constants.settings.getLocalizedString(30809): folderSettings["sync_artwork"] if folderSettings else constants.settings.getSetting("sync_artwork"),
 			}
 		)
 		self.setup(len(self.functions) + len(settings))
@@ -371,7 +371,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			values = [
 				constants.settings.getSetting("tmdb_language") if constants.settings.getSetting("tmdb_language") else "",
 				constants.settings.getSetting("tmdb_region") if constants.settings.getSetting("tmdb_region") else "",
-				constants.settings.getSetting("tmdb_adult") if constants.settings.getSetting("tmdb_adult") else "false",
+				"true" if constants.settings.getSetting("tmdb_adult") else "false",
 			]
 
 		for func, value in zip(functions, values):
@@ -638,7 +638,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				self.cache.updateFolder(folderSettings, self.folderID)
 
 	def setSearchLanguage(self, button):
-		selection = self.dialog.select(constants.settings.getLocalizedString(30802), filesystem.constants.TMDB_LANGUAGES)
+		selection = self.dialog.select(constants.settings.getLocalizedString(30810), filesystem.constants.TMDB_LANGUAGES)
 
 		if selection == -1:
 			return
@@ -646,7 +646,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		button.setLabel(label2=filesystem.constants.TMDB_LANGUAGES[selection])
 
 	def setCountry(self, button):
-		selection = self.dialog.select(constants.settings.getLocalizedString(30803), filesystem.constants.TMDB_REGIONS)
+		selection = self.dialog.select(constants.settings.getLocalizedString(30811), filesystem.constants.TMDB_REGIONS)
 
 		if selection == -1:
 			return
@@ -655,7 +655,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 	def setAdultContent(self, button):
 		options = ["true", "false"]
-		selection = self.dialog.select(constants.settings.getLocalizedString(30804), options)
+		selection = self.dialog.select(constants.settings.getLocalizedString(30812), options)
 
 		if selection == -1:
 			return

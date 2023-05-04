@@ -141,7 +141,7 @@ class Core:
 		if syncRootPath:
 			self.addMenu(
 				syncRootPath,
-				f"[B][COLOR yellow]{self.settings.getLocalizedString(30008)}[/COLOR][/B]",
+				f"[COLOR yellow][B]{self.settings.getLocalizedString(30008)}[/B][/COLOR]",
 			)
 
 		contextMenu = [
@@ -225,7 +225,7 @@ class Core:
 
 		self.addMenu(
 			f"{pluginURL}?mode=list_accounts&drive_id={driveID}",
-			f"[B][COLOR yellow]{self.settings.getLocalizedString(30032)}[/COLOR][/B]",
+			f"[COLOR yellow][B]{self.settings.getLocalizedString(30032)}[/B][/COLOR]",
 		)
 		self.addMenu(
 			f"{pluginURL}?mode=list_directory&drive_id={driveID}",
@@ -646,7 +646,7 @@ class Core:
 		response.close()
 
 	def setTMDBlanguage(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30802), filesystem.helpers.TMDB_LANGUAGES)
+		selection = self.dialog.select(self.settings.getLocalizedString(30810), filesystem.helpers.TMDB_LANGUAGES)
 
 		if selection == -1:
 			return
@@ -654,7 +654,7 @@ class Core:
 		self.settings.setSetting("tmdb_language", filesystem.helpers.TMDB_LANGUAGES[selection])
 
 	def setTMDBregion(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30803), filesystem.helpers.TMDB_REGIONS)
+		selection = self.dialog.select(self.settings.getLocalizedString(30811), filesystem.helpers.TMDB_REGIONS)
 
 		if selection == -1:
 			return
