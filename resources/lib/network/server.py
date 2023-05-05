@@ -210,7 +210,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 			try:
 				response = urllib.request.urlopen(req)
-			except urllib.error.URLError:
+			except urllib.error.URLError as e:
 				self.server.failed = True
 
 				if e.code == 404:
