@@ -72,14 +72,14 @@ class Syncer:
 
 			syncedIDs.append(id)
 
-			if item["trashed"]:
-				self.syncDeletions(item, syncRootPath, drivePath)
-				continue
-
 			try:
 				# Shared items that google automatically adds to an account don't have parentFolderIDs
 				parentFolderID = item["parents"][0]
 			except:
+				continue
+
+			if item["trashed"]:
+				self.syncDeletions(item, syncRootPath, drivePath)
 				continue
 
 			if item["mimeType"] == "application/vnd.google-apps.folder":
@@ -111,21 +111,28 @@ class Syncer:
 			folderID = id
 		else:
 			cachedFile = self.cache.getFile(id)
+
+			if not cachedFile:
+				return
+
 			self.cache.deleteFile(id)
+			folderID = cachedFile["parent_folder_id"]
+			cachedDirectory = self.cache.getDirectory(folderID)
+			cachedFiles = self.cache.getFile(folderID, "parent_folder_id")
 
-			if cachedFile:
-				folderID = cachedFile["parent_folder_id"]
-				cachedDirectory = self.cache.getDirectory(folderID)
-				cachedFiles = self.cache.getFile(folderID, "parent_folder_id")
-
-				if cachedFile["original_folder"]:
-					dirPath = os.path.join(syncRootPath, drivePath, cachedDirectory["local_path"])
-					self.fileOperations.deleteFile(syncRootPath, dirPath, cachedFile["local_name"])
-				else:
-					filePath = os.path.join(syncRootPath, cachedFile["local_path"])
-					self.fileOperations.deleteFile(syncRootPath, filePath=filePath)
+			if cachedFile["original_folder"]:
+				dirPath = os.path.join(syncRootPath, drivePath, cachedDirectory["local_path"])
+				self.fileOperations.deleteFile(syncRootPath, dirPath, cachedFile["local_name"])
+			else:
+				filePath = os.path.join(syncRootPath, cachedFile["local_path"])
+				self.fileOperations.deleteFile(syncRootPath, filePath=filePath)
 
 		if not cachedFiles:
+			cachedDirectory = self.cache.getDirectory(folderID)
+
+			if not cachedDirecory:
+				return
+
 			self.cache.deleteDirectory(folderID)
 
 		self.deleted = True

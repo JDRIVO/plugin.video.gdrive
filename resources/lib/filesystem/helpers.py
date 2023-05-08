@@ -29,11 +29,10 @@ def generateFilePath(dirPath, filename):
 def duplicateFileCheck(dirPath, filename):
 	filePath = os.path.join(dirPath, filename)
 	filename, fileExtension = os.path.splitext(filename)
-	filename_ = filename
 	copy = 1
 
 	while os.path.exists(filePath):
-		filePath = os.path.join(dirPath, f"{filename_} ({copy}){fileExtension}")
+		filePath = os.path.join(dirPath, f"{filename} ({copy}){fileExtension}")
 		copy += 1
 
 	return filePath
