@@ -474,8 +474,8 @@ msgid "Dialogs"
 msgstr "Dialogs"
 
 msgctxt "#30701"
-msgid "Display sync progress dialog"
-msgstr "Display sync progress dialog"
+msgid "Display initial sync progress dialog"
+msgstr "Display initial sync progress dialog"
 
 msgctxt "#30702"
 msgid "Display file deletion dialog"
