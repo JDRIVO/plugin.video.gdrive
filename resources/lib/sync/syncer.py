@@ -3,6 +3,7 @@ import os
 import xbmc
 
 from . import cache
+from ..ui import dialogs
 from .. import filesystem
 from ..threadpool import threadpool
 from ..filesystem.constants import *
@@ -130,7 +131,7 @@ class Syncer:
 		if not cachedFiles:
 			cachedDirectory = self.cache.getDirectory(folderID)
 
-			if not cachedDirecory:
+			if not cachedDirectory:
 				return
 
 			self.cache.deleteDirectory(folderID)
@@ -230,10 +231,10 @@ class Syncer:
 				if cachedFile:
 					# file has moved outside of root folder hierarchy/tree
 					cachedParentFolderID = cachedFile["parent_folder_id"]
-					cachedDirecory = self.cache.getDirectory(cachedParentFolderID)
+					cachedDirectory = self.cache.getDirectory(cachedParentFolderID)
 
 					if cachedFile["original_folder"]:
-						cachedFilePath = os.path.join(syncRootPath, drivePath, cachedDirecory["local_path"], cachedFile["local_name"])
+						cachedFilePath = os.path.join(syncRootPath, drivePath, cachedDirectory["local_path"], cachedFile["local_name"])
 					else:
 						cachedFilePath = os.path.join(syncRootPath, cachedFile["local_path"])
 
@@ -340,7 +341,7 @@ class Syncer:
 		else:
 			newFiles[rootFolderID][parentFolderID].files[file.type].append(file)
 
-	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, syncedIDs=None):
+	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, syncedIDs=None, initialSync=False):
 
 		if folderSettings["contains_encrypted"]:
 			encrypter = self.encrypter
@@ -353,6 +354,11 @@ class Syncer:
 		fileRenaming = folderSettings["file_renaming"]
 		fileTree = self.fileTree.buildTree(folderID, parentFolderID, dirPath, excludedTypes, encrypter, syncedIDs, threadCount)
 		folders = []
+
+		if initialSync and self.settings.getSetting("sync_progress_dialog"):
+			pDialog = dialogs.SyncProgressionDialog(self.fileTree, heading=f"Syncing files from {folderSettings['remote_name']}")
+		else:
+			pDialog = False
 
 		with threadpool.ThreadPool(threadCount) as pool:
 
@@ -369,15 +375,27 @@ class Syncer:
 					"root_folder_id": rootFolderID,
 				}
 				self.cache.addDirectory(directory)
-				pool.submit(self.remoteFileProcessor.processFiles, folder, folderSettings, dirPath, syncRootPath, driveID, rootFolderID, threadCount)
+				pool.submit(self.remoteFileProcessor.processFiles, folder, folderSettings, dirPath, syncRootPath, driveID, rootFolderID, threadCount, pDialog)
 
 				if folderRestructure or fileRenaming:
 					folders.append(folder)
 
+		if pDialog:
+			pDialog.close()
+
+		if not folders:
+			return
+
+		if pDialog:
+			pDialog = dialogs.SyncProgressionDialog(self.fileTree, heading=f"Performing renaming operations on {folderSettings['remote_name']}")
+
 		with threadpool.ThreadPool(threadCount) as pool:
 
 			for folder in folders:
-				pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, folder.path, syncRootPath, threadCount)
+				pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, folder.path, syncRootPath, threadCount, pDialog)
+
+		if pDialog:
+			pDialog.close()
 
 	def syncFileAdditions(self, files, syncRootPath, driveID):
 		threadCount = self.settings.getSettingInt("thread_count", 1)

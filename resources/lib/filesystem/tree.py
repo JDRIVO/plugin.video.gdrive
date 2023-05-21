@@ -1,4 +1,5 @@
 import os
+import threading
 
 from . import helpers
 from .constants import *
@@ -11,8 +12,10 @@ class FileTree:
 	def __init__(self, cloudService, cache):
 		self.cloudService = cloudService
 		self.cache = cache
+		self.counterLock = threading.Lock()
 
 	def buildTree(self, folderID, parentFolderID, path, excludedTypes, encrypter, syncedIDs, threadCount):
+		self.fileCount = 0
 		fileTree = dict()
 		remoteName = os.path.basename(path)
 		path_ = path
@@ -77,6 +80,9 @@ class FileTree:
 
 			if not file:
 				continue
+
+			with self.counterLock:
+				self.fileCount += 1
 
 			files = fileTree[parentFolderID].files
 

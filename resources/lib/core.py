@@ -343,7 +343,7 @@ class Core:
 			if folderSettings:
 				contextMenu = [
 					(
-						self.settings.getLocalizedString(30012),
+						self.settings.getLocalizedString(30005),
 						f"RunPlugin({pluginURL}?mode=display_sync_settings&sync_mode=folder&drive_id={driveID}&folder_id={folderID if folderID else driveID}&folder_name={folderName})",
 					),
 
