@@ -219,9 +219,8 @@ class Cache(Database):
 				for file in files:
 
 					if file["original_folder"]:
-						dirPath = os.path.join(drivePath, directory["local_path"])
 						filename = file["local_name"]
-						filePath = os.path.join(dirPath, filename)
+						filePath = os.path.join(os.path.join(drivePath, directory["local_path"]), filename)
 					else:
 						filePath = os.path.join(syncRootPath, file["local_path"])
 						filename = os.path.basename(filePath)
