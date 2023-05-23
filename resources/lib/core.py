@@ -32,8 +32,7 @@ class Core:
 		self.cacheToDisk = True
 
 	def run(self, dbID, dbType, filePath):
-		mode = self.settings.getParameter("mode", "main").lower()
-		pluginQueries = self.settings.parseQuery(sys.argv[2][1:])
+		mode = self.settings.getParameter("mode", "main")
 		modes = {
 			"main": self.createMainMenu,
 			"register_account": self.registerAccount,
@@ -429,7 +428,7 @@ class Core:
 		del syncSettings
 
 	def registerAccount(self):
-		selection = self.dialog.ok(
+		self.dialog.ok(
 			self.settings.getLocalizedString(30000),
 			"{} [B][COLOR blue]http://localhost:{}/register[/COLOR][/B] {}\n\n{} [COLOR chartreuse]{}[/COLOR] {} [COLOR chartreuse]{}[/COLOR] {} [COLOR chartreuse]{}[/COLOR] [B][COLOR blue]http://localhost:{}/status[/COLOR][/B]".format(
 				self.settings.getLocalizedString(30210),
