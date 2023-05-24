@@ -25,6 +25,7 @@ class RemoteFileProcessor:
 		driveID,
 		rootFolderID,
 		threadCount,
+		pDialog=False,
 	):
 		files = folder.files
 		parentFolderID = folder.id
@@ -36,6 +37,7 @@ class RemoteFileProcessor:
 		mediaAssets = files.get("media_assets")
 		strm = files.get("strm")
 		cachedFiles = []
+		self.pDialog = pDialog
 
 		if strm:
 
@@ -125,6 +127,9 @@ class RemoteFileProcessor:
 			)
 			cachedFiles.append(file)
 
+			if self.pDialog:
+				self.pDialog.update(remoteName)
+
 	def processSTRM(
 		self,
 		file,
@@ -150,6 +155,9 @@ class RemoteFileProcessor:
 			True,
 		)
 		cachedFiles.append(file)
+
+		if self.pDialog:
+			self.pDialog.update(remoteName)
 
 	def processVideo(
 		self,
@@ -182,6 +190,9 @@ class RemoteFileProcessor:
 		)
 		cachedFiles.append(file)
 
+		if self.pDialog:
+			self.pDialog.update(remoteName)
+
 class LocalFileProcessor:
 
 	def __init__(self, cloudService, fileOperations, settings):
@@ -198,6 +209,7 @@ class LocalFileProcessor:
 		remoteDirPath,
 		syncRootPath,
 		threadCount,
+		pDialog=False,
 	):
 		files = folder.files
 		syncRootPath = syncRootPath + os.sep
@@ -205,6 +217,7 @@ class LocalFileProcessor:
 		dirPath = os.path.join(syncRootPath, remoteDirPath)
 		videos = files.get("video")
 		mediaAssets = files.get("media_assets")
+		self.pDialog = pDialog
 
 		if videos:
 			folderRestructure = folderSettings["folder_restructure"]
@@ -288,6 +301,10 @@ class LocalFileProcessor:
 			filePath = os.path.join(processingDirPath, remoteName)
 			filePath = self.fileOperations.renameFile(syncRootPath, filePath, dirPath, filename)
 			mediaAssets.remove(file)
+
+			if self.pDialog:
+				self.pDialog.update(file.name)
+
 			file = {
 				"local_path": filePath.replace(syncRootPath, "") if not originalFolder else False,
 				"local_name": os.path.basename(filePath),
@@ -352,6 +369,10 @@ class LocalFileProcessor:
 			)
 
 		filePath = self.fileOperations.renameFile(syncRootPath, filePath, dirPath, filename)
+
+		if self.pDialog:
+			self.pDialog.update(file.name)
+
 		file = {
 			"local_path": filePath.replace(syncRootPath, "") if not originalFolder else False,
 			"local_name": os.path.basename(filePath),

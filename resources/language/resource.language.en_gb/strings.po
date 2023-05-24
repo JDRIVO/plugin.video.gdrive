@@ -29,6 +29,10 @@ msgctxt "#30004"
 msgid "Drive Name"
 msgstr "Drive Name"
 
+msgctxt "#30005"
+msgid "Sync settings"
+msgstr "Sync settings"
+
 msgctxt "#30006"
 msgid "API Ban"
 msgstr "API Ban"
@@ -174,8 +178,8 @@ msgid "Sync completed"
 msgstr "Sync completed"
 
 msgctxt "#30045"
-msgid "Files have been deleted."
-msgstr "Files have been deleted."
+msgid "Files have been deleted"
+msgstr "Files have been deleted"
 
 msgctxt "#30046"
 msgid "Account registration succeeded"
@@ -270,8 +274,8 @@ msgid "Are you sure you want to stop syncing this folder and delete its files?"
 msgstr "Are you sure you want to stop syncing this folder and delete its files?"
 
 msgctxt "#30075"
-msgid "Files are now being deleted. A notication will appear when they've been deleted."
-msgstr "Files are now being deleted. A notication will appear when they've been deleted."
+msgid "Deleting files"
+msgstr "Deleting files"
 
 msgctxt "#30076"
 msgid "Are you sure you want to stop syncing all folders and delete their files?"
@@ -298,8 +302,8 @@ msgid "You must assign a sync frequency"
 msgstr "You must assign a sync frequency"
 
 msgctxt "#30082"
-msgid "Syncing files. A notification will appear when this task has completed."
-msgstr "Syncing files. A notification will appear when this task has completed."
+msgid "Syncing files"
+msgstr "Syncing files"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
@@ -464,6 +468,18 @@ msgstr "Password"
 msgctxt "#30605"
 msgid "Salt file"
 msgstr "Salt file"
+
+msgctxt "#30700"
+msgid "Dialogs"
+msgstr "Dialogs"
+
+msgctxt "#30701"
+msgid "Display initial sync progress dialog"
+msgstr "Display initial sync progress dialog"
+
+msgctxt "#30702"
+msgid "Display file deletion dialog"
+msgstr "Display file deletion dialog"
 
 msgctxt "#30800"
 msgid "Sync"

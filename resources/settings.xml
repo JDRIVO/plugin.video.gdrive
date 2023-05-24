@@ -141,6 +141,20 @@
 				</setting>
 			</group>
 		</category>
+		<category id="dialog" label="30700" help="">
+			<group id="1">
+				<setting id="sync_progress_dialog" type="boolean" label="30701" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="file_deletion_dialog" type="boolean" label="30702" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+			</group>
+		</category>
 		<category id="sync" label="30800" help="">
 			<group id="1">
 				<setting id="thread_count" type="integer" label="30801" help="">
