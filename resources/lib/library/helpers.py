@@ -11,6 +11,7 @@ def getVideoDB():
 	dbVersion = {
 		"19": "119",
 		"20": "121",
+		"21": "131",
 	}
 	userAgent = xbmc.getUserAgent()
 	kodiVersion = re.findall("Kodi\/(\d+)", userAgent)[0]
