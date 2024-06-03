@@ -174,7 +174,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 			if delete:
 				xbmcgui.Dialog().notification(
-					self.server.settings.getLocalizedString(30000), 
+					self.server.settings.getLocalizedString(30000),
 					self.server.settings.getLocalizedString(30045),
 					self.server.gDriveIconPath,
 				)
@@ -401,23 +401,33 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.wfile.write(data.encode("utf-8"))
 
 		elif "/status" in self.path:
+			redirect = "/registration_failed"
 
 			try:
 				code = re.findall("code=(.*)&", self.path)[0]
-				token = self.server.cloudService.getToken(self.server.account.clientID, self.server.account.clientSecret, code, self.server.server_port)
-				self.server.account.accessToken = token["access_token"]
-				self.server.account.refreshToken = token["refresh_token"]
-				self.server.cloudService.setAccount(self.server.account)
-				self.server.cloudService.refreshToken()
-				driveID = self.server.cloudService.getDriveID()
-				self.server.accountManager.loadAccounts()
-				self.server.accountManager.addAccount(
-					self.server.account,
-					driveID,
-				)
-				redirect = "/registration_succeeded"
 			except Exception:
-				redirect = "/registration_failed"
+				xbmc.log("gdrive error: Google authorization code not returned", xbmc.LOGERROR)
+			else:
+				tokens = self.server.cloudService.getToken(self.server.account.clientID, self.server.account.clientSecret, code, self.server.server_port)
+
+				if not tokens:
+					xbmc.log("gdrive error: Failed to generate access and refresh tokens", xbmc.LOGERROR)
+				else:
+					self.server.account.accessToken = tokens["access_token"]
+					self.server.account.refreshToken = tokens["refresh_token"]
+					self.server.cloudService.setAccount(self.server.account)
+					self.server.cloudService.refreshToken()
+					driveID = self.server.cloudService.getDriveID()
+
+					if not driveID:
+						xbmc.log("gdrive error: Failed to obtain Drive ID", xbmc.LOGERROR)
+					else:
+						self.server.accountManager.loadAccounts()
+						self.server.accountManager.addAccount(
+							self.server.account,
+							driveID,
+						)
+						redirect = "/registration_succeeded"
 
 			self.send_response(303)
 			self.send_header("Location", f"http://localhost:{self.server.server_port}{redirect}")
