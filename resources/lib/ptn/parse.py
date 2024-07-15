@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from . import re
 from .extras import exceptions, genres, langs, link_patterns, patterns_ignore_title
-from .patterns import delimiters, patterns, patterns_ordered, types
+from .patterns import delimiters, patterns, patterns_ordered, types, patterns_allow_overlap
 from .post import post_processing_after_excess, post_processing_before_excess
 
 
@@ -14,7 +14,7 @@ class PTN(object):
         self.standardise = None
         self.coherent_types = None
 
-        self.post_title_pattern = "(?:{}|{})".format(
+        self.post_title_pattern = "(?:{}|{}|720p|1080p)".format(
             link_patterns(patterns["season"]), link_patterns(patterns["year"])
         )
 
@@ -39,7 +39,14 @@ class PTN(object):
     def _clean_string(string):
         clean = re.sub(r"^( -|\(|\[)", "", string)
         if clean.find(" ") == -1 and clean.find(".") != -1:
-            clean = re.sub(r"\.", " ", clean)
+            # 4 dots likely means we want an ellipsis and a space
+            clean = re.sub(r"\.{4,}", "... ", clean)
+
+            # Replace any instances of less than 3 dots with a space
+            # Lookarounds are used to prevent the 3-dots (ellipses) from being replaced
+            clean = re.sub(r"(?<!\.)\.\.(?!\.)", " ", clean)
+            clean = re.sub(r"(?<!\.)\.(?!\.\.)", " ", clean)
+
         clean = re.sub(r"_", " ", clean)
         clean = re.sub(r"([\[)_\]]|- )$", "", clean).strip()
         clean = clean.strip(" _-")
@@ -104,7 +111,19 @@ class PTN(object):
                 if self.standardise:
                     clean = self.standardise_clean(clean, key, replace, transforms)
 
-                self._part(key, (match_start, match_end), clean)
+                part_overlaps = False
+                for part, part_slices in self.part_slices.items():
+                    if part not in patterns_allow_overlap:
+                        # Strict smaller/larger than since punctuation can overlap.
+                        if (
+                            (part_slices[0] < match_start < part_slices[1])
+                            or (part_slices[0] < match_end < part_slices[1])
+                        ):
+                            part_overlaps = True
+                            break
+
+                if not part_overlaps:
+                    self._part(key, (match_start, match_end), clean)
 
         self.process_title()
         self.fix_known_exceptions()
@@ -213,13 +232,16 @@ class PTN(object):
         m = re.findall(r"[0-9]+", match[0])
         if m and len(m) > 1:
             clean = list(range(int(m[0]), int(m[-1]) + 1))
+        # This elif exists entirely for the Seasons 1, 2, 3, 4, etc. case. No other regex gives a number in match[1].
+        elif len(match) > 1 and match[1] and m:
+            clean = list(range(int(m[0]), int(match[1]) + 1))
         elif m:
             clean = int(m[0])
+
         return clean
 
     @staticmethod
     def split_multi(match):
-        # handle multi languages
         m = re.split(r"{}+".format(delimiters), match[0])
         clean = list(filter(None, m))
 
@@ -265,7 +287,7 @@ class PTN(object):
                 if re.match(
                     lang_regex,
                     re.sub(
-                        link_patterns(patterns["subtitles"][2:]), "", lang, flags=re.I
+                        link_patterns(patterns["subtitles"][-2:]), "", lang, flags=re.I
                     ),
                     re.IGNORECASE,
                 ):
@@ -322,16 +344,16 @@ class PTN(object):
                 self._part("title", None, "")
 
             raw = self.torrent_name[title_start:title_end]
-            # Something in square brackets with 3 chars or less is too weird to be right.
+            # Something in square brackets with 3 chars or fewer is too weird to be right.
             # If this seems too arbitrary, make it any square bracket, and Mother test
             # case will lose its translated title (which is mostly fine I think).
-            m = re.search("\(|(?:\[(?:.{,3}\]|[^\]]*\d[^\]]*\]?))", raw, flags=re.I)
+            m = re.search(r"\(|(?:\[(?:.{,3}\]|[^\]]*\d[^\]]*\]?))", raw, flags=re.I)
             if m:
                 relative_title_end = m.start()
                 raw = raw[:relative_title_end]
                 title_end = relative_title_end + title_start
             # Similar logic as above, but looking at beginning of string unmatched brackets.
-            m = re.search("^(?:\)|\[.*\])", raw)
+            m = re.search(r"^(?:\)|\[.*\])", raw)
             if m:
                 relative_title_start = m.end()
                 raw = raw[relative_title_start:]
@@ -361,6 +383,10 @@ class PTN(object):
             delimiters + r"*\Z", self.torrent_name[end:]
         ):
             unmatched.append((end, len(self.torrent_name)))
+
+        # If nothing matched, assume the whole thing is the title
+        if not self.match_slices:
+            unmatched.append((0, len(self.torrent_name)))
 
         return unmatched
 

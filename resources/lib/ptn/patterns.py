@@ -24,7 +24,7 @@ season_range_pattern = (
     + delimiters
     + "*(?:s(?:easons?)?)"
     + delimiters
-    + "*(?:s?[0-9]{1,2}[\s]*(?:(?:\-|(?:\s*to\s*))[\s]*s?[0-9]{1,2})+)(?:"
+    + "*(?:s?[0-9]{1,2}[\s]*(?:(?:\-|(?:\s*to\s*))[\s]*s?[0-9]{1,2}))(?:"
     + delimiters
     + "*Complete)?"
 )
@@ -40,18 +40,18 @@ episode_name_pattern = (
     + delimiters
     + "|$))+)"
 )
-pre_website_encoder_pattern = r"[^\s\.\[\]\-\(\)]+\)\s{0,2}\[[^\s\-]+\]|[^\s\.\[\]\-\(\)]+\s{0,2}(?:-\s)?[^\s\.\[\]\-]+$"
+pre_website_encoder_pattern = r"[^\s\.\[\]\-\(\)]+\)\s*\[[^\s\-]+\]|[^\s\.\[\]\-\(\)]+\s*(?:-\s)?[^\s\.\[\]\-]+$"
 
 # Forces an order to go by the regexes, as we want this to be deterministic (different
 # orders can generate different matchings). e.g. "doctor_who_2005..." in input.json
 patterns_ordered = [
+    "resolution",
+    "quality",
     "season",
     "episode",
     "year",
     "month",
     "day",
-    "resolution",
-    "quality",
     "codec",
     "audio",
     "region",
@@ -61,11 +61,11 @@ patterns_ordered = [
     "repack",
     "filetype",
     "widescreen",
+    "sbs",
     "site",
     "documentary",
     "language",
     "subtitles",
-    "sbs",
     "unrated",
     "size",
     "bitDepth",
@@ -85,17 +85,32 @@ patterns_ordered = [
     "genre",
 ]
 
+
+# Some patterns overlap with others. Season & episode do this a lot. Without something like this, we'd get issues like
+# the Avatar test: ... Complete Series 1080p ... 'Series 10' would be matched as a season, but the 10 is
+# from 1080p, which also gets matched.
+patterns_allow_overlap = [
+    "season",
+    "episode",
+    "language",
+    "subtitles",
+    "sbs"
+]
+
 patterns = {}
 patterns["episode"] = [
-    "(?<![a-z])(?:e|ep)(?:[0-9]{1,2}(?:-?(?:e|ep)?(?:[0-9]{1,2}))?)(?![0-9])",
+    r"(?<![a-z])(?:e|ep)(?:\(?[0-9]{1,2}(?:-?(?:e|ep)?(?:[0-9]{1,2}))?\)?)(?![0-9])",
     # Very specific as it could match too liberally
-    "\s\-\s\d{1,3}\s",
+    r"\s\-\s\d{1,3}\s",
     r"\b[0-9]{1,2}x([0-9]{2})\b",
     r"\bepisod(?:e|io)" + delimiters + r"\d{1,2}\b",
 ]
 # If adding season patterns, remember to look at episode, as it uses the last few!
 patterns["season"] = [
-    "\ss?(\d{1,2})\s\-\s\d{1,2}\s",  # Avoids matching some anime releases season and episode as a season range
+    r"\b(?:Seasons?)"
+    + delimiters
+    + r"(\d{1,2})" + "(?:(?:" + delimiters + r"|&|and|to){1,3}(\d{1,2})){2,}\b",
+    r"\ss?(\d{1,2})\s\-\s\d{1,2}\s",  # Avoids matching some anime releases season and episode as a season range
     r"\b" + season_range_pattern + r"\b",  # Describes season ranges
     r"(?:s\d{1,2}[.+\s]*){2,}\b",  # for S01.S02.etc. patterns
     # Describes season, optionally with complete or episode
@@ -113,7 +128,7 @@ patterns["season"] = [
 ]
 # The first 4 season regexes won't have 'Part' in them.
 patterns["episode"] += [
-    link_patterns(patterns["season"][5:])
+    link_patterns(patterns["season"][6:])
     + delimiters
     + "*P(?:ar)?t"
     + delimiters
@@ -126,14 +141,22 @@ patterns["month"] = "(?:{year}){d}({month}){d}(?:{day})".format(
 patterns["day"] = "(?:{year}){d}(?:{month}){d}({day})".format(
     d=delimiters, year=year_pattern, month=month_pattern, day=day_pattern
 )
+# resolution pattern according to https://ihax.io/display-resolution-explained/ and GPT4.
+# order from highest to lowest due to some torrent name having '4K HD' in them but its technically 4K.
 patterns["resolution"] = [
-    ("([0-9]{3,4}(?:p|i))", None, "lower"),
-    ("(1280x720p?)", "720p"),
-    ("FHD|1920x1080p?", "1080p"),
-    ("UHD", "UHD"),
-    ("HD", "HD"),
-    ("4K", "4K"),
+    (r"([0-9]{3,4}(?:p|i))", None, "lower"),  # Generic pattern for resolutions like 480p, 720p, 1080p, etc.
+    (r"(8K|7680{d}?x{d}?4320p?)".format(d=delimiters), "8K"),  # Pattern for 8K
+    (r"(5K|5120{d}?x{d}?2880p?)".format(d=delimiters), "5K"),  # Pattern for 5K
+    (r"(4K UHD|UHD|3840{d}?x{d}?2160p?)".format(d=delimiters), "2160p"),  # Pattern for 4K UHD / 2160p
+    (r"(4K|4096{d}?x{d}?2160p?)".format(d=delimiters), "4K"),  # Pattern for 4K / Cinema 4K
+    (r"(QHD|QuadHD|WQHD|2560{d}?x{d}?1440p?)".format(d=delimiters), "1440p"),  # Pattern for QHD / 1440p
+    (r"(2K|2048{d}?x{d}?1080p?)".format(d=delimiters), "2K"),  # Pattern for 2K
+    (r"(Full HD|FHD|1920{d}?x{d}?1080p?)".format(d=delimiters), "1080p"),  # Pattern for Full HD / 1080p
+    (r"(HD|1280{d}?x{d}?720p?)".format(d=delimiters), "720p"),  # Pattern for HD / 720p
+    (r"(qHD)", "540p"),  # Pattern for quarter High Definition
+    (r"(SD)", "480p"),  # Pattern for Standard Definition
 ]
+
 patterns["quality"] = [
     ("WEB[ -\.]?DL(?:Rip|Mux)?|HDRip", "WEB-DL"),
     # Match WEB-DL's first as they can show up with others.
@@ -207,8 +230,8 @@ patterns["network"] += [
     ("Sony\s?LIV", "SONY LIV"),
 ]
 patterns["codec"] = [
-    # ("xvid", "xvid"),
-    # ("av1", "av1"),
+    ("xvid", "mpeg4"),
+    ("av1", "av1"),
     ("[hx]{d}?264".format(d=delimiters), "h264"),
     ("AVC", "h264"),
     ("HEVC(?:{d}Main{d}?10P?)".format(d=delimiters), "hevc"),
@@ -219,28 +242,34 @@ patterns["codec"] = [
     ("HEVC", "hevc"),
     ("[h]{d}?263".format(d=delimiters), "h263"),
     ("VC-1", "vc1"),
-    ("MPEG(?:[-._ ]*2)", "mpeg2video"),
-    ("MPEG(?:[-._ ]*1)", "mpeg1video"),
+    ("MPEG{d}?1".format(d=delimiters), "mpeg1video"),
+    ("MPEG{d}?2".format(d=delimiters), "mpeg2video"),
 ]
 patterns["audio"] = get_channel_audio_options(
     [
         ("TrueHD", "truehd"),
         # ("Atmos", "Dolby Atmos"),
-        # ("DD-EX", "Dolby Digital EX"),
-        ("DD[P+]|E-?AC-?3|EC-3", "eac3"),
-        ("DD|AC-?3|DolbyD", "ac3"),
+        # ("DD{d}?EX".format(d=delimiters), "Dolby Digital EX"),
+        ("DD|AC{d}?3|DolbyD".format(d=delimiters), "ac3"),
+        ("DD[P+]|E{d}?AC{d}?3|EC{d}?3".format(d=delimiters), "eac3"),
         (
             "DTS{d}?HD(?:{d}?(?:MA|Masters?(?:{d}Audio)?))".format(d=delimiters),
             "dts",
         ),
         ("DTSMA", "dts"),
-        ("DTS{d}?HD".format(d=delimiters), "dts"),
+        # ("DTS{d}?HD".format(d=delimiters), "DTS-HD"),
+        # ("DTS{d}?ES".format(d=delimiters), "DTS-ES"),
+        # ("DTS{d}?EX".format(d=delimiters), "DTS-EX"),
+        # ("DTS{d}?X".format(d=delimiters), "DTS:X"),
         ("DTS", "dts"),
-        ("AAC[ \.\-]LC", "aac"),
+        # ("HE{d}?AAC".format(d=delimiters), "HE-AAC"),
+        # ("HE{d}?AACv2".format(d=delimiters), "HE-AAC v2"),
+        # ("AAC{d}?LC".format(d=delimiters), "AAC-LC"),
         ("AAC", "aac"),
         # ("Dual{d}Audios?".format(d=delimiters), "Dual"),
+        # ("Custom{d}Audios?".format(d=delimiters), "Custom"),
         ("FLAC", "flac"),
-        # ("OGG", "ogg"),
+        # ("OGG", "OGG"),
     ]
 ) + [
     ("7.1(?:{d}?ch(?:annel)?(?:{d}?Audio)?)?".format(d=delimiters), "7.1"),
@@ -257,9 +286,13 @@ patterns["hardcoded"] = "HC"
 patterns["proper"] = "PROPER"
 patterns["repack"] = "REPACK"
 patterns["fps"] = "([1-9][0-9]{1,2})" + delimiters + "*fps"
-patterns["filetype"] = [("MKV|AVI|(?:SRT|SUB|SSA)$", None, "upper"), ("MP-?4", "MP4")]
+patterns["filetype"] = [
+    (r"\.?(MKV|AVI|(?:SRT|SUB|SSA)$)", None, "upper"),
+    ("MP-?4", "MP4"),
+    (r"\.?(iso)$", "ISO"),
+]
 patterns["widescreen"] = "WS"
-patterns["site"] = "^(\[ ?([^\]]+?) ?\])"
+patterns["site"] = [r"^(\[ ?([^\]]+?)\s?\])", r"^((?:www\.)?[\w-]+\.[\w]{2,4})\s+-\s*"]
 
 lang_list_pattern = (
     r"\b(?:"
@@ -273,15 +306,19 @@ lang_list_pattern = (
     + delimiters
     + r"+|\b))"
 )
-subs_list_pattern = r"\b(?:" + link_patterns(langs) + delimiters + "*)"
+subs_list_pattern = r"(?:" + link_patterns(langs) + delimiters + "*)"
 
 patterns["subtitles"] = [
+    # Below must stay first, see patterns["language"]
     "sub(?:title|bed)?s?{d}*{langs}+".format(d=delimiters, langs=subs_list_pattern),
     "(?:soft{d}*)?{langs}+(?:(?:m(?:ulti(?:ple)?)?{d}*)?sub(?:title|bed)?s?)".format(
         d=delimiters, langs=subs_list_pattern
     ),
+    ("VOSTFR", ["French"]),
+    # The following are patterns just for the 'subs' strings. Add normal sub stuff above.
     # Need a pattern just for subs, and can't just make above regexes * over + as we want
     # just 'subs' to match last.
+    # The second-last one must stay second-last, see patterns["language"]
     "(?:m(?:ulti(?:ple)?)?{d}*)sub(?:title|bed)?s?".format(d=delimiters),
     "(?:m(?:ulti(?:ple)?)?[\.\s\-\+_\/]*)?sub(?:title|bed)?s?{d}*".format(d=delimiters),
 ]
@@ -311,7 +348,7 @@ patterns["language"] = [
     + "+)(?:"
     + delimiters
     + "*"
-    + patterns["subtitles"][2]
+    + patterns["subtitles"][-2]
     + ")",
 ]
 patterns["sbs"] = [("Half-SBS", "Half SBS"), ("SBS", None, "upper")]
@@ -325,7 +362,6 @@ patterns["bitDepth"] = "(8|10)-?bits?"
 patterns["3d"] = "3D"
 patterns["internal"] = "iNTERNAL"
 patterns["readnfo"] = "READNFO"
-# patterns["hdr"] = "HDR(?:10)?"
 patterns["hdr"] = [
     ("DV|DoVi|Dolby[-_. ]*Vision", "dolbyvision"),
     ("HLG", "hlg"),
@@ -362,6 +398,7 @@ types = {
     "internal": "boolean",
     "readnfo": "boolean",
     "documentary": "boolean",
+    # "hdr": "boolean",
     "limited": "boolean",
     "remastered": "boolean",
     "directorsCut": "boolean",

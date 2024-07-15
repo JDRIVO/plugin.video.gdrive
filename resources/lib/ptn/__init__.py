@@ -14,12 +14,9 @@ from .parse import PTN
 
 __author__ = "Giorgio Momigliano"
 __email__ = "gmomigliano@protonmail.com"
-__version__ = "2.4"
+__version__ = "2.8.1"
 __license__ = "MIT"
 
-ptn = PTN()
 
-
-# TODO change coherent_types default to True in 3.0
 def parse(name, standardise=True, coherent_types=False):
-    return ptn.parse(name, standardise, coherent_types)
+    return PTN().parse(name, standardise, coherent_types)
