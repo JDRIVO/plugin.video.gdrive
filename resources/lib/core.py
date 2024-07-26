@@ -421,6 +421,7 @@ class Core:
 
 	def listFolders(self, driveID, folders, parentFolderID=None):
 		sharedWithMe = self.settings.getParameter("shared_with_me")
+		starred = self.settings.getParameter("starred")
 
 		for folder in folders:
 			folderID = folder["id"]
@@ -449,11 +450,11 @@ class Core:
 						),
 						(
 							self.settings.getLocalizedString(30090),
-							f"RunPlugin({self.pluginURL}?mode=sync_multiple_folders&sync_mode=new&drive_id={driveID}&parent_id={parentFolderID}&shared_with_me={sharedWithMe})",
+							f"RunPlugin({self.pluginURL}?mode=sync_multiple_folders&sync_mode=new&drive_id={driveID}&parent_id={parentFolderID}&shared_with_me={sharedWithMe}&starred={starred})",
 						),
 						(
 							self.settings.getLocalizedString(30010),
-							f"RunPlugin({self.pluginURL}?mode=sync_all_folders&sync_mode=new&drive_id={driveID}&parent_id={parentFolderID}&shared_with_me={sharedWithMe})",
+							f"RunPlugin({self.pluginURL}?mode=sync_all_folders&sync_mode=new&drive_id={driveID}&parent_id={parentFolderID}&shared_with_me={sharedWithMe}&starred={starred})",
 						),
 						(
 							self.settings.getLocalizedString(30091),
