@@ -241,5 +241,29 @@
 				</setting>
 			</group>
 		</category>
+		<category id="accounts" label="30900" help="">
+			<group id="1">
+				<setting id="import_accounts" type="string" label="30901" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=import_accounts)</data>
+					</control>
+				</setting>
+				<setting id="export_accounts" type="string" label="30902" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=export_accounts)</data>
+					</control>
+				</setting>
+			</group>
+		</category>
 	</section>
 </settings>

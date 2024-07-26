@@ -173,16 +173,6 @@ class Core:
 			f"[B][COLOR yellow]{self.settings.getLocalizedString(30207)}[/COLOR][/B]",
 			folder=False,
 		)
-		self.addMenu(
-			f"{self.pluginURL}?mode=import_accounts",
-			f"[B][COLOR yellow]{self.settings.getLocalizedString(30087)}[/COLOR][/B]",
-			folder=False,
-		)
-		self.addMenu(
-			f"{self.pluginURL}?mode=export_accounts",
-			f"[COLOR yellow][B]{self.settings.getLocalizedString(30088)}[/B][/COLOR]",
-			folder=False,
-		)
 
 		for driveID, accountData in self.accounts.items():
 			alias = accountData["alias"]
@@ -213,8 +203,6 @@ class Core:
 			)
 
 		xbmcplugin.setContent(self.pluginHandle, "files")
-		# xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_FILE)
-		# xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL_IGNORE_FOLDERS)
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL_IGNORE_FOLDERS)
 
 	def createDriveMenu(self):

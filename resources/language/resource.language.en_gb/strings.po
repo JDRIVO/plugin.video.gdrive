@@ -329,14 +329,6 @@ msgctxt "#30086"
 msgid "Folder selection"
 msgstr "Folder selection"
 
-msgctxt "#30087"
-msgid "Import accounts"
-msgstr "Import accounts"
-
-msgctxt "#30088"
-msgid "Export accounts"
-msgstr "Export accounts"
-
 msgctxt "#30089"
 msgid "Select an operation"
 msgstr "Select an operation"
@@ -548,3 +540,16 @@ msgstr "TMDB region"
 msgctxt "#30812"
 msgid "TMDB adult content"
 msgstr "TMDB adult content"
+
+msgctxt "#30900"
+msgid "Accounts"
+msgstr "Accounts"
+
+msgctxt "#30901"
+msgid "Import accounts"
+msgstr "Import accounts"
+
+msgctxt "#30902"
+msgid "Export accounts"
+msgstr "Export accounts"
+
