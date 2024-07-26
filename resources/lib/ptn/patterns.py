@@ -363,7 +363,7 @@ patterns["3d"] = "3D"
 patterns["internal"] = "iNTERNAL"
 patterns["readnfo"] = "READNFO"
 patterns["hdr"] = [
-    ("DV|DoVi|Dolby[-_. ]*Vision", "dolbyvision"),
+    ("DV|DoVi|Dolby{d}Vision".format(d=delimiters), "dolbyvision"),
     ("HLG", "hlg"),
     ("HDR(?:10)?", "hdr10"),
 ]

@@ -21,7 +21,7 @@ class FileTree:
 		path_ = path
 		copy = 1
 
-		while self.cache.getDirectory(path, column="local_path"):
+		while self.cache.getDirectory({"local_path": path}):
 			path = f"{path_} ({copy})"
 			copy += 1
 
@@ -67,8 +67,8 @@ class FileTree:
 			mimeType = item["mimeType"]
 
 			if mimeType == "application/vnd.google-apps.folder":
-				folderName = item["name"]
-				path = path_ = os.path.join(fileTree[parentFolderID].path, helpers.removeProhibitedFSchars(folderName))
+				folderName = helpers.removeProhibitedFSchars(item["name"])
+				path = path_ = os.path.join(fileTree[parentFolderID].path, folderName)
 				copy = 1
 
 				while path in paths:

@@ -21,7 +21,7 @@ def updateLibrary(filePath, metadata):
 	dirPath, filename = os.path.split(filePath)
 	dbPath = getVideoDB()
 	db = Database(dbPath)
-	fileID = db.selectConditional("files", "idFile", f'idPath=(SELECT idPath FROM path WHERE strPath="{dirPath + os.sep}") AND strFilename="{filename}"')
+	fileID = db.selectConditional("files", "idFile", {"idPath": f'(SELECT idPath FROM path WHERE strPath="{dirPath + os.sep}")', "strFilename": filename})
 
 	if not fileID:
 		return
@@ -32,8 +32,9 @@ def updateLibrary(filePath, metadata):
 		"iVideoHeight": metadata["height"],
 		"iVideoDuration": float(metadata["durationMillis"]) / 1000,
 	}
+	condition = {"idFile": fileID, "iStreamType": "0"}
 
-	if db.selectAllConditional("streamdetails", f"idFile='{fileID}' AND iStreamType='0'"):
-		db.update("streamdetails", data, f"idFile='{fileID}' AND iStreamType='0'")
+	if db.selectAllConditional("streamdetails", condition):
+		db.update("streamdetails", data, condition)
 	else:
 		db.insert("streamdetails", data)

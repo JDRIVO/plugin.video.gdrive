@@ -170,7 +170,7 @@ class GoogleDrive:
 	def getDirectory(self, cache, folderID):
 		dirPath = ""
 		cachedDirectory = None
-		cachedFolder = cache.getFolder(folderID)
+		cachedFolder = cache.getFolder({"folder_id": folderID})
 		params = {
 			"fields": "parents,name",
 			"supportsAllDrives": "true",
@@ -188,8 +188,8 @@ class GoogleDrive:
 
 			dirName = filesystem.helpers.removeProhibitedFSchars(dirName)
 			dirPath = os.path.join(dirName, dirPath)
-			cachedDirectory = cache.getDirectory(folderID)
-			cachedFolder = cache.getFolder(folderID)
+			cachedDirectory = cache.getDirectory({"folder_id": folderID})
+			cachedFolder = cache.getFolder({"folder_id": folderID})
 
 		if cachedDirectory:
 			rootFolderID = cachedDirectory["root_folder_id"]
@@ -243,6 +243,10 @@ class GoogleDrive:
 		return response.get("startPageToken")
 
 	def getChanges(self, pageToken):
+
+		if not pageToken:
+			pageToken = self.getPageToken()
+
 		params = {
 			"pageToken": pageToken,
 			"fields": "nextPageToken,newStartPageToken,changes(file(id,name,parents,trashed,mimeType,fileExtension,videoMediaMetadata,modifiedTime))",

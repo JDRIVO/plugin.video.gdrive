@@ -206,8 +206,8 @@ msgid "Sync on startup"
 msgstr "Sync on startup"
 
 msgctxt "#30052"
-msgid "Syncing files from"
-msgstr "Syncing files from"
+msgid "Syncing folder"
+msgstr "Syncing folder"
 
 msgctxt "#30053"
 msgid "Performing renaming operations on"
@@ -326,8 +326,8 @@ msgid "Drives"
 msgstr "Drives"
 
 msgctxt "#30086"
-msgid "Import/export accounts"
-msgstr "Import/export accounts"
+msgid "Folder selection"
+msgstr "Folder selection"
 
 msgctxt "#30087"
 msgid "Import accounts"
@@ -340,6 +340,14 @@ msgstr "Export accounts"
 msgctxt "#30089"
 msgid "Select an operation"
 msgstr "Select an operation"
+
+msgctxt "#30090"
+msgid "Sync multiple"
+msgstr "Sync multiple"
+
+msgctxt "#30091"
+msgid "Search folder"
+msgstr "Search folder"
 
 msgctxt "#30121"
 msgid "Are you sure you want to delete account:"

@@ -1,5 +1,6 @@
 import os
 import re
+import json
 import urllib
 import datetime
 from threading import Thread
@@ -145,10 +146,10 @@ class ServerHandler(BaseHTTPRequestHandler):
 			postData = self.rfile.read(contentLength).decode("utf-8")
 			self.send_response(200)
 			self.end_headers()
-			driveID, folderID, folderName = re.findall("drive_id=(.*)&folder_id=(.*)&folder_name=(.*)", postData)[0]
-			self.server.taskManager.activeTasks.append(driveID)
-			self.server.taskManager.createTask(driveID, folderID, folderName)
-			self.server.taskManager.activeTasks.remove(driveID)
+			postData = json.loads(postData)
+			driveID = postData[0]
+			folders = postData[1:]
+			self.server.taskManager.addTask(driveID, folders)
 
 		elif self.path == "/register":
 			contentLength = int(self.headers["Content-Length"]) # <--- Gets the size of data
@@ -195,14 +196,13 @@ class ServerHandler(BaseHTTPRequestHandler):
 					self.server.gDriveIconPath,
 				)
 
-		elif self.path == "/renew_task":
+		elif self.path == "/reset_task":
 			contentLength = int(self.headers["Content-Length"])
 			postData = self.rfile.read(contentLength).decode("utf-8")
 			self.send_response(200)
 			self.end_headers()
 			driveID = re.findall("drive_id=(.*)", postData)[0]
-			self.server.taskManager.removeTask(driveID)
-			self.server.taskManager.spawnTask(self.server.cache.getDrive(driveID), startUpRun=False)
+			self.server.taskManager.resetTask(driveID)
 
 		elif self.path == "/force_sync":
 			contentLength = int(self.headers["Content-Length"])

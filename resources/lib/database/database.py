@@ -25,6 +25,10 @@ class Database:
 		else:
 			return []
 
+	@staticmethod
+	def joinConditions(data):
+		return "WHERE " + " AND ".join([f'{k}="{v}"' if str(v)[0] != "(" else f'{k}={v}' for k, v in data.items()])
+
 	def connect(self):
 		self.conn = sqlite3.connect(self.database, check_same_thread=False, timeout=15)
 		self.conn.row_factory = sqlite3.Row
@@ -90,7 +94,8 @@ class Database:
 
 	@lock
 	def selectConditional(self, table, column, condition):
-		query = f"SELECT {column} FROM {table} WHERE {condition}"
+		condition = self.joinConditions(condition)
+		query = f"SELECT {column} FROM {table} {condition}"
 		self.connect()
 		self.cursor.execute(query)
 		row = self.cursor.fetchone()
@@ -108,7 +113,8 @@ class Database:
 
 	@lock
 	def selectAllConditional(self, table, condition):
-		query = f"SELECT * FROM {table} WHERE {condition}"
+		condition = self.joinConditions(condition)
+		query = f"SELECT * FROM {table} {condition}"
 		self.connect()
 		self.cursor.execute(query)
 		rows = self.cursor.fetchall()
@@ -118,7 +124,8 @@ class Database:
 	@lock
 	def update(self, table, data, condition):
 		setValues = ", ".join([f"{column} = :{column}" for column in data.keys()])
-		query = f"UPDATE {table} SET {setValues} WHERE {condition}"
+		condition = self.joinConditions(condition)
+		query = f"UPDATE {table} SET {setValues} {condition}"
 		self.connect()
 		self.cursor.execute(query, data)
 		self.conn.commit()
@@ -126,7 +133,8 @@ class Database:
 
 	@lock
 	def delete(self, table, condition):
-		query = f"DELETE FROM {table} WHERE {condition}"
+		condition = self.joinConditions(condition)
+		query = f"DELETE FROM {table} {condition}"
 		self.connect()
 		self.cursor.execute(query)
 		self.conn.commit()

@@ -161,7 +161,12 @@ class Tasker:
 			startUpRun = False
 			self.sync(driveID)
 
-	def createTask(self, driveID, folderID, folderName):
+	def resetTask(self, driveID):
+		self.server.taskManager.removeTask(driveID)
+		self.server.taskManager.spawnTask(self.server.cache.getDrive(driveID), startUpRun=False)
+
+	def addTask(self, driveID, folders):
+		self.activeTasks.append(driveID)
 		self.encrypter.setup(settings=self.settings)
 		self.accountManager.loadAccounts()
 		self.accounts = self.accountManager.accounts
@@ -175,10 +180,18 @@ class Tasker:
 		self.cloudService.refreshToken()
 
 		driveSettings = self.cache.getDrive(driveID)
-		folderSettings = self.cache.getFolder(folderID)
+		folderTotal = len(folders)
+		folderProgress = 1
 
-		with self.taskLock:
-			self.syncer.syncFolderAdditions(syncRootPath, driveSettings["local_path"], folderName, folderSettings, folderID, folderID, folderID, driveID, initialSync=True)
+		for folder in folders:
+			folderName = folder["name"]
+			folderID = folder["id"]
+			folderSettings = self.cache.getFolder({"folder_id": folderID})
+
+			with self.taskLock:
+				self.syncer.syncFolderAdditions(syncRootPath, driveSettings["local_path"], folderName, folderSettings, folderID, folderID, folderID, driveID, initialSync=True, folderProgress=folderProgress, folderTotal=folderTotal)
+
+			folderProgress += 1
 
 		if not driveSettings["page_token"]:
 			self.cache.updateDrive({"page_token": self.cloudService.getPageToken()}, driveID)
@@ -188,3 +201,4 @@ class Tasker:
 
 		self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30044), self.gDriveIconPath)
 		self.spawnTask(driveSettings, startUpRun=False)
+		self.activeTasks.remove(driveID)

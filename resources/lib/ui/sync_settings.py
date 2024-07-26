@@ -1,4 +1,5 @@
 import os
+import json
 import time
 import urllib
 
@@ -37,6 +38,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.displayMode = kwargs.get("mode")
 		self.driveID = kwargs.get("drive_id")
 		self.folderID = kwargs.get("folder_id")
+		self.foldersToSync = kwargs.get("folders")
 		self.folderName = kwargs.get("folder_name")
 		self.accounts = kwargs.get("accounts")
 		self.cache = sync.cache.Cache()
@@ -245,7 +247,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 	def createFolderSettingsButtons(self):
 		settings = {}
-		folderSettings = self.cache.getFolder(self.folderID)
+		folderSettings = self.cache.getFolder({"folder_id": self.folderID})
 
 		if not self.displayMode == "new" and folderSettings:
 			self.functions = {
@@ -360,7 +362,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		self.TMDBButtonIDs = []
 		self.TMDBButtons = []
-		folderSettings = self.cache.getFolder(self.folderID)
+		folderSettings = self.cache.getFolder({"folder_id": self.folderID})
 
 		if folderSettings:
 			values = [
@@ -582,13 +584,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 		if self.displayMode == "new":
 			xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
 			self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30082), self.gDriveIconPath)
-			self.folderName = self.folderName_ = filesystem.helpers.removeProhibitedFSchars(self.folderName)
-			remoteName = self.folderName
-			copy = 1
-
-			while self.cache.getFolder(self.folderName, column="local_path"):
-				self.folderName = f"{self.folderName_} ({copy})"
-				copy += 1
 
 			if globalSettings:
 				globalSettings.update({"operating_system": os.name})
@@ -608,16 +603,34 @@ class SyncSettings(xbmcgui.WindowDialog):
 				)
 				self.cache.addDrive(driveSettings)
 
-			folderSettings.update(
-				{
-					"drive_id": self.driveID,
-					"folder_id": self.folderID,
-					"local_path": self.folderName,
-					"remote_name": remoteName,
-				}
-			)
-			self.cache.addFolder(folderSettings)
-			data = f"drive_id={self.driveID}&folder_id={self.folderID}&folder_name={remoteName}"
+			for folder in self.foldersToSync:
+				folderID = folder["id"]
+				folderExists = self.cache.getFolder({"folder_id": folderID})
+
+				if folderExists:
+					continue
+
+				folderName = folder["name"]
+				folderName = folderName_ = filesystem.helpers.removeProhibitedFSchars(folderName)
+				remoteName = folderName
+				folder["name"] = folderName
+				copy = 1
+
+				while self.cache.getFolder({"drive_id": self.driveID, "local_path": folderName}):
+					folderName = f"{folderName_} ({copy})"
+					copy += 1
+
+				folderSettings.update(
+					{
+						"drive_id": self.driveID,
+						"folder_id": folderID,
+						"local_path": folderName,
+						"remote_name": remoteName,
+					}
+				)
+				self.cache.addFolder(folderSettings)
+
+			data = json.dumps([self.driveID] + self.foldersToSync)
 			url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/add_sync_task"
 			req = urllib.request.Request(url, data.encode("utf-8"))
 			response = urllib.request.urlopen(req)
@@ -630,7 +643,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			if driveSettings:
 				self.cache.updateDrive(driveSettings, self.driveID)
 				data = f"drive_id={self.driveID}"
-				url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/renew_task"
+				url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/reset_task"
 				req = urllib.request.Request(url, data.encode("utf-8"))
 				response = urllib.request.urlopen(req)
 				response.close()

@@ -36,7 +36,7 @@ class Syncer:
 			item["name"] = filesystem.helpers.removeProhibitedFSchars(item["name"])
 
 			if item["mimeType"] == "application/vnd.google-apps.folder":
-				cachedDirectory = self.cache.getDirectory(item["id"])
+				cachedDirectory = self.cache.getDirectory({"folder_id": item["id"]})
 
 				if cachedDirectory:
 					existingFolders.append(item)
@@ -109,18 +109,18 @@ class Syncer:
 		cachedFiles = True
 
 		if item["mimeType"] == "application/vnd.google-apps.folder":
-			cachedFiles = self.cache.getFile(id, "parent_folder_id")
+			cachedFiles = self.cache.getFile({"parent_folder_id": id})
 			folderID = id
 		else:
-			cachedFile = self.cache.getFile(id)
+			cachedFile = self.cache.getFile({"file_id": id})
 
 			if not cachedFile:
 				return
 
 			self.cache.deleteFile(id)
 			folderID = cachedFile["parent_folder_id"]
-			cachedDirectory = self.cache.getDirectory(folderID)
-			cachedFiles = self.cache.getFile(folderID, "parent_folder_id")
+			cachedDirectory = self.cache.getDirectory({"folder_id": folderID})
+			cachedFiles = self.cache.getFile({"parent_folder_id": folderID})
 
 			if cachedFile["original_folder"]:
 				dirPath = os.path.join(syncRootPath, drivePath, cachedDirectory["local_path"])
@@ -130,7 +130,7 @@ class Syncer:
 				self.fileOperations.deleteFile(syncRootPath, filePath=filePath)
 
 		if not cachedFiles:
-			cachedDirectory = self.cache.getDirectory(folderID)
+			cachedDirectory = self.cache.getDirectory({"folder_id": folderID})
 
 			if not cachedDirectory:
 				return
@@ -142,7 +142,7 @@ class Syncer:
 	def syncFolderChanges(self, folder, parentFolderID, driveID, syncRootPath, drivePath, syncedIDs, excludedIDs):
 		folderID = folder["id"]
 		folderName = folder["name"]
-		cachedDirectory = self.cache.getDirectory(folderID)
+		cachedDirectory = self.cache.getDirectory({"folder_id": folderID})
 
 		if not cachedDirectory:
 			# new folder added
@@ -151,7 +151,7 @@ class Syncer:
 			if not rootFolderID:
 				return
 
-			folderSettings = self.cache.getFolder(rootFolderID)
+			folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
 			self.syncFolderAdditions(syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, syncedIDs, excludedIDs)
 			return
 
@@ -166,7 +166,7 @@ class Syncer:
 
 			if dirPath:
 				self.cache.updateDirectory({"parent_folder_id": parentFolderID}, folderID)
-				cachedParentDirectory = self.cache.getDirectory(parentFolderID)
+				cachedParentDirectory = self.cache.getDirectory({"folder_id": parentFolderID})
 				dirPath_ = dirPath
 				copy = 1
 
@@ -184,7 +184,7 @@ class Syncer:
 					}
 					self.cache.addDirectory(directory)
 
-				while self.cache.getDirectory(dirPath, column="local_path"):
+				while self.cache.getDirectory({"local_path": dirPath}):
 					dirPath = f"{dirPath_} ({copy})"
 					copy += 1
 
@@ -208,7 +208,7 @@ class Syncer:
 			newDirectoryPath = newDirectoryPath_ = os.path.join(cachedDirectoryPathHead, folderName)
 			copy = 1
 
-			while self.cache.getDirectory(newDirectoryPath, column="local_path"):
+			while self.cache.getDirectory({"local_path": newDirectoryPath}):
 				newDirectoryPath = f"{newDirectoryPath_} ({copy})"
 				copy += 1
 
@@ -223,8 +223,8 @@ class Syncer:
 
 	def syncFileChanges(self, file, parentFolderID, driveID, syncRootPath, drivePath, newFiles):
 		fileID = file["id"]
-		cachedDirectory = self.cache.getDirectory(parentFolderID)
-		cachedFile = self.cache.getFile(fileID)
+		cachedDirectory = self.cache.getDirectory({"folder_id": parentFolderID})
+		cachedFile = self.cache.getFile({"file_id": fileID})
 
 		if not cachedDirectory:
 			dirPath, rootFolderID = self.cloudService.getDirectory(self.cache, parentFolderID)
@@ -232,7 +232,7 @@ class Syncer:
 			if not rootFolderID and cachedFile:
 				# file has moved outside of root folder hierarchy/tree
 				cachedParentFolderID = cachedFile["parent_folder_id"]
-				cachedDirectory = self.cache.getDirectory(cachedParentFolderID)
+				cachedDirectory = self.cache.getDirectory({"folder_id": cachedParentFolderID})
 
 				if cachedFile["original_folder"]:
 					cachedFilePath = os.path.join(syncRootPath, drivePath, cachedDirectory["local_path"], cachedFile["local_name"])
@@ -250,7 +250,7 @@ class Syncer:
 			cachedParentFolderID = cachedDirectory["parent_folder_id"]
 			rootFolderID = cachedDirectory["root_folder_id"]
 
-		folderSettings = self.cache.getFolder(rootFolderID)
+		folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
 		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
 
 		if folderSettings["contains_encrypted"]:
@@ -267,7 +267,7 @@ class Syncer:
 
 		if cachedFile:
 			cachedParentFolderID = cachedFile["parent_folder_id"]
-			cachedDirectory = self.cache.getDirectory(cachedParentFolderID)
+			cachedDirectory = self.cache.getDirectory({"folder_id": cachedParentFolderID})
 			cachedDirPath = cachedDirectory["local_path"]
 			rootFolderID = cachedDirectory["root_folder_id"]
 
@@ -276,43 +276,32 @@ class Syncer:
 			else:
 				cachedFilePath = os.path.join(syncRootPath, cachedFile["local_path"])
 
-			if cachedFile["remote_name"] == filename and cachedDirPath == dirPath:
-				# GDrive creates a change after a newly uploaded vids metadata has been processed
-
-				if file.type != "video" or not file.metadata:
-					return
-
+			if (file.type == "video" or file.metadata) and (cachedFile["remote_name"] == filename and cachedDirPath == dirPath):
+				# GDrive invokes a file change after a newly uploaded vids metadata has been processed > update existing strm file to reflect change
 				filesystem.helpers.refreshMetadata(file.metadata, cachedFilePath)
 				return
 
-			if cachedFile["original_name"]:
-
-				if not os.path.exists(cachedFilePath):
-					# file doesn't exist locally - redownload it
-					self.cache.deleteFile(fileID)
-					self.deleted = True
-				else:
-					# rename/move file
-					newFilename = file.basename + os.path.splitext(cachedFile["local_name"])[1]
-
-					if cachedFile["original_folder"]:
-						dirPath = os.path.join(syncRootPath, drivePath, dirPath)
-						self.fileOperations.renameFile(syncRootPath, cachedFilePath, dirPath, newFilename)
-					else:
-						newFilePath = self.fileOperations.renameFile(syncRootPath, cachedFilePath, os.path.dirname(cachedFilePath), newFilename)
-						cachedFile["local_path"] = newFilePath
-
-					cachedFile["local_name"] = newFilename
-					cachedFile["remote_name"] = filename
-					cachedFile["parent_folder_id"] = parentFolderID
-					self.cache.updateFile(cachedFile, fileID)
-					return
-
-			else:
-				# redownload file
+			if not cachedFile["original_name"] or not os.path.exists(cachedFilePath) or (cachedFile["remote_name"] == filename and cachedDirPath == dirPath):
+				# new filename needs to be processed or file not existent or file contents modified > redownload file
 				self.fileOperations.deleteFile(syncRootPath, filePath=cachedFilePath)
 				self.cache.deleteFile(fileID)
 				self.deleted = True
+			else:
+				# file either moved or renamed
+				newFilename = file.basename + os.path.splitext(cachedFile["local_name"])[1]
+
+				if cachedFile["original_folder"]:
+					dirPath = os.path.join(syncRootPath, drivePath, dirPath)
+					self.fileOperations.renameFile(syncRootPath, cachedFilePath, dirPath, newFilename)
+				else:
+					newFilePath = self.fileOperations.renameFile(syncRootPath, cachedFilePath, os.path.dirname(cachedFilePath), newFilename)
+					cachedFile["local_path"] = newFilePath
+
+				cachedFile["local_name"] = newFilename
+				cachedFile["remote_name"] = filename
+				cachedFile["parent_folder_id"] = parentFolderID
+				self.cache.updateFile(cachedFile, fileID)
+				return
 
 		if not newFiles.get(rootFolderID):
 			newFiles[rootFolderID] = {}
@@ -332,7 +321,7 @@ class Syncer:
 		else:
 			newFiles[rootFolderID][parentFolderID].files[file.type].append(file)
 
-	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, syncedIDs=None, excludedIDs=[], initialSync=False):
+	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, syncedIDs=None, excludedIDs=[], initialSync=False, folderProgress=None, folderTotal=None):
 
 		if folderSettings["contains_encrypted"]:
 			encrypter = self.encrypter
@@ -347,7 +336,7 @@ class Syncer:
 		folders = []
 
 		if initialSync and self.settings.getSetting("sync_progress_dialog"):
-			pDialog = dialogs.SyncProgressionDialog(self.fileTree, heading=f"{self.settings.getLocalizedString(30052)} {folderSettings['remote_name']}")
+			pDialog = dialogs.SyncProgressionDialog(self.fileTree, heading=f"{self.settings.getLocalizedString(30052)} ({folderProgress}/{folderTotal}): {folderSettings['remote_name']}")
 		else:
 			pDialog = False
 
@@ -395,7 +384,7 @@ class Syncer:
 		with threadpool.ThreadPool(threadCount) as pool:
 
 			for rootFolderID, directories in files.items():
-				folderSettings = self.cache.getFolder(rootFolderID)
+				folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
 				folderRestructure = folderSettings["folder_restructure"]
 				fileRenaming = folderSettings["file_renaming"]
 

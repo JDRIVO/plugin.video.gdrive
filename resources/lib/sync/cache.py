@@ -27,19 +27,16 @@ class Cache(Database):
 			self.createTables()
 
 	def updateDrive(self, data, driveID):
-		self.update("drives", data, f"drive_id='{driveID}'")
+		self.update("drives", data, {"drive_id": driveID})
 
 	def updateFile(self, data, fileID):
-		self.update("files", data, f"file_id='{fileID}'")
+		self.update("files", data, {"file_id": fileID})
 
 	def updateFolder(self, data, folderID):
-		self.update("folders", data, f"folder_id='{folderID}'")
+		self.update("folders", data, {"folder_id": folderID})
 
 	def updateDirectory(self, data, folderID):
-		self.update("directories", data, f"folder_id='{folderID}'")
-
-	def getDriveSetting(self, column, driveID):
-		self.selectConditional("drives", column, f"drive_id='{driveID}'")
+		self.update("directories", data, {"folder_id": folderID})
 
 	def addDrive(self, data):
 		self.insert("drives", data)
@@ -81,39 +78,40 @@ class Cache(Database):
 		drives = self.selectAll("drives")
 		return drives
 
-	def getDrive(self, value, column="drive_id"):
-		drive = self.selectAllConditional("drives", f"{column}='{value}'")
+	def getDrive(self, driveID):
+		data = {"drive_id": driveID}
+		drive = self.selectAllConditional("drives", data)
 		if drive: return drive[0]
 
-	def getDirectory(self, value, column="folder_id"):
-		directory = self.selectAllConditional("directories", f"{column}='{value}'")
+	def getDirectory(self, data):
+		directory = self.selectAllConditional("directories", data)
 		if directory: return directory[0]
 
-	def getFolder(self, value, column="folder_id"):
-		folder = self.selectAllConditional("folders", f"{column}='{value}'")
+	def getFolder(self, data):
+		folder = self.selectAllConditional("folders", data)
 		if folder: return folder[0]
 
-	def getFile(self, value, column="file_id"):
-		file = self.selectAllConditional("files", f"{column}='{value}'")
+	def getFile(self, data):
+		file = self.selectAllConditional("files", data)
 		if file: return file[0]
 
-	def getFolders(self, value, column="drive_id"):
-		return self.selectAllConditional("folders", f"{column}='{value}'")
+	def getFolders(self, data):
+		return self.selectAllConditional("folders", data)
 
-	def getDirectories(self, value, column="parent_folder_id"):
-		return self.selectAllConditional("directories", f"{column}='{value}'")
+	def getDirectories(self, data):
+		return self.selectAllConditional("directories", data)
 
-	def getFiles(self, value, column="parent_folder_id"):
-		return self.selectAllConditional("files", f"{column}='{value}'")
+	def getFiles(self, data):
+		return self.selectAllConditional("files", data)
 
 	def deleteFile(self, value, column="file_id"):
-		self.delete("files", f"{column}='{value}'")
+		self.delete("files", {column: value})
 
 	def deleteDirectory(self, value, column="folder_id"):
-		self.delete("directories", f"{column}='{value}'")
+		self.delete("directories", {column: value})
 
 	def deleteFolder(self, value, column="folder_id"):
-		self.delete("folders", f"{column}='{value}'")
+		self.delete("folders", {column: value})
 
 	# def deleteDrive(self, driveID):
 		# syncRootPath = self.getSyncRootPath()
@@ -148,32 +146,32 @@ class Cache(Database):
 			return
 
 		self.deleteFolder(driveID, "drive_id")
-		self.delete("drives", f"drive_id='{driveID}'")
+		self.delete("drives", {"drive_id": driveID})
 		syncRootPath = self.getSyncRootPath()
 		drivePath = os.path.join(syncRootPath, drive["local_path"])
-		self.cleanCache(syncRootPath, drivePath, driveID, column="drive_id", pDialog=settings.getSetting("file_deletion_dialog"))
+		self.cleanCache(syncRootPath, drivePath, driveID, "drive_id", pDialog=settings.getSetting("file_deletion_dialog"))
 
 	def removeFolder(self, folderID, deleteFiles=False):
-		folder = self.getFolder(folderID)
+		folder = self.getFolder({"folder_id": folderID})
 		self.deleteFolder(folderID)
 		driveID = folder["drive_id"]
 		drive = self.getDrive(driveID)
 		syncRootPath = self.getSyncRootPath()
 		drivePath = os.path.join(syncRootPath, drive["local_path"])
-		self.cleanCache(syncRootPath, drivePath, folderID, deleteFiles=deleteFiles, pDialog=settings.getSetting("file_deletion_dialog"))
+		self.cleanCache(syncRootPath, drivePath, folderID, "folder_id", deleteFiles=deleteFiles, pDialog=settings.getSetting("file_deletion_dialog"))
 
 	def removeAllFolders(self, driveID, deleteFiles=False):
-		folders = self.getFolders(driveID)
+		folders = self.getFolders({"drive_id": driveID})
 		self.deleteFolder(driveID, column="drive_id")
 		drive = self.getDrive(driveID)
 		syncRootPath = self.getSyncRootPath()
 		drivePath = os.path.join(syncRootPath, drive["local_path"])
 
 		for folder in folders:
-			self.cleanCache(syncRootPath, drivePath, folder["folder_id"], deleteFiles=deleteFiles, pDialog=settings.getSetting("file_deletion_dialog"))
+			self.cleanCache(syncRootPath, drivePath, folder["folder_id"], "folder_id", deleteFiles=deleteFiles, pDialog=settings.getSetting("file_deletion_dialog"))
 
 	def updateSyncRootPath(self, path):
-		self.update("global", {"local_path": path}, "local_path=TEXT")
+		self.update("global", {"local_path": path}, {"local_path": "TEXT"})
 
 	def setSyncRootPath(self, path):
 		self.insert("global", {"local_path": path})
@@ -185,7 +183,7 @@ class Cache(Database):
 		self.insert("global", data)
 
 	def updateChildPaths(self, oldPath, newPath, folderID):
-		directories = self.getDirectories(folderID, "folder_id")
+		directories = self.getDirectories({"folder_id": folderID})
 		processedIDs = set()
 
 		while directories:
@@ -198,10 +196,10 @@ class Cache(Database):
 				continue
 
 			processedIDs.add(folderID)
-			directories += self.getDirectories(folderID, "parent_folder_id")
+			directories += self.getDirectories({"parent_folder_id": folderID})
 
-	def cleanCache(self, syncRootPath, drivePath, folderID, column="folder_id", deleteFiles=True, pDialog=False):
-		directories = self.getDirectories(folderID, column)
+	def cleanCache(self, syncRootPath, drivePath, folderID, column, deleteFiles=True, pDialog=False):
+		directories = self.getDirectories({column: folderID})
 
 		if deleteFiles and pDialog:
 			pDialog = dialogs.FileDeletionDialog(0, heading=settings.getLocalizedString(30075))
@@ -209,7 +207,7 @@ class Cache(Database):
 		while directories:
 			directory = directories.pop()
 			folderID = directory["folder_id"]
-			files = self.getFiles(folderID)
+			files = self.getFiles({"parent_folder_id": folderID})
 
 			if deleteFiles:
 
@@ -232,7 +230,7 @@ class Cache(Database):
 
 			self.deleteFile(folderID, "parent_folder_id")
 			self.deleteDirectory(folderID)
-			directories += self.getDirectories(folderID, "parent_folder_id")
+			directories += self.getDirectories({"parent_folder_id": folderID})
 
 		if pDialog:
 			pDialog.close()
