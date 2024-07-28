@@ -36,8 +36,8 @@ class Core:
 
 	def run(self, dbID, dbType, filePath):
 
-		if self.pluginHandle < 0 and "search_folder" in sys.argv[2]:
-			xbmc.executebuiltin(f"Container.Update({sys.argv[0] + sys.argv[2]})")
+		if self.pluginHandle < 0 and self.mode == "search_folder":
+			xbmc.executebuiltin(f"Container.Update({self.pluginURL + sys.argv[2]})")
 			return
 
 		modes = {
@@ -135,19 +135,19 @@ class Core:
 
 		xbmc.executebuiltin("Container.Refresh")
 
-	def addMenu(self, url, title, cm=False, folder=True):
+	def addMenuItem(self, url, title, contextMenu=False, isFolder=True):
 		listItem = xbmcgui.ListItem(title)
 
-		if cm:
-			listItem.addContextMenuItems(cm, True)
+		if contextMenu:
+			listItem.addContextMenuItems(contextMenu, True)
 
-		xbmcplugin.addDirectoryItem(self.pluginHandle, url, listItem, isFolder=folder)
+		xbmcplugin.addDirectoryItem(self.pluginHandle, url, listItem, isFolder=isFolder)
 
 	def createMainMenu(self):
 		syncRootPath = self.cache.getSyncRootPath()
 
 		if syncRootPath:
-			self.addMenu(
+			self.addMenuItem(
 				syncRootPath,
 				f"[COLOR yellow][B]{self.settings.getLocalizedString(30008)}[/B][/COLOR]",
 			)
@@ -158,20 +158,20 @@ class Core:
 				f"RunPlugin({self.pluginURL}?mode=force_sync_all)",
 			),
 		]
-		self.addMenu(
+		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_drives",
 			f"[COLOR yellow][B]{self.settings.getLocalizedString(30085)}[/B][/COLOR]",
-			cm=contextMenu,
+			contextMenu=contextMenu,
 		)
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_FILE)
 		self.cacheToDisk = False
 
 	def createDrivesMenu(self):
-		self.addMenu(
+		self.addMenuItem(
 			f"{self.pluginURL}?mode=register_account",
 			f"[B][COLOR yellow]{self.settings.getLocalizedString(30207)}[/COLOR][/B]",
-			folder=False,
+			isFolder=False,
 		)
 
 		for driveID, accountData in self.accounts.items():
@@ -196,10 +196,10 @@ class Core:
 					f"RunPlugin({self.pluginURL}?mode=delete_drive&drive_id={driveID})",
 				)
 			]
-			self.addMenu(
+			self.addMenuItem(
 				f"{self.pluginURL}?mode=list_drive&drive_id={driveID}",
 				displayName,
-				cm=contextMenu,
+				contextMenu=contextMenu,
 			)
 
 		xbmcplugin.setContent(self.pluginHandle, "files")
@@ -217,32 +217,32 @@ class Core:
 		driveSettings = self.cache.getDrive(driveID)
 
 		if driveSettings:
-			self.addMenu(
+			self.addMenuItem(
 				f"{self.pluginURL}?mode=list_synced_folders&drive_id={driveID}",
 				f"[COLOR yellow][B]{self.settings.getLocalizedString(30011)}[/B][/COLOR]",
 			)
 
-		self.addMenu(
+		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_accounts&drive_id={driveID}",
 			f"[COLOR yellow][B]{self.settings.getLocalizedString(30032)}[/B][/COLOR]",
 		)
-		self.addMenu(
+		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_folders&drive_id={driveID}",
 			self.settings.getLocalizedString(30038),
 		)
-		self.addMenu(
+		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_folders&drive_id={driveID}&shared_with_me=true",
 			self.settings.getLocalizedString(30039),
 		)
-		self.addMenu(
+		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_shared_drives&drive_id={driveID}",
 			self.settings.getLocalizedString(30040),
 		)
-		self.addMenu(
+		self.addMenuItem(
 			f"{self.pluginURL}?mode=search_drive&drive_id={driveID}",
 			self.settings.getLocalizedString(30041),
 		)
-		self.addMenu(
+		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_folders&drive_id={driveID}&starred=true",
 			self.settings.getLocalizedString(30042),
 		)
@@ -259,28 +259,28 @@ class Core:
 		self.cloudService.setAccount(account)
 		self.refreshAccess(account.expiry)
 
-		self.addMenu(
+		self.addMenuItem(
 			f"{self.pluginURL}?mode=add_service_account&drive_id={driveID}",
 			f"[B][COLOR yellow]{self.settings.getLocalizedString(30214)}[/COLOR][/B]",
-			folder=False,
+			isFolder=False,
 		)
-		self.addMenu(
+		self.addMenuItem(
 			f"{self.pluginURL}?mode=validate_accounts&drive_id={driveID}",
 			f"[B][COLOR yellow]{self.settings.getLocalizedString(30021)}[/COLOR][/B]",
-			folder=False,
+			isFolder=False,
 		)
-		self.addMenu(
+		self.addMenuItem(
 			f"{self.pluginURL}?mode=delete_accounts&drive_id={driveID}",
 			f"[B][COLOR yellow]{self.settings.getLocalizedString(30022)}[/COLOR][/B]",
-			folder=False,
+			isFolder=False,
 		)
 
 		for index, account in enumerate(self.accountManager.getAccounts(driveID)):
 			accountName = account.name
-			self.addMenu(
+			self.addMenuItem(
 				f"{self.pluginURL}?mode=accounts_cm&account_name={accountName}&account_index={index}&drive_id={driveID}",
 				f"[COLOR lime][B]{accountName}[/B][/COLOR]",
-				folder=False,
+				isFolder=False,
 			)
 
 		xbmcplugin.setContent(self.pluginHandle, "files")
@@ -337,7 +337,7 @@ class Core:
 			for sharedDrive in sharedDrives:
 				sharedDriveID = sharedDrive["id"]
 				sharedDriveName = sharedDrive["name"]
-				self.addMenu(
+				self.addMenuItem(
 					f"{self.pluginURL}?mode=list_folders&drive_id={driveID}&shared_drive_id={sharedDriveID}",
 					f"[B]{sharedDriveName}[/B]",
 				)
@@ -348,7 +348,6 @@ class Core:
 		folderName = self.settings.getParameter("folder_name")
 		mode = self.settings.getParameter("sync_mode")
 		self.succeeded=False
-
 		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, folder_id=folderID, accounts=self.accounts, folder_name=folderName, mode=mode)
 		syncSettings.doModal()
 		del syncSettings
@@ -398,11 +397,11 @@ class Core:
 
 		while folderIDs:
 			ids = folderIDs[:maxIDs]
-			queries.append("mimeType='application/vnd.google-apps.folder' and not trashed and (" + " or ".join(f"'{id}' in parents" for id in ids) + ")")
+			queries.append(("mimeType='application/vnd.google-apps.folder' and not trashed and (" + " or ".join(f"'{id}' in parents" for id in ids) + ")",))
 			folderIDs = folderIDs[maxIDs:]
 
 		with threadpool.threadpool.ThreadPool(threadCount) as pool:
-			pool.map(getFolders, [(query,) for query in queries])
+			pool.map(getFolders, queries)
 
 		if folderIDs:
 			self.getSpecificFolders(searchQuery, folders, folderIDs, threadCount)
@@ -453,10 +452,10 @@ class Core:
 					if self.mode in ("search_folder", "search_drive"):
 						contextMenu = contextMenu[:1]
 
-			self.addMenu(
+			self.addMenuItem(
 				f"{self.pluginURL}?mode=list_folders&drive_id={driveID}&folder_id={folderID}",
 				folderName,
-				cm=contextMenu,
+				contextMenu=contextMenu,
 			)
 
 		xbmcplugin.setContent(self.pluginHandle, "files")
@@ -465,19 +464,18 @@ class Core:
 	def listSyncedFolders(self):
 		driveID = self.settings.getParameter("drive_id")
 		folders = self.cache.getFolders({"drive_id": driveID})
-		self.addMenu(
+		self.addMenuItem(
 			f"{self.pluginURL}?mode=get_sync_settings&drive_id={driveID}&sync_mode=drive",
 			f"[B][COLOR yellow]{self.settings.getLocalizedString(30017)}[/COLOR][/B]",
-			folder=False,
+			isFolder=False,
 		)
 
 		for folder in folders:
 			folderName = folder["local_path"]
 			folderID = folder["folder_id"]
-			self.addMenu(
+			self.addMenuItem(
 				f"{self.pluginURL}?mode=get_sync_settings&drive_id={driveID}&folder_id={folderID}&sync_mode=folder",
 				f"[COLOR lime][B]{folderName}[/B][/COLOR]",
-				folder=True,
 			)
 
 		xbmcplugin.setContent(self.pluginHandle, "files")
@@ -533,13 +531,13 @@ class Core:
 		mode = self.settings.getParameter("sync_mode")
 		self.succeeded = False
 		folders = self.getFolders(driveID, parentFolderID)
-		folderNames = [folder["name"] for folder in folders]
-		chosenFolders = self.dialog.multiselect(self.settings.getLocalizedString(30086), folderNames)
+		folderNames = sorted([(folder["name"], index) for index, folder in enumerate(folders)], key=lambda x: x[0].lower())
+		chosenFolders = self.dialog.multiselect(self.settings.getLocalizedString(30086), [name for name, _ in folderNames])
 
 		if not chosenFolders:
 			return
 
-		folders = [folders[index] for index in chosenFolders]
+		folders = [folders[folderNames[index][1]] for index in chosenFolders]
 		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
 		syncSettings.doModal()
 		del syncSettings
@@ -617,7 +615,6 @@ class Core:
 		accounts = self.accountManager.getAccounts(driveID)
 		accountAmount = len(accounts)
 		pDialog = xbmcgui.DialogProgress()
-
 		pDialog.create(self.settings.getLocalizedString(30306))
 		deletion = False
 		count = 1
@@ -667,7 +664,6 @@ class Core:
 	def resolutionPriority(self):
 		resolutions = self.settings.getSetting("resolution_priority").split(", ")
 		resolutionOrder = ui.resolution_order.ResolutionOrder(resolutions=resolutions)
-
 		resolutionOrder.doModal()
 		newOrder = resolutionOrder.priorityList
 		del resolutionOrder
