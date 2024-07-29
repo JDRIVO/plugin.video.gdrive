@@ -347,7 +347,7 @@ class Core:
 		folderID = self.settings.getParameter("folder_id")
 		folderName = self.settings.getParameter("folder_name")
 		mode = self.settings.getParameter("sync_mode")
-		self.succeeded=False
+		self.succeeded = False
 		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, folder_id=folderID, accounts=self.accounts, folder_name=folderName, mode=mode)
 		syncSettings.doModal()
 		del syncSettings
