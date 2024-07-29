@@ -113,43 +113,14 @@ class Cache(Database):
 	def deleteFolder(self, value, column="folder_id"):
 		self.delete("folders", {column: value})
 
-	# def deleteDrive(self, driveID):
-		# syncRootPath = self.getSyncRootPath()
-		# drive = self.getDrive(driveID)
-
-		# if not drive:
-			# return
-
-		# drivePath = os.path.join(syncRootPath, drive["local_path"])
-		# files = self.getFiles(driveID, "drive_id")
-		# directories = {d["folder_id"]: d for d in self.getDirectories(driveID, "drive_id")}
-
-		# for file in files:
-
-			# if file["original_folder"]:
-				# parentFolderID = file["parent_folder_id"]
-				# filePath = os.path.join(syncRootPath, drivePath, directories[parentFolderID]["local_path"], file["local_name"])
-			# else:
-				# filePath = os.path.join(syncRootPath, file["local_path"])
-
-			# self.fileOperations.deleteFile(syncRootPath, filePath=filePath)
-
-		# self.deleteFile(driveID, "drive_id")
-		# self.deleteFolder(driveID, "drive_id")
-		# self.deleteDirectory(driveID, "drive_id")
-		# self.delete("drives", f"drive_id='{driveID}'")
-
 	def deleteDrive(self, driveID):
 		drive = self.getDrive(driveID)
 
 		if not drive:
 			return
 
-		self.deleteFolder(driveID, "drive_id")
+		self.cleanCache(driveID)
 		self.delete("drives", {"drive_id": driveID})
-		syncRootPath = self.getSyncRootPath()
-		drivePath = os.path.join(syncRootPath, drive["local_path"])
-		self.cleanCache(syncRootPath, drivePath, driveID, "drive_id", pDialog=settings.getSetting("file_deletion_dialog"))
 
 	def removeFolder(self, folderID, deleteFiles=False):
 		folder = self.getFolder({"folder_id": folderID})
@@ -158,7 +129,17 @@ class Cache(Database):
 		drive = self.getDrive(driveID)
 		syncRootPath = self.getSyncRootPath()
 		drivePath = os.path.join(syncRootPath, drive["local_path"])
-		self.cleanCache(syncRootPath, drivePath, folderID, "folder_id", deleteFiles=deleteFiles, pDialog=settings.getSetting("file_deletion_dialog"))
+		progressDialog = settings.getSetting("file_deletion_dialog")
+
+		if deleteFiles and progressDialog:
+			progressDialog = dialogs.FileDeletionDialog(0, heading=settings.getLocalizedString(30075))
+		else:
+			progressDialog = False
+
+		self.removeDirectories(syncRootPath, drivePath, folderID, "folder_id", deleteFiles, progressDialog)
+
+		if progressDialog:
+			progressDialog.close()
 
 	def removeAllFolders(self, driveID, deleteFiles=False):
 		folders = self.getFolders({"drive_id": driveID})
@@ -167,8 +148,20 @@ class Cache(Database):
 		syncRootPath = self.getSyncRootPath()
 		drivePath = os.path.join(syncRootPath, drive["local_path"])
 
-		for folder in folders:
-			self.cleanCache(syncRootPath, drivePath, folder["folder_id"], "folder_id", deleteFiles=deleteFiles, pDialog=settings.getSetting("file_deletion_dialog"))
+		if deleteFiles:
+			progressDialog = settings.getSetting("file_deletion_dialog")
+
+			if progressDialog:
+				progressDialog = dialogs.FileDeletionDialog(0, heading=settings.getLocalizedString(30075))
+
+			for folder in folders:
+				self.removeDirectories(syncRootPath, drivePath, folder["folder_id"], "folder_id", deleteFiles, progressDialog)
+
+			if progressDialog:
+				progressDialog.close()
+
+		else:
+			self.cleanCache(driveID)
 
 	def updateSyncRootPath(self, path):
 		self.update("global", {"local_path": path}, {"local_path": "TEXT"})
@@ -198,21 +191,23 @@ class Cache(Database):
 			processedIDs.add(folderID)
 			directories += self.getDirectories({"parent_folder_id": folderID})
 
-	def cleanCache(self, syncRootPath, drivePath, folderID, column, deleteFiles=True, pDialog=False):
-		directories = self.getDirectories({column: folderID})
+	def cleanCache(self, driveID):
+		self.deleteFile(driveID, column="drive_id")
+		self.deleteDirectory(driveID, column="drive_id")
+		self.deleteFolder(driveID, column="drive_id")
 
-		if deleteFiles and pDialog:
-			pDialog = dialogs.FileDeletionDialog(0, heading=settings.getLocalizedString(30075))
+	def removeDirectories(self, syncRootPath, drivePath, folderID, column, deleteFiles, progressDialog):
+		directories = self.getDirectories({column: folderID})
 
 		while directories:
 			directory = directories.pop()
 			folderID = directory["folder_id"]
-			files = self.getFiles({"parent_folder_id": folderID})
 
 			if deleteFiles:
+				files = self.getFiles({"parent_folder_id": folderID})
 
-				if pDialog:
-					pDialog.fileCount += len(files)
+				if progressDialog:
+					progressDialog.fileCount += len(files)
 
 				for file in files:
 
@@ -225,15 +220,12 @@ class Cache(Database):
 
 					self.fileOperations.deleteFile(syncRootPath, filePath=filePath)
 
-					if pDialog:
-						pDialog.update(filename)
+					if progressDialog:
+						progressDialog.update(filename)
 
-			self.deleteFile(folderID, "parent_folder_id")
+			self.deleteFile(folderID, column="parent_folder_id")
 			self.deleteDirectory(folderID)
 			directories += self.getDirectories({"parent_folder_id": folderID})
-
-		if pDialog:
-			pDialog.close()
 
 	def createGlobalTable(self):
 		columns = [
