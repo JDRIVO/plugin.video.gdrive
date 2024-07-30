@@ -239,7 +239,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 						self.server.cloudService.setAccount(account)
 						tokenRefresh = self.server.cloudService.refreshToken()
 
-						if tokenRefresh == "failed":
+						if not tokenRefresh:
 							continue
 
 						if self.server.transcoded:

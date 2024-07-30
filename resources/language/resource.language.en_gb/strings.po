@@ -310,8 +310,8 @@ msgid "You must assign a sync frequency"
 msgstr "You must assign a sync frequency"
 
 msgctxt "#30082"
-msgid "Syncing files"
-msgstr "Syncing files"
+msgid "Sync started"
+msgstr "Sync started"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
@@ -326,8 +326,8 @@ msgid "Drives"
 msgstr "Drives"
 
 msgctxt "#30086"
-msgid "Folder selection"
-msgstr "Folder selection"
+msgid "Folder Selection"
+msgstr "Folder Selection"
 
 msgctxt "#30089"
 msgid "Select an operation"
@@ -466,8 +466,8 @@ msgid "Server port (requires restart)"
 msgstr "Server port (requires restart)"
 
 msgctxt "#30603"
-msgid "Crypto"
-msgstr "Crypto"
+msgid "Encryption"
+msgstr "Encryption"
 
 msgctxt "#30604"
 msgid "Password"
@@ -506,8 +506,8 @@ msgid "Sync defaults"
 msgstr "Sync defaults"
 
 msgctxt "#30804"
-msgid "Does this folder contain gDrive encrypted files"
-msgstr "Does this folder contain gDrive encrypted files"
+msgid "Folder contains gDrive encrypted files"
+msgstr "Folder contains gDrive encrypted files"
 
 msgctxt "#30805"
 msgid "Rename videos to a Kodi friendly format"

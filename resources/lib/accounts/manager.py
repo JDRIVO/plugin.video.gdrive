@@ -40,9 +40,16 @@ class AccountManager:
 	def getAccount(self, driveID):
 		accounts = self.accounts.get(driveID)
 
-		if accounts:
-			# avoid returning a service account
-			return [account for account in accounts["accounts"] if not account.key][0]
+		if not accounts:
+			return
+
+		accounts = accounts.get("accounts")
+
+		if not accounts:
+			return
+
+		# avoid returning a service account
+		return [account for account in accounts if not account.key][0]
 
 	def getAccounts(self, driveID):
 		return self.accounts[driveID]["accounts"]
@@ -93,6 +100,10 @@ class AccountManager:
 
 	def deleteDrive(self, driveID):
 		self.loadAccounts()
+
+		if not self.accounts.get(driveID):
+			return
+
 		alias = self.getAlias(driveID)
 
 		if alias:
@@ -110,7 +121,7 @@ class AccountManager:
 		try:
 			importedAccounts = self.loadFile(filePath)
 		except Exception:
-			return "failed"
+			return
 
 		if not self.accounts:
 			self.accountData = importedAccounts
@@ -136,6 +147,7 @@ class AccountManager:
 							currentAccounts.append(account)
 
 		self.saveAccounts()
+		return True
 
 	def exportAccounts(self, filePath):
 		self.saveAccounts(os.path.join(filePath, "gdrive_accounts.pkl"))

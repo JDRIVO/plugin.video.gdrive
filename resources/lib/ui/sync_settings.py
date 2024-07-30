@@ -592,7 +592,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 			if driveSettings:
 				alias = self.accounts[self.driveID]["alias"]
 				drivePath = alias if alias else self.driveID
-
 				driveSettings.update(
 					{
 						"drive_id": self.driveID,
@@ -603,6 +602,8 @@ class SyncSettings(xbmcgui.WindowDialog):
 				)
 				self.cache.addDrive(driveSettings)
 
+			syncTaskData = [self.driveID]
+
 			for folder in self.foldersToSync:
 				folderID = folder["id"]
 				folderExists = self.cache.getFolder({"folder_id": folderID})
@@ -610,6 +611,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				if folderExists:
 					continue
 
+				syncTaskData.append(folder)
 				folderName = folder["name"]
 				folderName = folderName_ = filesystem.helpers.removeProhibitedFSchars(folderName)
 				remoteName = folderName
@@ -630,7 +632,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				)
 				self.cache.addFolder(folderSettings)
 
-			data = json.dumps([self.driveID] + self.foldersToSync)
+			data = json.dumps(syncTaskData)
 			url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/add_sync_task"
 			req = urllib.request.Request(url, data.encode("utf-8"))
 			response = urllib.request.urlopen(req)

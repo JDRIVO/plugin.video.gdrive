@@ -178,7 +178,6 @@ class Tasker:
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
 		self.cloudService.refreshToken()
-
 		driveSettings = self.cache.getDrive(driveID)
 		folderTotal = len(folders)
 		folderProgress = 1

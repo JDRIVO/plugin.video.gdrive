@@ -53,11 +53,12 @@ class GoogleDrive:
 		response = network.requester.makeRequest(GOOGLE_TOKEN_URL, data, method="POST")
 
 		if not response:
-			return "failed"
+			return
 
 		self.account.accessToken = response["access_token"].rstrip(".")
 		expiry = datetime.datetime.now() + datetime.timedelta(seconds=response["expires_in"] - 600)
 		self.account.expiry = expiry
+		return True
 
 	def getHeaders(self, accessToken=None, additionalHeader=None, additionalValue=None):
 		cookie = self.account.driveStream

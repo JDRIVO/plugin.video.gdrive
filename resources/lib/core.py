@@ -104,7 +104,7 @@ class Core:
 			self.cloudService.setAccount(account)
 			tokenRefresh = self.cloudService.refreshToken()
 
-			if tokenRefresh == "failed":
+			if not tokenRefresh:
 				selection = self.dialog.yesno(
 					self.settings.getLocalizedString(30000),
 					f"{accountName} {self.settings.getLocalizedString(30019)}",
@@ -603,7 +603,7 @@ class Core:
 		self.cloudService.setAccount(account)
 		tokenRefresh = self.cloudService.refreshToken()
 
-		if tokenRefresh == "failed":
+		if not tokenRefresh:
 			return
 
 		driveID = self.settings.getParameter("drive_id")
@@ -614,23 +614,23 @@ class Core:
 		driveID = self.settings.getParameter("drive_id")
 		accounts = self.accountManager.getAccounts(driveID)
 		accountAmount = len(accounts)
-		pDialog = xbmcgui.DialogProgress()
-		pDialog.create(self.settings.getLocalizedString(30306))
+		progressDialog = xbmcgui.DialogProgress()
+		progressDialog.create(self.settings.getLocalizedString(30306))
 		deletion = False
 		count = 1
 
 		for account in list(accounts):
 			accountName = account.name
 
-			if pDialog.iscanceled():
+			if progressDialog.iscanceled():
 				return
 
 			self.cloudService.setAccount(account)
 			tokenRefresh = self.cloudService.refreshToken()
-			pDialog.update(int(round(count / accountAmount * 100)), accountName)
+			progressDialog.update(int(round(count / accountAmount * 100)), accountName)
 			count += 1
 
-			if tokenRefresh == "failed":
+			if not tokenRefresh:
 				selection = self.dialog.yesno(
 					self.settings.getLocalizedString(30000),
 					f"{accountName} {self.settings.getLocalizedString(30019)}",
@@ -642,7 +642,7 @@ class Core:
 				accounts.remove(account)
 				deletion = True
 
-		pDialog.close()
+		progressDialog.close()
 		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30020))
 
 		if deletion:
@@ -679,7 +679,7 @@ class Core:
 
 		imported = self.accountManager.mergeAccounts(filePath)
 
-		if imported == "failed":
+		if not imported:
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30037))
 		else:
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30036))
@@ -727,7 +727,6 @@ class Core:
 		response.close()
 
 	def deleteDrive(self):
-
 		confirmation = self.dialog.yesno(
 			self.settings.getLocalizedString(30000),
 			self.settings.getLocalizedString(30016),

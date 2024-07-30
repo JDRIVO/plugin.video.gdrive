@@ -336,9 +336,9 @@ class Syncer:
 		folders = []
 
 		if initialSync and self.settings.getSetting("sync_progress_dialog"):
-			pDialog = dialogs.SyncProgressionDialog(self.fileTree, heading=f"{self.settings.getLocalizedString(30052)} ({folderProgress}/{folderTotal}): {folderSettings['remote_name']}")
+			progressDialog = dialogs.SyncProgressionDialog(self.fileTree, heading=f"{self.settings.getLocalizedString(30052)} ({folderProgress}/{folderTotal}): {folderSettings['remote_name']}")
 		else:
-			pDialog = False
+			progressDialog = False
 
 		with threadpool.ThreadPool(threadCount) as pool:
 
@@ -355,27 +355,27 @@ class Syncer:
 					"root_folder_id": rootFolderID,
 				}
 				self.cache.addDirectory(directory)
-				pool.submit(self.remoteFileProcessor.processFiles, folder, folderSettings, dirPath, syncRootPath, driveID, rootFolderID, threadCount, pDialog)
+				pool.submit(self.remoteFileProcessor.processFiles, folder, folderSettings, dirPath, syncRootPath, driveID, rootFolderID, threadCount, progressDialog)
 
 				if folderRestructure or fileRenaming:
 					folders.append(folder)
 
-		if pDialog:
-			pDialog.close()
+		if progressDialog:
+			progressDialog.close()
 
 		if not folders:
 			return
 
-		if pDialog:
-			pDialog = dialogs.SyncProgressionDialog(self.fileTree, heading=f"{self.settings.getLocalizedString(30053)} {folderSettings['remote_name']}")
+		if progressDialog:
+			progressDialog = dialogs.SyncProgressionDialog(self.fileTree, heading=f"{self.settings.getLocalizedString(30053)} {folderSettings['remote_name']}")
 
 		with threadpool.ThreadPool(threadCount) as pool:
 
 			for folder in folders:
-				pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, folder.path, syncRootPath, threadCount, pDialog)
+				pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, folder.path, syncRootPath, threadCount, progressDialog)
 
-		if pDialog:
-			pDialog.close()
+		if progressDialog:
+			progressDialog.close()
 
 	def syncFileAdditions(self, files, syncRootPath, driveID):
 		threadCount = self.settings.getSettingInt("thread_count", 1)

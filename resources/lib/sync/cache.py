@@ -142,26 +142,26 @@ class Cache(Database):
 			progressDialog.close()
 
 	def removeAllFolders(self, driveID, deleteFiles=False):
+
+		if not deleteFiles:
+			self.cleanCache(driveID)
+			return
+
 		folders = self.getFolders({"drive_id": driveID})
 		self.deleteFolder(driveID, column="drive_id")
 		drive = self.getDrive(driveID)
 		syncRootPath = self.getSyncRootPath()
 		drivePath = os.path.join(syncRootPath, drive["local_path"])
+		progressDialog = settings.getSetting("file_deletion_dialog")
 
-		if deleteFiles:
-			progressDialog = settings.getSetting("file_deletion_dialog")
+		if progressDialog:
+			progressDialog = dialogs.FileDeletionDialog(0, heading=settings.getLocalizedString(30075))
 
-			if progressDialog:
-				progressDialog = dialogs.FileDeletionDialog(0, heading=settings.getLocalizedString(30075))
+		for folder in folders:
+			self.removeDirectories(syncRootPath, drivePath, folder["folder_id"], deleteFiles, progressDialog)
 
-			for folder in folders:
-				self.removeDirectories(syncRootPath, drivePath, folder["folder_id"], deleteFiles, progressDialog)
-
-			if progressDialog:
-				progressDialog.close()
-
-		else:
-			self.cleanCache(driveID)
+		if progressDialog:
+			progressDialog.close()
 
 	def updateSyncRootPath(self, path):
 		self.update("global", {"local_path": path}, {"local_path": "TEXT"})

@@ -89,7 +89,6 @@ def getVideoInfo(filename, metadata):
 	season = videoInfo.get("season")
 	episode = videoInfo.get("episode")
 	language = videoInfo.get("language")
-
 	videoCodec = videoInfo.get("codec")
 	hdr = videoInfo.get("hdr")
 	audioCodec = videoInfo.get("audio")
