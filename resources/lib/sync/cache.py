@@ -79,8 +79,7 @@ class Cache(Database):
 		return drives
 
 	def getDrive(self, driveID):
-		data = {"drive_id": driveID}
-		drive = self.selectAllConditional("drives", data)
+		drive = self.selectAllConditional("drives", {"drive_id": driveID})
 		if drive: return drive[0]
 
 	def getDirectory(self, data):
