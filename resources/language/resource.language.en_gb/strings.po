@@ -370,8 +370,8 @@ msgid "The file wasn't found in your Google Drive account."
 msgstr "The file wasn't found in your Google Drive account."
 
 msgctxt "#30210"
-msgid "Navigate to"
-msgstr "Navigate to"
+msgid "Visit"
+msgstr "Visit"
 
 msgctxt "#30214"
 msgid "Add service account"
@@ -552,4 +552,3 @@ msgstr "Import accounts"
 msgctxt "#30902"
 msgid "Export accounts"
 msgstr "Export accounts"
-
