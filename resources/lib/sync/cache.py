@@ -103,6 +103,9 @@ class Cache(Database):
 	def getFiles(self, data):
 		return self.selectAllConditional("files", data)
 
+	def getFileCount(self, data):
+		return self.count("files", data)
+
 	def deleteFile(self, value, column="file_id"):
 		self.delete("files", {column: value})
 
@@ -131,7 +134,9 @@ class Cache(Database):
 		progressDialog = settings.getSetting("file_deletion_dialog")
 
 		if deleteFiles and progressDialog:
-			progressDialog = dialogs.FileDeletionDialog(0, heading=settings.getLocalizedString(30075))
+			fileTotal = self.getFileCount({"root_folder_id": folderID})
+			progressDialog = dialogs.FileDeletionDialog(fileTotal)
+			progressDialog.create()
 		else:
 			progressDialog = False
 
@@ -154,7 +159,9 @@ class Cache(Database):
 		progressDialog = settings.getSetting("file_deletion_dialog")
 
 		if progressDialog:
-			progressDialog = dialogs.FileDeletionDialog(0, heading=settings.getLocalizedString(30075))
+			fileTotal = self.getFileCount({"drive_id": driveID})
+			progressDialog = dialogs.FileDeletionDialog(fileTotal)
+			progressDialog.create()
 
 		for folder in folders:
 			self.removeDirectories(syncRootPath, drivePath, folder["folder_id"], deleteFiles, progressDialog)
@@ -205,9 +212,6 @@ class Cache(Database):
 			if deleteFiles:
 				files = self.getFiles({"parent_folder_id": folderID})
 
-				if progressDialog:
-					progressDialog.fileCount += len(files)
-
 				for file in files:
 
 					if file["original_folder"]:
@@ -220,6 +224,7 @@ class Cache(Database):
 					self.fileOperations.deleteFile(syncRootPath, filePath=filePath)
 
 					if progressDialog:
+						progressDialog.processed += 1
 						progressDialog.update(filename)
 
 			self.deleteFile(folderID, column="parent_folder_id")

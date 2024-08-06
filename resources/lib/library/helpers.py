@@ -1,21 +1,15 @@
 import os
-import re
 
-import xbmc
 import xbmcvfs
 
 from ..database.database import Database
 
 
 def getVideoDB():
-	dbVersion = {
-		"19": "119",
-		"20": "121",
-		"21": "131",
-	}
-	userAgent = xbmc.getUserAgent()
-	kodiVersion = re.findall("Kodi\/(\d+)", userAgent)[0]
-	return os.path.join(xbmcvfs.translatePath("special://database"), f"MyVideos{dbVersion[kodiVersion]}.db")
+	dbDirectory = xbmcvfs.translatePath("special://database")
+	directories = os.listdir(dbDirectory)
+	videoDatabase = [dir for dir in directories if "MyVideos" in dir][0]
+	return os.path.join(dbDirectory, videoDatabase)
 
 def updateLibrary(filePath, metadata):
 	dirPath, filename = os.path.split(filePath)

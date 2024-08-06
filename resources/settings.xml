@@ -159,7 +159,7 @@
 			<group id="1">
 				<setting id="thread_count" type="integer" label="30801" help="">
 					<level>0</level>
-					<default>1</default>
+					<default>8</default>
 					<constraints>
 						<minimum>1</minimum>
 						<step>1</step>

@@ -543,21 +543,27 @@ class Core:
 		del syncSettings
 
 	def registerAccount(self):
-		self.dialog.ok(
+		help = self.dialog.yesno(
 			self.settings.getLocalizedString(30000),
-			"{} [B][COLOR blue]http://localhost:{}/register[/COLOR][/B] {}\n\n{} [COLOR chartreuse]{}[/COLOR] {} [COLOR chartreuse]{}[/COLOR] {} [COLOR chartreuse]{}[/COLOR] [B][COLOR blue]http://localhost:{}/status[/COLOR][/B]".format(
-				self.settings.getLocalizedString(30210),
+			"{} [B][COLOR blue]http://localhost:{}/register[/COLOR][/B] {}\n\n{} [COLOR chartreuse]{}[/COLOR] - [COLOR chartreuse]{}[/COLOR] {} [COLOR chartreuse]{}[/COLOR] [B][COLOR blue]http://localhost:{}/status[/COLOR][/B]".format(
+				self.settings.getLocalizedString(30215),
 				self.settings.getSetting("server_port"),
+				self.settings.getLocalizedString(30216),
+				self.settings.getLocalizedString(30217),
 				self.settings.getLocalizedString(30218),
-				self.settings.getLocalizedString(30222),
-				self.settings.getLocalizedString(30223),
-				self.settings.getLocalizedString(30224),
-				self.settings.getLocalizedString(30225),
-				self.settings.getLocalizedString(30226),
-				self.settings.getLocalizedString(30227),
+				self.settings.getLocalizedString(30219),
+				self.settings.getLocalizedString(30220),
+				self.settings.getLocalizedString(30221),
 				self.settings.getSetting("server_port"),
-			)
+			),
+			self.settings.getLocalizedString(30066),
+			self.settings.getLocalizedString(30001),
 		)
+
+		if help:
+			url = "https://github.com/user-attachments/assets/b3d0e86f-2597-40c8-8485-6d11ad085372"
+			listItem = xbmcgui.ListItem("Client ID and Client Secret creation")
+			xbmc.Player().play(url, listItem)
 
 	def addServiceAccount(self):
 		accountName = self.dialog.input(self.settings.getLocalizedString(30025))

@@ -17,6 +17,10 @@ msgctxt "#30000"
 msgid "gDrive"
 msgstr "gDrive"
 
+msgctxt "#30001"
+msgid "Help"
+msgstr "Help"
+
 msgctxt "#30002"
 msgid "Rename"
 msgstr "Rename"
@@ -142,12 +146,12 @@ msgid "File exported as gdrive_accounts.pkl"
 msgstr "File exported as gdrive_accounts.pkl"
 
 msgctxt "#30036"
-msgid "Accounts imported"
-msgstr "Accounts imported"
+msgid "Accounts imported."
+msgstr "Accounts imported."
 
 msgctxt "#30037"
-msgid "Account import failed"
-msgstr "Account import failed"
+msgid "Account import failed."
+msgstr "Account import failed."
 
 msgctxt "#30038"
 msgid "My Drive"
@@ -206,12 +210,12 @@ msgid "Sync on startup"
 msgstr "Sync on startup"
 
 msgctxt "#30052"
-msgid "Syncing folder"
-msgstr "Syncing folder"
+msgid "Syncing folders"
+msgstr "Syncing folders"
 
 msgctxt "#30053"
-msgid "Performing renaming operations on"
-msgstr "Performing renaming operations on"
+msgid "Processing files"
+msgstr "Processing files"
 
 msgctxt "#30058"
 msgid "Search language"
@@ -298,16 +302,16 @@ msgid "Your encryption settings are incomplete."
 msgstr "Your encryption settings are incomplete."
 
 msgctxt "#30079"
-msgid "You must assign a destination path"
-msgstr "You must assign a destination path"
+msgid "You must assign a sync path."
+msgstr "You must assign a sync path."
 
 msgctxt "#30080"
-msgid "You must assign a sync mode"
-msgstr "You must assign a sync mode"
+msgid "You must assign a sync mode."
+msgstr "You must assign a sync mode."
 
 msgctxt "#30081"
-msgid "You must assign a sync frequency"
-msgstr "You must assign a sync frequency"
+msgid "You must assign a sync frequency."
+msgstr "You must assign a sync frequency."
 
 msgctxt "#30082"
 msgid "Sync started"
@@ -369,39 +373,35 @@ msgctxt "#30209"
 msgid "The file wasn't found in your Google Drive account."
 msgstr "The file wasn't found in your Google Drive account."
 
-msgctxt "#30210"
-msgid "Visit"
-msgstr "Visit"
-
 msgctxt "#30214"
 msgid "Add service account"
 msgstr "Add service account"
 
-msgctxt "#30218"
+msgctxt "#30215"
+msgid "Visit"
+msgstr "Visit"
+
+msgctxt "#30216"
 msgid "in a web browser."
 msgstr "in a web browser."
 
-msgctxt "#30222"
+msgctxt "#30217"
 msgid "You must create an"
 msgstr "You must create an"
 
-msgctxt "#30223"
+msgctxt "#30218"
 msgid "OAuth Client ID"
 msgstr "OAuth Client ID"
 
-msgctxt "#30224"
-msgid "that is a"
-msgstr "that is a"
-
-msgctxt "#30225"
+msgctxt "#30219"
 msgid "Web Application"
 msgstr "Web Application"
 
-msgctxt "#30226"
+msgctxt "#30220"
 msgid "with this"
 msgstr "with this"
 
-msgctxt "#30227"
+msgctxt "#30221"
 msgid "Redirect URI"
 msgstr "Redirect URI"
 

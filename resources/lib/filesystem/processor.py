@@ -5,22 +5,21 @@ from ..threadpool import threadpool
 
 from . import helpers
 from .constants import *
-from ..sync import cache
 
 
 class RemoteFileProcessor:
 
-	def __init__(self, cloudService, fileOperations, settings):
+	def __init__(self, cloudService, fileOperations, settings, cache):
 		self.cloudService = cloudService
 		self.fileOperations = fileOperations
 		self.settings = settings
-		self.cache = cache.Cache()
+		self.cache = cache
 
 	def processFiles(
 		self,
 		folder,
 		folderSettings,
-		remoteDirPath,
+		drivePath,
 		syncRootPath,
 		driveID,
 		rootFolderID,
@@ -30,6 +29,7 @@ class RemoteFileProcessor:
 		files = folder.files
 		parentFolderID = folder.id
 		syncRootPath = syncRootPath + os.sep
+		remoteDirPath = os.path.join(drivePath, folder.path)
 		dirPath = os.path.join(syncRootPath, remoteDirPath)
 		folderRestructure = folderSettings["folder_restructure"]
 		fileRenaming = folderSettings["file_renaming"]
@@ -37,7 +37,6 @@ class RemoteFileProcessor:
 		mediaAssets = files.get("media_assets")
 		strm = files.get("strm")
 		cachedFiles = []
-		self.progressDialog = progressDialog
 
 		if strm:
 
@@ -51,6 +50,7 @@ class RemoteFileProcessor:
 						rootFolderID,
 						parentFolderID,
 						cachedFiles,
+						progressDialog,
 					) for file in strm
 				]
 
@@ -74,6 +74,7 @@ class RemoteFileProcessor:
 						parentFolderID,
 						cachedFiles,
 						originalFolder,
+						progressDialog,
 					) for video in videos
 				]
 
@@ -91,6 +92,7 @@ class RemoteFileProcessor:
 						parentFolderID,
 						cachedFiles,
 						originalFolder,
+						progressDialog,
 					) for assetName, assets in mediaAssets.items() if assets
 				]
 
@@ -106,6 +108,7 @@ class RemoteFileProcessor:
 		parentFolderID,
 		cachedFiles,
 		originalFolder,
+		progressDialog,
 	):
 
 		for file in mediaAssets:
@@ -127,8 +130,8 @@ class RemoteFileProcessor:
 			)
 			cachedFiles.append(file)
 
-			if self.progressDialog:
-				self.progressDialog.update(remoteName)
+			if progressDialog:
+				progressDialog.processFile(remoteName)
 
 	def processSTRM(
 		self,
@@ -138,6 +141,7 @@ class RemoteFileProcessor:
 		rootFolderID,
 		parentFolderID,
 		cachedFiles,
+		progressDialog,
 	):
 		fileID = file.id
 		remoteName = file.name
@@ -156,8 +160,8 @@ class RemoteFileProcessor:
 		)
 		cachedFiles.append(file)
 
-		if self.progressDialog:
-			self.progressDialog.update(remoteName)
+		if progressDialog:
+			progressDialog.processFile(remoteName)
 
 	def processVideo(
 		self,
@@ -169,6 +173,7 @@ class RemoteFileProcessor:
 		parentFolderID,
 		cachedFiles,
 		originalFolder,
+		progressDialog,
 	):
 		fileID = file.id
 		remoteName = file.name
@@ -190,34 +195,40 @@ class RemoteFileProcessor:
 		)
 		cachedFiles.append(file)
 
-		if self.progressDialog:
-			self.progressDialog.update(remoteName)
+		if progressDialog:
+			progressDialog.processFile(remoteName)
 
 class LocalFileProcessor:
 
-	def __init__(self, cloudService, fileOperations, settings):
+	def __init__(self, cloudService, fileOperations, settings, cache):
 		self.cloudService = cloudService
 		self.fileOperations = fileOperations
 		self.settings = settings
-		self.cache = cache.Cache()
+		self.cache = cache
 		self.imdbLock = threading.Lock()
 
 	def processFiles(
 		self,
 		folder,
 		folderSettings,
-		remoteDirPath,
+		drivePath,
 		syncRootPath,
 		threadCount,
 		progressDialog=False,
 	):
 		files = folder.files
 		syncRootPath = syncRootPath + os.sep
+		remoteDirPath = os.path.join(drivePath, folder.path)
 		processingDirPath = os.path.join(syncRootPath, "[gDrive] Processing", remoteDirPath)
 		dirPath = os.path.join(syncRootPath, remoteDirPath)
 		videos = files.get("video")
 		mediaAssets = files.get("media_assets")
-		self.progressDialog = progressDialog
+
+		if progressDialog:
+			strm = files.get("strm")
+
+			if strm:
+				progressDialog.incrementFiles(len(strm))
 
 		if videos:
 			folderRestructure = folderSettings["folder_restructure"]
@@ -242,6 +253,7 @@ class LocalFileProcessor:
 						folderRestructure,
 						fileRenaming,
 						tmdbSettings,
+						progressDialog,
 					) for video in videos
 				]
 
@@ -258,6 +270,7 @@ class LocalFileProcessor:
 						None,
 						True,
 						True,
+						progressDialog,
 					) for assetName, assets in mediaAssets.items() if assets
 				]
 
@@ -270,6 +283,7 @@ class LocalFileProcessor:
 		videoFilename,
 		originalName,
 		originalFolder,
+		progressDialog,
 	):
 
 		for file in list(mediaAssets):
@@ -302,8 +316,8 @@ class LocalFileProcessor:
 			filePath = self.fileOperations.renameFile(syncRootPath, filePath, dirPath, filename)
 			mediaAssets.remove(file)
 
-			if self.progressDialog:
-				self.progressDialog.update(file.name)
+			if progressDialog:
+				progressDialog.processRenamedFile(file.name)
 
 			file = {
 				"local_path": filePath.replace(syncRootPath, "") if not originalFolder else False,
@@ -324,6 +338,7 @@ class LocalFileProcessor:
 		folderRestructure,
 		fileRenaming,
 		tmdbSettings,
+		progressDialog,
 	):
 		fileID = file.id
 		mediaType = file.media
@@ -366,12 +381,13 @@ class LocalFileProcessor:
 				newFilename,
 				originalName,
 				originalFolder,
+				progressDialog,
 			)
 
 		filePath = self.fileOperations.renameFile(syncRootPath, filePath, dirPath, filename)
 
-		if self.progressDialog:
-			self.progressDialog.update(file.name)
+		if progressDialog:
+			progressDialog.processRenamedFile(file.name)
 
 		file = {
 			"local_path": filePath.replace(syncRootPath, "") if not originalFolder else False,

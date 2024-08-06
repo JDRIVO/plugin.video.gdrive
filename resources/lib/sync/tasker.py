@@ -14,6 +14,8 @@ from .. import sync
 from .. import google_api
 from .. import encryption
 from .. import filesystem
+from ..ui import dialogs
+from ..threadpool import threadpool
 
 
 class Tasker:
@@ -26,10 +28,7 @@ class Tasker:
 		self.encrypter = encryption.encrypter.Encrypter(settings=self.settings)
 		self.cache = cache.Cache()
 		self.fileOperations = filesystem.operations.FileOperations(cloud_service=self.cloudService, encryption=self.encrypter)
-		self.fileTree = filesystem.tree.FileTree(self.cloudService, self.cache)
-		self.remoteFileProcessor = filesystem.processor.RemoteFileProcessor(self.cloudService, self.fileOperations, self.settings)
-		self.localFileProcessor = filesystem.processor.LocalFileProcessor(self.cloudService, self.fileOperations, self.settings)
-		self.syncer = sync.syncer.Syncer(self.accountManager, self.cloudService, self.encrypter, self.fileOperations, self.remoteFileProcessor, self.localFileProcessor, self.fileTree, self.settings)
+		self.syncer = sync.syncer.Syncer(self.accountManager, self.cloudService, self.encrypter, self.fileOperations, self.settings, self.cache)
 		self.gDriveIconPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media", "icon.png")
 		self.monitor = xbmc.Monitor()
 		self.dialog = xbmcgui.Dialog()
@@ -180,17 +179,26 @@ class Tasker:
 		self.cloudService.refreshToken()
 		driveSettings = self.cache.getDrive(driveID)
 		folderTotal = len(folders)
-		folderProgress = 1
+		threadCount = self.settings.getSettingInt("thread_count", 1)
 
-		for folder in folders:
-			folderName = folder["name"]
-			folderID = folder["id"]
-			folderSettings = self.cache.getFolder({"folder_id": folderID})
+		if self.settings.getSetting("sync_progress_dialog"):
+			progressDialog = dialogs.SyncProgressionDialog(folderTotal)
+			progressDialog.create()
+		else:
+			progressDialog = False
 
-			with self.taskLock:
-				self.syncer.syncFolderAdditions(syncRootPath, driveSettings["local_path"], folderName, folderSettings, folderID, folderID, folderID, driveID, initialSync=True, folderProgress=folderProgress, folderTotal=folderTotal)
+		with self.taskLock:
 
-			folderProgress += 1
+			with threadpool.ThreadPool(threadCount) as pool:
+
+				for folder in folders:
+					folderName = folder["name"]
+					folderID = folder["id"]
+					folderSettings = self.cache.getFolder({"folder_id": folderID})
+					pool.submit(self.syncer.syncFolderAdditions, syncRootPath, driveSettings["local_path"], folderName, folderSettings, folderID, folderID, folderID, driveID, progressDialog)
+
+		if progressDialog:
+			progressDialog.close()
 
 		if not driveSettings["page_token"]:
 			self.cache.updateDrive({"page_token": self.cloudService.getPageToken()}, driveID)

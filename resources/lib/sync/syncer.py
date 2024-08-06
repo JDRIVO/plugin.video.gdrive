@@ -2,26 +2,24 @@ import os
 
 import xbmc
 
-from . import cache
-from ..ui import dialogs
 from .. import filesystem
 from ..threadpool import threadpool
 from ..filesystem.constants import *
+from ..filesystem.tree import FileTree
 from ..filesystem.folder import Folder
 
 
 class Syncer:
 
-	def __init__(self, accountManager, cloudService, encrypter, fileOperations, remoteFileProcessor, localFileProcessor, fileTree, settings):
-		self.encrypter = encrypter
-		self.cloudService = cloudService
+	def __init__(self, accountManager, cloudService, encrypter, fileOperations, settings, cache):
 		self.accountManager = accountManager
-		self.remoteFileProcessor = remoteFileProcessor
-		self.localFileProcessor = localFileProcessor
-		self.fileTree = fileTree
+		self.cloudService = cloudService
+		self.encrypter = encrypter
 		self.fileOperations = fileOperations
 		self.settings = settings
-		self.cache = cache.Cache()
+		self.cache = cache
+		self.remoteFileProcessor = filesystem.processor.RemoteFileProcessor(self.cloudService, self.fileOperations, self.settings, self.cache)
+		self.localFileProcessor = filesystem.processor.LocalFileProcessor(self.cloudService, self.fileOperations, self.settings, self.cache)
 
 	def sortChanges(self, changes):
 		trashed, existingFolders, newFolders, files, excludedIDs = [], [], [], [], []
@@ -90,7 +88,7 @@ class Syncer:
 				self.syncFileChanges(item, parentFolderID, driveID, syncRootPath, drivePath, newFiles)
 
 		if newFiles:
-			self.syncFileAdditions(newFiles, syncRootPath, driveID)
+			self.syncFileAdditions(newFiles, drivePath, syncRootPath, driveID)
 
 			if self.settings.getSetting("update_library"):
 				xbmc.executebuiltin(f"UpdateLibrary(video,{syncRootPath})")
@@ -152,7 +150,7 @@ class Syncer:
 				return
 
 			folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
-			self.syncFolderAdditions(syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, syncedIDs, excludedIDs)
+			self.syncFolderAdditions(syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, syncedIDs=syncedIDs, excludedIDs=excludedIDs)
 			return
 
 		# existing folder
@@ -305,11 +303,11 @@ class Syncer:
 
 		if not newFiles.get(rootFolderID):
 			newFiles[rootFolderID] = {}
-			newFiles[rootFolderID][parentFolderID] = Folder(parentFolderID, parentFolderID, dirPath, os.path.join(drivePath, dirPath))
+			newFiles[rootFolderID][parentFolderID] = Folder(parentFolderID, parentFolderID, dirPath, dirPath)
 		else:
 
 			if not newFiles[rootFolderID].get(parentFolderID):
-				newFiles[rootFolderID][parentFolderID] = Folder(parentFolderID, parentFolderID, dirPath, os.path.join(drivePath, dirPath))
+				newFiles[rootFolderID][parentFolderID] = Folder(parentFolderID, parentFolderID, dirPath, dirPath)
 
 		if file.type in MEDIA_ASSETS:
 			mediaAssets = newFiles[rootFolderID][parentFolderID].files["media_assets"]
@@ -321,7 +319,7 @@ class Syncer:
 		else:
 			newFiles[rootFolderID][parentFolderID].files[file.type].append(file)
 
-	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, syncedIDs=None, excludedIDs=[], initialSync=False, folderProgress=None, folderTotal=None):
+	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderSettings, parentFolderID, folderID, rootFolderID, driveID, progressDialog=None, syncedIDs=None, excludedIDs=[]):
 
 		if folderSettings["contains_encrypted"]:
 			encrypter = self.encrypter
@@ -332,52 +330,26 @@ class Syncer:
 		threadCount = self.settings.getSettingInt("thread_count", 1)
 		folderRestructure = folderSettings["folder_restructure"]
 		fileRenaming = folderSettings["file_renaming"]
-		fileTree = self.fileTree.buildTree(folderID, parentFolderID, dirPath, excludedTypes, encrypter, syncedIDs, excludedIDs, threadCount)
-		folders = []
-
-		if initialSync and self.settings.getSetting("sync_progress_dialog"):
-			progressDialog = dialogs.SyncProgressionDialog(self.fileTree, heading=f"{self.settings.getLocalizedString(30052)} ({folderProgress}/{folderTotal}): {folderSettings['remote_name']}")
-		else:
-			progressDialog = False
+		fileTree = FileTree(self.cloudService, self.cache, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs, excludedIDs)
+		fileTree.buildTree(driveID, rootFolderID, folderID, parentFolderID, dirPath)
 
 		with threadpool.ThreadPool(threadCount) as pool:
 
 			for folder in fileTree:
-				remotePath = folder.path
-				dirPath = os.path.join(drivePath, remotePath)
-				folder.path = dirPath
-				directory = {
-					"drive_id": driveID,
-					"folder_id": folder.id,
-					"local_path": remotePath,
-					"remote_name": folder.name,
-					"parent_folder_id": folder.parentID,
-					"root_folder_id": rootFolderID,
-				}
-				self.cache.addDirectory(directory)
-				pool.submit(self.remoteFileProcessor.processFiles, folder, folderSettings, dirPath, syncRootPath, driveID, rootFolderID, threadCount, progressDialog)
-
-				if folderRestructure or fileRenaming:
-					folders.append(folder)
+				pool.submit(self.remoteFileProcessor.processFiles, folder, folderSettings, drivePath, syncRootPath, driveID, rootFolderID, threadCount, progressDialog)
 
 		if progressDialog:
-			progressDialog.close()
+			progressDialog.processFolder()
 
-		if not folders:
+		if not folderRestructure and not fileRenaming:
 			return
-
-		if progressDialog:
-			progressDialog = dialogs.SyncProgressionDialog(self.fileTree, heading=f"{self.settings.getLocalizedString(30053)} {folderSettings['remote_name']}")
 
 		with threadpool.ThreadPool(threadCount) as pool:
 
-			for folder in folders:
-				pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, folder.path, syncRootPath, threadCount, progressDialog)
+			for folder in fileTree:
+				pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, drivePath, syncRootPath, threadCount, progressDialog)
 
-		if progressDialog:
-			progressDialog.close()
-
-	def syncFileAdditions(self, files, syncRootPath, driveID):
+	def syncFileAdditions(self, files, drivePath, syncRootPath, driveID):
 		threadCount = self.settings.getSettingInt("thread_count", 1)
 		folders = []
 
@@ -389,7 +361,7 @@ class Syncer:
 				fileRenaming = folderSettings["file_renaming"]
 
 				for folderID, folder in directories.items():
-					pool.submit(self.remoteFileProcessor.processFiles, folder, folderSettings, folder.path, syncRootPath, driveID, rootFolderID, threadCount)
+					pool.submit(self.remoteFileProcessor.processFiles, folder, folderSettings, drivePath, syncRootPath, driveID, rootFolderID, threadCount)
 
 					if folderRestructure or fileRenaming:
 						folders.append((folder, folderSettings))
@@ -397,4 +369,4 @@ class Syncer:
 		with threadpool.ThreadPool(threadCount) as pool:
 
 			for folder, folderSettings in folders:
-				pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, folder.path, syncRootPath, threadCount)
+				pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, drivePath, syncRootPath, threadCount)

@@ -531,7 +531,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
 
 	def setSyncPath(self, button):
-		syncRootPath = self.dialog.browse(0, constants.settings.getLocalizedString(30077), "files")
+		syncRootPath = self.dialog.browse(3, constants.settings.getLocalizedString(30077), "")
 
 		if not syncRootPath:
 			return

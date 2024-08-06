@@ -8,27 +8,47 @@ from ..threadpool import threadpool
 
 
 class FileTree:
+	lock = threading.Lock()
 
-	def __init__(self, cloudService, cache):
+	def __init__(self, cloudService, cache, dialogProgress, threadCount, encrypter, excludedTypes, syncedIDs, excludedIDs):
 		self.cloudService = cloudService
 		self.cache = cache
-		self.counterLock = threading.Lock()
+		self.dialogProgress = dialogProgress
+		self.threadCount = threadCount
+		self.encrypter = encrypter
+		self.excludedTypes = excludedTypes
+		self.syncedIDs = syncedIDs
+		self.excludedIDs = excludedIDs
+		self.fileTree = {}
 
-	def buildTree(self, folderID, parentFolderID, path, excludedTypes, encrypter, syncedIDs, excludedIDs, threadCount):
-		self.fileCount = 0
-		fileTree = dict()
-		remoteName = os.path.basename(path)
+	def __iter__(self):
+		return iter(self.fileTree.values())
+
+	def buildTree(self, driveID, rootFolderID, folderID, parentFolderID, path):
+		folderIDs = [folderID]
+		folderName = os.path.basename(path)
 		path_ = path
 		copy = 1
 
-		while self.cache.getDirectory({"local_path": path}):
-			path = f"{path_} ({copy})"
-			copy += 1
+		with self.lock:
 
-		fileTree[folderID] = Folder(folderID, parentFolderID, remoteName, path)
-		yield from self.getContents(fileTree, [folderID], excludedTypes, encrypter, syncedIDs, excludedIDs, threadCount)
+			while self.cache.getDirectory({"local_path": path}):
+				path = f"{path_} ({copy})"
+				copy += 1
 
-	def getContents(self, fileTree, folderIDs, excludedTypes, encrypter, syncedIDs, excludedIDs, threadCount):
+		directory = {
+			"drive_id": driveID,
+			"folder_id": folderID,
+			"local_path": path,
+			"remote_name": folderName,
+			"parent_folder_id": parentFolderID,
+			"root_folder_id": rootFolderID,
+		}
+		self.cache.addDirectory(directory)
+		self.fileTree[folderID] = Folder(folderID, parentFolderID, folderName, path)
+		self.getContents(driveID, rootFolderID, folderIDs)
+
+	def getContents(self, driveID, rootFolderID, folderIDs):
 		maxIDs = 299
 		queries = []
 
@@ -42,33 +62,34 @@ class FileTree:
 			)
 			folderIDs = folderIDs[maxIDs:]
 
-		with threadpool.ThreadPool(threadCount) as pool:
+		def getFolders(query, parentFolderIDs):
+			items = self.cloudService.listDirectory(customQuery=query)
+			self.filterContents(items, driveID, rootFolderID, parentFolderIDs, folderIDs)
 
-			for query, parentFolderIDs in queries:
-				items = self.cloudService.listDirectory(customQuery=query)
-				yield from self.filterContents(fileTree, items, parentFolderIDs, folderIDs, excludedTypes, encrypter, syncedIDs, excludedIDs)
+		with threadpool.ThreadPool(self.threadCount) as pool:
+			pool.map(getFolders, queries)
 
 		if folderIDs:
-			yield from self.getContents(fileTree, folderIDs, excludedTypes, encrypter, syncedIDs, excludedIDs, threadCount)
+			self.getContents(driveID, rootFolderID, folderIDs)
 
-	def filterContents(self, fileTree, items, parentFolderIDs, folderIDs, excludedTypes, encrypter, syncedIDs, excludedIDs):
+	def filterContents(self, items, driveID, rootFolderID, parentFolderIDs, folderIDs):
 		paths = []
 
 		for item in items:
 			id = item["id"]
 
-			if id in excludedIDs:
+			if id in self.excludedIDs:
 				continue
 
-			if syncedIDs is not None:
-				syncedIDs.append(id)
+			if self.syncedIDs is not None:
+				self.syncedIDs.append(id)
 
 			parentFolderID = item["parents"][0]
 			mimeType = item["mimeType"]
 
 			if mimeType == "application/vnd.google-apps.folder":
 				folderName = helpers.removeProhibitedFSchars(item["name"])
-				path = path_ = os.path.join(fileTree[parentFolderID].path, folderName)
+				path = path_ = os.path.join(self.fileTree[parentFolderID].path, folderName)
 				copy = 1
 
 				while path in paths:
@@ -76,19 +97,28 @@ class FileTree:
 					copy += 1
 
 				paths.append(path)
-				fileTree[id] = Folder(id, parentFolderID, folderName, path)
 				folderIDs.append(id)
+				directory = {
+					"drive_id": driveID,
+					"folder_id": id,
+					"local_path": path,
+					"remote_name": folderName,
+					"parent_folder_id": parentFolderID,
+					"root_folder_id": rootFolderID,
+				}
+				self.cache.addDirectory(directory)
+				self.fileTree[id] = Folder(id, parentFolderID, folderName, path)
 				continue
 
-			file = helpers.makeFile(item, excludedTypes, encrypter)
+			file = helpers.makeFile(item, self.excludedTypes, self.encrypter)
 
 			if not file:
 				continue
 
-			with self.counterLock:
-				self.fileCount += 1
+			if self.dialogProgress:
+				self.dialogProgress.incrementFile()
 
-			files = fileTree[parentFolderID].files
+			files = self.fileTree[parentFolderID].files
 
 			if file.type in MEDIA_ASSETS:
 				mediaAssets = files["media_assets"]
@@ -99,6 +129,3 @@ class FileTree:
 				mediaAssets[file.ptnName].append(file)
 			else:
 				files[file.type].append(file)
-
-		for id in parentFolderIDs:
-			yield fileTree[id]

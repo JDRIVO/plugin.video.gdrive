@@ -132,6 +132,16 @@ class Database:
 		self.close()
 
 	@lock
+	def count(self, table, condition):
+		condition = self.joinConditions(condition)
+		query = f"SELECT COUNT(*) FROM {table} {condition}"
+		self.connect()
+		self.cursor.execute(query)
+		count = self.cursor.fetchone()
+		self.close()
+		return count[0] if count else 0
+
+	@lock
 	def delete(self, table, condition):
 		condition = self.joinConditions(condition)
 		query = f"DELETE FROM {table} {condition}"
