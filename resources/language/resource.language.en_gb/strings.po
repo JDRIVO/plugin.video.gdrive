@@ -94,16 +94,16 @@ msgid "is no longer valid. Do you want to delete this account?"
 msgstr "is no longer valid. Do you want to delete this account?"
 
 msgctxt "#30020"
-msgid "Account(s) validated."
-msgstr "Account(s) validated."
+msgid "Accounts validated."
+msgstr "Accounts validated."
 
 msgctxt "#30021"
-msgid "Validate account(s)"
-msgstr "Validate account(s)"
+msgid "Validate accounts"
+msgstr "Validate accounts"
 
 msgctxt "#30022"
-msgid "Delete account(s)"
-msgstr "Delete account(s)"
+msgid "Delete accounts"
+msgstr "Delete accounts"
 
 msgctxt "#30023"
 msgid "Validate"
@@ -358,8 +358,8 @@ msgid "Delete"
 msgstr "Delete"
 
 msgctxt "#30161"
-msgid "Account(s) deleted."
-msgstr "Account(s) deleted."
+msgid "Accounts deleted."
+msgstr "Accounts deleted."
 
 msgctxt "#30207"
 msgid "Add account"
