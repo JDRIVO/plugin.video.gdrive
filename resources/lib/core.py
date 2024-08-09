@@ -464,6 +464,7 @@ class Core:
 	def listSyncedFolders(self):
 		driveID = self.settings.getParameter("drive_id")
 		folders = self.cache.getFolders({"drive_id": driveID})
+		folders = sorted(folders, key=lambda x: x["local_path"].lower())
 		self.addMenuItem(
 			f"{self.pluginURL}?mode=get_sync_settings&drive_id={driveID}&sync_mode=drive",
 			f"[B][COLOR yellow]{self.settings.getLocalizedString(30017)}[/COLOR][/B]",
