@@ -291,12 +291,12 @@ class Syncer:
 
 				if cachedFile["original_folder"]:
 					dirPath = os.path.join(syncRootPath, drivePath, dirPath)
-					self.fileOperations.renameFile(syncRootPath, cachedFilePath, dirPath, newFilename)
+					newFilePath = self.fileOperations.renameFile(syncRootPath, cachedFilePath, dirPath, newFilename)
 				else:
 					newFilePath = self.fileOperations.renameFile(syncRootPath, cachedFilePath, os.path.dirname(cachedFilePath), newFilename)
 					cachedFile["local_path"] = newFilePath
 
-				cachedFile["local_name"] = newFilename
+				cachedFile["local_name"] = os.path.basename(newFilePath)
 				cachedFile["remote_name"] = filename
 				cachedFile["parent_folder_id"] = parentFolderID
 				self.cache.updateFile(cachedFile, fileID)
