@@ -320,7 +320,7 @@ class Syncer:
 		else:
 			newFiles[rootFolderID][parentFolderID].files[file.type].append(file)
 
-	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderSettings, folderID, driveID, progressDialog):
+	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderName, folderSettings, folderID, driveID, progressDialog):
 		rootFolderID = parentFolderID = folderID
 
 		if folderSettings["contains_encrypted"]:
@@ -333,7 +333,7 @@ class Syncer:
 		folderRestructure = folderSettings["folder_restructure"]
 		fileRenaming = folderSettings["file_renaming"]
 		fileTree = FileTree(self.cloudService, progressDialog, threadCount, encrypter, excludedTypes)
-		fileTree.buildTree(driveID, rootFolderID, folderID, parentFolderID, dirPath)
+		fileTree.buildTree(driveID, rootFolderID, folderID, parentFolderID, folderName, dirPath)
 
 		with threadpool.ThreadPool(threadCount) as pool:
 

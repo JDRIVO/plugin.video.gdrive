@@ -614,15 +614,15 @@ class SyncSettings(xbmcgui.WindowDialog):
 				syncTaskData.append(folder)
 				folderName = folder["name"]
 				folderName = folderName_ = filesystem.helpers.removeProhibitedFSchars(folderName)
-				remoteName = folderName
-				folderName = self.cache.getUniqueFolder(self.driveID, folderName)
+				dirPath = self.cache.getUniqueFolder(self.driveID, folderName)
 				folder["name"] = folderName
+				folder["path"] = dirPath
 				folderSettings.update(
 					{
 						"drive_id": self.driveID,
 						"folder_id": folderID,
-						"local_path": folderName,
-						"remote_name": remoteName,
+						"local_path": dirPath,
+						"remote_name": folderName,
 					}
 				)
 				self.cache.addFolder(folderSettings)

@@ -19,9 +19,8 @@ class FileTree:
 	def __iter__(self):
 		return iter(self.fileTree.values())
 
-	def buildTree(self, driveID, rootFolderID, folderID, parentFolderID, path):
+	def buildTree(self, driveID, rootFolderID, folderID, parentFolderID, folderName, path):
 		folderIDs = [folderID]
-		folderName = os.path.basename(path)
 		self.fileTree[folderID] = Folder(folderID, parentFolderID, folderName, path)
 		self.getContents(driveID, rootFolderID, folderIDs)
 
