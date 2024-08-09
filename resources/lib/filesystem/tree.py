@@ -1,5 +1,4 @@
 import os
-import threading
 
 from . import helpers
 from .constants import *
@@ -8,17 +7,13 @@ from ..threadpool import threadpool
 
 
 class FileTree:
-	lock = threading.Lock()
 
-	def __init__(self, cloudService, cache, dialogProgress, threadCount, encrypter, excludedTypes, syncedIDs, excludedIDs):
+	def __init__(self, cloudService, dialogProgress, threadCount, encrypter, excludedTypes):
 		self.cloudService = cloudService
-		self.cache = cache
 		self.dialogProgress = dialogProgress
 		self.threadCount = threadCount
 		self.encrypter = encrypter
 		self.excludedTypes = excludedTypes
-		self.syncedIDs = syncedIDs
-		self.excludedIDs = excludedIDs
 		self.fileTree = {}
 
 	def __iter__(self):
@@ -27,24 +22,6 @@ class FileTree:
 	def buildTree(self, driveID, rootFolderID, folderID, parentFolderID, path):
 		folderIDs = [folderID]
 		folderName = os.path.basename(path)
-		path_ = path
-		copy = 1
-
-		with self.lock:
-
-			while self.cache.getDirectory({"local_path": path}):
-				path = f"{path_} ({copy})"
-				copy += 1
-
-		directory = {
-			"drive_id": driveID,
-			"folder_id": folderID,
-			"local_path": path,
-			"remote_name": folderName,
-			"parent_folder_id": parentFolderID,
-			"root_folder_id": rootFolderID,
-		}
-		self.cache.addDirectory(directory)
 		self.fileTree[folderID] = Folder(folderID, parentFolderID, folderName, path)
 		self.getContents(driveID, rootFolderID, folderIDs)
 
@@ -77,36 +54,22 @@ class FileTree:
 
 		for item in items:
 			id = item["id"]
-
-			if id in self.excludedIDs:
-				continue
-
-			if self.syncedIDs is not None:
-				self.syncedIDs.append(id)
-
 			parentFolderID = item["parents"][0]
 			mimeType = item["mimeType"]
 
 			if mimeType == "application/vnd.google-apps.folder":
 				folderName = helpers.removeProhibitedFSchars(item["name"])
 				path = path_ = os.path.join(self.fileTree[parentFolderID].path, folderName)
+				pathLowerCase = path.lower()
 				copy = 1
 
-				while path in paths:
+				while pathLowerCase in paths:
 					path = f"{path_} ({copy})"
+					pathLowerCase = path.lower()
 					copy += 1
 
-				paths.append(path)
+				paths.append(pathLowerCase)
 				folderIDs.append(id)
-				directory = {
-					"drive_id": driveID,
-					"folder_id": id,
-					"local_path": path,
-					"remote_name": folderName,
-					"parent_folder_id": parentFolderID,
-					"root_folder_id": rootFolderID,
-				}
-				self.cache.addDirectory(directory)
 				self.fileTree[id] = Folder(id, parentFolderID, folderName, path)
 				continue
 
@@ -127,5 +90,6 @@ class FileTree:
 					mediaAssets[file.ptnName] = []
 
 				mediaAssets[file.ptnName].append(file)
+
 			else:
 				files[file.type].append(file)

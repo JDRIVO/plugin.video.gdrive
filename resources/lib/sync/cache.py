@@ -29,14 +29,33 @@ class Cache(Database):
 	def updateDrive(self, data, driveID):
 		self.update("drives", data, {"drive_id": driveID})
 
-	def updateFile(self, data, fileID):
-		self.update("files", data, {"file_id": fileID})
-
 	def updateFolder(self, data, folderID):
 		self.update("folders", data, {"folder_id": folderID})
 
 	def updateDirectory(self, data, folderID):
 		self.update("directories", data, {"folder_id": folderID})
+
+	def updateFile(self, data, fileID):
+		self.update("files", data, {"file_id": fileID})
+
+	def updateSyncRootPath(self, path):
+		self.update("global", {"local_path": path}, {"local_path": "TEXT"})
+
+	def updateChildPaths(self, oldPath, newPath, folderID):
+		directories = self.getDirectories({"folder_id": folderID})
+		processedIDs = set()
+
+		while directories:
+			directory = directories.pop()
+			folderID = directory["folder_id"]
+			directory["local_path"] = directory["local_path"].replace(oldPath, newPath, 1)
+			self.updateDirectory(directory, folderID)
+
+			if folderID in processedIDs:
+				continue
+
+			processedIDs.add(folderID)
+			directories += self.getDirectories({"parent_folder_id": folderID})
 
 	def addDrive(self, data):
 		self.insert("drives", data)
@@ -82,17 +101,37 @@ class Cache(Database):
 		drive = self.selectAllConditional("drives", {"drive_id": driveID})
 		if drive: return drive[0]
 
-	def getDirectory(self, data):
-		directory = self.selectAllConditional("directories", data)
-		if directory: return directory[0]
-
 	def getFolder(self, data):
 		folder = self.selectAllConditional("folders", data)
 		if folder: return folder[0]
 
+	def getDirectory(self, data):
+		directory = self.selectAllConditional("directories", data)
+		if directory: return directory[0]
+
 	def getFile(self, data):
 		file = self.selectAllConditional("files", data)
 		if file: return file[0]
+
+	def getUniqueFolder(self, driveID, path):
+		path_ = path
+		copy = 1
+
+		while self.selectAllConditionalCaseInsensitive("folders", {"drive_id": driveID, "local_path": path}):
+			path = f"{path_} ({copy})"
+			copy += 1
+
+		return path
+
+	def getUniqueDirectory(self, driveID, path):
+		path_ = path
+		copy = 1
+
+		while self.selectAllConditionalCaseInsensitive("directories", {"drive_id": driveID, "local_path": path}):
+			path = f"{path_} ({copy})"
+			copy += 1
+
+		return path
 
 	def getFolders(self, data):
 		return self.selectAllConditional("folders", data)
@@ -106,14 +145,8 @@ class Cache(Database):
 	def getFileCount(self, data):
 		return self.count("files", data)
 
-	def deleteFile(self, value, column="file_id"):
-		self.delete("files", {column: value})
-
-	def deleteDirectory(self, value, column="folder_id"):
-		self.delete("directories", {column: value})
-
-	def deleteFolder(self, value, column="folder_id"):
-		self.delete("folders", {column: value})
+	def getSyncRootPath(self):
+		return self.select("global", "local_path")
 
 	def deleteDrive(self, driveID):
 		drive = self.getDrive(driveID)
@@ -123,6 +156,15 @@ class Cache(Database):
 
 		self.cleanCache(driveID)
 		self.delete("drives", {"drive_id": driveID})
+
+	def deleteFolder(self, value, column="folder_id"):
+		self.delete("folders", {column: value})
+
+	def deleteDirectory(self, value, column="folder_id"):
+		self.delete("directories", {column: value})
+
+	def deleteFile(self, value, column="file_id"):
+		self.delete("files", {column: value})
 
 	def removeFolder(self, folderID, deleteFiles=False):
 		folder = self.getFolder({"folder_id": folderID})
@@ -169,39 +211,6 @@ class Cache(Database):
 		if progressDialog:
 			progressDialog.close()
 
-	def updateSyncRootPath(self, path):
-		self.update("global", {"local_path": path}, {"local_path": "TEXT"})
-
-	def setSyncRootPath(self, path):
-		self.insert("global", {"local_path": path})
-
-	def getSyncRootPath(self):
-		return self.select("global", "local_path")
-
-	def addGlobalData(self, data):
-		self.insert("global", data)
-
-	def updateChildPaths(self, oldPath, newPath, folderID):
-		directories = self.getDirectories({"folder_id": folderID})
-		processedIDs = set()
-
-		while directories:
-			directory = directories.pop()
-			folderID = directory["folder_id"]
-			directory["local_path"] = directory["local_path"].replace(oldPath, newPath, 1)
-			self.updateDirectory(directory, folderID)
-
-			if folderID in processedIDs:
-				continue
-
-			processedIDs.add(folderID)
-			directories += self.getDirectories({"parent_folder_id": folderID})
-
-	def cleanCache(self, driveID):
-		self.deleteFile(driveID, column="drive_id")
-		self.deleteDirectory(driveID, column="drive_id")
-		self.deleteFolder(driveID, column="drive_id")
-
 	def removeDirectories(self, syncRootPath, drivePath, folderID, deleteFiles, progressDialog):
 		directories = self.getDirectories({"folder_id": folderID})
 
@@ -230,6 +239,17 @@ class Cache(Database):
 			self.deleteFile(folderID, column="parent_folder_id")
 			self.deleteDirectory(folderID)
 			directories += self.getDirectories({"parent_folder_id": folderID})
+
+	def setSyncRootPath(self, path):
+		self.insert("global", {"local_path": path})
+
+	def cleanCache(self, driveID):
+		self.deleteFile(driveID, column="drive_id")
+		self.deleteDirectory(driveID, column="drive_id")
+		self.deleteFolder(driveID, column="drive_id")
+
+	def addGlobalData(self, data):
+		self.insert("global", data)
 
 	def createGlobalTable(self):
 		columns = [

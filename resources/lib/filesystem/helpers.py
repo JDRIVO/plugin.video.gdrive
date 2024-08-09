@@ -11,7 +11,6 @@ from .file import File
 from .. import library
 from .. import network
 from .constants import *
-from .. import filesystem
 from .subtitles import Subtitles
 
 
@@ -342,17 +341,3 @@ def getExcludedTypes(folderSettings):
 		excluded.append("nfo")
 
 	return excluded
-
-def refreshMetadata(metadata, strmPath):
-	width = metadata['width']
-	height = metadata['height']
-	duration = metadata['durationMillis']
-
-	if not width or not height or not duration:
-		return
-
-	fileOperations = filesystem.operations.FileOperations()
-	strmContent = fileOperations.readFile(strmPath)
-	strmContent += f"&video_width={width}&video_height={height}&aspect_ratio={float(width) / height}&video_duration={float(duration) / 1000}"
-	fileOperations.overwriteFile(strmPath, strmContent)
-	library.helpers.updateLibrary(strmPath, metadata)

@@ -615,13 +615,8 @@ class SyncSettings(xbmcgui.WindowDialog):
 				folderName = folder["name"]
 				folderName = folderName_ = filesystem.helpers.removeProhibitedFSchars(folderName)
 				remoteName = folderName
+				folderName = self.cache.getUniqueFolder(self.driveID, folderName)
 				folder["name"] = folderName
-				copy = 1
-
-				while self.cache.getFolder({"drive_id": self.driveID, "local_path": folderName}):
-					folderName = f"{folderName_} ({copy})"
-					copy += 1
-
 				folderSettings.update(
 					{
 						"drive_id": self.driveID,

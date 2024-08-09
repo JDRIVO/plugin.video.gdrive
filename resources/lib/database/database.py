@@ -122,6 +122,16 @@ class Database:
 		return self.convertToDic(rows)
 
 	@lock
+	def selectAllConditionalCaseInsensitive(self, table, condition):
+		condition = self.joinConditions(condition)
+		query = f"SELECT * FROM {table} {condition} COLLATE NOCASE"
+		self.connect()
+		self.cursor.execute(query)
+		rows = self.cursor.fetchall()
+		self.close()
+		return self.convertToDic(rows)
+
+	@lock
 	def update(self, table, data, condition):
 		setValues = ", ".join([f"{column} = :{column}" for column in data.keys()])
 		condition = self.joinConditions(condition)
