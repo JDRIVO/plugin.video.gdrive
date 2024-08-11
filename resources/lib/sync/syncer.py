@@ -126,7 +126,7 @@ class Syncer:
 			if not cachedDirectory:
 				return
 
-			self.cache.deleteDirectory(folderID)
+			self.cache.removeEmptyDirectories(cachedDirectory["root_folder_id"])
 
 		self.deleted = True
 

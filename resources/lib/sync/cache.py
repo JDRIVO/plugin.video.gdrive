@@ -211,14 +211,13 @@ class Cache(Database):
 		if progressDialog:
 			progressDialog.close()
 
-	def removeDirectories(self, syncRootPath, drivePath, folderID, deleteFiles, progressDialog):
-		directories = self.getDirectories({"folder_id": folderID})
+	def removeDirectories(self, syncRootPath, drivePath, rootFolderID, deleteFiles, progressDialog):
 
-		while directories:
-			directory = directories.pop()
-			folderID = directory["folder_id"]
+		if deleteFiles:
+			directories = self.getDirectories({"root_folder_id": rootFolderID})
 
-			if deleteFiles:
+			for directory in directories:
+				folderID = directory["folder_id"]
 				files = self.getFiles({"parent_folder_id": folderID})
 
 				for file in files:
@@ -236,9 +235,23 @@ class Cache(Database):
 						progressDialog.processed += 1
 						progressDialog.update(filename)
 
-			self.deleteFile(folderID, column="parent_folder_id")
-			self.deleteDirectory(folderID)
-			directories += self.getDirectories({"parent_folder_id": folderID})
+		self.deleteFile(rootFolderID, column="root_folder_id")
+		self.deleteDirectory(rootFolderID, column="root_folder_id")
+
+	def removeEmptyDirectories(self, folderID):
+		directories = self.getDirectories({"root_folder_id": folderID})
+		directories = sorted([(dir["local_path"], dir["folder_id"]) for dir in directories], key=lambda x: x[0])
+		dirSize = len(directories)
+
+		for i, (dirPath, folderID) in enumerate(directories):
+
+			if i + 1 < dirSize and directories[i + 1][0].startswith(dirPath + os.sep):
+				continue
+
+			files = self.getFiles({"parent_folder_id": folderID})
+
+			if not files:
+				self.deleteDirectory(folderID)
 
 	def setSyncRootPath(self, path):
 		self.insert("global", {"local_path": path})

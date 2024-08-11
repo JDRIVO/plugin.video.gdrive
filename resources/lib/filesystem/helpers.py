@@ -8,7 +8,6 @@ import datetime
 from .. import ptn
 from . import video
 from .file import File
-from .. import library
 from .. import network
 from .constants import *
 from .subtitles import Subtitles
