@@ -241,6 +241,9 @@ class Syncer:
 				self.deleted = True
 				return
 
+			if not rootFolderID:
+				return
+
 			folderName = os.path.basename(dirPath)
 			dirPath = self.cache.getUniqueDirectory(driveID, dirPath)
 			parentsParentFolderID = self.cloudService.getParentDirectoryID(parentFolderID)
