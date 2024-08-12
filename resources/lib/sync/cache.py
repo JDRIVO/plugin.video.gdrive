@@ -222,11 +222,9 @@ class Cache(Database):
 			for file in files:
 
 				if file["original_folder"]:
-					filename = file["local_name"]
-					filePath = os.path.join(os.path.join(drivePath, directory["local_path"]), filename)
+					filePath = os.path.join(drivePath, directory["local_path"], file["local_name"])
 				else:
 					filePath = os.path.join(syncRootPath, file["local_path"])
-					filename = os.path.basename(filePath)
 
 				self.fileOperations.deleteFile(syncRootPath, filePath=filePath)
 
@@ -247,7 +245,7 @@ class Cache(Database):
 
 					if file["original_folder"]:
 						filename = file["local_name"]
-						filePath = os.path.join(os.path.join(drivePath, directory["local_path"]), filename)
+						filePath = os.path.join(drivePath, directory["local_path"], filename)
 					else:
 						filePath = os.path.join(syncRootPath, file["local_path"])
 						filename = os.path.basename(filePath)
