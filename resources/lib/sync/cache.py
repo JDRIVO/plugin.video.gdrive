@@ -211,6 +211,29 @@ class Cache(Database):
 		if progressDialog:
 			progressDialog.close()
 
+	def removeDirectory(self, syncRootPath, drivePath, folderID):
+		directories = self.getDirectories({"folder_id": folderID})
+
+		while directories:
+			directory = directories.pop()
+			folderID = directory["folder_id"]
+			files = self.getFiles({"parent_folder_id": folderID})
+
+			for file in files:
+
+				if file["original_folder"]:
+					filename = file["local_name"]
+					filePath = os.path.join(os.path.join(drivePath, directory["local_path"]), filename)
+				else:
+					filePath = os.path.join(syncRootPath, file["local_path"])
+					filename = os.path.basename(filePath)
+
+				self.fileOperations.deleteFile(syncRootPath, filePath=filePath)
+
+			self.deleteFile(folderID, column="parent_folder_id")
+			self.deleteDirectory(folderID)
+			directories += self.getDirectories({"parent_folder_id": folderID})
+
 	def removeDirectories(self, syncRootPath, drivePath, rootFolderID, deleteFiles, progressDialog):
 
 		if deleteFiles:

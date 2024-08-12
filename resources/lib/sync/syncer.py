@@ -166,7 +166,7 @@ class Syncer:
 			if not dirPath:
 				# folder moved to another root folder != existing root folder > delete current folder
 				drivePath = os.path.join(syncRootPath, drivePath)
-				self.cache.removeDirectories(syncRootPath, drivePath, folderID, True, False)
+				self.cache.removeDirectory(syncRootPath, drivePath, folderID)
 				self.deleted = True
 			else:
 				self.cache.updateDirectory({"parent_folder_id": parentFolderID}, folderID)
