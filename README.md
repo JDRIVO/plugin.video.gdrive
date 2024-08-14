@@ -3,7 +3,7 @@ A Kodi Add-On for playing videos stored on Google Drive.
 
 ## File & Folder Renaming
 | Rename videos to a Kodi friendly format | Create a Kodi friendly directory structure | Output |
-| :-------------------------------------: | :----------------------------------------: | :----: |
+| :-------------------------------------: | :----------------------------------------: | ------ |
 | ❌ | ❌ | Aftermath.2017.BluRay.1080p.DTS-HD.MA.5.1.x264.dxva.strm                           |
 | ✔️ | ❌ | Aftermath (2007).strm                                                              |
 | ❌ | ✔️ | Aftermath (2007)/Aftermath.2017.BluRay.1080p.DTS-HD.MA.5.1.x264.dxva.strm          |
