@@ -247,7 +247,7 @@ patterns["codec"] = [
 ]
 patterns["audio"] = get_channel_audio_options(
     [
-        ("TrueHD", "truehd"),
+        ("True{d}?HD".format(d=delimiters), "truehd"),
         # ("Atmos", "Dolby Atmos"),
         # ("DD{d}?EX".format(d=delimiters), "Dolby Digital EX"),
         ("DD|AC{d}?3|DolbyD".format(d=delimiters), "ac3"),
@@ -363,7 +363,7 @@ patterns["3d"] = "3D"
 patterns["internal"] = "iNTERNAL"
 patterns["readnfo"] = "READNFO"
 patterns["hdr"] = [
-    ("DV|DoVi|Dolby{d}Vision".format(d=delimiters), "dolbyvision"),
+    ("DV|DoVi|Dolby{d}?Vision".format(d=delimiters), "dolbyvision"),
     ("HLG", "hlg"),
     ("HDR(?:10)?", "hdr10"),
 ]
