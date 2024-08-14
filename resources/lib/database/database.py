@@ -84,8 +84,15 @@ class Database:
 		if row: return row[0]
 
 	@lock
-	def select(self, table, column):
+	def select(self, table, column, condition=None, caseSensitive=True):
 		query = f"SELECT {column} FROM {table}"
+
+		if condition:
+			query += f" {self.joinConditions(condition)}"
+
+		if not caseSensitive:
+			query += " COLLATE NOCASE"
+
 		self.connect()
 		self.cursor.execute(query)
 		row = self.cursor.fetchone()
@@ -93,38 +100,15 @@ class Database:
 		if row: return row[0]
 
 	@lock
-	def selectConditional(self, table, column, condition):
-		condition = self.joinConditions(condition)
-		query = f"SELECT {column} FROM {table} {condition}"
-		self.connect()
-		self.cursor.execute(query)
-		row = self.cursor.fetchone()
-		self.close()
-		if row: return row[0]
-
-	@lock
-	def selectAll(self, table):
+	def selectAll(self, table, condition=None, caseSensitive=True):
 		query = f"SELECT * FROM {table}"
-		self.connect()
-		self.cursor.execute(query)
-		rows = self.cursor.fetchall()
-		self.close()
-		return self.convertToDic(rows)
 
-	@lock
-	def selectAllConditional(self, table, condition):
-		condition = self.joinConditions(condition)
-		query = f"SELECT * FROM {table} {condition}"
-		self.connect()
-		self.cursor.execute(query)
-		rows = self.cursor.fetchall()
-		self.close()
-		return self.convertToDic(rows)
+		if condition:
+			query += f" {self.joinConditions(condition)}"
 
-	@lock
-	def selectAllConditionalCaseInsensitive(self, table, condition):
-		condition = self.joinConditions(condition)
-		query = f"SELECT * FROM {table} {condition} COLLATE NOCASE"
+		if not caseSensitive:
+			query += " COLLATE NOCASE"
+
 		self.connect()
 		self.cursor.execute(query)
 		rows = self.cursor.fetchall()

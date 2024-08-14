@@ -63,7 +63,7 @@ class LibraryMonitor(Database, xbmc.Monitor):
 			strmData = self.fileOperations.readFile(filePath)
 
 			try:
-				fileID = self.selectConditional("files", "idFile", {"idPath": f'(SELECT idPath FROM path WHERE strPath="{fileDir}")', "strFilename": filename})
+				fileID = self.select("files", "idFile", {"idPath": f'(SELECT idPath FROM path WHERE strPath="{fileDir}")', "strFilename": filename})
 			except Exception as e:
 				xbmc.log(f"gdrive error: Monitor error {e}", xbmc.LOGERROR)
 				return
@@ -80,9 +80,9 @@ class LibraryMonitor(Database, xbmc.Monitor):
 
 				type, values = data
 
-				if type == "video" and self.selectAllConditional("streamdetails", {"idFile": fileID, "iStreamType": "0"}):
+				if type == "video" and self.selectAll("streamdetails", {"idFile": fileID, "iStreamType": "0"}):
 					self.update("streamdetails", values, {"idFile": fileID, "iStreamType": "0"})
-				elif type == "audio" and self.selectAllConditional("streamdetails", {"idFile": fileID, "iStreamType": "1"}):
+				elif type == "audio" and self.selectAll("streamdetails", {"idFile": fileID, "iStreamType": "1"}):
 					self.update("streamdetails", values, {"idFile": fileID, "iStreamType": "1"})
 				else:
 					self.insert("streamdetails", values)

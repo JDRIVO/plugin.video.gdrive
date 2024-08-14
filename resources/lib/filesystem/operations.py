@@ -67,9 +67,10 @@ class FileOperations:
 
 	def renameFile(self, syncRootPath, oldPath, dirPath, filename):
 		self.createDirs(dirPath)
+		creationDate = helpers.getCreationDate(oldPath)
 
 		with self.fileLock:
-			newPath = helpers.duplicateFileCheck(dirPath, filename)
+			newPath = helpers.duplicateFileCheck(dirPath, filename, creationDate)
 			shutil.move(oldPath, newPath)
 
 		self.deleteEmptyDirs(syncRootPath, os.path.dirname(oldPath))

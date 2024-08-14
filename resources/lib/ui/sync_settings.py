@@ -614,7 +614,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				syncTaskData.append(folder)
 				folderName = folder["name"]
 				folderName = folderName_ = filesystem.helpers.removeProhibitedFSchars(folderName)
-				dirPath = self.cache.getUniqueFolder(self.driveID, folderName)
+				dirPath = self.cache.getUniqueFolderPath(self.driveID, folderName)
 				folder["name"] = folderName
 				folder["path"] = dirPath
 				folderSettings.update(

@@ -142,7 +142,7 @@ class Syncer:
 			if not rootFolderID:
 				return
 
-			dirPath = self.cache.getUniqueDirectory(driveID, dirPath)
+			dirPath = self.cache.getUniqueDirectoryPath(driveID, dirPath)
 			directory = {
 				"drive_id": driveID,
 				"folder_id": folderID,
@@ -173,13 +173,13 @@ class Syncer:
 				cachedParentDirectory = self.cache.getDirectory({"folder_id": parentFolderID})
 
 				if cachedParentDirectory:
-					dirPath = self.cache.getUniqueDirectory(driveID, dirPath)
+					dirPath = self.cache.getUniqueDirectoryPath(driveID, dirPath)
 				else:
 					parentDirPath = os.path.split(dirPath)[0]
 					parentFolderName = os.path.basename(parentDirPath)
-					parentDirPath = self.cache.getUniqueDirectory(driveID, parentDirPath)
+					parentDirPath = self.cache.getUniqueDirectoryPath(driveID, parentDirPath)
 					dirPath = os.path.join(parentDirPath, folderName)
-					dirPath = self.cache.getUniqueDirectory(driveID, dirPath)
+					dirPath = self.cache.getUniqueDirectoryPath(driveID, dirPath)
 					parentsParentFolderID = self.cloudService.getParentDirectoryID(parentFolderID)
 					directory = {
 						"drive_id": driveID,
@@ -204,7 +204,7 @@ class Syncer:
 			# folder renamed
 			cachedDirectoryPathHead, _ = os.path.split(cachedDirectoryPath)
 			newDirectoryPath = newDirectoryPath_ = os.path.join(cachedDirectoryPathHead, folderName)
-			newDirectoryPath = self.cache.getUniqueDirectory(driveID, newDirectoryPath)
+			newDirectoryPath = self.cache.getUniqueDirectoryPath(driveID, newDirectoryPath, folderID)
 			oldPath = os.path.join(syncRootPath, drivePath, cachedDirectoryPath)
 			newPath = os.path.join(syncRootPath, drivePath, newDirectoryPath)
 			self.fileOperations.renameFolder(syncRootPath, oldPath, newPath)
@@ -245,7 +245,7 @@ class Syncer:
 				return
 
 			folderName = os.path.basename(dirPath)
-			dirPath = self.cache.getUniqueDirectory(driveID, dirPath)
+			dirPath = self.cache.getUniqueDirectoryPath(driveID, dirPath)
 			parentsParentFolderID = self.cloudService.getParentDirectoryID(parentFolderID)
 			directory = {
 				"drive_id": driveID,

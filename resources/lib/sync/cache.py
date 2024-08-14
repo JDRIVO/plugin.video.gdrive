@@ -98,49 +98,54 @@ class Cache(Database):
 		return drives
 
 	def getDrive(self, driveID):
-		drive = self.selectAllConditional("drives", {"drive_id": driveID})
+		drive = self.selectAll("drives", {"drive_id": driveID})
 		if drive: return drive[0]
 
-	def getFolder(self, data):
-		folder = self.selectAllConditional("folders", data)
+	def getFolder(self, condition):
+		folder = self.selectAll("folders", condition)
 		if folder: return folder[0]
 
-	def getDirectory(self, data):
-		directory = self.selectAllConditional("directories", data)
+	def getDirectory(self, condition):
+		directory = self.selectAll("directories", condition)
 		if directory: return directory[0]
 
-	def getFile(self, data):
-		file = self.selectAllConditional("files", data)
+	def getFile(self, condition):
+		file = self.selectAll("files", condition)
 		if file: return file[0]
 
-	def getUniqueFolder(self, driveID, path):
+	def getUniqueFolderPath(self, driveID, path):
 		path_ = path
 		copy = 1
 
-		while self.selectAllConditionalCaseInsensitive("folders", {"drive_id": driveID, "local_path": path}):
+		while self.selectAll("folders", {"drive_id": driveID, "local_path": path}, caseSensitive=False):
 			path = f"{path_} ({copy})"
 			copy += 1
 
 		return path
 
-	def getUniqueDirectory(self, driveID, path):
+	def getUniqueDirectoryPath(self, driveID, path, folderID=None):
 		path_ = path
 		copy = 1
 
-		while self.selectAllConditionalCaseInsensitive("directories", {"drive_id": driveID, "local_path": path}):
+		while True:
+			cachedFolderID = self.select("directories", "folder_id", {"drive_id": driveID, "local_path": path}, caseSensitive=False)
+
+			if not cachedFolderID or folderID == cachedFolderID:
+				break
+
 			path = f"{path_} ({copy})"
 			copy += 1
 
 		return path
 
-	def getFolders(self, data):
-		return self.selectAllConditional("folders", data)
+	def getFolders(self, condition):
+		return self.selectAll("folders", condition)
 
-	def getDirectories(self, data):
-		return self.selectAllConditional("directories", data)
+	def getDirectories(self, condition):
+		return self.selectAll("directories", condition)
 
-	def getFiles(self, data):
-		return self.selectAllConditional("files", data)
+	def getFiles(self, condition):
+		return self.selectAll("files", condition)
 
 	def getFileCount(self, data):
 		return self.count("files", data)

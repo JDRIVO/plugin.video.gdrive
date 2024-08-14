@@ -17,18 +17,34 @@ def convertTime(time):
 	# RFC 3339 to timestamp
 	return datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=datetime.timezone.utc).timestamp()
 
+def getCreationDate(path):
+
+	if os.name == "nt":
+		return os.path.getctime(path)
+	else:
+		stat = os.stat(path)
+
+		try:
+			return stat.st_birthtime
+		except AttributeError:
+			return stat.st_mtime
+
 def removeProhibitedFSchars(name):
 	return re.sub(r'[<>\*\?\\/:|"]*', '', name.rstrip())
 
 def generateFilePath(dirPath, filename):
 	return duplicateFileCheck(dirPath, filename)
 
-def duplicateFileCheck(dirPath, filename):
+def duplicateFileCheck(dirPath, filename, creationDate=None):
 	filePath = os.path.join(dirPath, filename)
 	filename, fileExtension = os.path.splitext(filename)
 	copy = 1
 
 	while os.path.exists(filePath):
+
+		if creationDate and creationDate == getCreationDate(filePath):
+			break
+
 		filePath = os.path.join(dirPath, f"{filename} ({copy}){fileExtension}")
 		copy += 1
 
