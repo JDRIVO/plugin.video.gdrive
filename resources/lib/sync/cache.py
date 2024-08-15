@@ -113,6 +113,18 @@ class Cache(Database):
 		file = self.selectAll("files", condition)
 		if file: return file[0]
 
+	def getFolders(self, condition):
+		return self.selectAll("folders", condition)
+
+	def getDirectories(self, condition):
+		return self.selectAll("directories", condition)
+
+	def getFiles(self, condition):
+		return self.selectAll("files", condition)
+
+	def getFileCount(self, data):
+		return self.count("files", data)
+
 	def getUniqueFolderPath(self, driveID, path):
 		path_ = path
 		copy = 1
@@ -137,18 +149,6 @@ class Cache(Database):
 			copy += 1
 
 		return path
-
-	def getFolders(self, condition):
-		return self.selectAll("folders", condition)
-
-	def getDirectories(self, condition):
-		return self.selectAll("directories", condition)
-
-	def getFiles(self, condition):
-		return self.selectAll("files", condition)
-
-	def getFileCount(self, data):
-		return self.count("files", data)
 
 	def getSyncRootPath(self):
 		return self.select("global", "local_path")
@@ -267,11 +267,11 @@ class Cache(Database):
 	def removeEmptyDirectories(self, folderID):
 		directories = self.getDirectories({"root_folder_id": folderID})
 		directories = sorted([(dir["local_path"], dir["folder_id"]) for dir in directories], key=lambda x: x[0])
-		dirSize = len(directories)
 
-		for i, (dirPath, folderID) in enumerate(directories):
+		for dirPath, folderID in directories:
+			subDirs = [path for path, id in directories if dirPath + os.sep in path]
 
-			if i + 1 < dirSize and directories[i + 1][0].startswith(dirPath + os.sep):
+			if subDirs:
 				continue
 
 			files = self.getFiles({"parent_folder_id": folderID})
