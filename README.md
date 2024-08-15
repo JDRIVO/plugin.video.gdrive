@@ -10,10 +10,10 @@ https://github.com/user-attachments/assets/b3d0e86f-2597-40c8-8485-6d11ad085372
 ### <table><tr><td>Movie</td></tr></table>
 | Rename videos to a Kodi friendly format | Create a Kodi friendly directory structure | Output |
 | :-------------------------------------: | :----------------------------------------: | ------ |
-| ❌ | ❌ | Deadpool.2016.1080p.DTS-HD.MA.5.1.x264.strm                                       |
-| ✔️ | ❌ | Deadpool (2016).strm                                                              |
-| ❌ | ✔️ | Deadpool (2016)/Deadpool.2016.1080p.DTS-HD.MA.5.1.x264.strm                      |
-| ✔️ | ✔️ | Deadpool (2016)/Deadpool (2016).strm                                             |
+| ❌ | ❌ | Deadpool.2016.1080p.DTS-HD.MA.5.1.x264.strm                                        |
+| ✔️ | ❌ | Deadpool (2016).strm                                                               |
+| ❌ | ✔️ | Deadpool (2016)/Deadpool.2016.1080p.DTS-HD.MA.5.1.x264.strm                        |
+| ✔️ | ✔️ | Deadpool (2016)/Deadpool (2016).strm                                               |
 ### <table><tr><td>Episode</td></tr></table>
 | Rename videos to a Kodi friendly format | Create a Kodi friendly directory structure | Output |
 | :-------------------------------------: | :----------------------------------------: | ------ |
