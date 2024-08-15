@@ -283,7 +283,7 @@ class Syncer:
 			else:
 				cachedFilePath = os.path.join(syncRootPath, cachedFile["local_path"])
 
-			if not cachedFile["original_name"] or not cachedFile["original_folder"] or not os.path.exists(cachedFilePath) or (cachedFile["remote_name"] == filename and cachedDirPath == dirPath):
+			if (cachedFile["remote_name"] == filename and cachedDirPath == dirPath) or not cachedFile["original_name"] or not cachedFile["original_folder"] or not os.path.exists(cachedFilePath):
 				# new filename needs to be processed or file not existent or file contents modified > redownload file
 				self.fileOperations.deleteFile(syncRootPath, filePath=cachedFilePath)
 				self.cache.deleteFile(fileID)
