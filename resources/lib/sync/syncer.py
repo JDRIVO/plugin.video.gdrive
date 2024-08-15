@@ -164,7 +164,7 @@ class Syncer:
 			dirPath, rootFolderID = self.cloudService.getDirectory(self.cache, folderID)
 
 			if not dirPath:
-				# folder moved to another root folder != existing root folder > delete current folder
+				# folder has moved outside of root folder hierarchy/tree > delete folder
 				drivePath = os.path.join(syncRootPath, drivePath)
 				self.cache.removeDirectory(syncRootPath, drivePath, folderID)
 				self.deleted = True
@@ -227,7 +227,7 @@ class Syncer:
 			dirPath, rootFolderID = self.cloudService.getDirectory(self.cache, parentFolderID)
 
 			if not rootFolderID and cachedFile:
-				# file has moved outside of root folder hierarchy/tree
+				# file has moved outside of root folder hierarchy/tree > delete file
 				cachedParentFolderID = cachedFile["parent_folder_id"]
 				cachedDirectory = self.cache.getDirectory({"folder_id": cachedParentFolderID})
 
@@ -283,7 +283,7 @@ class Syncer:
 			else:
 				cachedFilePath = os.path.join(syncRootPath, cachedFile["local_path"])
 
-			if not cachedFile["original_name"] or not os.path.exists(cachedFilePath) or (cachedFile["remote_name"] == filename and cachedDirPath == dirPath):
+			if not cachedFile["original_name"] or not cachedFile["original_folder"] or not os.path.exists(cachedFilePath) or (cachedFile["remote_name"] == filename and cachedDirPath == dirPath):
 				# new filename needs to be processed or file not existent or file contents modified > redownload file
 				self.fileOperations.deleteFile(syncRootPath, filePath=cachedFilePath)
 				self.cache.deleteFile(fileID)
