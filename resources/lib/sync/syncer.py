@@ -60,10 +60,16 @@ class Syncer:
 
 		changes = self.sortChanges(changes)
 		self.deleted = False
+		syncedIDs = []
 		newFiles = {}
 
 		for item in changes:
 			id = item["id"]
+
+			if id in syncedIDs:
+				continue
+
+			syncedIDs.append(id)
 
 			try:
 				# shared items that google automatically adds to an account don't have parentFolderIDs
@@ -76,7 +82,7 @@ class Syncer:
 				continue
 
 			if item["mimeType"] == "application/vnd.google-apps.folder":
-				self.syncFolderChanges(item, parentFolderID, driveID, syncRootPath, drivePath)
+				self.syncFolderChanges(item, parentFolderID, driveID, syncRootPath, drivePath, syncedIDs)
 			else:
 				self.syncFileChanges(item, parentFolderID, driveID, syncRootPath, drivePath, newFiles)
 
@@ -130,7 +136,7 @@ class Syncer:
 
 		self.deleted = True
 
-	def syncFolderChanges(self, folder, parentFolderID, driveID, syncRootPath, drivePath):
+	def syncFolderChanges(self, folder, parentFolderID, driveID, syncRootPath, drivePath, syncedIDs):
 		folderID = folder["id"]
 		folderName = folder["name"]
 		cachedDirectory = self.cache.getDirectory({"folder_id": folderID})
@@ -142,16 +148,9 @@ class Syncer:
 			if not rootFolderID:
 				return
 
+			folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
 			dirPath = self.cache.getUniqueDirectoryPath(driveID, dirPath)
-			directory = {
-				"drive_id": driveID,
-				"folder_id": folderID,
-				"local_path": dirPath,
-				"remote_name": folderName,
-				"parent_folder_id": parentFolderID,
-				"root_folder_id": rootFolderID,
-			}
-			self.cache.addDirectory(directory)
+			self.syncFolderAdditions(syncRootPath, drivePath, dirPath, folderName, folderSettings, folderID, parentFolderID, driveID, syncedIDs=syncedIDs)
 			return
 
 		# existing folder
@@ -323,19 +322,19 @@ class Syncer:
 		else:
 			newFiles[rootFolderID][parentFolderID].files[file.type].append(file)
 
-	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderName, folderSettings, folderID, driveID, progressDialog):
-		rootFolderID = parentFolderID = folderID
+	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderName, folderSettings, folderID, parentFolderID, driveID, progressDialog=None, syncedIDs=None):
+		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
+		rootFolderID = folderSettings["folder_id"]
+		folderRestructure = folderSettings["folder_restructure"]
+		fileRenaming = folderSettings["file_renaming"]
+		threadCount = self.settings.getSettingInt("thread_count", 1)
 
 		if folderSettings["contains_encrypted"]:
 			encrypter = self.encrypter
 		else:
 			encrypter = False
 
-		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
-		threadCount = self.settings.getSettingInt("thread_count", 1)
-		folderRestructure = folderSettings["folder_restructure"]
-		fileRenaming = folderSettings["file_renaming"]
-		fileTree = FileTree(self.cloudService, progressDialog, threadCount, encrypter, excludedTypes)
+		fileTree = FileTree(self.cloudService, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs)
 		fileTree.buildTree(driveID, rootFolderID, folderID, parentFolderID, folderName, dirPath)
 
 		with threadpool.ThreadPool(threadCount) as pool:

@@ -8,51 +8,61 @@ from ..threadpool import threadpool
 
 class FileTree:
 
-	def __init__(self, cloudService, dialogProgress, threadCount, encrypter, excludedTypes):
+	def __init__(self, cloudService, dialogProgress, threadCount, encrypter, excludedTypes, syncedIDs):
 		self.cloudService = cloudService
 		self.dialogProgress = dialogProgress
 		self.threadCount = threadCount
 		self.encrypter = encrypter
 		self.excludedTypes = excludedTypes
+		self.syncedIDs = syncedIDs
+		self.folderIDs = []
 		self.fileTree = {}
 
 	def __iter__(self):
 		return iter(self.fileTree.values())
 
 	def buildTree(self, driveID, rootFolderID, folderID, parentFolderID, folderName, path):
-		folderIDs = [folderID]
+		self.folderIDs.append(folderID)
 		self.fileTree[folderID] = Folder(folderID, parentFolderID, folderName, path)
-		self.getContents(driveID, rootFolderID, folderIDs)
+		self.getContents(driveID, rootFolderID)
 
-	def getContents(self, driveID, rootFolderID, folderIDs):
+	def getContents(self, driveID, rootFolderID):
 		maxIDs = 299
 		queries = []
 
-		while folderIDs:
-			ids = folderIDs[:maxIDs]
+		while self.folderIDs:
+			ids = self.folderIDs[:maxIDs]
 			queries.append(
 				(
 					"not trashed and (" + " or ".join(f"'{id}' in parents" for id in ids) + ")",
 					ids,
 				)
 			)
-			folderIDs = folderIDs[maxIDs:]
+			self.folderIDs = self.folderIDs[maxIDs:]
 
 		def getFolders(query, parentFolderIDs):
 			items = self.cloudService.listDirectory(customQuery=query)
-			self.filterContents(items, driveID, rootFolderID, parentFolderIDs, folderIDs)
+			self.filterContents(items, driveID, rootFolderID, parentFolderIDs)
 
 		with threadpool.ThreadPool(self.threadCount) as pool:
 			pool.map(getFolders, queries)
 
-		if folderIDs:
-			self.getContents(driveID, rootFolderID, folderIDs)
+		if self.folderIDs:
+			self.getContents(driveID, rootFolderID)
 
-	def filterContents(self, items, driveID, rootFolderID, parentFolderIDs, folderIDs):
+	def filterContents(self, items, driveID, rootFolderID, parentFolderIDs):
 		paths = []
 
 		for item in items:
 			id = item["id"]
+
+			if self.syncedIDs is not None:
+
+				if id in self.syncedIDs:
+					continue
+
+				self.syncedIDs.append(id)
+
 			parentFolderID = item["parents"][0]
 			mimeType = item["mimeType"]
 
@@ -68,7 +78,7 @@ class FileTree:
 					copy += 1
 
 				paths.append(pathLowerCase)
-				folderIDs.append(id)
+				self.folderIDs.append(id)
 				self.fileTree[id] = Folder(id, parentFolderID, folderName, path)
 				continue
 
