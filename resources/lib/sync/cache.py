@@ -269,7 +269,7 @@ class Cache(Database):
 		directories = sorted([(dir["local_path"], dir["folder_id"]) for dir in directories], key=lambda x: x[0])
 
 		for dirPath, folderID in directories:
-			subDirs = [path for path, id in directories if dirPath + os.sep in path]
+			subDirs = [path for path, id in directories if path.startswith(dirPath + os.sep)]
 
 			if subDirs:
 				continue
