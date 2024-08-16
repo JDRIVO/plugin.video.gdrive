@@ -646,7 +646,7 @@ class Core:
 				if not selection:
 					continue
 
-				accounts.remove(account)
+				self.accountManager.deleteAccount(driveID, account)
 				deletion = True
 
 		progressDialog.close()
