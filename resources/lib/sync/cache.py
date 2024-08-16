@@ -268,16 +268,18 @@ class Cache(Database):
 		directories = self.getDirectories({"root_folder_id": folderID})
 		directories = sorted([(dir["local_path"], dir["folder_id"]) for dir in directories], key=lambda x: x[0])
 
-		for dirPath, folderID in directories:
-			subDirs = [path for path, id in directories if path.startswith(dirPath + os.sep)]
+		for idx, (dirPath, folderID) in enumerate(directories):
 
-			if subDirs:
-				continue
+			for path, id in directories[idx:]:
 
-			files = self.getFiles({"parent_folder_id": folderID})
+				if path.startswith(dirPath + os.sep):
+					break
 
-			if not files:
-				self.deleteDirectory(folderID)
+			else:
+				files = self.getFiles({"parent_folder_id": folderID})
+
+				if not files:
+					self.deleteDirectory(folderID)
 
 	def setSyncRootPath(self, path):
 		self.insert("global", {"local_path": path})
