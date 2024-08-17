@@ -71,12 +71,12 @@ class FileTree:
 				path = path_ = os.path.join(self.fileTree[parentFolderID].path, folderName)
 				copy = 1
 
+				if self.syncedIDs:
+					path = self.cache.getUniqueDirectoryPath(driveID, path_, paths=paths)
+
 				while path.lower() in paths:
 					path = f"{path_} ({copy})"
 					copy += 1
-
-				if self.syncedIDs:
-					path = self.cache.getUniqueDirectoryPath(driveID, path_, copy=copy)
 
 				paths.add(path.lower())
 				self.folderIDs.append(id)
