@@ -147,7 +147,7 @@ class Cache(Database):
 
 			path = f"{path_} ({copy})"
 			copy += 1
-			
+
 			if paths:
 				paths.add(path.lower())
 
