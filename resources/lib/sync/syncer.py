@@ -304,23 +304,13 @@ class Syncer:
 				self.cache.updateFile(cachedFile, fileID)
 				return
 
-		if not newFiles.get(rootFolderID):
-			newFiles[rootFolderID] = {}
-			newFiles[rootFolderID][parentFolderID] = Folder(parentFolderID, parentFolderID, dirPath, dirPath)
-		else:
-
-			if not newFiles[rootFolderID].get(parentFolderID):
-				newFiles[rootFolderID][parentFolderID] = Folder(parentFolderID, parentFolderID, dirPath, dirPath)
+		folder = newFiles.setdefault(rootFolderID, {}).setdefault(parentFolderID, Folder(parentFolderID, parentFolderID, dirPath, dirPath))
+		files = folder.files
 
 		if file.type in MEDIA_ASSETS:
-			mediaAssets = newFiles[rootFolderID][parentFolderID].files["media_assets"]
-
-			if file.ptnName not in mediaAssets:
-				mediaAssets[file.ptnName] = []
-
-			mediaAssets[file.ptnName].append(file)
+			files["media_assets"].setdefault(file.ptnName, []).append(file)
 		else:
-			newFiles[rootFolderID][parentFolderID].files[file.type].append(file)
+			files[file.type].append(file)
 
 	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderName, folderSettings, folderID, parentFolderID, driveID, progressDialog=None, syncedIDs=None):
 		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
@@ -334,7 +324,7 @@ class Syncer:
 		else:
 			encrypter = False
 
-		fileTree = FileTree(self.cloudService, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs)
+		fileTree = FileTree(self.cloudService, self.cache, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs)
 		fileTree.buildTree(driveID, rootFolderID, folderID, parentFolderID, folderName, dirPath)
 
 		with threadpool.ThreadPool(threadCount) as pool:

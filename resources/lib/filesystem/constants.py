@@ -1,4 +1,5 @@
 ARTWORK = (
+	"actor",
 	"banner",
 	"characterart",
 	"clearart",

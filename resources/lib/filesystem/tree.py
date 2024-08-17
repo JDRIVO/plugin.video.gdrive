@@ -8,8 +8,9 @@ from ..threadpool import threadpool
 
 class FileTree:
 
-	def __init__(self, cloudService, dialogProgress, threadCount, encrypter, excludedTypes, syncedIDs):
+	def __init__(self, cloudService, cache, dialogProgress, threadCount, encrypter, excludedTypes, syncedIDs):
 		self.cloudService = cloudService
+		self.cache = cache
 		self.dialogProgress = dialogProgress
 		self.threadCount = threadCount
 		self.encrypter = encrypter
@@ -51,54 +52,47 @@ class FileTree:
 			self.getContents(driveID, rootFolderID)
 
 	def filterContents(self, items, driveID, rootFolderID, parentFolderIDs):
-		paths = []
+		paths = set()
 
 		for item in items:
 			id = item["id"]
-
-			if self.syncedIDs is not None:
-
-				if id in self.syncedIDs:
-					continue
-
-				self.syncedIDs.append(id)
-
 			parentFolderID = item["parents"][0]
 			mimeType = item["mimeType"]
+			isFolder = mimeType == "application/vnd.google-apps.folder"
 
-			if mimeType == "application/vnd.google-apps.folder":
+			if self.syncedIDs:
+				self.syncedIDs.append(id)
+
+				if isFolder and self.cache.getDirectory({"folder_id": id}):
+					continue
+
+			if isFolder:
 				folderName = helpers.removeProhibitedFSchars(item["name"])
 				path = path_ = os.path.join(self.fileTree[parentFolderID].path, folderName)
-				pathLowerCase = path.lower()
 				copy = 1
 
-				while pathLowerCase in paths:
+				while path.lower() in paths:
 					path = f"{path_} ({copy})"
-					pathLowerCase = path.lower()
 					copy += 1
 
-				paths.append(pathLowerCase)
+				if self.syncedIDs:
+					path = self.cache.getUniqueDirectoryPath(driveID, path_, copy=copy)
+
+				paths.add(path.lower())
 				self.folderIDs.append(id)
 				self.fileTree[id] = Folder(id, parentFolderID, folderName, path)
-				continue
-
-			file = helpers.makeFile(item, self.excludedTypes, self.encrypter)
-
-			if not file:
-				continue
-
-			if self.dialogProgress:
-				self.dialogProgress.incrementFile()
-
-			files = self.fileTree[parentFolderID].files
-
-			if file.type in MEDIA_ASSETS:
-				mediaAssets = files["media_assets"]
-
-				if file.ptnName not in mediaAssets:
-					mediaAssets[file.ptnName] = []
-
-				mediaAssets[file.ptnName].append(file)
-
 			else:
-				files[file.type].append(file)
+				file = helpers.makeFile(item, self.excludedTypes, self.encrypter)
+
+				if not file:
+					continue
+
+				if self.dialogProgress:
+					self.dialogProgress.incrementFile()
+
+				files = self.fileTree[parentFolderID].files
+
+				if file.type in MEDIA_ASSETS:
+					files["media_assets"].setdefault(file.ptnName, []).append(file)
+				else:
+					files[file.type].append(file)

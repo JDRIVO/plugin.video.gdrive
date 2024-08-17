@@ -135,9 +135,8 @@ class Cache(Database):
 
 		return path
 
-	def getUniqueDirectoryPath(self, driveID, path, folderID=None):
+	def getUniqueDirectoryPath(self, driveID, path, folderID=None, copy=1):
 		path_ = path
-		copy = 1
 
 		while True:
 			cachedFolderID = self.select("directories", "folder_id", {"drive_id": driveID, "local_path": path}, caseSensitive=False)

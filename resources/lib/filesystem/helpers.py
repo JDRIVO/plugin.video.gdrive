@@ -61,7 +61,7 @@ def identifyFileType(filename, fileExtension, mimeType):
 		return "video"
 	elif fileExtension == "nfo":
 		return "nfo"
-	elif fileExtension in ("jpg", "png"):
+	elif fileExtension in ("jpeg", "jpg", "png"):
 		filenameLowerCase = filename.lower()
 		artwork = [type for type in MEDIA_ASSETS if type in filenameLowerCase]
 
