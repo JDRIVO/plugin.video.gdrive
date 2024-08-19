@@ -389,7 +389,7 @@ class Core:
 				parentFolderID = folder["parents"][0]
 				folderIDs.append(folderID)
 
-				if searchQuery in [str.lower() for str in folderName.split()]:
+				if searchQuery in folderName.lower():
 					folders.append({"name": folderName, "id": folderID, "parent_id": parentFolderID})
 
 		maxIDs = 100
