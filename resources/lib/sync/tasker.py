@@ -161,8 +161,8 @@ class Tasker:
 			self.sync(driveID)
 
 	def resetTask(self, driveID):
-		self.server.taskManager.removeTask(driveID)
-		self.server.taskManager.spawnTask(self.server.cache.getDrive(driveID), startUpRun=False)
+		self.removeTask(driveID)
+		self.spawnTask(self.cache.getDrive(driveID), startUpRun=False)
 
 	def addTask(self, driveID, folders):
 		self.activeTasks.append(driveID)
