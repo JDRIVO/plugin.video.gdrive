@@ -326,7 +326,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 			constants.settings.getLocalizedString(30060): self.setAdultContent,
 		}
 		self.functions.update(functions)
-		self.buttonSwitchesIDs = []
 		buttonGeneral = xbmcgui.ControlButton(
 			x=self.center - 80,
 			y=self.y + 60,
@@ -399,6 +398,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 	def createButtons(self):
 		self.buttonSpacing = 60
 		self.radioButtons, self.pushButtons, self.functions = {}, {}, {}
+		self.buttonSwitchesIDs = []
 
 		if self.displayMode in ("new", "folder"):
 			self.folders = True
