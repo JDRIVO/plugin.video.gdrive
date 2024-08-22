@@ -315,7 +315,9 @@ def makeFile(file, excludedTypes, encrypter):
 	if not fileType or fileType in excludedTypes:
 		return
 
-	if fileType != "strm":
+	if fileType == "strm":
+		file = File()
+	else:
 		videoInfo = getVideoInfo(filename, metadata)
 		mediaType = identifyMediaType(videoInfo)
 
@@ -331,8 +333,6 @@ def makeFile(file, excludedTypes, encrypter):
 		file.setContents(videoInfo)
 		file.metadata = metadata
 		file.media = mediaType
-	else:
-		file = File()
 
 	filename = removeProhibitedFSchars(filename)
 	file.name = filename
