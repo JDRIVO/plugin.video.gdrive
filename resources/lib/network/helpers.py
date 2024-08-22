@@ -7,9 +7,9 @@ def addQueryString(url, params):
 def mergePaths(baseURL, paths):
 
 	if isinstance(paths, str):
-		return f'{baseURL}/{paths}'
+		return f"{baseURL}/{paths}"
 	else:
-		return f'{baseURL}/{"/".join(paths)}'
+		return f"{baseURL}/{'/'.join(paths)}"
 
 def quote(string):
 	return urllib.parse.quote(string)
