@@ -99,12 +99,3 @@ class FileOperations:
 
 		with open(filePath, "r") as file:
 			return file.read()
-
-	@staticmethod
-	def overwriteFile(filePath, content, mode="w+"):
-		stInfo = os.stat(filePath)
-
-		with open(filePath, mode) as file:
-			file.write(content)
-
-		os.utime(filePath, (stInfo.st_atime, stInfo.st_mtime))
