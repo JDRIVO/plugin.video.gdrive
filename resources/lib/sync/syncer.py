@@ -157,6 +157,7 @@ class Syncer:
 		cachedDirectoryPath = cachedDirectory["local_path"]
 		cachedParentFolderID = cachedDirectory["parent_folder_id"]
 		cachedRootFolderID = cachedDirectory["root_folder_id"]
+		cachedRemoteName = cachedDirectory["remote_name"]
 
 		if parentFolderID != cachedParentFolderID and folderID != cachedRootFolderID:
 			# folder has been moved into another directory
@@ -195,11 +196,7 @@ class Syncer:
 				self.fileOperations.renameFolder(syncRootPath, oldPath, newPath)
 				self.cache.updateChildPaths(cachedDirectoryPath, dirPath, folderID)
 
-			return
-
-		cachedRemoteName = cachedDirectory["remote_name"]
-
-		if cachedRemoteName != folderName:
+		elif cachedRemoteName != folderName:
 			# folder renamed
 			cachedDirectoryPathHead, _ = os.path.split(cachedDirectoryPath)
 			newDirectoryPath = newDirectoryPath_ = os.path.join(cachedDirectoryPathHead, folderName)
@@ -282,7 +279,15 @@ class Syncer:
 			else:
 				cachedFilePath = os.path.join(syncRootPath, cachedFile["local_path"])
 
-			if (cachedFile["remote_name"] == filename and cachedDirPath == dirPath) or not cachedFile["original_name"] or not cachedFile["original_folder"] or not os.path.exists(cachedFilePath):
+			if cachedFile["remote_name"] == filename and cachedDirPath == dirPath:
+				# GDrive creates a change after a newly uploaded vids metadata has been processed
+				if file.type == "video" and file.metadata:
+					file.updateDBdata = True
+
+				self.fileOperations.deleteFile(syncRootPath, filePath=cachedFilePath)
+				self.cache.deleteFile(fileID)
+				self.deleted = True
+			elif not cachedFile["original_name"] or not cachedFile["original_folder"] or not os.path.exists(cachedFilePath):
 				# new filename needs to be processed or file not existent or file contents modified > redownload file
 				self.fileOperations.deleteFile(syncRootPath, filePath=cachedFilePath)
 				self.cache.deleteFile(fileID)

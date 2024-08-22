@@ -1,10 +1,11 @@
 import os
 import re
 import threading
-from ..threadpool import threadpool
 
 from . import helpers
 from .constants import *
+from ..library import editor
+from ..threadpool import threadpool
 
 
 class RemoteFileProcessor:
@@ -14,6 +15,7 @@ class RemoteFileProcessor:
 		self.fileOperations = fileOperations
 		self.settings = settings
 		self.cache = cache
+		self.dbEditor = editor.DatabaseEditor()
 
 	def processFiles(
 		self,
@@ -182,7 +184,7 @@ class RemoteFileProcessor:
 		filePath = self.fileOperations.createFile(dirPath, filename, strmContent, modifiedTime=file.modifiedTime, mode="w+")
 		localName = os.path.basename(filePath)
 		file.name = localName
-		file = (
+		file_ = (
 			driveID,
 			rootFolderID,
 			parentFolderID,
@@ -193,7 +195,10 @@ class RemoteFileProcessor:
 			True,
 			originalFolder,
 		)
-		cachedFiles.append(file)
+		cachedFiles.append(file_)
+
+		if file.updateDBdata:
+			self.dbEditor.processData(filePath, dirPath, localName)
 
 		if progressDialog:
 			progressDialog.processFile(remoteName)

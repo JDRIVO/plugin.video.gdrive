@@ -8,6 +8,7 @@ class File:
 	extension = None
 	encrypted = None
 	modifiedTime = None
+	updateDBdata = False
 
 	@property
 	def basename(self):
