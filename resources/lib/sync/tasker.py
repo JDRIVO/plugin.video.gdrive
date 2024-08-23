@@ -6,8 +6,6 @@ import threading
 import traceback
 
 import xbmc
-import xbmcgui
-import xbmcaddon
 
 from . import cache
 from .. import sync
@@ -29,9 +27,8 @@ class Tasker:
 		self.cache = cache.Cache()
 		self.fileOperations = filesystem.operations.FileOperations(cloud_service=self.cloudService, encryption=self.encrypter)
 		self.syncer = sync.syncer.Syncer(self.accountManager, self.cloudService, self.encrypter, self.fileOperations, self.settings, self.cache)
-		self.gDriveIconPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media", "icon.png")
 		self.monitor = xbmc.Monitor()
-		self.dialog = xbmcgui.Dialog()
+		self.dialog = dialogs.Dialog()
 		self.taskLock = threading.Lock()
 		self.idLock = threading.Lock()
 		self.tasks = {}
@@ -207,6 +204,6 @@ class Tasker:
 		if self.settings.getSetting("update_library"):
 			xbmc.executebuiltin(f"UpdateLibrary(video,{syncRootPath})")
 
-		self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30044), self.gDriveIconPath)
+		self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30044))
 		self.spawnTask(driveSettings, startUpRun=False)
 		self.activeTasks.remove(driveID)

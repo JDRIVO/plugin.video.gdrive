@@ -8,10 +8,9 @@ from socketserver import ThreadingMixIn
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import xbmc
-import xbmcgui
-import xbmcaddon
 
 import constants
+from .. import ui
 from .. import sync
 from .. import accounts
 from .. import playback
@@ -53,7 +52,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 		self.taskManager = sync.tasker.Tasker(self.settings, self.accountManager)
 		self.taskManager.run()
 		self.fileOperations = filesystem.operations.FileOperations()
-		self.gDriveIconPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media", "icon.png")
+		self.dialog = ui.dialogs.Dialog()
 
 class ServerHandler(BaseHTTPRequestHandler):
 
@@ -174,10 +173,9 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.server.cache.removeFolder(folderID, deleteFiles=delete)
 
 			if delete:
-				xbmcgui.Dialog().notification(
+				self.server.dialog.notification(
 					self.server.settings.getLocalizedString(30000),
 					self.server.settings.getLocalizedString(30045),
-					self.server.gDriveIconPath,
 				)
 
 		elif self.path == "/stop_all_folders_sync":
@@ -190,10 +188,9 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.server.cache.removeAllFolders(driveID, deleteFiles=delete)
 
 			if delete:
-				xbmcgui.Dialog().notification(
+				self.server.dialog.notification(
 					self.server.settings.getLocalizedString(30000),
 					self.server.settings.getLocalizedString(30045),
-					self.server.gDriveIconPath,
 				)
 
 		elif self.path == "/reset_task":
@@ -224,11 +221,11 @@ class ServerHandler(BaseHTTPRequestHandler):
 				self.server.failed = True
 
 				if e.code == 404:
-					xbmcgui.Dialog().ok(self.server.settings.getLocalizedString(30003), self.server.settings.getLocalizedString(30209))
+					self.server.dialog.ok(self.server.settings.getLocalizedString(30003), self.server.settings.getLocalizedString(30209))
 					return
 
 				elif e.code == 401:
-					xbmcgui.Dialog().ok(self.server.settings.getLocalizedString(30003), self.server.settings.getLocalizedString(30018))
+					self.server.dialog.ok(self.server.settings.getLocalizedString(30003), self.server.settings.getLocalizedString(30018))
 					return
 
 				elif e.code == 403 or e.code == 429:
@@ -254,15 +251,14 @@ class ServerHandler(BaseHTTPRequestHandler):
 							continue
 
 						accountChange = True
-						xbmcgui.Dialog().notification(
+						self.server.dialog.notification(
 							f"{self.server.settings.getLocalizedString(30003)}: {self.server.settings.getLocalizedString(30006)}",
 							self.server.settings.getLocalizedString(30007),
-							self.server.gDriveIconPath,
 						)
 						break
 
 					if not accountChange:
-						xbmcgui.Dialog().ok(
+						self.server.dialog.ok(
 							f"{self.server.settings.getLocalizedString(30003)}: {self.server.settings.getLocalizedString(30006)}",
 							self.server.settings.getLocalizedString(30009),
 						)

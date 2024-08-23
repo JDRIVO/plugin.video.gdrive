@@ -9,6 +9,7 @@ import xbmcaddon
 
 import constants
 from .. import sync
+from . import dialogs
 from .. import filesystem
 
 
@@ -42,16 +43,13 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.folderName = kwargs.get("folder_name")
 		self.accounts = kwargs.get("accounts")
 		self.cache = sync.cache.Cache()
+		self.dialog = dialogs.Dialog()
 
 		self.folders = False
 		self.syncMode = None
 		self.syncFrequency = None
 
-		addon = xbmcaddon.Addon()
-		self.dialog = xbmcgui.Dialog()
-
-		texturesPath = os.path.join(addon.getAddonInfo("path"), "resources", "media")
-		self.gDriveIconPath = os.path.join(texturesPath, "icon.png")
+		texturesPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
 		self.radioButtonFocus = os.path.join(texturesPath, "radiobutton-focus.png")
 		self.radioButtonNoFocus = os.path.join(texturesPath, "radiobutton-nofocus.png")
 		self.buttonFocusTexture = os.path.join(texturesPath, "focus.png")
@@ -504,7 +502,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		self.close()
 		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
-		self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30075), self.gDriveIconPath)
+		self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30075))
 		data = f"folder_id={self.folderID}&delete=True"
 		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_folder_sync"
 		req = urllib.request.Request(url, data.encode("utf-8"))
@@ -521,7 +519,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		self.close()
 		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
-		self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30075), self.gDriveIconPath)
+		self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30075))
 		data = f"drive_id={self.driveID}&delete=True"
 		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_all_folders_sync"
 		req = urllib.request.Request(url, data.encode("utf-8"))
@@ -583,7 +581,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		if self.displayMode == "new":
 			xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
-			self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30082), self.gDriveIconPath)
+			self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30082))
 
 			if globalSettings:
 				globalSettings.update({"operating_system": os.name})

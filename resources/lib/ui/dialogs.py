@@ -1,6 +1,8 @@
+import os
 import threading
 
 import xbmcgui
+import xbmcaddon
 
 import constants
 
@@ -92,3 +94,15 @@ class FileDeletionDialog(xbmcgui.DialogProgressBG):
 
 	def update(self, filename):
 		super().update(self.getPercentage(), message=filename, heading=self.heading)
+
+class Dialog(xbmcgui.Dialog):
+
+	def __init__(self):
+		self.icon = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media", "icon.png")
+
+	def notification(self, heading, message, icon=None, time=5000, sound=True):
+
+		if icon is None:
+			icon = self.icon
+
+		super().notification(heading, message, icon, time, sound)

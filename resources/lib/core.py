@@ -30,7 +30,7 @@ class Core:
 		self.accountManager = accounts.manager.AccountManager(self.settings)
 		self.accounts = self.accountManager.accounts
 		self.cloudService = google_api.drive.GoogleDrive()
-		self.dialog = xbmcgui.Dialog()
+		self.dialog = ui.dialogs.Dialog()
 		self.succeeded = True
 		self.cacheToDisk = True
 
@@ -287,7 +287,7 @@ class Core:
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
 
 	def searchFolder(self):
-		searchQuery = xbmcgui.Dialog().input(self.settings.getLocalizedString(30043))
+		searchQuery = self.dialog.input(self.settings.getLocalizedString(30043))
 
 		if not searchQuery:
 			self.succeeded = False
@@ -315,7 +315,7 @@ class Core:
 		self.listFolders(driveID, folders)
 
 	def searchDrive(self):
-		searchQuery = xbmcgui.Dialog().input(self.settings.getLocalizedString(30043))
+		searchQuery = self.dialog.input(self.settings.getLocalizedString(30043))
 
 		if not searchQuery:
 			self.succeeded = False
