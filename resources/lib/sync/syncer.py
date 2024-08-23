@@ -280,6 +280,8 @@ class Syncer:
 				cachedFilePath = os.path.join(syncRootPath, cachedFile["local_path"])
 
 			if cachedFile["remote_name"] == filename and cachedDirPath == dirPath:
+				# file contents modified > redownload file
+
 				# GDrive creates a change after a newly uploaded vids metadata has been processed
 				if file.type == "video" and file.metadata:
 					file.updateDBdata = True
@@ -288,7 +290,7 @@ class Syncer:
 				self.cache.deleteFile(fileID)
 				self.deleted = True
 			elif not cachedFile["original_name"] or not cachedFile["original_folder"] or not os.path.exists(cachedFilePath):
-				# new filename needs to be processed or file not existent or file contents modified > redownload file
+				# new filename needs to be processed or file not existent > redownload file
 				self.fileOperations.deleteFile(syncRootPath, filePath=cachedFilePath)
 				self.cache.deleteFile(fileID)
 				self.deleted = True
