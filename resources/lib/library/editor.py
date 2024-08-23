@@ -1,6 +1,5 @@
 import os
 
-import xbmc
 import xbmcvfs
 
 import constants
