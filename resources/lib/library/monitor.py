@@ -25,30 +25,22 @@ class LibraryMonitor(xbmc.Monitor):
 			return
 
 		data = json.loads(data)
+		item = data.get("item")
 
-		if "item" in data and "type" in data.get("item") and data.get("item").get("type") in ("episode", "movie"):
-			dbID = data["item"]["id"]
-			dbType = data["item"]["type"]
+		if not item:
+			return
 
-			if dbType == "movie":
-				query =	{
-					"jsonrpc": "2.0",
-					"id": "1",
-					"method": "VideoLibrary.GetMovieDetails",
-					"params": {"movieid": dbID, "properties": ["file"]},
-				}
-				jsonKey = "moviedetails"
-			else:
-				query = {
-					"jsonrpc": "2.0",
-					"id": "1",
-					"method": "VideoLibrary.GetEpisodeDetails",
-					"params": {"episodeid": dbID, "properties": ["file"]},
-				}
-				jsonKey = "episodedetails"
+		type = item.get("type")
 
+		if type in ("episode", "movie"):
+			query = {
+				"jsonrpc": "2.0",
+				"id": "1",
+				"method": "VideoLibrary.GetMovieDetails" if type == "movie" else "VideoLibrary.GetEpisodeDetails",
+				"params": {f"{type}id": item["id"], "properties": ["file"]},
+			}
 			jsonResponse = self.jsonQuery(query)
-			filePath = jsonResponse["result"][jsonKey]["file"]
+			filePath = jsonResponse["result"][f"{type}details"]["file"]
 			dirPath = os.path.dirname(filePath)
 			filename = os.path.basename(filePath)
 			fileExtension = os.path.splitext(filename)[1]
