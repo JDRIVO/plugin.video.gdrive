@@ -32,7 +32,7 @@ class LibraryMonitor(xbmc.Monitor):
 
 		type = item.get("type")
 
-		if type in ("episode", "movie"):
+		if type in ("movie", "episode"):
 			query = {
 				"jsonrpc": "2.0",
 				"id": "1",
