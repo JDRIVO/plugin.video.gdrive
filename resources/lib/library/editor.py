@@ -21,7 +21,11 @@ class DatabaseEditor(Database):
 		return os.path.join(dbDirectory, videoDatabase)
 
 	def processData(self, strmPath, dirPath, filename):
-		strmData = self.fileOperations.readFile(strmPath)
+		strmData = self.settings.parseQuery(self.fileOperations.readFile(strmPath))
+
+		if not strmData or "plugin://plugin.video.gdrive/?mode" not in strmData:
+			return
+
 		fileID = self.getFileID(dirPath, filename)
 
 		if not fileID:
@@ -55,7 +59,6 @@ class DatabaseEditor(Database):
 				"audio_channels": "iAudioChannels",
 			}
 
-		data = self.settings.parseQuery(data)
 		data = {values[k]: v for k, v in data.items() if k in values}
 
 		if data:
