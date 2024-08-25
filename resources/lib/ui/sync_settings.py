@@ -579,7 +579,20 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		self.close()
 
-		if self.displayMode == "new":
+		if self.displayMode != "new":
+
+			if driveSettings:
+				self.cache.updateDrive(driveSettings, self.driveID)
+				data = f"drive_id={self.driveID}"
+				url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/reset_task"
+				req = urllib.request.Request(url, data.encode("utf-8"))
+				response = urllib.request.urlopen(req)
+				response.close()
+
+			if folderSettings:
+				self.cache.updateFolder(folderSettings, self.folderID)
+
+		else:
 			xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
 			self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30082))
 
@@ -632,19 +645,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 			response.close()
 			xbmc.executebuiltin("Container.Refresh")
 			xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
-
-		else:
-
-			if driveSettings:
-				self.cache.updateDrive(driveSettings, self.driveID)
-				data = f"drive_id={self.driveID}"
-				url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/reset_task"
-				req = urllib.request.Request(url, data.encode("utf-8"))
-				response = urllib.request.urlopen(req)
-				response.close()
-
-			if folderSettings:
-				self.cache.updateFolder(folderSettings, self.folderID)
 
 	def setSearchLanguage(self, button):
 		selection = self.dialog.select(constants.settings.getLocalizedString(30810), filesystem.constants.TMDB_LANGUAGES)
