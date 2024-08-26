@@ -223,7 +223,7 @@ class GoogleDrive:
 			else:
 				params["q"] = f"mimeType='application/vnd.google-apps.folder' and '{folderID}' in parents and not trashed"
 
-			params["fields"] = "nextPageToken,files(id,name)"
+			params["fields"] = "nextPageToken,files(id,name,modifiedTime)"
 
 		files = []
 		pageToken = True

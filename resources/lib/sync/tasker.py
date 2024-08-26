@@ -192,8 +192,9 @@ class Tasker:
 					folderID = folder["id"]
 					folderName = folder["name"]
 					dirPath = folder["path"]
+					modifiedTime = folder["modifiedTime"]
 					folderSettings = self.cache.getFolder({"folder_id": folderID})
-					pool.submit(self.syncer.syncFolderAdditions, syncRootPath, driveSettings["local_path"], dirPath, folderName, folderSettings, folderID, folderID, driveID, progressDialog)
+					pool.submit(self.syncer.syncFolderAdditions, syncRootPath, driveSettings["local_path"], dirPath, folderSettings, folderName, modifiedTime, folderID, folderID, driveID, progressDialog)
 
 		if progressDialog:
 			progressDialog.close()

@@ -1,9 +1,9 @@
-from . import video
+from .video import Video
 
 
-class Subtitles(video.Video):
+class Subtitles(Video):
 	language = None
 
-	def setContents(self, data):
-		super().setContents(data)
-		self.language = data.get("language")
+	def setData(self, video, metadata):
+		super().setData(video, metadata)
+		self.language = video.get("language")

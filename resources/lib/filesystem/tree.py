@@ -22,9 +22,9 @@ class FileTree:
 	def __iter__(self):
 		return iter(self.fileTree.values())
 
-	def buildTree(self, driveID, rootFolderID, folderID, parentFolderID, folderName, path):
+	def buildTree(self, driveID, rootFolderID, folderID, parentFolderID, folderName, path, modifiedTime):
 		self.folderIDs.append(folderID)
-		self.fileTree[folderID] = Folder(folderID, parentFolderID, folderName, path)
+		self.fileTree[folderID] = Folder(folderID, parentFolderID, folderName, path, modifiedTime)
 		self.getContents(driveID, rootFolderID)
 
 	def getContents(self, driveID, rootFolderID):
@@ -80,7 +80,7 @@ class FileTree:
 
 				paths.add(path.lower())
 				self.folderIDs.append(id)
-				self.fileTree[id] = Folder(id, parentFolderID, folderName, path)
+				self.fileTree[id] = Folder(id, parentFolderID, folderName, path, item["modifiedTime"])
 			else:
 				file = helpers.makeFile(item, self.excludedTypes, self.encrypter)
 

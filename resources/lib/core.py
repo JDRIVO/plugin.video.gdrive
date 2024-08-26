@@ -135,8 +135,11 @@ class Core:
 
 		xbmc.executebuiltin("Container.Refresh")
 
-	def addMenuItem(self, url, title, contextMenu=False, isFolder=True):
+	def addMenuItem(self, url, title, contextMenu=None, dateTime=None, isFolder=True):
 		listItem = xbmcgui.ListItem(title)
+
+		if dateTime:
+			listItem.setDateTime(dateTime)
 
 		if contextMenu:
 			listItem.addContextMenuItems(contextMenu, True)
@@ -161,7 +164,7 @@ class Core:
 		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_drives",
 			f"[COLOR yellow][B]{self.settings.getLocalizedString(30085)}[/B][/COLOR]",
-			contextMenu=contextMenu,
+			contextMenu,
 		)
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_FILE)
@@ -199,7 +202,7 @@ class Core:
 			self.addMenuItem(
 				f"{self.pluginURL}?mode=list_drive&drive_id={driveID}",
 				displayName,
-				contextMenu=contextMenu,
+				contextMenu,
 			)
 
 		xbmcplugin.setContent(self.pluginHandle, "files")
@@ -386,11 +389,10 @@ class Core:
 			for folder in folders_:
 				folderName = folder["name"]
 				folderID = folder["id"]
-				parentFolderID = folder["parents"][0]
 				folderIDs.append(folderID)
 
 				if searchQuery in folderName.lower():
-					folders.append({"name": folderName, "id": folderID, "parent_id": parentFolderID})
+					folders.append({"name": folderName, "id": folderID, "modifiedTime": folder["modifiedTime"]})
 
 		maxIDs = 100
 		queries = []
@@ -413,6 +415,7 @@ class Core:
 		for folder in folders:
 			folderID = folder["id"]
 			folderName = folder["name"]
+			modifiedTime = folder["modifiedTime"]
 			folderSettings = self.cache.getFolder({"folder_id": folderID})
 
 			if folderSettings:
@@ -428,12 +431,12 @@ class Core:
 
 				if directory:
 					folderName = f"[COLOR springgreen][B]{folderName}[/B][/COLOR]"
-					contextMenu = False
+					contextMenu = None
 				else:
 					contextMenu = [
 						(
 							self.settings.getLocalizedString(30013),
-							f"RunPlugin({self.pluginURL}?mode=sync_folder&sync_mode=new&drive_id={driveID}&folder_id={folderID}&folder_name={folderName})",
+							f"RunPlugin({self.pluginURL}?mode=sync_folder&sync_mode=new&drive_id={driveID}&folder_id={folderID}&folder_name={folderName}&modified_time={modifiedTime})",
 						),
 						(
 							self.settings.getLocalizedString(30090),
@@ -455,11 +458,13 @@ class Core:
 			self.addMenuItem(
 				f"{self.pluginURL}?mode=list_folders&drive_id={driveID}&folder_id={folderID}",
 				folderName,
-				contextMenu=contextMenu,
+				contextMenu,
+				dateTime=modifiedTime,
 			)
 
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
+		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_DATE)
 
 	def listSyncedFolders(self):
 		driveID = self.settings.getParameter("drive_id")
@@ -509,7 +514,8 @@ class Core:
 		driveID = self.settings.getParameter("drive_id")
 		folderID = self.settings.getParameter("folder_id")
 		folderName = self.settings.getParameter("folder_name")
-		folders = [{"id": folderID, "name": folderName}]
+		modifiedTime = self.settings.getParameter("modified_time")
+		folders = [{"id": folderID, "name": folderName, "modifiedTime": modifiedTime}]
 		mode = self.settings.getParameter("sync_mode")
 		self.succeeded = False
 		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)

@@ -62,51 +62,40 @@ def identifyFileType(filename, fileExtension, mimeType):
 	elif fileExtension == "nfo":
 		return "nfo"
 	elif fileExtension in ("jpeg", "jpg", "png"):
-		filenameLowerCase = filename.lower()
-		artwork = [type for type in MEDIA_ASSETS if type in filenameLowerCase]
-
-		if artwork:
-			return artwork[0]
-
+		return next((type for type in MEDIA_ASSETS if type in filename.lower()), None)
 	elif fileExtension in SUBTITLE_EXTENSIONS:
 		return "subtitles"
 	elif fileExtension == "strm":
 		return "strm"
 
-def identifyMediaType(videoInfo):
-	videoTitle = videoInfo.get("title")
-	videoYear = videoInfo.get("year")
-	videoSeason = videoInfo.get("season")
-	videoEpisode = videoInfo.get("episode")
+def identifyVideo(ptnData):
+	title = ptnData.get("title")
+	year = ptnData.get("year")
+	season = ptnData.get("season")
+	episode = ptnData.get("episode")
+	language = ptnData.get("language")
+	media = None
 
-	if videoEpisode is not None and videoSeason is not None and videoTitle:
-		return "episode"
-	elif videoTitle and videoYear:
-		return "movie"
+	if episode is not None and season is not None and title:
+		media = "episode"
+	elif title and year:
+		media = "movie"
 
-def getVideoInfo(filename, metadata):
+	return {
+		"media": media,
+		"title": title,
+		"year": year,
+		"season": season,
+		"episode": episode,
+		"language": language,
+	}
 
-	try:
-		videoDuration = float(metadata["durationMillis"]) / 1000
-		videoWidth = metadata["width"]
-		videoHeight = metadata["height"]
-		aspectRatio = float(videoWidth) / videoHeight
-	except Exception:
-		videoDuration = False
-		videoWidth = False
-		videoHeight = False
-		aspectRatio = False
-
-	videoInfo = ptn.parse(filename, standardise=True, coherent_types=False)
-	title = videoInfo.get("title")
-	year = videoInfo.get("year")
-	season = videoInfo.get("season")
-	episode = videoInfo.get("episode")
-	language = videoInfo.get("language")
-	videoCodec = videoInfo.get("codec")
-	hdr = videoInfo.get("hdr")
-	audioCodec = videoInfo.get("audio")
-	audioChannels = False
+def extractMetadata(metadata, ptnData):
+	duration = metadata.get("durationMillis")
+	videoWidth = metadata.get("width")
+	videoHeight = metadata.get("height")
+	audioCodec = ptnData.get("audio")
+	audioChannels = None
 
 	if audioCodec:
 		audioCodecList = audioCodec.split(" ")
@@ -116,25 +105,92 @@ def getVideoInfo(filename, metadata):
 			audioChannels = int(math.ceil(float(audioCodecList[1])))
 
 	return {
-		"title": title,
-		"year": year,
-		"season": season,
-		"episode": episode,
-		"language": language,
+		"video_duration": float(duration) / 1000 if duration else None,
 		"video_width": videoWidth,
 		"video_height": videoHeight,
-		"aspect_ratio": aspectRatio,
-		"video_duration": videoDuration,
-		"video_codec": videoCodec,
+		"aspect_ratio": float(videoWidth) / videoHeight if videoWidth and videoHeight else None,
+		"video_codec": ptnData.get("codec"),
 		"audio_codec": audioCodec,
 		"audio_channels": audioChannels,
-		"hdr": hdr,
+		"hdr": ptnData.get("hdr"),
 	}
 
+def makeFile(file, excludedTypes, encrypter):
+	fileID = file["id"]
+	filename = file["name"]
+	mimeType = file["mimeType"]
+	modifiedTime = file["modifiedTime"]
+	fileExtension = file.get("fileExtension")
+	metadata = file.get("videoMediaMetadata", {})
+
+	if encrypter and mimeType == "application/octet-stream" and not fileExtension:
+		filename = encrypter.decryptFilename(filename)
+
+		if not filename:
+			return
+
+		fileExtension = filename.rsplit(".", 1)[-1]
+		encrypted = True
+
+	else:
+		encrypted = False
+
+	fileType = identifyFileType(filename, fileExtension, mimeType)
+
+	if not fileType or fileType in excludedTypes:
+		return
+
+	if fileType == "strm":
+		file = File()
+	else:
+		ptnData = ptn.parse(filename, standardise=True, coherent_types=False)
+		videoData = identifyVideo(ptnData)
+		media = videoData["media"]
+		metadata = extractMetadata(metadata, ptnData)
+
+		if fileType == "subtitles":
+			file = Subtitles()
+		elif media == "episode":
+			file = video.Episode()
+		elif media == "movie":
+			file = video.Movie()
+		else:
+			file = video.Video()
+
+		file.setData(videoData, metadata)
+		file.media = media
+
+	filename = removeProhibitedFSchars(filename)
+	file.name = filename
+	file.id = fileID
+	file.type = fileType
+	file.encrypted = encrypted
+	file.extension = fileExtension
+	file.modifiedTime = convertTime(modifiedTime)
+	return file
+
+def getExcludedTypes(folderSettings):
+	excluded = []
+
+	if not folderSettings["sync_subtitles"]:
+		excluded.append("subtitles")
+
+	if not folderSettings["sync_artwork"]:
+		excluded += list(ARTWORK)
+
+	if not folderSettings["sync_nfo"]:
+		excluded.append("nfo")
+
+	return excluded
+
 def createSTRMContents(driveID, fileID, encrypted, contents):
-	contents["drive_id"] = driveID
-	contents["file_id"] = fileID
-	contents["encrypted"] = str(encrypted)
+	contents.update(
+		{
+			"drive_id": driveID,
+			"file_id": fileID,
+			"encrypted": str(encrypted),
+		}
+	)
 	return "plugin://plugin.video.gdrive/?mode=video" + "".join([f"&{k}={v}"for k, v in contents.items() if v])
 
 def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
@@ -289,70 +345,3 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 
 	if matches:
 		return matches[max(matches)]
-
-def makeFile(file, excludedTypes, encrypter):
-	fileID = file["id"]
-	filename = file["name"]
-	mimeType = file["mimeType"]
-	modifiedTime = file["modifiedTime"]
-	fileExtension = file.get("fileExtension")
-	metadata = file.get("videoMediaMetadata")
-
-	if encrypter and mimeType == "application/octet-stream" and not fileExtension:
-		filename = encrypter.decryptFilename(filename)
-
-		if not filename:
-			return
-
-		fileExtension = filename.rsplit(".", 1)[-1]
-		encrypted = True
-
-	else:
-		encrypted = False
-
-	fileType = identifyFileType(filename, fileExtension, mimeType)
-
-	if not fileType or fileType in excludedTypes:
-		return
-
-	if fileType == "strm":
-		file = File()
-	else:
-		videoInfo = getVideoInfo(filename, metadata)
-		mediaType = identifyMediaType(videoInfo)
-
-		if fileType == "subtitles":
-			file = Subtitles()
-		elif mediaType == "episode":
-			file = video.Episode()
-		elif mediaType == "movie":
-			file = video.Movie()
-		else:
-			file = video.Video()
-
-		file.setContents(videoInfo)
-		file.metadata = metadata
-		file.media = mediaType
-
-	filename = removeProhibitedFSchars(filename)
-	file.name = filename
-	file.id = fileID
-	file.type = fileType
-	file.encrypted = encrypted
-	file.extension = fileExtension
-	file.modifiedTime = convertTime(modifiedTime)
-	return file
-
-def getExcludedTypes(folderSettings):
-	excluded = []
-
-	if not folderSettings["sync_subtitles"]:
-		excluded.append("subtitles")
-
-	if not folderSettings["sync_artwork"]:
-		excluded += list(ARTWORK)
-
-	if not folderSettings["sync_nfo"]:
-		excluded.append("nfo")
-
-	return excluded

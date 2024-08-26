@@ -1,52 +1,34 @@
-from . import file
 from . import helpers
+from .file import File
 
 
-class Video(file.File):
+class Video(File):
 	title = None
 	year = None
 	media = None
 	ptnName = None
 	duration = None
-	metadata = {}
-	aspectRatio = None
 	videoWidth = None
 	videoHeight = None
+	aspectRatio = None
 	videoCodec = None
 	audioCodec = None
 	audioChannels = None
-	contents = None
 	hdr = None
+	contents = None
 
-	def setContents(self, data):
-		title = data.get("title")
-		year = data.get("year")
-		season = data.get("season")
-		episode = data.get("episode")
-		self.ptnName = str((title, year, season, episode))
-
-		if title is not None:
-			self.title = title
-
-		if year is not None:
-			self.year = year
-
-		if season is not None:
-			self.season = str(season)
-
-		if episode is not None:
-			self.episode = episode
-
-		del data["year"]
-		del data["title"]
-		del data["season"]
-		del data["episode"]
-		self.contents = data
+	def setData(self, video, metadata):
+		self.title = video.get("title")
+		self.year = video.get("year")
+		self.contents = metadata
 
 class Movie(Video):
 
+	def setData(self, video, metadata):
+		super().setData(video, metadata)
+		self.ptnName = str((self.title, self.year))
+
 	def formatName(self, tmdbSettings, imdbLock):
-		# Produces a conventional name that can be understood by library scrapers
 		data = helpers.getTMDBtitle("movie", self.title, self.year, tmdbSettings, imdbLock)
 
 		if data:
@@ -61,37 +43,19 @@ class Episode(Video):
 	season = None
 	episode = None
 
-	def formatName(self, tmdbSettings, imdbLock):
-		# Produces a conventional name that can be understood by library scrapers
+	def setData(self, video, metadata):
+		super().setData(video, metadata)
+		self.season = video.get("season")
+		self.episode = video.get("episode")
+		self.ptnName = str((self.title, self.year, self.season, self.episode))
 
-		if int(self.season) < 10:
-			season = f"0{self.season}"
-		else:
-			season = self.season
+	def formatName(self, tmdbSettings, imdbLock):
+		season = f"{int(self.season):02d}"
 
 		if isinstance(self.episode, int):
-
-			if self.episode < 10:
-				episode = f"0{self.episode}"
-			else:
-				episode = str(self.episode)
-
+			episode = f"{self.episode:02d}"
 		else:
-			modifiedEpisode = ""
-
-			for e in self.episode:
-
-				if e < 10:
-					append = f"0{e}"
-				else:
-					append = e
-
-				if e != self.episode[-1]:
-					modifiedEpisode += f"{append}-"
-				else:
-					modifiedEpisode += str(append)
-
-			episode = modifiedEpisode
+			episode = "-".join(f"{e:02d}" for e in self.episode)
 
 		data = helpers.getTMDBtitle("episode", self.title, self.year, tmdbSettings, imdbLock)
 

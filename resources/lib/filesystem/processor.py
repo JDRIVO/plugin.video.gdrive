@@ -21,8 +21,9 @@ class RemoteFileProcessor:
 		self,
 		folder,
 		folderSettings,
-		drivePath,
 		syncRootPath,
+		drivePath,
+		dirPath,
 		driveID,
 		rootFolderID,
 		threadCount,
@@ -32,7 +33,6 @@ class RemoteFileProcessor:
 		parentFolderID = folder.id
 		syncRootPath = syncRootPath + os.sep
 		remoteDirPath = os.path.join(drivePath, folder.path)
-		dirPath = os.path.join(syncRootPath, remoteDirPath)
 		folderRestructure = folderSettings["folder_restructure"]
 		fileRenaming = folderSettings["file_renaming"]
 		videos = files.get("video")
@@ -216,8 +216,8 @@ class LocalFileProcessor:
 		self,
 		folder,
 		folderSettings,
-		drivePath,
 		syncRootPath,
+		drivePath,
 		threadCount,
 		progressDialog=False,
 	):
