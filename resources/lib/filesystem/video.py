@@ -3,9 +3,9 @@ from .file import File
 
 
 class Video(File):
+	media = None
 	title = None
 	year = None
-	media = None
 	ptnName = None
 	duration = None
 	videoWidth = None
