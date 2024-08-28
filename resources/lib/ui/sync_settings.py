@@ -35,6 +35,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		constants.settings.getLocalizedString(30059): {"type": "folder", "name": "tmdb_region"},
 		constants.settings.getLocalizedString(30060): {"type": "folder", "name": "tmdb_adult"},
 	}
+
 	def __init__(self, *args, **kwargs):
 		self.displayMode = kwargs.get("mode")
 		self.driveID = kwargs.get("drive_id")
