@@ -6,7 +6,7 @@ class File:
 	name = None
 	type = None
 	extension = None
-	encrypted = None
+	encrypted = False
 	modifiedTime = None
 	updateDBdata = False
 
