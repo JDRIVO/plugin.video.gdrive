@@ -85,9 +85,9 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.end_headers()
 			dbID, dbType = re.findall("db_id=(.*)&db_type=(.*)", postData)[0]
 
-			if dbID == "False":
-				dbID = False
-				dbType = False
+			if dbID == "None":
+				dbID = None
+				dbType = None
 				trackProgress = False
 			else:
 				trackProgress = True

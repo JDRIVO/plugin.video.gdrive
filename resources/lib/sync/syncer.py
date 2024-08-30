@@ -330,7 +330,7 @@ class Syncer:
 		if folderSettings["contains_encrypted"]:
 			encrypter = self.encrypter
 		else:
-			encrypter = False
+			encrypter = None
 
 		fileTree = FileTree(self.cloudService, self.cache, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs)
 		fileTree.buildTree(driveID, rootFolderID, folderID, parentFolderID, folderName, dirPath, modifiedTime)

@@ -858,7 +858,7 @@ class Core:
 		if dbID:
 			data = f"db_id={dbID}&db_type={dbType}"
 		else:
-			data = "db_id=False&db_type=False"
+			data = "db_id=None&db_type=None"
 
 		xbmcplugin.setResolvedUrl(self.pluginHandle, True, item)
 		url = f"http://localhost:{serverPort}/start_player"

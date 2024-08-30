@@ -188,7 +188,7 @@ class Cache(Database):
 			progressDialog = dialogs.FileDeletionDialog(fileTotal)
 			progressDialog.create()
 		else:
-			progressDialog = False
+			progressDialog = None
 
 		self.removeDirectories(syncRootPath, drivePath, folderID, deleteFiles, progressDialog)
 

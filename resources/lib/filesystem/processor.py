@@ -351,11 +351,13 @@ class LocalFileProcessor:
 		filename = f"{file.basename}.strm"
 		filePath = os.path.join(processingDirPath, filename)
 		originalName = originalFolder = True
-		newFilename = False
+		newFilename = None
 
 		if mediaType in ("episode", "movie"):
 			modifiedName = file.formatName(tmdbSettings, self.imdbLock)
-			newFilename = modifiedName.get("filename") if modifiedName else False
+
+			if modifiedName:
+				newFilename = modifiedName.get("filename")
 
 			if newFilename:
 

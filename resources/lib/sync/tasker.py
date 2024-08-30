@@ -182,7 +182,7 @@ class Tasker:
 			progressDialog = dialogs.SyncProgressionDialog(folderTotal)
 			progressDialog.create()
 		else:
-			progressDialog = False
+			progressDialog = None
 
 		with self.taskLock:
 
