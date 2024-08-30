@@ -8,10 +8,10 @@ from ..threadpool import threadpool
 
 class FileTree:
 
-	def __init__(self, cloudService, cache, dialogProgress, threadCount, encrypter, excludedTypes, syncedIDs):
+	def __init__(self, cloudService, cache, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs):
 		self.cloudService = cloudService
 		self.cache = cache
-		self.dialogProgress = dialogProgress
+		self.progressDialog = progressDialog
 		self.threadCount = threadCount
 		self.encrypter = encrypter
 		self.excludedTypes = excludedTypes
@@ -87,8 +87,8 @@ class FileTree:
 				if not file:
 					continue
 
-				if self.dialogProgress:
-					self.dialogProgress.incrementFile()
+				if self.progressDialog:
+					self.progressDialog.incrementFile()
 
 				files = self.fileTree[parentFolderID].files
 
