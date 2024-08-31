@@ -27,7 +27,7 @@ class RemoteFileProcessor:
 		driveID,
 		rootFolderID,
 		threadCount,
-		progressDialog=False,
+		progressDialog=None,
 	):
 		files = folder.files
 		parentFolderID = folder.id
@@ -219,7 +219,7 @@ class LocalFileProcessor:
 		syncRootPath,
 		drivePath,
 		threadCount,
-		progressDialog=False,
+		progressDialog=None,
 	):
 		files = folder.files
 		syncRootPath = syncRootPath + os.sep
