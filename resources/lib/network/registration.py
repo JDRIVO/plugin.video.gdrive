@@ -51,6 +51,10 @@ form = """
 			text-indent: 2px;
 		}
 
+		.input:focus {
+			outline: 1px solid black;
+		}
+
 		.button {
 			width: calc(100% - 20px);
 			height: 40px;
