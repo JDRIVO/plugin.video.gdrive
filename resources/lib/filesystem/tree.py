@@ -8,9 +8,10 @@ from ..threadpool import threadpool
 
 class FileTree:
 
-	def __init__(self, cloudService, cache, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs):
+	def __init__(self, cloudService, cache, drivePath, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs):
 		self.cloudService = cloudService
 		self.cache = cache
+		self.drivePath = drivePath
 		self.progressDialog = progressDialog
 		self.threadCount = threadCount
 		self.encrypter = encrypter
@@ -24,7 +25,7 @@ class FileTree:
 
 	def buildTree(self, driveID, rootFolderID, folderID, parentFolderID, folderName, path, modifiedTime):
 		self.folderIDs.append(folderID)
-		self.fileTree[folderID] = Folder(folderID, parentFolderID, folderName, path, modifiedTime)
+		self.fileTree[folderID] = Folder(folderID, parentFolderID, folderName, path, os.path.join(self.drivePath, path), modifiedTime)
 		self.getContents(driveID, rootFolderID)
 
 	def getContents(self, driveID, rootFolderID):
@@ -68,7 +69,7 @@ class FileTree:
 
 			if isFolder:
 				folderName = helpers.removeProhibitedFSchars(item["name"])
-				path = path_ = os.path.join(self.fileTree[parentFolderID].path, folderName)
+				path = path_ = os.path.join(self.fileTree[parentFolderID].remotePath, folderName)
 				copy = 1
 
 				if self.syncedIDs:
@@ -80,7 +81,7 @@ class FileTree:
 
 				paths.add(path.lower())
 				self.folderIDs.append(id)
-				self.fileTree[id] = Folder(id, parentFolderID, folderName, path, item["modifiedTime"])
+				self.fileTree[id] = Folder(id, parentFolderID, folderName, path, os.path.join(self.drivePath, path), item["modifiedTime"])
 			else:
 				file = helpers.makeFile(item, self.excludedTypes, self.encrypter)
 

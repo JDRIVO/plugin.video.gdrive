@@ -50,9 +50,9 @@ class Syncer:
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
 		self.cloudService.refreshToken()
-		syncRootPath = self.cache.getSyncRootPath()
 		driveSettings = self.cache.getDrive(driveID)
-		drivePath = driveSettings["local_path"]
+		syncRootPath = self.cache.getSyncRootPath()
+		drivePath = os.path.join(syncRootPath, driveSettings["local_path"])
 		changes, pageToken = self.cloudService.getChanges(driveSettings["page_token"])
 
 		if not changes:
@@ -87,7 +87,7 @@ class Syncer:
 				self.syncFileChanges(item, parentFolderID, driveID, syncRootPath, drivePath, newFiles)
 
 		if newFiles:
-			self.syncFileAdditions(newFiles, drivePath, syncRootPath, driveID)
+			self.syncFileAdditions(newFiles, syncRootPath, driveID)
 
 			if self.settings.getSetting("update_library"):
 				xbmc.executebuiltin(f"UpdateLibrary(video,{syncRootPath})")
@@ -120,7 +120,7 @@ class Syncer:
 			cachedFiles = self.cache.getFile({"parent_folder_id": folderID})
 
 			if cachedFile["original_folder"]:
-				dirPath = os.path.join(syncRootPath, drivePath, cachedDirectory["local_path"])
+				dirPath = os.path.join(drivePath, cachedDirectory["local_path"])
 				self.fileOperations.deleteFile(syncRootPath, dirPath, cachedFile["local_name"])
 			else:
 				filePath = os.path.join(syncRootPath, cachedFile["local_path"])
@@ -166,7 +166,6 @@ class Syncer:
 
 			if not dirPath:
 				# folder has moved outside of root folder hierarchy/tree > delete folder
-				drivePath = os.path.join(syncRootPath, drivePath)
 				self.cache.removeDirectory(syncRootPath, drivePath, folderID)
 				self.deleted = True
 			else:
@@ -192,8 +191,8 @@ class Syncer:
 					}
 					self.cache.addDirectory(directory)
 
-				oldPath = os.path.join(syncRootPath, drivePath, cachedDirectoryPath)
-				newPath = os.path.join(syncRootPath, drivePath, dirPath)
+				oldPath = os.path.join(drivePath, cachedDirectoryPath)
+				newPath = os.path.join(drivePath, dirPath)
 				self.fileOperations.renameFolder(syncRootPath, oldPath, newPath)
 				self.cache.updateChildPaths(cachedDirectoryPath, dirPath, folderID)
 
@@ -202,8 +201,8 @@ class Syncer:
 			cachedDirectoryPathHead, _ = os.path.split(cachedDirectoryPath)
 			newDirectoryPath = newDirectoryPath_ = os.path.join(cachedDirectoryPathHead, folderName)
 			newDirectoryPath = self.cache.getUniqueDirectoryPath(driveID, newDirectoryPath, folderID)
-			oldPath = os.path.join(syncRootPath, drivePath, cachedDirectoryPath)
-			newPath = os.path.join(syncRootPath, drivePath, newDirectoryPath)
+			oldPath = os.path.join(drivePath, cachedDirectoryPath)
+			newPath = os.path.join(drivePath, newDirectoryPath)
 			self.fileOperations.renameFolder(syncRootPath, oldPath, newPath)
 			self.cache.updateChildPaths(cachedDirectoryPath, newDirectoryPath, folderID)
 			self.cache.updateDirectory({"remote_name": folderName}, folderID)
@@ -229,7 +228,7 @@ class Syncer:
 				cachedDirectory = self.cache.getDirectory({"folder_id": cachedParentFolderID})
 
 				if cachedFile["original_folder"]:
-					cachedFilePath = os.path.join(syncRootPath, drivePath, cachedDirectory["local_path"], cachedFile["local_name"])
+					cachedFilePath = os.path.join(drivePath, cachedDirectory["local_path"], cachedFile["local_name"])
 				else:
 					cachedFilePath = os.path.join(syncRootPath, cachedFile["local_path"])
 
@@ -276,7 +275,7 @@ class Syncer:
 			rootFolderID = cachedDirectory["root_folder_id"]
 
 			if cachedFile["original_folder"]:
-				cachedFilePath = os.path.join(syncRootPath, drivePath, cachedDirPath, cachedFile["local_name"])
+				cachedFilePath = os.path.join(drivePath, cachedDirPath, cachedFile["local_name"])
 			else:
 				cachedFilePath = os.path.join(syncRootPath, cachedFile["local_path"])
 
@@ -300,7 +299,7 @@ class Syncer:
 				newFilename = file.basename + os.path.splitext(cachedFile["local_name"])[1]
 
 				if cachedFile["original_folder"]:
-					dirPath = os.path.join(syncRootPath, drivePath, dirPath)
+					dirPath = os.path.join(drivePath, dirPath)
 					newFilePath = self.fileOperations.renameFile(syncRootPath, cachedFilePath, dirPath, newFilename)
 				else:
 					newFilePath = self.fileOperations.renameFile(syncRootPath, cachedFilePath, os.path.dirname(cachedFilePath), newFilename)
@@ -312,7 +311,7 @@ class Syncer:
 				self.cache.updateFile(cachedFile, fileID)
 				return
 
-		folder = newFiles.setdefault(rootFolderID, {}).setdefault(parentFolderID, Folder(parentFolderID, parentFolderID, dirPath, dirPath))
+		folder = newFiles.setdefault(rootFolderID, {}).setdefault(parentFolderID, Folder(parentFolderID, parentFolderID, dirPath, dirPath, os.path.join(drivePath, dirPath)))
 		files = folder.files
 
 		if file.type in MEDIA_ASSETS:
@@ -321,6 +320,7 @@ class Syncer:
 			files[file.type].append(file)
 
 	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderSettings, folderName, modifiedTime, folderID, parentFolderID, driveID, progressDialog=None, syncedIDs=None):
+		syncRootPath = syncRootPath + os.sep
 		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
 		rootFolderID = folderSettings["folder_id"]
 		folderRestructure = folderSettings["folder_restructure"]
@@ -332,25 +332,22 @@ class Syncer:
 		else:
 			encrypter = None
 
-		fileTree = FileTree(self.cloudService, self.cache, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs)
+		fileTree = FileTree(self.cloudService, self.cache, drivePath, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs)
 		fileTree.buildTree(driveID, rootFolderID, folderID, parentFolderID, folderName, dirPath, modifiedTime)
-		dirPaths = []
 
 		with threadpool.ThreadPool(threadCount) as pool:
 
 			for folder in fileTree:
-				dirPath = os.path.join(syncRootPath, drivePath, folder.path)
-				dirPaths.append((dirPath, folder.modifiedTime))
 				directory = {
 					"drive_id": driveID,
 					"folder_id": folder.id,
-					"local_path": folder.path,
+					"local_path": folder.remotePath,
 					"remote_name": folder.name,
 					"parent_folder_id": folder.parentID,
 					"root_folder_id": rootFolderID,
 				}
 				self.cache.addDirectory(directory)
-				pool.submit(self.remoteFileProcessor.processFiles, folder, folderSettings, syncRootPath, drivePath, dirPath, driveID, rootFolderID, threadCount, progressDialog)
+				pool.submit(self.remoteFileProcessor.processFiles, folder, folderSettings, syncRootPath, driveID, rootFolderID, threadCount, progressDialog)
 
 		if progressDialog:
 			progressDialog.processFolder()
@@ -360,16 +357,18 @@ class Syncer:
 			with threadpool.ThreadPool(threadCount) as pool:
 
 				for folder in fileTree:
-					pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, syncRootPath, drivePath, threadCount, progressDialog)
+					pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, syncRootPath, threadCount, progressDialog)
 
-		for dirPath, modifiedTime in dirPaths:
+		for folder in fileTree:
+			modifiedTime = folder.modifiedTime
 
 			try:
-				os.utime(dirPath, (modifiedTime, modifiedTime))
+				os.utime(folder.localPath, (modifiedTime, modifiedTime))
 			except:
 				continue
 
-	def syncFileAdditions(self, files, drivePath, syncRootPath, driveID):
+	def syncFileAdditions(self, files, syncRootPath, driveID):
+		syncRootPath = syncRootPath + os.sep
 		threadCount = self.settings.getSettingInt("thread_count", 1)
 		folders = []
 
@@ -381,8 +380,7 @@ class Syncer:
 				fileRenaming = folderSettings["file_renaming"]
 
 				for folderID, folder in directories.items():
-					dirPath = os.path.join(syncRootPath, drivePath, folder.path)
-					pool.submit(self.remoteFileProcessor.processFiles, folder, folderSettings, syncRootPath, drivePath, dirPath, driveID, rootFolderID, threadCount)
+					pool.submit(self.remoteFileProcessor.processFiles, folder, folderSettings, syncRootPath, driveID, rootFolderID, threadCount)
 
 					if folderRestructure or fileRenaming:
 						folders.append((folder, folderSettings))
@@ -390,4 +388,4 @@ class Syncer:
 		with threadpool.ThreadPool(threadCount) as pool:
 
 			for folder, folderSettings in folders:
-				pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, syncRootPath, drivePath, threadCount)
+				pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, syncRootPath, threadCount)

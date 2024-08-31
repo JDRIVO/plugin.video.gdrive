@@ -157,8 +157,8 @@ def makeFile(file, excludedTypes, encrypter):
 		else:
 			file = video.Video()
 
-		file.setData(videoData, metadata)
 		file.media = media
+		file.setData(videoData, metadata)
 
 	filename = removeProhibitedFSchars(filename)
 	file.name = filename

@@ -166,15 +166,16 @@ class Tasker:
 		self.encrypter.setup(settings=self.settings)
 		self.accountManager.loadAccounts()
 		self.accounts = self.accountManager.accounts
+		account = self.accountManager.getAccount(driveID)
+		self.cloudService.setAccount(account)
+		self.cloudService.refreshToken()
 		syncRootPath = self.cache.getSyncRootPath()
 
 		if not os.path.exists(syncRootPath):
 			self.fileOperations.createDirs(syncRootPath)
 
-		account = self.accountManager.getAccount(driveID)
-		self.cloudService.setAccount(account)
-		self.cloudService.refreshToken()
 		driveSettings = self.cache.getDrive(driveID)
+		drivePath = os.path.join(syncRootPath, driveSettings["local_path"])
 		folderTotal = len(folders)
 		threadCount = self.settings.getSettingInt("thread_count", 1)
 
@@ -194,7 +195,7 @@ class Tasker:
 					dirPath = folder["path"]
 					modifiedTime = folder["modifiedTime"]
 					folderSettings = self.cache.getFolder({"folder_id": folderID})
-					pool.submit(self.syncer.syncFolderAdditions, syncRootPath, driveSettings["local_path"], dirPath, folderSettings, folderName, modifiedTime, folderID, folderID, driveID, progressDialog)
+					pool.submit(self.syncer.syncFolderAdditions, syncRootPath, drivePath, dirPath, folderSettings, folderName, modifiedTime, folderID, folderID, driveID, progressDialog)
 
 		if progressDialog:
 			progressDialog.close()
