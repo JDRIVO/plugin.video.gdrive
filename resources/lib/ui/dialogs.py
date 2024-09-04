@@ -19,24 +19,7 @@ class SyncProgressionDialog(xbmcgui.DialogProgressBG):
 		self.fileCount = 0
 
 	def create(self):
-		super().create(heading=self.getFolderHeading())
-
-	def getSyncedFilesPercentage(self):
-
-		try:
-			return int(self.processedFiles / self.fileCount * 100)
-		except:
-			return 0
-
-	def getRenamedFilesPercentage(self):
-
-		try:
-			return int(self.renamedFiles / self.fileCount * 100)
-		except:
-			return 0
-
-	def getFolderHeading(self):
-		return f"{self.settings.getLocalizedString(30000)}: {self.settings.getLocalizedString(30052)} ({self.processedFolders}/{self.folderTotal})"
+		super().create(heading=self._getFolderHeading())
 
 	def incrementFile(self):
 
@@ -50,7 +33,19 @@ class SyncProgressionDialog(xbmcgui.DialogProgressBG):
 
 		with self.lock:
 			self.renamedFiles += count
-			super().update(self.getRenamedFilesPercentage(), heading=f"{self.settings.getLocalizedString(30000)}: {self.settings.getLocalizedString(30053)}")
+			super().update(self._getRenamedFilesPercentage(), heading=f"{self.settings.getLocalizedString(30000)}: {self.settings.getLocalizedString(30053)}")
+
+	def processFile(self, filename):
+
+		with self.lock:
+			self.processedFiles += 1
+			super().update(self._getSyncedFilesPercentage(), message=filename, heading=self._getFolderHeading())
+
+	def processFolder(self):
+
+		with self.lock:
+			self.processedFolders += 1
+			super().update(self._getSyncedFilesPercentage(), heading=self._getFolderHeading())
 
 	def processRenamedFile(self, filename):
 
@@ -60,19 +55,25 @@ class SyncProgressionDialog(xbmcgui.DialogProgressBG):
 		if self.processedFolders != self.folderTotal or self.processedFolders == 0:
 			return
 
-		super().update(self.getRenamedFilesPercentage(), message=filename, heading=f"{self.settings.getLocalizedString(30000)}: {self.settings.getLocalizedString(30053)}")
+		super().update(self._getRenamedFilesPercentage(), message=filename, heading=f"{self.settings.getLocalizedString(30000)}: {self.settings.getLocalizedString(30053)}")
 
-	def processFolder(self):
+	def _getFolderHeading(self):
+		return f"{self.settings.getLocalizedString(30000)}: {self.settings.getLocalizedString(30052)} ({self.processedFolders}/{self.folderTotal})"
 
-		with self.lock:
-			self.processedFolders += 1
-			super().update(self.getSyncedFilesPercentage(), heading=self.getFolderHeading())
+	def _getSyncedFilesPercentage(self):
 
-	def processFile(self, filename):
+		try:
+			return int(self.processedFiles / self.fileCount * 100)
+		except:
+			return 0
 
-		with self.lock:
-			self.processedFiles += 1
-			super().update(self.getSyncedFilesPercentage(), message=filename, heading=self.getFolderHeading())
+	def _getRenamedFilesPercentage(self):
+
+		try:
+			return int(self.renamedFiles / self.fileCount * 100)
+		except:
+			return 0
+
 
 class FileDeletionDialog(xbmcgui.DialogProgressBG):
 
@@ -82,18 +83,19 @@ class FileDeletionDialog(xbmcgui.DialogProgressBG):
 		self.processed = 0
 		self.heading = f"{self.settings.getLocalizedString(30000)}: {self.settings.getLocalizedString(30075)}"
 
-	def getPercentage(self):
+	def create(self):
+		super().create(heading=self.heading)
+
+	def update(self, filename):
+		super().update(self._getPercentage(), message=filename, heading=self.heading)
+
+	def _getPercentage(self):
 
 		try:
 			return int(self.processed / self.fileTotal * 100)
 		except:
 			return 0
 
-	def create(self):
-		super().create(heading=self.heading)
-
-	def update(self, filename):
-		super().update(self.getPercentage(), message=filename, heading=self.heading)
 
 class Dialog(xbmcgui.Dialog):
 

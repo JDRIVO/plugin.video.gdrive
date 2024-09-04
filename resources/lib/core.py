@@ -3,7 +3,6 @@ import sys
 import glob
 import json
 import time
-import urllib
 import datetime
 
 import xbmc
@@ -17,6 +16,7 @@ from . import accounts
 from . import filesystem
 from . import google_api
 from . import threadpool
+from .network import requester
 
 
 class Core:
@@ -41,35 +41,35 @@ class Core:
 			return
 
 		modes = {
-			"main": self.createMainMenu,
-			"register_account": self.registerAccount,
+			"accounts_cm": self.showAccountsContextMenu,
 			"add_service_account": self.addServiceAccount,
-			"validate_accounts": self.validateAccounts,
 			"delete_accounts": self.accountDeletion,
+			"delete_drive": self.deleteDrive,
+			"export_accounts": self.exportAccounts,
+			"import_accounts": self.importAccounts,
+			"force_sync_drive": self.forceSyncDrive,
+			"force_sync_drives": self.forceSyncDrives,
+			"get_sync_settings": self.getSyncSettings,
+			"list_accounts": self.listAccounts,
 			"list_drive": self.createDriveMenu,
 			"list_drives": self.createDrivesMenu,
-			"list_accounts": self.listAccounts,
 			"list_folders": self.addFolders,
-			"list_synced_folders": self.listSyncedFolders,
-			"video": self.playVideo,
-			"get_sync_settings": self.getSyncSettings,
-			"sync_folder": self.syncFolder,
-			"sync_all_folders": self.syncAllFolders,
-			"sync_multiple_folders": self.syncMultipleFolders,
-			"resolution_priority": self.resolutionPriority,
-			"force_sync": self.forceSync,
-			"force_sync_all": self.forceSyncAll,
-			"accounts_cm": self.accountsContextMenu,
 			"list_shared_drives": self.listSharedDrives,
+			"list_synced_folders": self.listSyncedFolders,
+			"main": self.createMainMenu,
+			"register_account": self.registerAccount,
+			"resolution_priority": self.resolutionPriority,
 			"search_drive": self.searchDrive,
 			"search_folder": self.searchFolder,
-			"import_accounts": self.importAccounts,
-			"export_accounts": self.exportAccounts,
-			"set_playback_account": self.setPlaybackAccount,
 			"set_alias": self.setAlias,
-			"delete_drive": self.deleteDrive,
+			"set_playback_account": self.setPlaybackAccount,
 			"set_tmdb_language": self.setTMDBlanguage,
 			"set_tmdb_region": self.setTMDBregion,
+			"sync_all_folders": self.syncAllFolders,
+			"sync_folder": self.syncFolder,
+			"sync_multiple_folders": self.syncMultipleFolders,
+			"validate_accounts": self.validateAccounts,
+			"video": self.playVideo,
 		}
 
 		if self.mode == "video":
@@ -79,61 +79,33 @@ class Core:
 
 		xbmcplugin.endOfDirectory(self.pluginHandle, succeeded=self.succeeded, cacheToDisc=self.cacheToDisk)
 
-	def accountsContextMenu(self):
-		options = [
-			self.settings.getLocalizedString(30002),
-			self.settings.getLocalizedString(30023),
-			self.settings.getLocalizedString(30159),
-		]
+	def accountDeletion(self):
 		driveID = self.settings.getParameter("drive_id")
-		accountName = self.settings.getParameter("account_name")
-		accountIndex = int(self.settings.getParameter("account_index"))
-		selection = self.dialog.contextmenu(options)
 		accounts = self.accountManager.getAccounts(driveID)
-		account = accounts[accountIndex]
+		accountNames = self.accountManager.getAccountNames(accounts)
+		selection = self.dialog.multiselect(self.settings.getLocalizedString(30158), accountNames)
 
-		if selection == 0:
-			newAccountName = self.dialog.input(self.settings.getLocalizedString(30025))
-
-			if not newAccountName:
-				return
-
-			self.accountManager.renameAccount(driveID, accountIndex, newAccountName)
-
-		elif selection == 1:
-			self.cloudService.setAccount(account)
-			tokenRefresh = self.cloudService.refreshToken()
-
-			if not tokenRefresh:
-				selection = self.dialog.yesno(
-					self.settings.getLocalizedString(30000),
-					f"{accountName} {self.settings.getLocalizedString(30019)}",
-				)
-
-				if not selection:
-					return
-
-				self.accountManager.deleteAccount(driveID, account)
-
-			else:
-				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30020))
-				return
-
-		elif selection == 2:
-			selection = self.dialog.yesno(
-				self.settings.getLocalizedString(30000),
-				f"{self.settings.getLocalizedString(30121)} {accountName}?",
-			)
-
-			if not selection:
-				return
-
-			self.accountManager.deleteAccount(driveID, account)
-
-		else:
+		if not selection:
 			return
 
+		self.accountManager.deleteAccounts(selection, accounts, driveID)
+		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30161))
 		xbmc.executebuiltin("Container.Refresh")
+
+	def addFolders(self):
+		driveID = self.settings.getParameter("drive_id")
+		folderID = self.settings.getParameter("folder_id")
+		sharedDriveID = self.settings.getParameter("shared_drive_id")
+
+		if not folderID:
+
+			if sharedDriveID:
+				folderID = sharedDriveID
+			else:
+				folderID = driveID
+
+		folders = self.getFolders(driveID, folderID)
+		self.listFolders(driveID, folders, folderID)
 
 	def addMenuItem(self, url, title, contextMenu=None, dateTime=None, isFolder=True):
 		listItem = xbmcgui.ListItem(title)
@@ -146,67 +118,56 @@ class Core:
 
 		xbmcplugin.addDirectoryItem(self.pluginHandle, url, listItem, isFolder=isFolder)
 
-	def createMainMenu(self):
-		syncRootPath = self.cache.getSyncRootPath()
+	def addServiceAccount(self):
+		accountName = self.dialog.input(self.settings.getLocalizedString(30025))
 
-		if syncRootPath:
-			self.addMenuItem(
-				syncRootPath,
-				f"[COLOR yellow][B]{self.settings.getLocalizedString(30008)}[/B][/COLOR]",
-			)
+		if not accountName:
+			return
 
-		contextMenu = [
-			(
-				self.settings.getLocalizedString(30010),
-				f"RunPlugin({self.pluginURL}?mode=force_sync_all)",
-			),
-		]
-		self.addMenuItem(
-			f"{self.pluginURL}?mode=list_drives",
-			f"[COLOR yellow][B]{self.settings.getLocalizedString(30085)}[/B][/COLOR]",
-			contextMenu,
-		)
-		xbmcplugin.setContent(self.pluginHandle, "files")
-		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_FILE)
-		self.cacheToDisk = False
+		keyFilePath = self.dialog.browse(1, self.settings.getLocalizedString(30026), "files", mask=".json")
 
-	def createDrivesMenu(self):
-		self.addMenuItem(
-			f"{self.pluginURL}?mode=register_account",
-			f"[B][COLOR yellow]{self.settings.getLocalizedString(30207)}[/COLOR][/B]",
-			isFolder=False,
-		)
+		if not keyFilePath:
+			return
 
-		for driveID, accountData in self.accounts.items():
-			alias = accountData["alias"]
+		with open(keyFilePath, "r") as key:
+			keyFile = json.loads(key.read())
 
-			if alias:
-				displayName = alias
-			else:
-				displayName = driveID
+		error = []
 
-			contextMenu = [
-				(
-					self.settings.getLocalizedString(30800),
-					f"RunPlugin({self.pluginURL}?mode=force_sync&drive_id={driveID})",
-				),
-				(
-					self.settings.getLocalizedString(30002),
-					f"RunPlugin({self.pluginURL}?mode=set_alias&drive_id={driveID})",
-				),
-				(
-					self.settings.getLocalizedString(30159),
-					f"RunPlugin({self.pluginURL}?mode=delete_drive&drive_id={driveID})",
-				)
-			]
-			self.addMenuItem(
-				f"{self.pluginURL}?mode=list_drive&drive_id={driveID}",
-				displayName,
-				contextMenu,
-			)
+		try:
+			email = keyFile["client_email"]
+		except Exception:
+			error.append("email")
 
-		xbmcplugin.setContent(self.pluginHandle, "files")
-		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL_IGNORE_FOLDERS)
+		try:
+			key = keyFile["private_key"]
+		except Exception:
+			error.append("key")
+
+		if error:
+
+			if len(error) == 2:
+				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30028))
+			elif "email" in error:
+				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30029))
+			elif "key" in error:
+				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30030))
+
+			return
+
+		account = accounts.account.Account()
+		account.name = accountName
+		account.email = email
+		account.key = key
+		self.cloudService.setAccount(account)
+		tokenRefresh = self.cloudService.refreshToken()
+
+		if not tokenRefresh:
+			return
+
+		driveID = self.settings.getParameter("drive_id")
+		self.accountManager.addAccount(account, driveID)
+		xbmc.executebuiltin("Container.Refresh")
 
 	def createDriveMenu(self):
 		driveID = self.settings.getParameter("drive_id")
@@ -216,7 +177,7 @@ class Core:
 			return
 
 		self.cloudService.setAccount(account)
-		self.refreshAccess(account.expiry)
+		self.refreshToken(account.expiry)
 		driveSettings = self.cache.getDrive(driveID)
 
 		if driveSettings:
@@ -252,128 +213,122 @@ class Core:
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
 
-	def listAccounts(self):
-		driveID = self.settings.getParameter("drive_id")
-		account = self.accountManager.getAccount(driveID)
-
-		if not account:
-			return
-
-		self.cloudService.setAccount(account)
-		self.refreshAccess(account.expiry)
-
+	def createDrivesMenu(self):
 		self.addMenuItem(
-			f"{self.pluginURL}?mode=add_service_account&drive_id={driveID}",
-			f"[B][COLOR yellow]{self.settings.getLocalizedString(30214)}[/COLOR][/B]",
-			isFolder=False,
-		)
-		self.addMenuItem(
-			f"{self.pluginURL}?mode=validate_accounts&drive_id={driveID}",
-			f"[B][COLOR yellow]{self.settings.getLocalizedString(30021)}[/COLOR][/B]",
-			isFolder=False,
-		)
-		self.addMenuItem(
-			f"{self.pluginURL}?mode=delete_accounts&drive_id={driveID}",
-			f"[B][COLOR yellow]{self.settings.getLocalizedString(30022)}[/COLOR][/B]",
+			f"{self.pluginURL}?mode=register_account",
+			f"[B][COLOR yellow]{self.settings.getLocalizedString(30207)}[/COLOR][/B]",
 			isFolder=False,
 		)
 
-		for index, account in enumerate(self.accountManager.getAccounts(driveID)):
-			accountName = account.name
+		for driveID, accountData in self.accounts.items():
+			alias = accountData["alias"]
+
+			if alias:
+				displayName = alias
+			else:
+				displayName = driveID
+
+			contextMenu = [
+				(
+					self.settings.getLocalizedString(30800),
+					f"RunPlugin({self.pluginURL}?mode=force_sync_drive&drive_id={driveID})",
+				),
+				(
+					self.settings.getLocalizedString(30002),
+					f"RunPlugin({self.pluginURL}?mode=set_alias&drive_id={driveID})",
+				),
+				(
+					self.settings.getLocalizedString(30159),
+					f"RunPlugin({self.pluginURL}?mode=delete_drive&drive_id={driveID})",
+				)
+			]
 			self.addMenuItem(
-				f"{self.pluginURL}?mode=accounts_cm&account_name={accountName}&account_index={index}&drive_id={driveID}",
-				f"[COLOR lime][B]{accountName}[/B][/COLOR]",
-				isFolder=False,
+				f"{self.pluginURL}?mode=list_drive&drive_id={driveID}",
+				displayName,
+				contextMenu,
 			)
 
 		xbmcplugin.setContent(self.pluginHandle, "files")
-		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
+		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL_IGNORE_FOLDERS)
 
-	def searchFolder(self):
-		searchQuery = self.dialog.input(self.settings.getLocalizedString(30043))
+	def createMainMenu(self):
+		syncRootPath = self.cache.getSyncRootPath()
 
-		if not searchQuery:
-			self.succeeded = False
+		if syncRootPath:
+			self.addMenuItem(
+				syncRootPath,
+				f"[COLOR yellow][B]{self.settings.getLocalizedString(30008)}[/B][/COLOR]",
+			)
+
+		contextMenu = [
+			(
+				self.settings.getLocalizedString(30010),
+				f"RunPlugin({self.pluginURL}?mode=force_sync_drives)",
+			),
+		]
+		self.addMenuItem(
+			f"{self.pluginURL}?mode=list_drives",
+			f"[COLOR yellow][B]{self.settings.getLocalizedString(30085)}[/B][/COLOR]",
+			contextMenu,
+		)
+		xbmcplugin.setContent(self.pluginHandle, "files")
+		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_FILE)
+		self.cacheToDisk = False
+
+	def deleteDrive(self):
+		confirmation = self.dialog.yesno(
+			self.settings.getLocalizedString(30000),
+			self.settings.getLocalizedString(30016),
+		)
+
+		if not confirmation:
 			return
 
-		searchQuery = searchQuery.lower()
+		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
 		driveID = self.settings.getParameter("drive_id")
-		sharedDriveID = self.settings.getParameter("shared_drive_id")
-		folderID = self.settings.getParameter("folder_id")
-		account = self.accountManager.getAccount(driveID)
-		self.cloudService.setAccount(account)
-		self.refreshAccess(account.expiry)
+		serverPort = self.settings.getSettingInt("server_port", 8011)
+		url = f"http://localhost:{serverPort}/delete_drive"
+		data = {"drive_id": driveID}
+		requester.makeRequest(url, data)
 
-		if not folderID:
+	def exportAccounts(self):
+		filePath = self.dialog.browse(0, self.settings.getLocalizedString(30034), "")
 
-			if sharedDriveID:
-				folderID = sharedDriveID
-			else:
-				folderID = driveID
-
-		folders = []
-		folderIDs = [folderID]
-		threadCount = self.settings.getSettingInt("thread_count", 1)
-		self.getSpecificFolders(searchQuery, folders, folderIDs, threadCount)
-		self.listFolders(driveID, folders)
-
-	def searchDrive(self):
-		searchQuery = self.dialog.input(self.settings.getLocalizedString(30043))
-
-		if not searchQuery:
-			self.succeeded = False
+		if not filePath:
 			return
 
+		self.accountManager.exportAccounts(filePath)
+		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30035))
+
+	def importAccounts(self):
+		filePath = self.dialog.browse(1, self.settings.getLocalizedString(30033), "files", mask=".pkl")
+
+		if not filePath:
+			return
+
+		imported = self.accountManager.mergeAccounts(filePath)
+
+		if not imported:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30037))
+		else:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30036))
+
+	def forceSyncDrive(self):
 		driveID = self.settings.getParameter("drive_id")
-		folders = self.getFolders(driveID, driveID, search=searchQuery)
-		self.listFolders(driveID, folders)
+		serverPort = self.settings.getSettingInt("server_port", 8011)
+		url = f"http://localhost:{serverPort}/sync"
+		data = {"drive_id": driveID}
+		requester.makeRequest(url, data)
 
-	def listSharedDrives(self):
-		driveID = self.settings.getParameter("drive_id")
-		account = self.accountManager.getAccount(driveID)
-		self.cloudService.setAccount(account)
-		self.refreshAccess(account.expiry)
-		sharedDrives = self.cloudService.getDrives()
-
-		if sharedDrives:
-
-			for sharedDrive in sharedDrives:
-				sharedDriveID = sharedDrive["id"]
-				sharedDriveName = sharedDrive["name"]
-				self.addMenuItem(
-					f"{self.pluginURL}?mode=list_folders&drive_id={driveID}&shared_drive_id={sharedDriveID}",
-					f"[B]{sharedDriveName}[/B]",
-				)
-
-	def getSyncSettings(self):
-		driveID = self.settings.getParameter("drive_id")
-		folderID = self.settings.getParameter("folder_id")
-		folderName = self.settings.getParameter("folder_name")
-		mode = self.settings.getParameter("sync_mode")
-		self.succeeded = False
-		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, folder_id=folderID, accounts=self.accounts, folder_name=folderName, mode=mode)
-		syncSettings.doModal()
-		del syncSettings
-
-	def addFolders(self):
-		driveID = self.settings.getParameter("drive_id")
-		folderID = self.settings.getParameter("folder_id")
-		sharedDriveID = self.settings.getParameter("shared_drive_id")
-
-		if not folderID:
-
-			if sharedDriveID:
-				folderID = sharedDriveID
-			else:
-				folderID = driveID
-
-		folders = self.getFolders(driveID, folderID)
-		self.listFolders(driveID, folders, folderID)
+	def forceSyncDrives(self):
+		serverPort = self.settings.getSettingInt("server_port", 8011)
+		url = f"http://localhost:{serverPort}/sync_all"
+		requester.makeRequest(url)
 
 	def getFolders(self, driveID, folderID, search=False):
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
-		self.refreshAccess(account.expiry)
+		self.refreshToken(account.expiry)
 		sharedWithMe = self.settings.getParameter("shared_with_me")
 		starred = self.settings.getParameter("starred")
 		return self.cloudService.listDirectory(folderID=folderID, sharedWithMe=sharedWithMe, foldersOnly=True, starred=starred, search=search)
@@ -407,6 +362,53 @@ class Core:
 
 		if folderIDs:
 			self.getSpecificFolders(searchQuery, folders, folderIDs, threadCount)
+
+	def getSyncSettings(self):
+		driveID = self.settings.getParameter("drive_id")
+		folderID = self.settings.getParameter("folder_id")
+		folderName = self.settings.getParameter("folder_name")
+		mode = self.settings.getParameter("sync_mode")
+		self.succeeded = False
+		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, folder_id=folderID, accounts=self.accounts, folder_name=folderName, mode=mode)
+		syncSettings.doModal()
+		del syncSettings
+
+	def listAccounts(self):
+		driveID = self.settings.getParameter("drive_id")
+		account = self.accountManager.getAccount(driveID)
+
+		if not account:
+			return
+
+		self.cloudService.setAccount(account)
+		self.refreshToken(account.expiry)
+
+		self.addMenuItem(
+			f"{self.pluginURL}?mode=add_service_account&drive_id={driveID}",
+			f"[B][COLOR yellow]{self.settings.getLocalizedString(30214)}[/COLOR][/B]",
+			isFolder=False,
+		)
+		self.addMenuItem(
+			f"{self.pluginURL}?mode=validate_accounts&drive_id={driveID}",
+			f"[B][COLOR yellow]{self.settings.getLocalizedString(30021)}[/COLOR][/B]",
+			isFolder=False,
+		)
+		self.addMenuItem(
+			f"{self.pluginURL}?mode=delete_accounts&drive_id={driveID}",
+			f"[B][COLOR yellow]{self.settings.getLocalizedString(30022)}[/COLOR][/B]",
+			isFolder=False,
+		)
+
+		for index, account in enumerate(self.accountManager.getAccounts(driveID)):
+			accountName = account.name
+			self.addMenuItem(
+				f"{self.pluginURL}?mode=accounts_cm&account_name={accountName}&account_index={index}&drive_id={driveID}",
+				f"[COLOR lime][B]{accountName}[/B][/COLOR]",
+				isFolder=False,
+			)
+
+		xbmcplugin.setContent(self.pluginHandle, "files")
+		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
 
 	def listFolders(self, driveID, folders, parentFolderID=None):
 		sharedWithMe = self.settings.getParameter("shared_with_me")
@@ -466,6 +468,24 @@ class Core:
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_DATE)
 
+	def listSharedDrives(self):
+		driveID = self.settings.getParameter("drive_id")
+		account = self.accountManager.getAccount(driveID)
+		self.cloudService.setAccount(account)
+		self.refreshToken(account.expiry)
+		sharedDrives = self.cloudService.getDrives()
+
+		if not sharedDrives:
+			return
+
+		for sharedDrive in sharedDrives:
+			sharedDriveID = sharedDrive["id"]
+			sharedDriveName = sharedDrive["name"]
+			self.addMenuItem(
+				f"{self.pluginURL}?mode=list_folders&drive_id={driveID}&shared_drive_id={sharedDriveID}",
+				f"[B]{sharedDriveName}[/B]",
+			)
+
 	def listSyncedFolders(self):
 		driveID = self.settings.getParameter("drive_id")
 		folders = self.cache.getFolders({"drive_id": driveID})
@@ -486,292 +506,6 @@ class Core:
 
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_FILE)
-
-	def refreshAccess(self, expiry):
-		timeNow = datetime.datetime.now()
-
-		if timeNow >= expiry:
-			self.cloudService.refreshToken()
-			self.accountManager.saveAccounts()
-
-	def forceSync(self):
-		driveID = self.settings.getParameter("drive_id")
-		serverPort = self.settings.getSettingInt("server_port", 8011)
-		url = f"http://localhost:{serverPort}/force_sync"
-		data = f"drive_id={driveID}"
-		req = urllib.request.Request(url, data.encode("utf-8"))
-		response = urllib.request.urlopen(req)
-		response.close()
-
-	def forceSyncAll(self):
-		serverPort = self.settings.getSettingInt("server_port", 8011)
-		url = f"http://localhost:{serverPort}/force_sync_all"
-		req = urllib.request.Request(url)
-		response = urllib.request.urlopen(req)
-		response.close()
-
-	def syncFolder(self):
-		driveID = self.settings.getParameter("drive_id")
-		folderID = self.settings.getParameter("folder_id")
-		folderName = self.settings.getParameter("folder_name")
-		modifiedTime = self.settings.getParameter("modified_time")
-		folders = [{"id": folderID, "name": folderName, "modifiedTime": modifiedTime}]
-		mode = self.settings.getParameter("sync_mode")
-		self.succeeded = False
-		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
-		syncSettings.doModal()
-		del syncSettings
-
-	def syncAllFolders(self):
-		driveID = self.settings.getParameter("drive_id")
-		parentFolderID = self.settings.getParameter("parent_id")
-		mode = self.settings.getParameter("sync_mode")
-		self.succeeded = False
-		folders = self.getFolders(driveID, parentFolderID)
-		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
-		syncSettings.doModal()
-		del syncSettings
-
-	def syncMultipleFolders(self):
-		driveID = self.settings.getParameter("drive_id")
-		parentFolderID = self.settings.getParameter("parent_id")
-		mode = self.settings.getParameter("sync_mode")
-		self.succeeded = False
-		folders = self.getFolders(driveID, parentFolderID)
-		folderNames = sorted([(folder["name"], index) for index, folder in enumerate(folders)], key=lambda x: x[0].lower())
-		chosenFolders = self.dialog.multiselect(self.settings.getLocalizedString(30086), [name for name, _ in folderNames])
-
-		if not chosenFolders:
-			return
-
-		folders = [folders[folderNames[index][1]] for index in chosenFolders]
-		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
-		syncSettings.doModal()
-		del syncSettings
-
-	def registerAccount(self):
-		help = self.dialog.yesno(
-			self.settings.getLocalizedString(30000),
-			"{} [B][COLOR blue]http://localhost:{}/register[/COLOR][/B] {}\n\n{} [COLOR chartreuse]{}[/COLOR] - [COLOR chartreuse]{}[/COLOR] {} [COLOR chartreuse]{}[/COLOR] [B][COLOR blue]http://localhost:{}/status[/COLOR][/B]".format(
-				self.settings.getLocalizedString(30215),
-				self.settings.getSetting("server_port"),
-				self.settings.getLocalizedString(30216),
-				self.settings.getLocalizedString(30217),
-				self.settings.getLocalizedString(30218),
-				self.settings.getLocalizedString(30219),
-				self.settings.getLocalizedString(30220),
-				self.settings.getLocalizedString(30221),
-				self.settings.getSetting("server_port"),
-			),
-			self.settings.getLocalizedString(30066),
-			self.settings.getLocalizedString(30001),
-		)
-
-		if help:
-			url = "https://github.com/user-attachments/assets/b3d0e86f-2597-40c8-8485-6d11ad085372"
-			listItem = xbmcgui.ListItem("Client ID and Client Secret creation")
-			xbmc.Player().play(url, listItem)
-
-	def addServiceAccount(self):
-		accountName = self.dialog.input(self.settings.getLocalizedString(30025))
-
-		if not accountName:
-			return
-
-		keyFilePath = self.dialog.browse(1, self.settings.getLocalizedString(30026), "files", mask=".json")
-
-		if not keyFilePath:
-			return
-
-		with open(keyFilePath, "r") as key:
-			keyFile = json.loads(key.read())
-
-		error = []
-
-		try:
-			email = keyFile["client_email"]
-		except Exception:
-			error.append("email")
-
-		try:
-			key = keyFile["private_key"]
-		except Exception:
-			error.append("key")
-
-		if error:
-
-			if len(error) == 2:
-				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30028))
-			elif "email" in error:
-				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30029))
-			elif "key" in error:
-				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30030))
-
-			return
-
-		account = accounts.account.Account()
-		account.name = accountName
-		account.email = email
-		account.key = key
-		self.cloudService.setAccount(account)
-		tokenRefresh = self.cloudService.refreshToken()
-
-		if not tokenRefresh:
-			return
-
-		driveID = self.settings.getParameter("drive_id")
-		self.accountManager.addAccount(account, driveID)
-		xbmc.executebuiltin("Container.Refresh")
-
-	def validateAccounts(self):
-		driveID = self.settings.getParameter("drive_id")
-		accounts = self.accountManager.getAccounts(driveID)
-		accountAmount = len(accounts)
-		progressDialog = xbmcgui.DialogProgress()
-		progressDialog.create(self.settings.getLocalizedString(30306))
-		deletion = False
-		count = 1
-
-		for account in list(accounts):
-			accountName = account.name
-
-			if progressDialog.iscanceled():
-				return
-
-			self.cloudService.setAccount(account)
-			tokenRefresh = self.cloudService.refreshToken()
-			progressDialog.update(int(round(count / accountAmount * 100)), accountName)
-			count += 1
-
-			if not tokenRefresh:
-				selection = self.dialog.yesno(
-					self.settings.getLocalizedString(30000),
-					f"{accountName} {self.settings.getLocalizedString(30019)}",
-				)
-
-				if not selection:
-					continue
-
-				self.accountManager.deleteAccount(driveID, account)
-				deletion = True
-
-		progressDialog.close()
-		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30020))
-
-		if deletion:
-			xbmc.executebuiltin("Container.Refresh")
-
-	def accountDeletion(self):
-		driveID = self.settings.getParameter("drive_id")
-		accounts = self.accountManager.getAccounts(driveID)
-		accountNames = self.accountManager.getAccountNames(accounts)
-		selection = self.dialog.multiselect(self.settings.getLocalizedString(30158), accountNames)
-
-		if not selection:
-			return
-
-		self.accountManager.deleteAccounts(selection, accounts, driveID)
-		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30161))
-		xbmc.executebuiltin("Container.Refresh")
-
-	def resolutionPriority(self):
-		resolutions = self.settings.getSetting("resolution_priority").split(", ")
-		resolutionOrder = ui.resolution_order.ResolutionOrder(resolutions=resolutions)
-		resolutionOrder.doModal()
-		newOrder = resolutionOrder.priorityList
-		del resolutionOrder
-
-		if newOrder:
-			self.settings.setSetting("resolution_priority", ", ".join(newOrder))
-
-	def importAccounts(self):
-		filePath = self.dialog.browse(1, self.settings.getLocalizedString(30033), "files", mask=".pkl")
-
-		if not filePath:
-			return
-
-		imported = self.accountManager.mergeAccounts(filePath)
-
-		if not imported:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30037))
-		else:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30036))
-			xbmc.executebuiltin("Container.Refresh")
-
-	def exportAccounts(self):
-		filePath = self.dialog.browse(0, self.settings.getLocalizedString(30034), "")
-
-		if not filePath:
-			return
-
-		self.accountManager.exportAccounts(filePath)
-		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30035))
-
-	def setPlaybackAccount(self):
-		accounts = self.accountManager.getDrives()
-		displayNames = [account[1] for account in accounts]
-		selection = self.dialog.select(self.settings.getLocalizedString(30014), displayNames)
-
-		if selection == -1:
-			return
-
-		self.settings.setSetting("playback_account", accounts[selection][0])
-		self.settings.setSetting("account_override", accounts[selection][1])
-
-	def setAlias(self):
-		driveID = self.settings.getParameter("drive_id")
-		alias = self.dialog.input(self.settings.getLocalizedString(30004))
-
-		if not alias:
-			return
-
-		alias = filesystem.helpers.removeProhibitedFSchars(alias)
-
-		if alias in self.accountManager.aliases:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30015))
-			return
-
-		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
-		serverPort = self.settings.getSettingInt("server_port", 8011)
-		url = f"http://localhost:{serverPort}/set_alias"
-		data = f"drive_id={driveID}&alias={alias}"
-		req = urllib.request.Request(url, data.encode("utf-8"))
-		response = urllib.request.urlopen(req)
-		response.close()
-
-	def deleteDrive(self):
-		confirmation = self.dialog.yesno(
-			self.settings.getLocalizedString(30000),
-			self.settings.getLocalizedString(30016),
-		)
-
-		if not confirmation:
-			return
-
-		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
-		driveID = self.settings.getParameter("drive_id")
-		serverPort = self.settings.getSettingInt("server_port", 8011)
-		url = f"http://localhost:{serverPort}/delete_drive"
-		data = f"drive_id={driveID}"
-		req = urllib.request.Request(url, data.encode("utf-8"))
-		response = urllib.request.urlopen(req)
-		response.close()
-
-	def setTMDBlanguage(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30810), filesystem.helpers.TMDB_LANGUAGES)
-
-		if selection == -1:
-			return
-
-		self.settings.setSetting("tmdb_language", filesystem.helpers.TMDB_LANGUAGES[selection])
-
-	def setTMDBregion(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30811), filesystem.helpers.TMDB_REGIONS)
-
-		if selection == -1:
-			return
-
-		self.settings.setSetting("tmdb_region", filesystem.helpers.TMDB_REGIONS[selection])
 
 	def playVideo(self, dbID, dbType, filePath):
 
@@ -796,7 +530,7 @@ class Core:
 
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
-		self.refreshAccess(account.expiry)
+		self.refreshToken(account.expiry)
 		transcoded = False
 
 		if encrypted:
@@ -835,17 +569,15 @@ class Core:
 
 		self.accountManager.saveAccounts()
 		serverPort = self.settings.getSettingInt("server_port", 8011)
-		url = f"http://localhost:{serverPort}/play_url"
-		data = f"encrypted={encrypted}&url={driveURL}&drive_id={driveID}&file_id={fileID}&transcoded={transcoded}"
-		req = urllib.request.Request(url, data.encode("utf-8"))
-
-		try:
-			response = urllib.request.urlopen(req)
-			response.close()
-		except urllib.error.URLError as e:
-			xbmc.log("gdrive error: " + str(e))
-			return
-
+		url = f"http://localhost:{serverPort}/initialize_stream"
+		data = {
+			"encrypted": encrypted,
+			"url": driveURL,
+			"drive_id": driveID,
+			"file_id": fileID,
+			"transcoded": transcoded,
+		}
+		requester.makeRequest(url, data)
 		item = xbmcgui.ListItem(path=f"http://localhost:{serverPort}/play")
 
 		if self.settings.getSetting("subtitles_format") == "Subtitles are named the same as STRM":
@@ -855,13 +587,265 @@ class Core:
 			subtitles = glob.glob(glob.escape(os.path.dirname(filePath) + os.sep) + "*[!gom]")
 			item.setSubtitles(subtitles)
 
-		if dbID:
-			data = f"db_id={dbID}&db_type={dbType}"
-		else:
-			data = "db_id=None&db_type=None"
-
 		xbmcplugin.setResolvedUrl(self.pluginHandle, True, item)
 		url = f"http://localhost:{serverPort}/start_player"
-		req = urllib.request.Request(url, data.encode("utf-8"))
-		response = urllib.request.urlopen(req)
-		response.close()
+		data = {"db_id": dbID, "db_type": dbType}
+		requester.makeRequest(url, data)
+
+	def refreshToken(self, expiry):
+		timeNow = datetime.datetime.now()
+
+		if timeNow >= expiry:
+			self.cloudService.refreshToken()
+			self.accountManager.saveAccounts()
+
+	def registerAccount(self):
+		help = self.dialog.yesno(
+			self.settings.getLocalizedString(30000),
+			"{} [B][COLOR blue]http://localhost:{}/register[/COLOR][/B] {}\n\n{} [COLOR chartreuse]{}[/COLOR] - [COLOR chartreuse]{}[/COLOR] {} [COLOR chartreuse]{}[/COLOR] [B][COLOR blue]http://localhost:{}/status[/COLOR][/B]".format(
+				self.settings.getLocalizedString(30215),
+				self.settings.getSetting("server_port"),
+				self.settings.getLocalizedString(30216),
+				self.settings.getLocalizedString(30217),
+				self.settings.getLocalizedString(30218),
+				self.settings.getLocalizedString(30219),
+				self.settings.getLocalizedString(30220),
+				self.settings.getLocalizedString(30221),
+				self.settings.getSetting("server_port"),
+			),
+			self.settings.getLocalizedString(30066),
+			self.settings.getLocalizedString(30001),
+		)
+
+		if help:
+			url = "https://github.com/user-attachments/assets/b3d0e86f-2597-40c8-8485-6d11ad085372"
+			listItem = xbmcgui.ListItem("Client ID and Client Secret creation")
+			xbmc.Player().play(url, listItem)
+
+	def resolutionPriority(self):
+		resolutions = self.settings.getSetting("resolution_priority").split(", ")
+		resolutionOrder = ui.resolution_order.ResolutionOrder(resolutions=resolutions)
+		resolutionOrder.doModal()
+		newOrder = resolutionOrder.priorityList
+		del resolutionOrder
+
+		if newOrder:
+			self.settings.setSetting("resolution_priority", ", ".join(newOrder))
+
+	def searchDrive(self):
+		searchQuery = self.dialog.input(self.settings.getLocalizedString(30043))
+
+		if not searchQuery:
+			self.succeeded = False
+			return
+
+		driveID = self.settings.getParameter("drive_id")
+		folders = self.getFolders(driveID, driveID, search=searchQuery)
+		self.listFolders(driveID, folders)
+
+	def searchFolder(self):
+		searchQuery = self.dialog.input(self.settings.getLocalizedString(30043))
+
+		if not searchQuery:
+			self.succeeded = False
+			return
+
+		searchQuery = searchQuery.lower()
+		driveID = self.settings.getParameter("drive_id")
+		sharedDriveID = self.settings.getParameter("shared_drive_id")
+		folderID = self.settings.getParameter("folder_id")
+		account = self.accountManager.getAccount(driveID)
+		self.cloudService.setAccount(account)
+		self.refreshToken(account.expiry)
+
+		if not folderID:
+
+			if sharedDriveID:
+				folderID = sharedDriveID
+			else:
+				folderID = driveID
+
+		folders = []
+		folderIDs = [folderID]
+		threadCount = self.settings.getSettingInt("thread_count", 1)
+		self.getSpecificFolders(searchQuery, folders, folderIDs, threadCount)
+		self.listFolders(driveID, folders)
+
+	def setAlias(self):
+		driveID = self.settings.getParameter("drive_id")
+		alias = self.dialog.input(self.settings.getLocalizedString(30004))
+
+		if not alias:
+			return
+
+		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
+		alias = filesystem.helpers.removeProhibitedFSchars(alias)
+
+		if alias in self.accountManager.aliases:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30015))
+			return
+
+		serverPort = self.settings.getSettingInt("server_port", 8011)
+		url = f"http://localhost:{serverPort}/set_alias"
+		data = {"drive_id": driveID, "alias": alias}
+		requester.makeRequest(url, data)
+
+	def setPlaybackAccount(self):
+		accounts = self.accountManager.getDrives()
+		displayNames = [account[1] for account in accounts]
+		selection = self.dialog.select(self.settings.getLocalizedString(30014), displayNames)
+
+		if selection == -1:
+			return
+
+		self.settings.setSetting("playback_account", accounts[selection][0])
+		self.settings.setSetting("account_override", accounts[selection][1])
+
+	def setTMDBlanguage(self):
+		selection = self.dialog.select(self.settings.getLocalizedString(30810), filesystem.helpers.TMDB_LANGUAGES)
+
+		if selection == -1:
+			return
+
+		self.settings.setSetting("tmdb_language", filesystem.helpers.TMDB_LANGUAGES[selection])
+
+	def setTMDBregion(self):
+		selection = self.dialog.select(self.settings.getLocalizedString(30811), filesystem.helpers.TMDB_REGIONS)
+
+		if selection == -1:
+			return
+
+		self.settings.setSetting("tmdb_region", filesystem.helpers.TMDB_REGIONS[selection])
+
+	def showAccountsContextMenu(self):
+		options = [
+			self.settings.getLocalizedString(30002),
+			self.settings.getLocalizedString(30023),
+			self.settings.getLocalizedString(30159),
+		]
+		driveID = self.settings.getParameter("drive_id")
+		accountName = self.settings.getParameter("account_name")
+		accountIndex = int(self.settings.getParameter("account_index"))
+		selection = self.dialog.contextmenu(options)
+		accounts = self.accountManager.getAccounts(driveID)
+		account = accounts[accountIndex]
+
+		if selection == 0:
+			newAccountName = self.dialog.input(self.settings.getLocalizedString(30025))
+
+			if not newAccountName:
+				return
+
+			self.accountManager.renameAccount(driveID, accountIndex, newAccountName)
+
+		elif selection == 1:
+			self.cloudService.setAccount(account)
+			tokenRefresh = self.cloudService.refreshToken()
+
+			if not tokenRefresh:
+				selection = self.dialog.yesno(
+					self.settings.getLocalizedString(30000),
+					f"{accountName} {self.settings.getLocalizedString(30019)}",
+				)
+
+				if not selection:
+					return
+
+				self.accountManager.deleteAccount(driveID, account)
+
+			else:
+				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30020))
+				return
+
+		elif selection == 2:
+			selection = self.dialog.yesno(
+				self.settings.getLocalizedString(30000),
+				f"{self.settings.getLocalizedString(30121)} {accountName}?",
+			)
+
+			if not selection:
+				return
+
+			self.accountManager.deleteAccount(driveID, account)
+
+		else:
+			return
+
+		xbmc.executebuiltin("Container.Refresh")
+
+	def syncAllFolders(self):
+		driveID = self.settings.getParameter("drive_id")
+		parentFolderID = self.settings.getParameter("parent_id")
+		mode = self.settings.getParameter("sync_mode")
+		self.succeeded = False
+		folders = self.getFolders(driveID, parentFolderID)
+		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
+		syncSettings.doModal()
+		del syncSettings
+
+	def syncFolder(self):
+		driveID = self.settings.getParameter("drive_id")
+		folderID = self.settings.getParameter("folder_id")
+		folderName = self.settings.getParameter("folder_name")
+		modifiedTime = self.settings.getParameter("modified_time")
+		folders = [{"id": folderID, "name": folderName, "modifiedTime": modifiedTime}]
+		mode = self.settings.getParameter("sync_mode")
+		self.succeeded = False
+		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
+		syncSettings.doModal()
+		del syncSettings
+
+	def syncMultipleFolders(self):
+		driveID = self.settings.getParameter("drive_id")
+		parentFolderID = self.settings.getParameter("parent_id")
+		mode = self.settings.getParameter("sync_mode")
+		self.succeeded = False
+		folders = self.getFolders(driveID, parentFolderID)
+		folderNames = sorted([(folder["name"], index) for index, folder in enumerate(folders)], key=lambda x: x[0].lower())
+		chosenFolders = self.dialog.multiselect(self.settings.getLocalizedString(30086), [name for name, _ in folderNames])
+
+		if not chosenFolders:
+			return
+
+		folders = [folders[folderNames[index][1]] for index in chosenFolders]
+		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
+		syncSettings.doModal()
+		del syncSettings
+
+	def validateAccounts(self):
+		driveID = self.settings.getParameter("drive_id")
+		accounts = self.accountManager.getAccounts(driveID)
+		accountAmount = len(accounts)
+		progressDialog = xbmcgui.DialogProgress()
+		progressDialog.create(self.settings.getLocalizedString(30306))
+		deletion = False
+		count = 1
+
+		for account in list(accounts):
+			accountName = account.name
+
+			if progressDialog.iscanceled():
+				return
+
+			self.cloudService.setAccount(account)
+			tokenRefresh = self.cloudService.refreshToken()
+			progressDialog.update(int(round(count / accountAmount * 100)), accountName)
+			count += 1
+
+			if not tokenRefresh:
+				selection = self.dialog.yesno(
+					self.settings.getLocalizedString(30000),
+					f"{accountName} {self.settings.getLocalizedString(30019)}",
+				)
+
+				if not selection:
+					continue
+
+				self.accountManager.deleteAccount(driveID, account)
+				deletion = True
+
+		progressDialog.close()
+		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30020))
+
+		if deletion:
+			xbmc.executebuiltin("Container.Refresh")

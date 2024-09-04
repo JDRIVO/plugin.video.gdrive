@@ -22,6 +22,7 @@ class Video(File):
 		self.year = video.get("year")
 		self.contents = metadata
 
+
 class Movie(Video):
 
 	def setData(self, video, metadata):
@@ -33,11 +34,8 @@ class Movie(Video):
 
 		if data:
 			title, year = data
-			return {
-				"title": title,
-				"year": year,
-				"filename": f"{title} ({year})",
-			}
+			return {"title": title, "year": year, "filename": f"{title} ({year})"}
+
 
 class Episode(Video):
 	season = None
@@ -61,8 +59,4 @@ class Episode(Video):
 
 		if data:
 			title, year = data
-			return {
-				"title": title,
-				"year": year,
-				"filename": f"{title} S{season}E{episode}",
-			}
+			return {"title": title, "year": year, "filename": f"{title} S{season}E{episode}"}

@@ -7,48 +7,48 @@ form = """
 	<title>Registration Form</title>
 	<style>
 		body {
+			align-items: center;
 			background-color: #080808;
-			margin: 0;
-			font-family: Arial, sans-serif;
 			color: white;
 			display: flex;
-			justify-content: center;
-			align-items: center;
+			font-family: Arial, sans-serif;
 			height: 100vh;
+			justify-content: center;
+			margin: 0;
 		}
 
 		.container {
-			border: 1px solid black;
-			width: 300px;
-			height: 250px;
-			padding: 20px;
-			background-color: #0F0F0F;
-			box-shadow: 5px 10px rgba(0, 0, 0, 0.5);
-			border-radius: 8px;
-			display: flex;
-			justify-content: center;
 			align-items: center;
+			background-color: #0F0F0F;
+			border-radius: 8px;
+			border: 1px solid black;
+			box-shadow: 5px 10px rgba(0, 0, 0, 0.5);
 			box-sizing: border-box;
+			display: flex;
+			height: 250px;
+			justify-content: center;
+			padding: 20px;
+			width: 300px;
 		}
 
 		form {
+			align-items: center;
 			display: flex;
 			flex-direction: column;
-			align-items: center;
 			gap: 15px;
 			width: 100%;
 		}
 
 		.input {
-			width: calc(100% - 20px);
+			background-color: #080808;
+			border-radius: 4px;
+			border: none;
+			box-sizing: border-box;
+			color: white;
 			height: 40px;
 			padding: 4px;
-			background-color: #080808;
-			color: white;
-			border: none;
-			border-radius: 4px;
-			box-sizing: border-box;
 			text-indent: 2px;
+			width: calc(100% - 20px);
 		}
 
 		.input:focus {
@@ -56,15 +56,15 @@ form = """
 		}
 
 		.button {
-			width: calc(100% - 20px);
+			background-color: #080808;
+			border-radius: 4px;
+			border: none;
+			box-sizing: border-box;
+			color: gray;
+			cursor: pointer;
 			height: 40px;
 			padding: 4px;
-			background-color: #080808;
-			color: gray;
-			border: none;
-			border-radius: 4px;
-			cursor: pointer;
-			box-sizing: border-box;
+			width: calc(100% - 20px);
 		}
 
 		.button:hover {
@@ -95,46 +95,46 @@ def status(output):
 	<title>Registration Status</title>
 	<style>
 		body {
+			align-items: center;
 			background-color: #080808;
-			margin: 0;
-			font-family: Arial, sans-serif;
 			color: white;
 			display: flex;
-			justify-content: center;
-			align-items: center;
+			font-family: Arial, sans-serif;
 			height: 100vh;
+			justify-content: center;
+			margin: 0;
 		}
 
 		.container {
-			border: 1px solid black;
-			width: 300px;
-			height: 250px;
-			padding: 20px;
-			background-color: #0F0F0F;
-			box-shadow: 5px 10px rgba(0, 0, 0, 0.5);
-			border-radius: 8px;
-			display: flex;
-			justify-content: center;
 			align-items: center;
+			background-color: #0F0F0F;
+			border-radius: 8px;
+			border: 1px solid black;
+			box-shadow: 5px 10px rgba(0, 0, 0, 0.5);
 			box-sizing: border-box;
+			display: flex;
+			height: 250px;
+			justify-content: center;
+			padding: 20px;
 			position: relative;
+			width: 300px;
 		}
 
 		.inner-box {
+			align-items: center;
 			background-color: #080808;
-			color: white;
-			padding: 20px;
 			border-radius: 8px;
-			width: calc(100%% - 40px);
-			box-sizing: border-box;
-			position: absolute;
-			top: 20px;
 			bottom: 20px;
-			left: 20px;
-			right: 20px;
+			box-sizing: border-box;
+			color: white;
 			display: flex;
 			justify-content: center;
-			align-items: center;
+			left: 20px;
+			padding: 20px;
+			position: absolute;
+			right: 20px;
+			top: 20px;
+			width: calc(100%% - 40px);
 		}
 
 		.message {

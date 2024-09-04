@@ -10,15 +10,9 @@ from ..database.database import Database
 class DatabaseEditor(Database):
 
 	def __init__(self):
-		super().__init__(self.getVideoDB())
+		super().__init__(self._getVideoDB())
 		self.settings = constants.settings
 		self.fileOperations = filesystem.operations.FileOperations()
-
-	def getVideoDB(self):
-		dbDirectory = xbmcvfs.translatePath("special://database")
-		directories = os.listdir(dbDirectory)
-		videoDatabase = [dir for dir in directories if "MyVideos" in dir][0]
-		return os.path.join(dbDirectory, videoDatabase)
 
 	def processData(self, strmPath, dirPath, filename):
 		strmData = self.settings.parseQuery(self.fileOperations.readFile(strmPath))
@@ -26,21 +20,29 @@ class DatabaseEditor(Database):
 		if not strmData or "plugin://plugin.video.gdrive/?mode" not in strmData:
 			return
 
-		fileID = self.getFileID(dirPath, filename)
+		fileID = self._getFileID(dirPath, filename)
 
 		if not fileID:
 			return
 
-		videoData = self.extractMediaData(fileID, strmData, "video")
-		audioData = self.extractMediaData(fileID, strmData, "audio")
+		videoData = self._extractMediaData(fileID, strmData, "video")
+		audioData = self._extractMediaData(fileID, strmData, "audio")
 
 		if videoData:
-			self.addMediaData(fileID, videoData, "video")
+			self._addMediaData(fileID, videoData, "video")
 
 		if audioData:
-			self.addMediaData(fileID, audioData, "audio")
+			self._addMediaData(fileID, audioData, "audio")
 
-	def extractMediaData(self, fileID, data, mediaType):
+	def _addMediaData(self, fileID, data, mediaType):
+		streamType = "0" if mediaType == "video" else "1"
+
+		if self.selectAll("streamdetails", {"idFile": fileID, "iStreamType": streamType}):
+			self.update("streamdetails", data, {"idFile": fileID, "iStreamType": streamType})
+		else:
+			self.insert("streamdetails", data)
+
+	def _extractMediaData(self, fileID, data, mediaType):
 
 		if mediaType == "video":
 			streamType = "0"
@@ -66,17 +68,11 @@ class DatabaseEditor(Database):
 
 		return data
 
-	def addMediaData(self, fileID, data, mediaType):
-
-		if mediaType == "video":
-			streamType = "0"
-		else:
-			streamType = "1"
-
-		if self.selectAll("streamdetails", {"idFile": fileID, "iStreamType": streamType}):
-			self.update("streamdetails", data, {"idFile": fileID, "iStreamType": streamType})
-		else:
-			self.insert("streamdetails", data)
-
-	def getFileID(self, dirPath, filename):
+	def _getFileID(self, dirPath, filename):
 		return self.select("files", "idFile", {"idPath": f'(SELECT idPath FROM path WHERE strPath="{dirPath + os.sep}")', "strFilename": filename})
+
+	def _getVideoDB(self):
+		dbDirectory = xbmcvfs.translatePath("special://database")
+		directories = os.listdir(dbDirectory)
+		videoDatabase = [dir for dir in directories if "MyVideos" in dir][0]
+		return os.path.join(dbDirectory, videoDatabase)

@@ -16,29 +16,46 @@ class ThreadPool(queue.Queue, xbmc.Monitor):
 
 		self.maxWorkers = maxWorkers
 		self.tasksRemaining = {"tasks": 0}
-		self.createWorkers()
+		self._createWorkers()
 
 	def __enter__(self):
 		return self
 
 	def __exit__(self, exc_type, exc_val, exc_tb):
-		self.shutdown()
+		self._shutdown()
 
-	def decrementTasks(self):
-		self.tasksRemaining["tasks"] -= 1
+	def map(self, func, args):
+		self._setTasks(len(args))
+		[self.put((func, args_)) for args_ in args]
 
-	def incrementTasks(self):
-		self.tasksRemaining["tasks"] += 1
+	def submit(self, func, *args):
+		self._incrementTasks()
+		self.put((func, args))
 
-	def setTasks(self, taskNumber):
-		self.tasksRemaining["tasks"] = taskNumber
-
-	def createWorkers(self):
+	def _createWorkers(self):
 
 		for _ in range(self.maxWorkers):
-			threading.Thread(target=self.worker).start()
+			threading.Thread(target=self._worker).start()
 
-	def worker(self):
+	def _decrementTasks(self):
+		self.tasksRemaining["tasks"] -= 1
+
+	def _incrementTasks(self):
+		self.tasksRemaining["tasks"] += 1
+
+	def _setTasks(self, taskNumber):
+		self.tasksRemaining["tasks"] = taskNumber
+
+	def _shutdown(self):
+
+		while self.tasksRemaining["tasks"] and not self.abortRequested():
+
+			if self.waitForAbort(0.1):
+				break
+
+		self.put(None)
+
+	def _worker(self):
 
 		while not self.abortRequested():
 
@@ -61,21 +78,4 @@ class ThreadPool(queue.Queue, xbmc.Monitor):
 			except Exception as e:
 				xbmc.log(f"gdrive error: {e}: {''.join(traceback.format_tb(e.__traceback__))}", xbmc.LOGERROR)
 
-			self.decrementTasks()
-
-	def map(self, func, args):
-		self.setTasks(len(args))
-		[self.put((func, args_)) for args_ in args]
-
-	def submit(self, func, *args):
-		self.incrementTasks()
-		self.put((func, args))
-
-	def shutdown(self):
-
-		while self.tasksRemaining["tasks"] and not self.abortRequested():
-
-			if self.waitForAbort(0.1):
-				break
-
-		self.put(None)
+			self._decrementTasks()

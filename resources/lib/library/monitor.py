@@ -12,12 +12,7 @@ class LibraryMonitor(xbmc.Monitor):
 	def __init__(self):
 		self.settings = constants.settings
 		self.dbEditor = editor.DatabaseEditor()
-		self.enabled = self.isEnabled()
-
-	@staticmethod
-	def jsonQuery(query):
-		query = json.dumps(query)
-		return json.loads(xbmc.executeJSONRPC(query))
+		self.enabled = self._isEnabled()
 
 	def onNotification(self, sender, method, data):
 
@@ -39,7 +34,7 @@ class LibraryMonitor(xbmc.Monitor):
 				"method": "VideoLibrary.GetMovieDetails" if type == "movie" else "VideoLibrary.GetEpisodeDetails",
 				"params": {f"{type}id": item["id"], "properties": ["file"]},
 			}
-			jsonResponse = self.jsonQuery(query)
+			jsonResponse = self._jsonQuery(query)
 			filePath = jsonResponse["result"][f"{type}details"]["file"]
 			dirPath = os.path.dirname(filePath)
 			filename = os.path.basename(filePath)
@@ -49,7 +44,12 @@ class LibraryMonitor(xbmc.Monitor):
 				self.dbEditor.processData(filePath, dirPath, filename)
 
 	def onSettingsChanged(self):
-		self.enabled = self.isEnabled()
+		self.enabled = self._isEnabled()
 
-	def isEnabled(self):
+	def _isEnabled(self):
 		return self.settings.getSetting("library_monitor")
+
+	@staticmethod
+	def _jsonQuery(query):
+		query = json.dumps(query)
+		return json.loads(xbmc.executeJSONRPC(query))

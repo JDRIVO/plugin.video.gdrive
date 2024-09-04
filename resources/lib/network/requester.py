@@ -1,6 +1,5 @@
 import json
 import urllib.error
-import urllib.parse
 import urllib.request
 
 import xbmc
@@ -13,7 +12,7 @@ HEADERS = {
 
 HEADERS_FORM_ENCODED = {
 	"User-Agent": USER_AGENT,
-	"Content-Type": "application/x-www-form-urlencoded",
+	"Content-Type": "application/json",
 }
 
 
@@ -23,14 +22,14 @@ def makeRequest(url, data=None, headers=HEADERS, cookie=None, download=False, me
 		headers = HEADERS_FORM_ENCODED
 
 	if data:
-		data = urllib.parse.urlencode(data).encode("utf-8")
+		data = json.dumps(data).encode("utf-8")
 
 	req = urllib.request.Request(url, data, headers)
 
 	try:
 		response = urllib.request.urlopen(req)
 	except urllib.error.URLError as e:
-		xbmc.log("gdrive error: " + str(e), xbmc.LOGERROR)
+		xbmc.log(f"gdrive error: {e}", xbmc.LOGERROR)
 		return {}
 
 	if download:

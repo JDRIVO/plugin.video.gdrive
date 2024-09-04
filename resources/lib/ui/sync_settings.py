@@ -1,7 +1,5 @@
 import os
-import json
 import time
-import urllib
 
 import xbmc
 import xbmcgui
@@ -11,6 +9,7 @@ import constants
 from .. import sync
 from . import dialogs
 from .. import filesystem
+from ..network import requester
 
 
 class SyncSettings(xbmcgui.WindowDialog):
@@ -45,11 +44,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.accounts = kwargs.get("accounts")
 		self.cache = sync.cache.Cache()
 		self.dialog = dialogs.Dialog()
-
-		self.folders = False
-		self.syncMode = None
-		self.syncFrequency = None
-
 		texturesPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
 		self.radioButtonFocus = os.path.join(texturesPath, "radiobutton-focus.png")
 		self.radioButtonNoFocus = os.path.join(texturesPath, "radiobutton-nofocus.png")
@@ -58,146 +52,64 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.blueTexture = os.path.join(texturesPath, "blue.png")
 		self.grayTexture = os.path.join(texturesPath, "gray.png")
 		self.dGrayTexture = os.path.join(texturesPath, "dgray.png")
-		self.createButtons()
+		self.folders = False
+		self.syncMode = None
+		self.syncFrequency = None
+		self._createButtons()
 
-	def setup(self, buttonAmount):
-		self.font = "font13"
-		self.viewportWidth = self.getWidth()
-		self.viewportHeight = self.getHeight()
-		self.windowWidth = int(1000 * self.viewportWidth / 1920)
+	def _createButtons(self):
+		self.buttonSpacing = 60
+		self.radioButtons, self.pushButtons, self.functions = {}, {}, {}
+		self.buttonSwitchesIDs = []
 
-		if self.folders:
-			self.buttonWidth = self.windowWidth - 200
+		if self.displayMode in ("new", "folder"):
+			self.folders = True
+			self._createFolderSettingsButtons()
+			self._createFolderSettingsTMDBButtons()
 		else:
-			self.buttonWidth = self.windowWidth - 50
+			self._createDriveSettingsButtons()
 
-		self.buttonHeight = 40
-		self.windowHeight = int((400 + self.buttonHeight * buttonAmount) * self.viewportHeight / 1080)
-		self.windowBottom = int((self.viewportHeight + self.windowHeight) / 2)
+		self.pushButtonIDs = [button.getId() for button in self.pushButtons]
+		self.radioButtonIDs = [button.getId() for button in self.radioButtons]
+		self.buttonOK = xbmcgui.ControlButton(
+			x=self.center + 80 if self.folders else self.center,
+			y=self.windowBottom - 60,
+			width=100,
+			height=self.buttonHeight,
+			label=constants.settings.getLocalizedString(30066),
+			font=self.font,
+			noFocusTexture=self.dGrayTexture,
+			focusTexture=self.buttonFocusTexture,
+			alignment=2 + 4,
+		)
+		self.buttonClose = xbmcgui.ControlButton(
+			x=self.center + 200 if self.folders else self.center + 120,
+			y=self.windowBottom - 60,
+			width=100,
+			height=self.buttonHeight,
+			label=constants.settings.getLocalizedString(30067),
+			font=self.font,
+			noFocusTexture=self.dGrayTexture,
+			focusTexture=self.buttonFocusTexture,
+			alignment=2 + 4,
+		)
+		self.addControls([self.buttonOK, self.buttonClose])
+		self.buttonCloseID = self.buttonClose.getId()
+		self.buttonOKID = self.buttonOK.getId()
+		self.setFocusId(self.menuButtonIDs[0])
 
-		self.x = int((self.viewportWidth - self.windowWidth) / 2)
-		self.y = int((self.viewportHeight - self.windowHeight) / 2)
-		self.center = int((self.x + self.windowWidth / 2) - (self.buttonWidth / 2))
-
-		background = xbmcgui.ControlImage(self.x, self.y, self.windowWidth, self.windowHeight, self.grayTexture)
-		bar = xbmcgui.ControlImage(self.x, self.y, self.windowWidth, 40, self.blueTexture)
-		label = xbmcgui.ControlLabel(self.x + 10, self.y + 5, 0, 0, constants.settings.getLocalizedString(30012))
-		self.addControls([background, bar, label])
-
-	def onAction(self, action):
-		action = action.getId()
-		self.buttonID = self.getFocusId()
-
-		if action == self.ACTION_BACKSPACE:
-			self.close()
-		elif action == self.ACTION_MOVE_UP:
-
-			if self.buttonID == self.menuButtonIDs[0]:
-				self.setFocus(self.buttonOK)
-			elif self.buttonID in (self.buttonCloseID, self.buttonOKID):
-				self.setFocusId(self.menuButtonIDs[-1])
-			elif self.buttonID in self.menuButtonIDs:
-				self.updateList("up")
-
-		elif action == self.ACTION_MOVE_DOWN:
-
-			if self.buttonID == self.menuButtonIDs[-1]:
-				self.setFocus(self.buttonOK)
-			elif self.buttonID in (self.buttonCloseID, self.buttonOKID):
-				self.setFocusId(self.menuButtonIDs[0])
-			elif self.buttonID in self.menuButtonIDs:
-				self.updateList("down")
-
-		elif action == self.ACTION_MOVE_RIGHT:
-
-			if self.folders:
-
-				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonOKID:
-					self.setFocus(self.buttonClose)
-				elif self.buttonID in self.buttonSwitchesIDs:
-					self.setFocusId(self.menuButtonIDs[0])
-				elif self.buttonID == self.buttonCloseID:
-					self.setFocusId(self.menuButtonIDs[0])
-
-			else:
-
-				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonOKID:
-					self.setFocus(self.buttonClose)
-				elif self.buttonID == self.buttonCloseID:
-					self.setFocusId(self.menuButtonIDs[0])
-
-		elif action == self.ACTION_MOVE_LEFT:
-
-			if self.folders:
-
-				if self.buttonID in self.menuButtonIDs:
-					self.setFocusId(self.buttonSwitchesIDs[0])
-				elif self.buttonID in self.buttonSwitchesIDs:
-					self.setFocus(self.buttonOK)
-				elif self.buttonID == self.buttonCloseID:
-					self.setFocus(self.buttonOK)
-				elif self.buttonID == self.buttonOKID:
-					self.setFocusId(self.menuButtonIDs[0])
-
-			else:
-
-				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonCloseID:
-					self.setFocus(self.buttonOK)
-				elif self.buttonID == self.buttonOKID:
-					self.setFocusId(self.menuButtonIDs[0])
-
-	def onControl(self, control):
-		self.buttonID = control.getId()
-
-		if self.buttonID == self.buttonCloseID:
-			self.close()
-		elif self.buttonID == self.buttonOKID:
-			self.setSettings()
-		elif self.buttonID in self.pushButtonIDs:
-			self.functions[control.getLabel()](control)
-		elif self.buttonID in self.buttonSwitchesIDs:
-
-			if self.buttonID == self.buttonSwitchesIDs[0]:
-				[button.setVisible(False) for button in self.TMDBButtons]
-				[button.setVisible(True) for button in self.generalSettingsButtons]
-				self.menuButtonIDs = self.generalSettingsButtonIDs
-			else:
-				[button.setVisible(False) for button in self.generalSettingsButtons]
-				[button.setVisible(True) for button in self.TMDBButtons]
-				self.menuButtonIDs = self.TMDBButtonIDs
-
-	def updateList(self, direction):
-		currentIndex = self.menuButtonIDs.index(self.buttonID)
-
-		if direction == "up":
-			newIndex = currentIndex - 1
-		elif direction == "down":
-			newIndex = currentIndex + 1
-
-			if newIndex == len(self.menuButtonIDs):
-				newIndex = 0
-
-		newButton = self.getButton(self.menuButtonIDs[newIndex])
-		self.setFocus(newButton)
-
-	def getLabel(self, buttonID):
-		return self.getButton(buttonID).getLabel()
-
-	def getButton(self, buttonID):
-		return self.getControl(buttonID)
-
-	def createDriveSettingsButtons(self):
+	def _createDriveSettingsButtons(self):
 		driveSettings = self.cache.getDrive(self.driveID)
 		self.functions = {
-			constants.settings.getLocalizedString(30049): self.setSyncMode,
-			constants.settings.getLocalizedString(30050): self.setSyncFrequency,
-			constants.settings.getLocalizedString(30061): self.stopAllFoldersSync,
-			constants.settings.getLocalizedString(30062): self.stopAllFoldersSyncAndDelete,
+			constants.settings.getLocalizedString(30049): self._setSyncMode,
+			constants.settings.getLocalizedString(30050): self._setSyncFrequency,
+			constants.settings.getLocalizedString(30061): self._stopSyncingFolders,
+			constants.settings.getLocalizedString(30062): self._stopSyncingFoldersAndDelete,
 		}
 		self.syncMode = driveSettings["task_mode"]
 		self.syncFrequency = driveSettings["task_frequency"]
 		settings = {constants.settings.getLocalizedString(30051): driveSettings["startup_sync"]}
-		self.setup(len(self.functions) + len(settings))
+		self._setup(len(self.functions) + len(settings))
 
 		for setting, value in settings.items():
 			button = xbmcgui.ControlRadioButton(
@@ -244,26 +156,26 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.generalSettingsButtonIDs = [button.getId() for button in self.generalSettingsButtons]
 		self.menuButtonIDs = self.generalSettingsButtonIDs
 
-	def createFolderSettingsButtons(self):
+	def _createFolderSettingsButtons(self):
 		settings = {}
 		folderSettings = self.cache.getFolder({"folder_id": self.folderID})
 
 		if not self.displayMode == "new" and folderSettings:
 			self.functions = {
-				constants.settings.getLocalizedString(30063): self.stopFolderSync,
-				constants.settings.getLocalizedString(30064): self.stopFolderSyncAndDelete,
+				constants.settings.getLocalizedString(30063): self._stopSyncingFolder,
+				constants.settings.getLocalizedString(30064): self._stopSyncingFolderAndDelete,
 			}
 		else:
 
 			if not self.cache.getSyncRootPath():
-				self.functions.update({constants.settings.getLocalizedString(30048): self.setSyncPath})
+				self.functions.update({constants.settings.getLocalizedString(30048): self._setSyncPath})
 
 			if not self.cache.getDrive(self.driveID):
 				settings.update({constants.settings.getLocalizedString(30051): False})
 				self.functions.update(
 					{
-						constants.settings.getLocalizedString(30049): self.setSyncMode,
-						constants.settings.getLocalizedString(30050): self.setSyncFrequency,
+						constants.settings.getLocalizedString(30049): self._setSyncMode,
+						constants.settings.getLocalizedString(30050): self._setSyncFrequency,
 					}
 				)
 
@@ -277,7 +189,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				constants.settings.getLocalizedString(30809): folderSettings["sync_artwork"] if folderSettings else constants.settings.getSetting("sync_artwork"),
 			}
 		)
-		self.setup(len(self.functions) + len(settings))
+		self._setup(len(self.functions) + len(settings))
 
 		for setting in self.functions:
 			button = xbmcgui.ControlButton(
@@ -318,11 +230,11 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.generalSettingsButtonIDs = [button.getId() for button in self.generalSettingsButtons]
 		self.menuButtonIDs = self.generalSettingsButtonIDs
 
-	def createFolderSettingsTMDBButtons(self):
+	def _createFolderSettingsTMDBButtons(self):
 		functions = {
-			constants.settings.getLocalizedString(30058): self.setSearchLanguage,
-			constants.settings.getLocalizedString(30059): self.setCountry,
-			constants.settings.getLocalizedString(30060): self.setAdultContent,
+			constants.settings.getLocalizedString(30058): self._setSearchLanguage,
+			constants.settings.getLocalizedString(30059): self._setCountry,
+			constants.settings.getLocalizedString(30060): self._setAdultContent,
 		}
 		self.functions.update(functions)
 		buttonGeneral = xbmcgui.ControlButton(
@@ -338,7 +250,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 		)
 		self.addControl(buttonGeneral)
 		self.buttonSwitchesIDs.append(buttonGeneral.getId())
-
 		buttonTMDB = xbmcgui.ControlButton(
 			x=self.center - 80,
 			y=self.y + 100,
@@ -357,9 +268,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		buttonTMDB.controlUp(buttonGeneral)
 		buttonTMDB.controlDown(buttonGeneral)
 		buttonSpacing = 60
-
-		self.TMDBButtonIDs = []
-		self.TMDBButtons = []
+		self.TMDBButtons, self.TMDBButtonIDs = [], []
 		folderSettings = self.cache.getFolder({"folder_id": self.folderID})
 
 		if folderSettings:
@@ -394,151 +303,117 @@ class SyncSettings(xbmcgui.WindowDialog):
 			self.TMDBButtonIDs.append(button.getId())
 			self.TMDBButtons.append(button)
 
-	def createButtons(self):
-		self.buttonSpacing = 60
-		self.radioButtons, self.pushButtons, self.functions = {}, {}, {}
-		self.buttonSwitchesIDs = []
+	def _getButton(self, buttonID):
+		return self.getControl(buttonID)
 
-		if self.displayMode in ("new", "folder"):
-			self.folders = True
-			self.createFolderSettingsButtons()
-			self.createFolderSettingsTMDBButtons()
-		else:
-			self.createDriveSettingsButtons()
+	def onAction(self, action):
+		action = action.getId()
+		self.buttonID = self.getFocusId()
 
-		self.pushButtonIDs = [button.getId() for button in self.pushButtons]
-		self.radioButtonIDs = [button.getId() for button in self.radioButtons]
+		if action == self.ACTION_BACKSPACE:
+			self.close()
+		elif action == self.ACTION_MOVE_UP:
 
-		self.buttonOK = xbmcgui.ControlButton(
-			x=self.center + 80 if self.folders else self.center,
-			y=self.windowBottom - 60,
-			width=100,
-			height=self.buttonHeight,
-			label=constants.settings.getLocalizedString(30066),
-			font=self.font,
-			noFocusTexture=self.dGrayTexture,
-			focusTexture=self.buttonFocusTexture,
-			alignment=2 + 4,
-		)
-		self.buttonClose = xbmcgui.ControlButton(
-			x=self.center + 200 if self.folders else self.center + 120,
-			y=self.windowBottom - 60,
-			width=100,
-			height=self.buttonHeight,
-			label=constants.settings.getLocalizedString(30067),
-			font=self.font,
-			noFocusTexture=self.dGrayTexture,
-			focusTexture=self.buttonFocusTexture,
-			alignment=2 + 4,
-		)
-		self.addControls([self.buttonOK, self.buttonClose])
-		self.buttonCloseID = self.buttonClose.getId()
-		self.buttonOKID = self.buttonOK.getId()
-		self.setFocusId(self.menuButtonIDs[0])
+			if self.buttonID == self.menuButtonIDs[0]:
+				self.setFocus(self.buttonOK)
+			elif self.buttonID in (self.buttonCloseID, self.buttonOKID):
+				self.setFocusId(self.menuButtonIDs[-1])
+			elif self.buttonID in self.menuButtonIDs:
+				self._updateList("up")
 
-	def setSyncMode(self, button):
-		modes = [constants.settings.getLocalizedString(30068), constants.settings.getLocalizedString(30069)]
-		selection = self.dialog.select(constants.settings.getLocalizedString(30049), modes)
+		elif action == self.ACTION_MOVE_DOWN:
+
+			if self.buttonID == self.menuButtonIDs[-1]:
+				self.setFocus(self.buttonOK)
+			elif self.buttonID in (self.buttonCloseID, self.buttonOKID):
+				self.setFocusId(self.menuButtonIDs[0])
+			elif self.buttonID in self.menuButtonIDs:
+				self._updateList("down")
+
+		elif action == self.ACTION_MOVE_RIGHT:
+
+			if self.folders:
+
+				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonOKID:
+					self.setFocus(self.buttonClose)
+				elif self.buttonID in self.buttonSwitchesIDs:
+					self.setFocusId(self.menuButtonIDs[0])
+				elif self.buttonID == self.buttonCloseID:
+					self.setFocusId(self.menuButtonIDs[0])
+
+			else:
+
+				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonOKID:
+					self.setFocus(self.buttonClose)
+				elif self.buttonID == self.buttonCloseID:
+					self.setFocusId(self.menuButtonIDs[0])
+
+		elif action == self.ACTION_MOVE_LEFT:
+
+			if self.folders:
+
+				if self.buttonID in self.menuButtonIDs:
+					self.setFocusId(self.buttonSwitchesIDs[0])
+				elif self.buttonID in self.buttonSwitchesIDs:
+					self.setFocus(self.buttonOK)
+				elif self.buttonID == self.buttonCloseID:
+					self.setFocus(self.buttonOK)
+				elif self.buttonID == self.buttonOKID:
+					self.setFocusId(self.menuButtonIDs[0])
+
+			else:
+
+				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonCloseID:
+					self.setFocus(self.buttonOK)
+				elif self.buttonID == self.buttonOKID:
+					self.setFocusId(self.menuButtonIDs[0])
+
+	def onControl(self, control):
+		self.buttonID = control.getId()
+
+		if self.buttonID == self.buttonCloseID:
+			self.close()
+		elif self.buttonID == self.buttonOKID:
+			self._setSettings()
+		elif self.buttonID in self.pushButtonIDs:
+			self.functions[control.getLabel()](control)
+		elif self.buttonID in self.buttonSwitchesIDs:
+
+			if self.buttonID == self.buttonSwitchesIDs[0]:
+				[button.setVisible(False) for button in self.TMDBButtons]
+				[button.setVisible(True) for button in self.generalSettingsButtons]
+				self.menuButtonIDs = self.generalSettingsButtonIDs
+			else:
+				[button.setVisible(False) for button in self.generalSettingsButtons]
+				[button.setVisible(True) for button in self.TMDBButtons]
+				self.menuButtonIDs = self.TMDBButtonIDs
+
+	def _setAdultContent(self, button):
+		options = ["true", "false"]
+		selection = self.dialog.select(constants.settings.getLocalizedString(30812), options)
 
 		if selection == -1:
 			return
 
-		selection =  modes[selection]
+		button.setLabel(label2=options[selection])
 
-		if selection != self.syncMode:
-			[button.setLabel(label2=" ") for button, setting in self.pushButtons.items() if setting == constants.settings.getLocalizedString(30050)]
-			self.syncMode = selection
-			button.setLabel(label2=self.syncMode)
+	def _setCountry(self, button):
+		selection = self.dialog.select(constants.settings.getLocalizedString(30811), filesystem.constants.TMDB_REGIONS)
 
-	def setSyncFrequency(self, button):
-
-		if not self.syncMode:
+		if selection == -1:
 			return
 
-		if self.syncMode == constants.settings.getLocalizedString(30068):
-			syncFrequency = self.dialog.numeric(0, constants.settings.getLocalizedString(30070))
-		else:
-			syncFrequency = self.dialog.numeric(2, constants.settings.getLocalizedString(30071))
+		button.setLabel(label2=filesystem.constants.TMDB_REGIONS[selection])
 
-		if syncFrequency:
-			button.setLabel(label2=syncFrequency)
+	def _setSearchLanguage(self, button):
+		selection = self.dialog.select(constants.settings.getLocalizedString(30810), filesystem.constants.TMDB_LANGUAGES)
 
-	def stopFolderSync(self, *args):
-		selection = self.dialog.yesno(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30072))
-
-		if not selection:
+		if selection == -1:
 			return
 
-		self.close()
-		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
-		data = f"folder_id={self.folderID}&delete=False"
-		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_folder_sync"
-		req = urllib.request.Request(url, data.encode("utf-8"))
-		response = urllib.request.urlopen(req)
-		response.close()
-		xbmc.executebuiltin("Container.Refresh")
-		xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
+		button.setLabel(label2=filesystem.constants.TMDB_LANGUAGES[selection])
 
-	def stopAllFoldersSync(self, *args):
-		selection = self.dialog.yesno(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30073))
-
-		if not selection:
-			return
-
-		self.close()
-		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
-		data = f"drive_id={self.driveID}&delete=False"
-		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_all_folders_sync"
-		req = urllib.request.Request(url, data.encode("utf-8"))
-		response = urllib.request.urlopen(req)
-		response.close()
-		xbmc.executebuiltin("Container.Refresh")
-		xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
-
-	def stopFolderSyncAndDelete(self, *args):
-		selection = self.dialog.yesno(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30074))
-
-		if not selection:
-			return
-
-		self.close()
-		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
-		self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30075))
-		data = f"folder_id={self.folderID}&delete=True"
-		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_folder_sync"
-		req = urllib.request.Request(url, data.encode("utf-8"))
-		response = urllib.request.urlopen(req)
-		response.close()
-		xbmc.executebuiltin("Container.Refresh")
-		xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
-
-	def stopAllFoldersSyncAndDelete(self, *args):
-		selection = self.dialog.yesno(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30076))
-
-		if not selection:
-			return
-
-		self.close()
-		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
-		self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30075))
-		data = f"drive_id={self.driveID}&delete=True"
-		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_all_folders_sync"
-		req = urllib.request.Request(url, data.encode("utf-8"))
-		response = urllib.request.urlopen(req)
-		response.close()
-		xbmc.executebuiltin("Container.Refresh")
-		xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
-
-	def setSyncPath(self, button):
-		syncRootPath = self.dialog.browse(3, constants.settings.getLocalizedString(30077), "")
-
-		if not syncRootPath:
-			return
-
-		syncRootPath = os.path.join(syncRootPath, constants.settings.getLocalizedString(30000))
-		button.setLabel(label2=syncRootPath)
-
-	def setSettings(self):
+	def _setSettings(self):
 		globalSettings, driveSettings, folderSettings = {}, {}, {}
 		settingTypes = {"global": globalSettings, "drive": driveSettings, "folder": folderSettings}
 
@@ -584,17 +459,14 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 			if driveSettings:
 				self.cache.updateDrive(driveSettings, self.driveID)
-				data = f"drive_id={self.driveID}"
+				data = {"drive_id": self.driveID}
 				url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/reset_task"
-				req = urllib.request.Request(url, data.encode("utf-8"))
-				response = urllib.request.urlopen(req)
-				response.close()
+				requester.makeRequest(url, data)
 
 			if folderSettings:
 				self.cache.updateFolder(folderSettings, self.folderID)
 
 		else:
-			xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
 			self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30082))
 
 			if globalSettings:
@@ -639,35 +511,124 @@ class SyncSettings(xbmcgui.WindowDialog):
 				)
 				self.cache.addFolder(folderSettings)
 
-			data = json.dumps(syncTaskData)
 			url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/add_sync_task"
-			req = urllib.request.Request(url, data.encode("utf-8"))
-			response = urllib.request.urlopen(req)
-			response.close()
 			xbmc.executebuiltin("Container.Refresh")
-			xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
+			requester.makeRequest(url, syncTaskData)
 
-	def setSearchLanguage(self, button):
-		selection = self.dialog.select(constants.settings.getLocalizedString(30810), filesystem.constants.TMDB_LANGUAGES)
+	def _setSyncFrequency(self, button):
+
+		if not self.syncMode:
+			return
+
+		if self.syncMode == constants.settings.getLocalizedString(30068):
+			syncFrequency = self.dialog.numeric(0, constants.settings.getLocalizedString(30070))
+		else:
+			syncFrequency = self.dialog.numeric(2, constants.settings.getLocalizedString(30071))
+
+		if syncFrequency:
+			button.setLabel(label2=syncFrequency)
+
+	def _setSyncMode(self, button):
+		modes = [constants.settings.getLocalizedString(30068), constants.settings.getLocalizedString(30069)]
+		selection = self.dialog.select(constants.settings.getLocalizedString(30049), modes)
 
 		if selection == -1:
 			return
 
-		button.setLabel(label2=filesystem.constants.TMDB_LANGUAGES[selection])
+		selection =  modes[selection]
 
-	def setCountry(self, button):
-		selection = self.dialog.select(constants.settings.getLocalizedString(30811), filesystem.constants.TMDB_REGIONS)
+		if selection != self.syncMode:
+			[button.setLabel(label2=" ") for button, setting in self.pushButtons.items() if setting == constants.settings.getLocalizedString(30050)]
+			self.syncMode = selection
+			button.setLabel(label2=self.syncMode)
 
-		if selection == -1:
+	def _setSyncPath(self, button):
+		syncRootPath = self.dialog.browse(3, constants.settings.getLocalizedString(30077), "")
+
+		if not syncRootPath:
 			return
 
-		button.setLabel(label2=filesystem.constants.TMDB_REGIONS[selection])
+		syncRootPath = os.path.join(syncRootPath, constants.settings.getLocalizedString(30000))
+		button.setLabel(label2=syncRootPath)
 
-	def setAdultContent(self, button):
-		options = ["true", "false"]
-		selection = self.dialog.select(constants.settings.getLocalizedString(30812), options)
+	def _setup(self, buttonAmount):
+		self.font = "font13"
+		self.viewportWidth = self.getWidth()
+		self.viewportHeight = self.getHeight()
+		self.windowWidth = int(1000 * self.viewportWidth / 1920)
 
-		if selection == -1:
+		if self.folders:
+			self.buttonWidth = self.windowWidth - 200
+		else:
+			self.buttonWidth = self.windowWidth - 50
+
+		self.buttonHeight = 40
+		self.windowHeight = int((400 + self.buttonHeight * buttonAmount) * self.viewportHeight / 1080)
+		self.windowBottom = int((self.viewportHeight + self.windowHeight) / 2)
+		self.x = int((self.viewportWidth - self.windowWidth) / 2)
+		self.y = int((self.viewportHeight - self.windowHeight) / 2)
+		self.center = int((self.x + self.windowWidth / 2) - (self.buttonWidth / 2))
+		background = xbmcgui.ControlImage(self.x, self.y, self.windowWidth, self.windowHeight, self.grayTexture)
+		bar = xbmcgui.ControlImage(self.x, self.y, self.windowWidth, 40, self.blueTexture)
+		label = xbmcgui.ControlLabel(self.x + 10, self.y + 5, 0, 0, constants.settings.getLocalizedString(30012))
+		self.addControls([background, bar, label])
+
+	def _stopSyncingFolder(self, *args):
+		selection = self.dialog.yesno(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30072))
+
+		if not selection:
 			return
 
-		button.setLabel(label2=options[selection])
+		self.close()
+		data = {"folder_id": self.folderID, "delete": False}
+		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_syncing_folder"
+		requester.makeRequest(url, data)
+
+	def _stopSyncingFolderAndDelete(self, *args):
+		selection = self.dialog.yesno(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30074))
+
+		if not selection:
+			return
+
+		self.close()
+		self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30075))
+		data = {"folder_id": self.folderID, "delete": True}
+		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_syncing_folder"
+		requester.makeRequest(url, data)
+
+	def _stopSyncingFolders(self, *args):
+		selection = self.dialog.yesno(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30073))
+
+		if not selection:
+			return
+
+		self.close()
+		data = {"drive_id": self.driveID, "delete": False}
+		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
+		requester.makeRequest(url, data)
+
+	def _stopSyncingFoldersAndDelete(self, *args):
+		selection = self.dialog.yesno(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30076))
+
+		if not selection:
+			return
+
+		self.close()
+		self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30075))
+		data = {"drive_id": self.driveID, "delete": True}
+		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
+		requester.makeRequest(url, data)
+
+	def _updateList(self, direction):
+		currentIndex = self.menuButtonIDs.index(self.buttonID)
+
+		if direction == "up":
+			newIndex = currentIndex - 1
+		elif direction == "down":
+			newIndex = currentIndex + 1
+
+			if newIndex == len(self.menuButtonIDs):
+				newIndex = 0
+
+		newButton = self._getButton(self.menuButtonIDs[newIndex])
+		self.setFocus(newButton)

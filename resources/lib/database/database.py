@@ -17,86 +17,67 @@ class Database:
 
 		return wrapper
 
-	@staticmethod
-	def convertToDic(rows):
-
-		if rows:
-			return [dict(row) for row in rows]
-		else:
-			return []
-
-	@staticmethod
-	def joinConditions(data):
-		return "WHERE " + " AND ".join([f'{k}="{v}"' if str(v)[0] != "(" else f'{k}={v}' for k, v in data.items()])
-
-	def connect(self):
-		self.conn = sqlite3.connect(self.database, check_same_thread=False, timeout=15)
-		self.conn.row_factory = sqlite3.Row
-		self.cursor = self.conn.cursor()
-
-	def close(self):
-		self.conn.close()
+	@lock
+	def count(self, table, condition):
+		condition = self._joinConditions(condition)
+		query = f"SELECT COUNT(*) FROM {table} {condition}"
+		self._connect()
+		self.cursor.execute(query)
+		count = self.cursor.fetchone()
+		self._close()
+		return count[0] if count else 0
 
 	@lock
 	def createTable(self, table, columns):
 		columns = ", ".join(columns)
 		query = f"CREATE TABLE IF NOT EXISTS {table} ({columns})"
-		self.connect()
+		self._connect()
 		self.cursor.execute(query)
 		self.conn.commit()
-		self.close()
+		self._close()
+
+	@lock
+	def delete(self, table, condition):
+		condition = self._joinConditions(condition)
+		query = f"DELETE FROM {table} {condition}"
+		self._connect()
+		self.cursor.execute(query)
+		self.conn.commit()
+		self._close()
 
 	@lock
 	def insert(self, table, data):
 		columns = ", ".join(data.keys())
 		placeholders = ":" + ", :".join(data.keys())
 		query = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
-		self.connect()
+		self._connect()
 		self.cursor.execute(query, data)
 		self.conn.commit()
-		self.close()
+		self._close()
 
 	@lock
 	def insertMany(self, table, columns, data):
 		placeholders = ", ".join("?" * len(columns))
 		query = f"INSERT INTO {table} {columns} VALUES ({placeholders})"
-		self.connect()
+		self._connect()
 		self.cursor.executemany(query, data)
 		self.conn.commit()
-		self.close()
-
-	@lock
-	def tableExists(self, table):
-		query = f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table}'"
-		self.connect()
-		self.cursor.execute(query)
-		row = self.cursor.fetchone()
-		self.close()
-		return row
-
-	@lock
-	def valueExists(self, table):
-		query = f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table}'"
-		self.connect()
-		self.cursor.execute(query)
-		row = self.cursor.fetchone()
-		self.close()
-		if row: return row[0]
+		self._close()
 
 	@lock
 	def select(self, table, column, condition=None, caseSensitive=True):
 		query = f"SELECT {column} FROM {table}"
 
 		if condition:
-			query += f" {self.joinConditions(condition)}"
+			query += f" {self._joinConditions(condition)}"
 
 		if not caseSensitive:
 			query += " COLLATE NOCASE"
 
-		self.connect()
+		self._connect()
 		self.cursor.execute(query)
 		row = self.cursor.fetchone()
-		self.close()
+		self._close()
 		if row: return row[0]
 
 	@lock
@@ -104,42 +85,43 @@ class Database:
 		query = f"SELECT * FROM {table}"
 
 		if condition:
-			query += f" {self.joinConditions(condition)}"
+			query += f" {self._joinConditions(condition)}"
 
 		if not caseSensitive:
 			query += " COLLATE NOCASE"
 
-		self.connect()
+		self._connect()
 		self.cursor.execute(query)
 		rows = self.cursor.fetchall()
-		self.close()
-		return self.convertToDic(rows)
+		self._close()
+		return self._convertToDic(rows)
 
 	@lock
 	def update(self, table, data, condition):
 		setValues = ", ".join([f"{column} = :{column}" for column in data.keys()])
-		condition = self.joinConditions(condition)
+		condition = self._joinConditions(condition)
 		query = f"UPDATE {table} SET {setValues} {condition}"
-		self.connect()
+		self._connect()
 		self.cursor.execute(query, data)
 		self.conn.commit()
-		self.close()
+		self._close()
 
-	@lock
-	def count(self, table, condition):
-		condition = self.joinConditions(condition)
-		query = f"SELECT COUNT(*) FROM {table} {condition}"
-		self.connect()
-		self.cursor.execute(query)
-		count = self.cursor.fetchone()
-		self.close()
-		return count[0] if count else 0
+	def _close(self):
+		self.conn.close()
 
-	@lock
-	def delete(self, table, condition):
-		condition = self.joinConditions(condition)
-		query = f"DELETE FROM {table} {condition}"
-		self.connect()
-		self.cursor.execute(query)
-		self.conn.commit()
-		self.close()
+	def _connect(self):
+		self.conn = sqlite3.connect(self.database, check_same_thread=False, timeout=15)
+		self.conn.row_factory = sqlite3.Row
+		self.cursor = self.conn.cursor()
+
+	@staticmethod
+	def _convertToDic(rows):
+
+		if rows:
+			return [dict(row) for row in rows]
+		else:
+			return []
+
+	@staticmethod
+	def _joinConditions(data):
+		return "WHERE " + " AND ".join([f'{k}="{v}"' if str(v)[0] != "(" else f"{k}={v}" for k, v in data.items()])

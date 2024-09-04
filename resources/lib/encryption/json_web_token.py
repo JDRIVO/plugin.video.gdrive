@@ -16,23 +16,15 @@ class JsonWebToken:
 
 	def __init__(self, email, key, scope, authURL):
 		self.key = key
-		self.headers = {
-			"alg": "RS256",
-			"typ": "JWT",
-		}
+		self.headers = {"alg": "RS256", "typ": "JWT"}
 		iat = time.time()
-		exp = iat + 3600
 		self.claimSet = {
 			"iss": email,
 			"scope": scope,
 			"aud": authURL,
-			"exp": exp,
+			"exp": iat + 3600,
 			"iat": iat,
 		}
-
-	@staticmethod
-	def encode(input):
-		return base64.urlsafe_b64encode(input).decode("utf-8").rstrip("=")
 
 	def create(self):
 		key = self.key.encode("utf-8")
@@ -40,12 +32,16 @@ class JsonWebToken:
 		headers = json.dumps(self.headers).encode("utf-8")
 
 		segments = []
-		segments.append(self.encode(headers))
-		segments.append(self.encode(claimSet))
+		segments.append(self._encode(headers))
+		segments.append(self._encode(claimSet))
 		sigContent = ".".join(segments).encode("utf-8")
 
 		key = RSA.import_key(key)
 		h = SHA256.new(sigContent)
 		signature = pkcs1_15.new(key).sign(h)
-		segments.append(self.encode(signature))
+		segments.append(self._encode(signature))
 		return ".".join(segments)
+
+	@staticmethod
+	def _encode(input):
+		return base64.urlsafe_b64encode(input).decode("utf-8").rstrip("=")

@@ -32,134 +32,8 @@ class Tasker:
 		self.taskLock = threading.Lock()
 		self.idLock = threading.Lock()
 		self.tasks = {}
-		self.ids, self.activeTasks = [], []
-
-	def run(self):
-		drives = self.cache.getDrives()
-
-		if not drives:
-			return
-
-		for driveSettings in drives:
-			self.spawnTask(driveSettings)
-
-	@staticmethod
-	def strptime(dateString, format):
-		return datetime.datetime(*(time.strptime(dateString, format)[:6]))
-
-	@staticmethod
-	def floorDT(dt, interval):
-		replace = (dt.minute // interval)*interval
-		return dt.replace(minute = replace, second=0, microsecond=0)
-
-	def syncAll(self):
-		drives = self.cache.getDrives()
-
-		if not drives:
-			return
-
-		for driveSettings in drives:
-			self.sync(driveSettings["drive_id"])
-
-	def sync(self, driveID):
-		self.activeTasks.append(driveID)
-
-		try:
-
-			with self.taskLock:
-				self.syncer.syncChanges(driveID)
-
-		except Exception as e:
-			xbmc.log(f"gdrive error: {e}: {''.join(traceback.format_tb(e.__traceback__))}", xbmc.LOGERROR)
-
-		self.activeTasks.remove(driveID)
-
-	def createTaskID(self):
-
-		with self.idLock:
-			id = random.random()
-
-			while id in self.ids:
-				id = random.random()
-
-			self.ids.append(id)
-			return id
-
-	def removeTask(self, driveID):
-
-		if driveID in self.tasks:
-			del self.tasks[driveID]
-			time.sleep(2)
-
-			while driveID in self.activeTasks:
-				time.sleep(0.1)
-
-	def spawnTask(self, driveSettings, startUpRun=True):
-		driveID = driveSettings["drive_id"]
-		taskMode = driveSettings["task_mode"]
-		taskFrequency = driveSettings["task_frequency"]
-		startupSync = driveSettings["startup_sync"]
-		taskID = self.createTaskID()
-		self.tasks[driveID] = taskID
-
-		if taskMode == "schedule":
-			taskFrequency = self.strptime(taskFrequency.lstrip(), "%H:%M").time()
-			threading.Thread(target=self.startScheduledTask, args=(startupSync, taskFrequency, driveID, taskID, startUpRun)).start()
-		else:
-			taskFrequency = int(taskFrequency) * 60
-			threading.Thread(target=self.startIntervalTask, args=(startupSync, taskFrequency, driveID, taskID, startUpRun)).start()
-
-	def startIntervalTask(self, startupSync, taskFrequency, driveID, taskID, startUpRun=True):
-		lastUpdate = time.time()
-
-		while not self.monitor.abortRequested():
-
-			if self.tasks.get(driveID) != taskID:
-				self.ids.remove(taskID)
-				return
-
-			if not startupSync and startUpRun:
-				startUpRun = False
-				continue
-
-			if time.time() - lastUpdate < taskFrequency and not startUpRun:
-
-				if self.monitor.waitForAbort(1):
-					break
-
-				continue
-
-			startUpRun = False
-			self.sync(driveID)
-			lastUpdate = time.time()
-
-	def startScheduledTask(self, startupSync, taskFrequency, driveID, taskID, startUpRun=True):
-
-		while not self.monitor.abortRequested():
-
-			if self.tasks.get(driveID) != taskID:
-				self.ids.remove(taskID)
-				return
-
-			if not startupSync and startUpRun:
-				startUpRun = False
-				continue
-
-			currentTime = self.floorDT(datetime.datetime.now().time(), 1)
-
-			if currentTime != taskFrequency and not startUpRun:
-
-				if self.monitor.waitForAbort(1):
-					break
-
-				continue
-
-			startUpRun = False
-			self.sync(driveID)
-
-	def resetTask(self, driveID):
-		self.removeTask(driveID)
-		self.spawnTask(self.cache.getDrive(driveID), startUpRun=False)
+		self.ids = []
+		self.activeTasks = []
 
 	def addTask(self, driveID, folders):
 		self.activeTasks.append(driveID)
@@ -207,5 +81,132 @@ class Tasker:
 			xbmc.executebuiltin(f"UpdateLibrary(video,{syncRootPath})")
 
 		self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30044))
-		self.spawnTask(driveSettings, startUpRun=False)
+		self._spawnTask(driveSettings, startUpRun=False)
 		self.activeTasks.remove(driveID)
+
+	def removeTask(self, driveID):
+
+		if driveID in self.tasks:
+			del self.tasks[driveID]
+			time.sleep(2)
+
+			while driveID in self.activeTasks:
+				time.sleep(0.1)
+
+	def resetTask(self, driveID):
+		self.removeTask(driveID)
+		self._spawnTask(self.cache.getDrive(driveID), startUpRun=False)
+
+	def run(self):
+		drives = self.cache.getDrives()
+
+		if not drives:
+			return
+
+		for driveSettings in drives:
+			self._spawnTask(driveSettings)
+
+	def sync(self, driveID):
+		self.activeTasks.append(driveID)
+
+		try:
+
+			with self.taskLock:
+				self.syncer.syncChanges(driveID)
+
+		except Exception as e:
+			xbmc.log(f"gdrive error: {e}: {''.join(traceback.format_tb(e.__traceback__))}", xbmc.LOGERROR)
+
+		self.activeTasks.remove(driveID)
+
+	def syncAll(self):
+		drives = self.cache.getDrives()
+
+		if not drives:
+			return
+
+		for driveSettings in drives:
+			self.sync(driveSettings["drive_id"])
+
+	def _createTaskID(self):
+
+		with self.idLock:
+			id = random.random()
+
+			while id in self.ids:
+				id = random.random()
+
+			self.ids.append(id)
+			return id
+
+	@staticmethod
+	def _floorDT(dt, interval):
+		replace = (dt.minute // interval)*interval
+		return dt.replace(minute = replace, second=0, microsecond=0)
+
+	def _spawnTask(self, driveSettings, startUpRun=True):
+		driveID = driveSettings["drive_id"]
+		taskMode = driveSettings["task_mode"]
+		taskFrequency = driveSettings["task_frequency"]
+		startupSync = driveSettings["startup_sync"]
+		taskID = self._createTaskID()
+		self.tasks[driveID] = taskID
+
+		if taskMode == "schedule":
+			taskFrequency = self._strptime(taskFrequency.lstrip(), "%H:%M").time()
+			threading.Thread(target=self._startScheduledTask, args=(startupSync, taskFrequency, driveID, taskID, startUpRun)).start()
+		else:
+			taskFrequency = int(taskFrequency) * 60
+			threading.Thread(target=self._startIntervalTask, args=(startupSync, taskFrequency, driveID, taskID, startUpRun)).start()
+
+	def _startIntervalTask(self, startupSync, taskFrequency, driveID, taskID, startUpRun=True):
+		lastUpdate = time.time()
+
+		while not self.monitor.abortRequested():
+
+			if self.tasks.get(driveID) != taskID:
+				self.ids.remove(taskID)
+				return
+
+			if not startupSync and startUpRun:
+				startUpRun = False
+				continue
+
+			if time.time() - lastUpdate < taskFrequency and not startUpRun:
+
+				if self.monitor.waitForAbort(1):
+					break
+
+				continue
+
+			startUpRun = False
+			self.sync(driveID)
+			lastUpdate = time.time()
+
+	def _startScheduledTask(self, startupSync, taskFrequency, driveID, taskID, startUpRun=True):
+
+		while not self.monitor.abortRequested():
+
+			if self.tasks.get(driveID) != taskID:
+				self.ids.remove(taskID)
+				return
+
+			if not startupSync and startUpRun:
+				startUpRun = False
+				continue
+
+			currentTime = self._floorDT(datetime.datetime.now().time(), 1)
+
+			if currentTime != taskFrequency and not startUpRun:
+
+				if self.monitor.waitForAbort(1):
+					break
+
+				continue
+
+			startUpRun = False
+			self.sync(driveID)
+
+	@staticmethod
+	def _strptime(dateString, format):
+		return datetime.datetime(*(time.strptime(dateString, format)[:6]))

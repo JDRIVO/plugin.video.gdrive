@@ -13,20 +13,39 @@ class Settings(xbmcaddon.Addon):
 		except Exception:
 			self.pluginQueries = None
 
+	def getParameter(self, key, default=None):
+		return self._parseValue(self.pluginQueries.get(key), default)
+
+	def getParameterInt(self, key, default=None):
+
+		try:
+			return int(self.getParameter(key))
+		except ValueError:
+			return default
+
+	def getSetting(self, key, default=None):
+		return self._parseValue(super().getSetting(key), default)
+
+	def getSettingInt(self, key, default=None):
+
+		try:
+			return int(self.getSetting(key))
+		except ValueError:
+			return default
+
 	@staticmethod
 	def parseQuery(queries):
 
 		try:
-			queries = urllib.parse.parse_qs(queries)
+			query = dict(urllib.parse.parse_qsl(queries))
 		except Exception:
 			return
 
-		query = {key: value[0] for key, value in queries.items()}
 		query["mode"] = query.get("mode", "main")
 		return query
 
 	@staticmethod
-	def parseValue(value, default):
+	def _parseValue(value, default):
 
 		if value is None:
 			return default
@@ -37,23 +56,3 @@ class Settings(xbmcaddon.Addon):
 			return valueLowerCase == "true"
 		else:
 			return value
-
-	def getParameter(self, key, default=None):
-		return self.parseValue(self.pluginQueries.get(key), default)
-
-	def getSetting(self, key, default=None):
-		return self.parseValue(super().getSetting(key), default)
-
-	def getParameterInt(self, key, default=None):
-
-		try:
-			return int(self.getParameter(key))
-		except ValueError:
-			return default
-
-	def getSettingInt(self, key, default=None):
-
-		try:
-			return int(self.getSetting(key))
-		except ValueError:
-			return default

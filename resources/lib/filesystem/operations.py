@@ -12,22 +12,15 @@ class FileOperations:
 		self.encryption = kwargs.get("encryption")
 		self.fileLock = threading.Lock()
 
-	def downloadFile(self, dirPath, filename, fileID, modifiedTime=None, encrypted=False):
-		self.createDirs(dirPath)
-		file = self.cloudService.downloadFile(fileID)
+	def createDirs(self, dirPath):
 
-		if file:
+		try:
 
-			if encrypted:
+			if not os.path.exists(dirPath):
+				os.makedirs(dirPath)
 
-				with self.fileLock:
-					filePath = helpers.generateFilePath(dirPath, filename)
-					self.encryption.decryptStream(file, filePath, modifiedTime=modifiedTime)
-
-			else:
-				filePath = self.createFile(dirPath, filename, file.read(), modifiedTime=modifiedTime)
-
-			return filePath
+		except FileExistsError:
+			return
 
 	def createFile(self, dirPath, filename, content, modifiedTime=None, mode="wb"):
 		self.createDirs(dirPath)
@@ -53,17 +46,30 @@ class FileOperations:
 		if os.path.exists(filePath):
 			os.remove(filePath)
 
-		self.deleteEmptyDirs(syncRootPath, dirPath)
+		self._deleteEmptyDirs(syncRootPath, dirPath)
 
-	def createDirs(self, dirPath):
+	def downloadFile(self, dirPath, filename, fileID, modifiedTime=None, encrypted=False):
+		self.createDirs(dirPath)
+		file = self.cloudService.downloadFile(fileID)
 
-		try:
+		if file:
 
-			if not os.path.exists(dirPath):
-				os.makedirs(dirPath)
+			if encrypted:
 
-		except FileExistsError:
-			return
+				with self.fileLock:
+					filePath = helpers.generateFilePath(dirPath, filename)
+					self.encryption.decryptStream(file, filePath, modifiedTime=modifiedTime)
+
+			else:
+				filePath = self.createFile(dirPath, filename, file.read(), modifiedTime=modifiedTime)
+
+			return filePath
+
+	@staticmethod
+	def readFile(filePath):
+
+		with open(filePath, "r") as file:
+			return file.read()
 
 	def renameFile(self, syncRootPath, oldPath, dirPath, filename):
 		self.createDirs(dirPath)
@@ -73,17 +79,17 @@ class FileOperations:
 			newPath = helpers.duplicateFileCheck(dirPath, filename, creationDate)
 			shutil.move(oldPath, newPath)
 
-		self.deleteEmptyDirs(syncRootPath, os.path.dirname(oldPath))
+		self._deleteEmptyDirs(syncRootPath, os.path.dirname(oldPath))
 		return newPath
 
 	def renameFolder(self, syncRootPath, oldPath, newPath):
 
 		if os.path.exists(oldPath):
 			shutil.move(oldPath, newPath)
-			self.deleteEmptyDirs(syncRootPath, os.path.dirname(oldPath))
+			self._deleteEmptyDirs(syncRootPath, os.path.dirname(oldPath))
 
 	@staticmethod
-	def deleteEmptyDirs(syncRootPath, dirPath):
+	def _deleteEmptyDirs(syncRootPath, dirPath):
 
 		try:
 
@@ -93,9 +99,3 @@ class FileOperations:
 
 		except OSError:
 			return
-
-	@staticmethod
-	def readFile(filePath):
-
-		with open(filePath, "r") as file:
-			return file.read()

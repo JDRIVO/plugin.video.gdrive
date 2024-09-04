@@ -26,9 +26,9 @@ class FileTree:
 	def buildTree(self, driveID, rootFolderID, folderID, parentFolderID, folderName, path, modifiedTime):
 		self.folderIDs.append(folderID)
 		self.fileTree[folderID] = Folder(folderID, parentFolderID, folderName, path, os.path.join(self.drivePath, path), modifiedTime)
-		self.getContents(driveID, rootFolderID)
+		self._getContents(driveID, rootFolderID)
 
-	def getContents(self, driveID, rootFolderID):
+	def _getContents(self, driveID, rootFolderID):
 		maxIDs = 299
 		queries = []
 
@@ -44,15 +44,15 @@ class FileTree:
 
 		def getFolders(query, parentFolderIDs):
 			items = self.cloudService.listDirectory(customQuery=query)
-			self.filterContents(items, driveID, rootFolderID, parentFolderIDs)
+			self._filterContents(items, driveID, rootFolderID, parentFolderIDs)
 
 		with threadpool.ThreadPool(self.threadCount) as pool:
 			pool.map(getFolders, queries)
 
 		if self.folderIDs:
-			self.getContents(driveID, rootFolderID)
+			self._getContents(driveID, rootFolderID)
 
-	def filterContents(self, items, driveID, rootFolderID, parentFolderIDs):
+	def _filterContents(self, items, driveID, rootFolderID, parentFolderIDs):
 		paths = set()
 
 		for item in items:

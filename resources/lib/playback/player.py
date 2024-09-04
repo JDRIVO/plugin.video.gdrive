@@ -30,37 +30,25 @@ class Player(xbmc.Player):
 			if self.monitor.waitForAbort(0.1):
 				return
 
-		Thread(target=self.updateTime).start()
+		Thread(target=self._updateTime).start()
 
 	def onPlayBackEnded(self):
 		self.close = True
+
+	def onPlayBackSeek(self, time, seekOffset):
+		self.time = time
 
 	def onPlayBackStopped(self):
 
 		if self.trackProgress and self.dbType in ("movie", "episode"):
 
 			for _ in range(3):
-				self.markVideoWatched()
+				self._markVideoWatched()
 				xbmc.sleep(1000)
 
 		self.close = True
 
-	def onPlayBackSeek(self, time, seekOffset):
-		self.time = time
-
-	def updateTime(self):
-
-		while not self.monitor.abortRequested() and not self.close:
-
-			try:
-				self.time = self.getTime()
-			except Exception:
-				pass
-
-			if self.monitor.waitForAbort(1):
-				break
-
-	def markVideoWatched(self):
+	def _markVideoWatched(self):
 
 		try:
 			videoProgress = self.time / self.videoDuration * 100
@@ -73,3 +61,15 @@ class Player(xbmc.Player):
 				xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "playcount": 1, "resume": {"position": 0, "total": 0}}}' % self.dbID)
 			elif self.dbType == "episode":
 				xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "playcount": 1, "resume": {"position": 0, "total": 0}}}' % self.dbID)
+
+	def _updateTime(self):
+
+		while not self.monitor.abortRequested() and not self.close:
+
+			try:
+				self.time = self.getTime()
+			except Exception:
+				pass
+
+			if self.monitor.waitForAbort(1):
+				break
