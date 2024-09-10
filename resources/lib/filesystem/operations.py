@@ -1,4 +1,5 @@
 import os
+import pickle
 import shutil
 import threading
 
@@ -66,6 +67,17 @@ class FileOperations:
 			return filePath
 
 	@staticmethod
+	def loadPickleFile(filePath):
+
+		try:
+
+			with open(filePath, "rb") as file:
+				return pickle.load(file)
+
+		except pickle.PickleError:
+			return
+
+	@staticmethod
 	def readFile(filePath):
 
 		with open(filePath, "r") as file:
@@ -87,6 +99,12 @@ class FileOperations:
 		if os.path.exists(oldPath):
 			shutil.move(oldPath, newPath)
 			self._deleteEmptyDirs(syncRootPath, os.path.dirname(oldPath))
+
+	@staticmethod
+	def savePickleFile(data, filePath):
+
+		with open(filePath, "wb") as file:
+			pickle.dump(data, file)
 
 	@staticmethod
 	def _deleteEmptyDirs(syncRootPath, dirPath):

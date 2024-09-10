@@ -6,7 +6,7 @@ try:
 	from Cryptodome.Hash import SHA256
 	from Cryptodome.PublicKey import RSA
 	from Cryptodome.Signature import pkcs1_15
-except Exception:
+except ImportError:
 	from Crypto.Hash import SHA256
 	from Crypto.PublicKey import RSA
 	from Crypto.Signature import pkcs1_15

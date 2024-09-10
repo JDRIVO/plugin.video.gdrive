@@ -10,7 +10,7 @@ class Settings(xbmcaddon.Addon):
 
 		try:
 			self.pluginQueries = self.parseQuery(sys.argv[2][1:])
-		except Exception:
+		except IndexError:
 			self.pluginQueries = None
 
 	def getParameter(self, key, default=None):
@@ -35,13 +35,8 @@ class Settings(xbmcaddon.Addon):
 
 	@staticmethod
 	def parseQuery(queries):
-
-		try:
-			query = dict(urllib.parse.parse_qsl(queries))
-		except Exception:
-			return
-
-		query["mode"] = query.get("mode", "main")
+		query = dict(urllib.parse.parse_qsl(queries))
+		query.setdefault("mode", "main")
 		return query
 
 	@staticmethod

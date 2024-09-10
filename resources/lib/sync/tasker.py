@@ -1,12 +1,12 @@
 import os
 import time
 import random
-import datetime
 import threading
 import traceback
 
 import xbmc
 
+import helpers
 from . import cache
 from .. import sync
 from .. import google_api
@@ -38,7 +38,7 @@ class Tasker:
 	def addTask(self, driveID, folders):
 		self.activeTasks.append(driveID)
 		self.encrypter.setup(settings=self.settings)
-		self.accountManager.loadAccounts()
+		self.accountManager.setAccounts()
 		self.accounts = self.accountManager.accounts
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
@@ -69,7 +69,8 @@ class Tasker:
 					dirPath = folder["path"]
 					modifiedTime = folder["modifiedTime"]
 					folderSettings = self.cache.getFolder({"folder_id": folderID})
-					pool.submit(self.syncer.syncFolderAdditions, syncRootPath, drivePath, dirPath, folderSettings, folderName, modifiedTime, folderID, folderID, driveID, progressDialog)
+					folder = filesystem.folder.Folder(folderID, folderID, folderName, dirPath, os.path.join(drivePath, dirPath), modifiedTime)
+					pool.submit(self.syncer.syncFolderAdditions, syncRootPath, drivePath, folder, folderSettings, progressDialog)
 
 		if progressDialog:
 			progressDialog.close()
@@ -139,11 +140,6 @@ class Tasker:
 			self.ids.append(id)
 			return id
 
-	@staticmethod
-	def _floorDT(dt, interval):
-		replace = (dt.minute // interval)*interval
-		return dt.replace(minute = replace, second=0, microsecond=0)
-
 	def _spawnTask(self, driveSettings, startUpRun=True):
 		driveID = driveSettings["drive_id"]
 		taskMode = driveSettings["task_mode"]
@@ -153,7 +149,7 @@ class Tasker:
 		self.tasks[driveID] = taskID
 
 		if taskMode == "schedule":
-			taskFrequency = self._strptime(taskFrequency.lstrip(), "%H:%M").time()
+			taskFrequency = helpers.strptime(taskFrequency.lstrip(), "%H:%M")
 			threading.Thread(target=self._startScheduledTask, args=(startupSync, taskFrequency, driveID, taskID, startUpRun)).start()
 		else:
 			taskFrequency = int(taskFrequency) * 60
@@ -195,7 +191,7 @@ class Tasker:
 				startUpRun = False
 				continue
 
-			currentTime = self._floorDT(datetime.datetime.now().time(), 1)
+			currentTime = helpers.getCurrentTime()
 
 			if currentTime != taskFrequency and not startUpRun:
 
@@ -206,7 +202,3 @@ class Tasker:
 
 			startUpRun = False
 			self.sync(driveID)
-
-	@staticmethod
-	def _strptime(dateString, format):
-		return datetime.datetime(*(time.strptime(dateString, format)[:6]))

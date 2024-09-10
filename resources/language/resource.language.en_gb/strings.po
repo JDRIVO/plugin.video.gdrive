@@ -454,92 +454,92 @@ msgid "Import media flag information from STRM"
 msgstr "Import media flag information from STRM"
 
 msgctxt "#30600"
-msgid "Streamer"
-msgstr "Streamer"
-
-msgctxt "#30601"
-msgid "Server"
-msgstr "Server"
-
-msgctxt "#30602"
-msgid "Server port (requires restart)"
-msgstr "Server port (requires restart)"
-
-msgctxt "#30603"
-msgid "Encryption"
-msgstr "Encryption"
-
-msgctxt "#30604"
-msgid "Password"
-msgstr "Password"
-
-msgctxt "#30605"
-msgid "Salt file"
-msgstr "Salt file"
-
-msgctxt "#30700"
-msgid "Dialogs"
-msgstr "Dialogs"
-
-msgctxt "#30701"
-msgid "Display initial sync progress dialog"
-msgstr "Display initial sync progress dialog"
-
-msgctxt "#30702"
-msgid "Display file deletion dialog"
-msgstr "Display file deletion dialog"
-
-msgctxt "#30800"
 msgid "Sync"
 msgstr "Sync"
 
-msgctxt "#30801"
+msgctxt "#30601"
 msgid "Threads"
 msgstr "Threads"
 
-msgctxt "#30802"
+msgctxt "#30602"
 msgid "Automatically update library"
 msgstr "Automatically update library"
 
-msgctxt "#30803"
+msgctxt "#30603"
 msgid "Sync defaults"
 msgstr "Sync defaults"
 
-msgctxt "#30804"
+msgctxt "#30604"
 msgid "Folder contains gDrive encrypted files"
 msgstr "Folder contains gDrive encrypted files"
 
-msgctxt "#30805"
+msgctxt "#30605"
 msgid "Rename videos to a Kodi friendly format"
 msgstr "Rename videos to a Kodi friendly format"
 
-msgctxt "#30806"
+msgctxt "#30606"
 msgid "Create a Kodi friendly directory structure"
 msgstr "Create a Kodi friendly directory structure"
 
-msgctxt "#30807"
+msgctxt "#30607"
 msgid "Sync NFOs"
 msgstr "Sync NFOs"
 
-msgctxt "#30808"
+msgctxt "#30608"
 msgid "Sync subtitles"
 msgstr "Sync subtitles"
 
-msgctxt "#30809"
+msgctxt "#30609"
 msgid "Sync artwork"
 msgstr "Sync artwork"
 
-msgctxt "#30810"
+msgctxt "#30610"
 msgid "TMDB search language"
 msgstr "TMDB search language"
 
-msgctxt "#30811"
+msgctxt "#30611"
 msgid "TMDB region"
 msgstr "TMDB region"
 
-msgctxt "#30812"
+msgctxt "#30612"
 msgid "TMDB adult content"
 msgstr "TMDB adult content"
+
+msgctxt "#30700"
+msgid "Streamer"
+msgstr "Streamer"
+
+msgctxt "#30701"
+msgid "Server"
+msgstr "Server"
+
+msgctxt "#30702"
+msgid "Server port (requires restart)"
+msgstr "Server port (requires restart)"
+
+msgctxt "#30703"
+msgid "Encryption"
+msgstr "Encryption"
+
+msgctxt "#30704"
+msgid "Password"
+msgstr "Password"
+
+msgctxt "#30705"
+msgid "Salt file"
+msgstr "Salt file"
+
+msgctxt "#30800"
+msgid "Dialogs"
+msgstr "Dialogs"
+
+msgctxt "#30801"
+msgid "Display initial sync progress dialog"
+msgstr "Display initial sync progress dialog"
+
+msgctxt "#30802"
+msgid "Display file deletion dialog"
+msgstr "Display file deletion dialog"
 
 msgctxt "#30900"
 msgid "Accounts"

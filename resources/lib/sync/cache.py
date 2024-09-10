@@ -4,9 +4,9 @@ import xbmcvfs
 import xbmcaddon
 
 from ..ui import dialogs
-from constants import settings
 from ..filesystem import operations
 from ..database.database import Database
+from constants import settings
 
 ADDON_PATH = xbmcvfs.translatePath(xbmcaddon.Addon().getAddonInfo("profile"))
 

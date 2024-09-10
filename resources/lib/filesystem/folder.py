@@ -1,4 +1,4 @@
-from . import helpers
+from helpers import convertTime
 
 
 class Folder:
@@ -10,7 +10,7 @@ class Folder:
 		self.remotePath = remotePath
 		self.localPath = localPath
 		self.processingPath = None
-		self.modifiedTime = helpers.convertTime(modifiedTime) if modifiedTime else None
+		self.modifiedTime = convertTime(modifiedTime) if modifiedTime else None
 		self.files = {
 			"strm": [],
 			"video": [],

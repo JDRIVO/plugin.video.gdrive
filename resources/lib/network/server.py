@@ -11,6 +11,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import xbmc
 
 import constants
+from . import helpers
+from . import registration
 from .. import ui
 from .. import sync
 from .. import accounts
@@ -18,7 +20,6 @@ from .. import playback
 from .. import encryption
 from .. import filesystem
 from .. import google_api
-from . import registration
 
 
 class ServerRunner(Thread):
@@ -89,7 +90,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		return json.loads(self.getPostData())
 
 	def handleAccountRegistration(self):
-		queries = self.parseQuery(self.getPostData())
+		queries = helpers.parseQuery(self.getPostData())
 		clientID = queries["client_id"]
 		authURL = self.server.cloudService.getAuthURL(clientID, self.server.server_port)
 		self.server.account = accounts.account.Account()
@@ -124,7 +125,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.server.fileID = postData["file_id"]
 		self.server.encrypted = postData["encrypted"]
 		self.server.transcoded = postData["transcoded"]
-		self.server.accountManager.loadAccounts()
+		self.server.accountManager.setAccounts()
 		account = self.server.accountManager.getAccount(self.server.driveID)
 		self.server.cloudService.setAccount(account)
 
@@ -134,10 +135,10 @@ class ServerHandler(BaseHTTPRequestHandler):
 			return
 
 		try:
-			start, end = re.findall("([\d]+)-([\d]*)", self.headers["range"])[0]
+			start, end = re.search("([\d]+)-([\d]*)", self.headers["range"]).group(1, 2)
 			start = int(start) if start else ""
 			end = int(end) if end else ""
-		except:
+		except AttributeError:
 			start = ""
 			end = ""
 
@@ -247,7 +248,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			if not driveID:
 				xbmc.log("gdrive error: Failed to obtain Drive ID", xbmc.LOGERROR)
 			else:
-				self.server.accountManager.loadAccounts()
+				self.server.accountManager.setAccounts()
 				self.server.accountManager.addAccount(self.server.account, driveID)
 				redirect = "/registration_succeeded"
 
@@ -287,18 +288,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 	def handleSyncAll(self):
 		self.handleResponse(200)
 		self.server.taskManager.syncAll()
-
-	def parseQuery(self, query):
-		return dict(urllib.parse.parse_qsl(query))
-
-	def parseURL(self, urlString):
-		url = urllib.parse.urlparse(urlString)
-		query = url.query
-
-		if query:
-			query = self.parseQuery(query)
-
-		return {"path": url.path, "query": query}
 
 	def sendPlayResponse(self, start, end, response, startOffset):
 
@@ -357,7 +346,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			"/sync_all": self.handleSyncAll,
 			"/status": self.handleStatusRequest,
 		}
-		parsedURL = self.parseURL(self.path)
+		parsedURL = helpers.parseURL(self.path)
 		path = parsedURL["path"]
 		query = parsedURL["query"]
 		handler = pathHandlers.get(path)

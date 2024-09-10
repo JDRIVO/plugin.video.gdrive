@@ -1,7 +1,9 @@
 import os
-import pickle
+
 import xbmcvfs
 import xbmcaddon
+
+from .. import filesystem
 
 ADDON_PATH = xbmcvfs.translatePath(xbmcaddon.Addon().getAddonInfo("profile"))
 
@@ -15,7 +17,8 @@ class AccountManager:
 
 	def __init__(self, settings):
 		self.settings = settings
-		self.loadAccounts()
+		self.fileOperations = filesystem.operations.FileOperations()
+		self.setAccounts()
 
 	def addAccount(self, account, driveID):
 		accounts = self.accounts.get(driveID)
@@ -46,7 +49,7 @@ class AccountManager:
 			self.saveAccounts()
 
 	def deleteDrive(self, driveID):
-		self.loadAccounts()
+		self.setAccounts()
 
 		if not self.accounts.get(driveID):
 			return
@@ -92,19 +95,8 @@ class AccountManager:
 	def getDrives(self):
 		return [[driveID, data["alias"] if data["alias"] else driveID] for driveID, data in self.accounts.items()]
 
-	def loadAccounts(self):
-		self.accountData = self._loadFile()
-
-		if self.accountData:
-			self.accounts = self.accountData["drives"]
-			self.aliases = self.accountData["aliases"]
-		else:
-			self.accountData = {"aliases": {}, "drives": {}}
-			self.accounts = self.accountData["drives"]
-			self.aliases = self.accountData["aliases"]
-
 	def mergeAccounts(self, filePath):
-		accounts = self._loadFile(filePath)
+		accounts = self._loadAccounts(filePath)
 
 		if not accounts:
 			return
@@ -133,9 +125,18 @@ class AccountManager:
 		self.saveAccounts()
 
 	def saveAccounts(self, filePath=ACCOUNTS_FILE):
+		self.fileOperations.savePickleFile(self.accountData, filePath)
 
-		with open(filePath, "wb") as accounts:
-			pickle.dump(self.accountData, accounts)
+	def setAccounts(self):
+		self.accountData = self._loadAccounts()
+
+		if self.accountData:
+			self.accounts = self.accountData["drives"]
+			self.aliases = self.accountData["aliases"]
+		else:
+			self.accountData = {"aliases": {}, "drives": {}}
+			self.accounts = self.accountData["drives"]
+			self.aliases = self.accountData["aliases"]
 
 	def setAlias(self, driveID, alias):
 		currentAlias = self.getAlias(driveID)
@@ -147,13 +148,5 @@ class AccountManager:
 		self.accounts[driveID]["alias"] = alias
 		self.saveAccounts()
 
-	@staticmethod
-	def _loadFile(filePath=ACCOUNTS_FILE):
-
-		try:
-
-			with open(filePath, "rb") as accounts:
-				return pickle.load(accounts)
-
-		except Exception:
-			return
+	def _loadAccounts(self, filePath=ACCOUNTS_FILE):
+		return self.fileOperations.loadPickleFile(filePath)

@@ -64,14 +64,14 @@ class SyncProgressionDialog(xbmcgui.DialogProgressBG):
 
 		try:
 			return int(self.processedFiles / self.fileCount * 100)
-		except:
+		except ZeroDivisionError:
 			return 0
 
 	def _getRenamedFilesPercentage(self):
 
 		try:
 			return int(self.renamedFiles / self.fileCount * 100)
-		except:
+		except ZeroDivisionError:
 			return 0
 
 
@@ -93,7 +93,7 @@ class FileDeletionDialog(xbmcgui.DialogProgressBG):
 
 		try:
 			return int(self.processed / self.fileTotal * 100)
-		except:
+		except ZeroDivisionError:
 			return 0
 
 

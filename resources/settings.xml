@@ -107,57 +107,9 @@
 				</setting>
 			</group>
 		</category>
-		<category id="streamer" label="30600" help="">
-			<group id="1" label="30601">
-				<setting id="server_port" type="integer" label="30602" help="">
-					<level>0</level>
-					<default>8011</default>
-					<control type="edit" format="integer">
-						<heading>30602</heading>
-					</control>
-				</setting>
-			</group>
-			<group id="2" label="30603">
-				<setting id="crypto_password" type="string" label="30604" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="edit" format="string">
-						<heading>30604</heading>
-					</control>
-				</setting>
-				<setting id="crypto_salt" type="path" label="30605" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<writable>false</writable>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="button" format="file">
-						<heading>30605</heading>
-					</control>
-				</setting>
-			</group>
-		</category>
-		<category id="dialog" label="30700" help="">
+		<category id="sync" label="30600" help="">
 			<group id="1">
-				<setting id="sync_progress_dialog" type="boolean" label="30701" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="file_deletion_dialog" type="boolean" label="30702" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-			</group>
-		</category>
-		<category id="sync" label="30800" help="">
-			<group id="1">
-				<setting id="thread_count" type="integer" label="30801" help="">
+				<setting id="thread_count" type="integer" label="30601" help="">
 					<level>0</level>
 					<default>8</default>
 					<constraints>
@@ -169,44 +121,44 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="update_library" type="boolean" label="30802" help="">
+				<setting id="update_library" type="boolean" label="30602" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
 			</group>
-			<group id="2" label="30803">
-				<setting id="contains_encrypted" type="boolean" label="30804" help="">
+			<group id="2" label="30603">
+				<setting id="contains_encrypted" type="boolean" label="30604" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="file_renaming" type="boolean" label="30805" help="">
+				<setting id="file_renaming" type="boolean" label="30605" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="folder_restructure" type="boolean" label="30806" help="">
+				<setting id="folder_restructure" type="boolean" label="30606" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_nfo" type="boolean" label="30807" help="">
+				<setting id="sync_nfo" type="boolean" label="30607" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_subtitles" type="boolean" label="30808" help="">
+				<setting id="sync_subtitles" type="boolean" label="30608" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_artwork" type="boolean" label="30809" help="">
+				<setting id="sync_artwork" type="boolean" label="30609" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="tmdb_language" type="string" label="30810" help="">
+				<setting id="tmdb_language" type="string" label="30610" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -216,7 +168,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_language)</data>
 					</control>
 				</setting>
-				<setting id="tmdb_region" type="string" label="30811" help="">
+				<setting id="tmdb_region" type="string" label="30611" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -226,7 +178,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_region)</data>
 					</control>
 				</setting>
-				<setting id="tmdb_adult" type="string" label="30812" help="">
+				<setting id="tmdb_adult" type="string" label="30612" help="">
 					<level>0</level>
 					<default>false</default>
 					<constraints>
@@ -236,8 +188,56 @@
 						</options>
 					</constraints>
 					<control type="list" format="string">
-						<heading>30812</heading>
+						<heading>30612</heading>
 					</control>
+				</setting>
+			</group>
+		</category>
+		<category id="streamer" label="30700" help="">
+			<group id="1" label="30701">
+				<setting id="server_port" type="integer" label="30702" help="">
+					<level>0</level>
+					<default>8011</default>
+					<control type="edit" format="integer">
+						<heading>30702</heading>
+					</control>
+				</setting>
+			</group>
+			<group id="2" label="30703">
+				<setting id="crypto_password" type="string" label="30704" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="edit" format="string">
+						<heading>30704</heading>
+					</control>
+				</setting>
+				<setting id="crypto_salt" type="path" label="30705" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<writable>false</writable>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="file">
+						<heading>30705</heading>
+					</control>
+				</setting>
+			</group>
+		</category>
+		<category id="dialog" label="30800" help="">
+			<group id="1">
+				<setting id="sync_progress_dialog" type="boolean" label="30801" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="file_deletion_dialog" type="boolean" label="30802" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
 				</setting>
 			</group>
 		</category>

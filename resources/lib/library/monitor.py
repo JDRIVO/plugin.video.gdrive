@@ -5,6 +5,7 @@ import xbmc
 
 import constants
 from . import editor
+from helpers import sendJSONRPCCommand
 
 
 class LibraryMonitor(xbmc.Monitor):
@@ -34,7 +35,7 @@ class LibraryMonitor(xbmc.Monitor):
 				"method": "VideoLibrary.GetMovieDetails" if type == "movie" else "VideoLibrary.GetEpisodeDetails",
 				"params": {f"{type}id": item["id"], "properties": ["file"]},
 			}
-			jsonResponse = self._jsonQuery(query)
+			jsonResponse = sendJSONRPCCommand(query)
 			filePath = jsonResponse["result"][f"{type}details"]["file"]
 			dirPath = os.path.dirname(filePath)
 			filename = os.path.basename(filePath)
@@ -48,8 +49,3 @@ class LibraryMonitor(xbmc.Monitor):
 
 	def _isEnabled(self):
 		return self.settings.getSetting("library_monitor")
-
-	@staticmethod
-	def _jsonQuery(query):
-		query = json.dumps(query)
-		return json.loads(xbmc.executeJSONRPC(query))

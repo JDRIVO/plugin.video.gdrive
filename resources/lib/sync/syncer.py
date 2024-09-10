@@ -2,11 +2,12 @@ import os
 
 import xbmc
 
-from .. import filesystem
+from ..filesystem import helpers
+from ..filesystem import processor
 from ..threadpool import threadpool
-from ..filesystem.constants import *
 from ..filesystem.tree import FileTree
 from ..filesystem.folder import Folder
+from ..filesystem.constants import MEDIA_ASSETS
 
 
 class Syncer:
@@ -18,8 +19,8 @@ class Syncer:
 		self.fileOperations = fileOperations
 		self.settings = settings
 		self.cache = cache
-		self.remoteFileProcessor = filesystem.processor.RemoteFileProcessor(self.cloudService, self.fileOperations, self.settings, self.cache)
-		self.localFileProcessor = filesystem.processor.LocalFileProcessor(self.cloudService, self.fileOperations, self.settings, self.cache)
+		self.remoteFileProcessor = processor.RemoteFileProcessor(self.cloudService, self.fileOperations, self.settings, self.cache)
+		self.localFileProcessor = processor.LocalFileProcessor(self.cloudService, self.fileOperations, self.settings, self.cache)
 
 	def syncChanges(self, driveID):
 		account = self.accountManager.getAccount(driveID)
@@ -30,7 +31,7 @@ class Syncer:
 		drivePath = os.path.join(syncRootPath, driveSettings["local_path"])
 		changes, pageToken = self.cloudService.getChanges(driveSettings["page_token"])
 
-		if not changes:
+		if not changes or not pageToken:
 			return
 
 		changes = self._sortChanges(changes)
@@ -49,7 +50,7 @@ class Syncer:
 			try:
 				# shared items that google automatically adds to an account don't have parentFolderIDs
 				parentFolderID = item["parents"][0]
-			except:
+			except KeyError:
 				continue
 
 			if item["trashed"]:
@@ -76,9 +77,10 @@ class Syncer:
 
 		self.cache.updateDrive({"page_token": pageToken}, driveID)
 
-	def syncFolderAdditions(self, syncRootPath, drivePath, dirPath, folderSettings, folderName, modifiedTime, folderID, parentFolderID, driveID, progressDialog=None, syncedIDs=None):
+	def syncFolderAdditions(self, syncRootPath, drivePath, folder, folderSettings, progressDialog=None, syncedIDs=None):
 		syncRootPath = syncRootPath + os.sep
-		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
+		excludedTypes = helpers.getExcludedTypes(folderSettings)
+		driveID = folderSettings["drive_id"]
 		rootFolderID = folderSettings["folder_id"]
 		folderRestructure = folderSettings["folder_restructure"]
 		fileRenaming = folderSettings["file_renaming"]
@@ -89,8 +91,8 @@ class Syncer:
 		else:
 			encrypter = None
 
-		fileTree = FileTree(self.cloudService, self.cache, drivePath, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs)
-		fileTree.buildTree(driveID, rootFolderID, folderID, parentFolderID, folderName, dirPath, modifiedTime)
+		fileTree = FileTree(self.cloudService, self.cache, driveID, drivePath, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs)
+		fileTree.buildTree(folder)
 
 		with threadpool.ThreadPool(threadCount) as pool:
 
@@ -121,7 +123,7 @@ class Syncer:
 
 			try:
 				os.utime(folder.localPath, (modifiedTime, modifiedTime))
-			except:
+			except os.error:
 				continue
 
 	def _syncFileAdditions(self, files, syncRootPath, driveID):
@@ -226,14 +228,14 @@ class Syncer:
 			self.cache.addDirectory(directory)
 
 		folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
-		excludedTypes = filesystem.helpers.getExcludedTypes(folderSettings)
+		excludedTypes = helpers.getExcludedTypes(folderSettings)
 
 		if folderSettings["contains_encrypted"]:
 			encrypter = self.encrypter
 		else:
 			encrypter = None
 
-		file = filesystem.helpers.makeFile(file, excludedTypes, encrypter)
+		file = helpers.makeFile(file, excludedTypes, encrypter)
 
 		if not file:
 			return
@@ -306,7 +308,8 @@ class Syncer:
 			folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
 			modifiedTime = folder["modifiedTime"]
 			dirPath = self.cache.getUniqueDirectoryPath(driveID, dirPath)
-			self.syncFolderAdditions(syncRootPath, drivePath, dirPath, folderSettings, folderName, modifiedTime, folderID, parentFolderID, driveID, syncedIDs=syncedIDs)
+			folder = Folder(folderID, parentFolderID, folderName, dirPath, os.path.join(drivePath, dirPath), modifiedTime=modifiedTime)
+			self.syncFolderAdditions(syncRootPath, drivePath, folder, folderSettings, syncedIDs=syncedIDs)
 			return
 
 		# existing folder
@@ -375,7 +378,7 @@ class Syncer:
 				trashed.append(item)
 				continue
 
-			item["name"] = filesystem.helpers.removeProhibitedFSchars(item["name"])
+			item["name"] = helpers.removeProhibitedFSchars(item["name"])
 
 			if item["mimeType"] == "application/vnd.google-apps.folder":
 				cachedDirectory = self.cache.getDirectory({"folder_id": item["id"]})

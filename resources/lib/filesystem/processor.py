@@ -3,7 +3,7 @@ import re
 import threading
 
 from . import helpers
-from .constants import *
+from .constants import ARTWORK
 from ..library import editor
 from ..threadpool import threadpool
 

@@ -54,14 +54,13 @@ class GoogleDrive:
 			"pageSize": "1000",
 		}
 		changes = []
-		nextPageToken = True
 
-		while nextPageToken:
+		while pageToken:
 			url = network.helpers.addQueryString(API["changes"], params)
 			response = network.requester.makeRequest(url, headers=self.getHeaders())
-			nextPageToken = response.get("nextPageToken")
+			pageToken = response.get("nextPageToken")
 			changes += response.get("changes")
-			params["pageToken"] = nextPageToken
+			params["pageToken"] = pageToken
 
 		return changes, response.get("newStartPageToken")
 
@@ -81,7 +80,7 @@ class GoogleDrive:
 
 			try:
 				dirName, folderID = response["name"], response["parents"][0]
-			except Exception:
+			except KeyError:
 				return None, None
 
 			dirName = filesystem.helpers.removeProhibitedFSchars(dirName)
@@ -169,7 +168,7 @@ class GoogleDrive:
 		url = f"https://drive.google.com/get_video_info?docid={fileID}"
 		self.account.driveStream = None
 		responseData, cookie = network.requester.makeRequest(url, headers=self.getHeaders(), cookie=True)
-		self.account.driveStream = re.findall("DRIVE_STREAM=(.*?);", cookie)[0]
+		self.account.driveStream = re.search("DRIVE_STREAM=(.*?);", cookie).group(1)
 
 		for _ in range(5):
 			responseData = urllib.parse.unquote(responseData)
@@ -197,9 +196,9 @@ class GoogleDrive:
 			resolutionMap[resolution] = itag
 			streams[itag] = {"resolution": resolution}
 
-		for r in re.finditer("\@([^\@]+)", urls):
+		for r in re.finditer("\@([^\@;]+)", urls):
 			videoURL = r.group(1)
-			itag = re.findall("itag=([\d]+)", videoURL)[0]
+			itag = re.search("itag=([\d]+)", videoURL).group(1)
 			streams[itag]["url"] = f"https://{videoURL}|{self.getHeadersEncoded()}"
 
 		if streams and resolutionPriority:

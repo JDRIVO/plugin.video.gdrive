@@ -1,16 +1,17 @@
 import os
 
 from . import helpers
-from .constants import *
 from .folder import Folder
+from .constants import MEDIA_ASSETS
 from ..threadpool import threadpool
 
 
 class FileTree:
 
-	def __init__(self, cloudService, cache, drivePath, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs):
+	def __init__(self, cloudService, cache, driveID, drivePath, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs):
 		self.cloudService = cloudService
 		self.cache = cache
+		self.driveID = driveID
 		self.drivePath = drivePath
 		self.progressDialog = progressDialog
 		self.threadCount = threadCount
@@ -23,12 +24,13 @@ class FileTree:
 	def __iter__(self):
 		return iter(self.fileTree.values())
 
-	def buildTree(self, driveID, rootFolderID, folderID, parentFolderID, folderName, path, modifiedTime):
-		self.folderIDs.append(folderID)
-		self.fileTree[folderID] = Folder(folderID, parentFolderID, folderName, path, os.path.join(self.drivePath, path), modifiedTime)
-		self._getContents(driveID, rootFolderID)
+	def buildTree(self, rootFolder):
+		rootFolderID = rootFolder.id
+		self.folderIDs.append(rootFolderID)
+		self.fileTree[rootFolderID] = rootFolder
+		self._getContents()
 
-	def _getContents(self, driveID, rootFolderID):
+	def _getContents(self):
 		maxIDs = 299
 		queries = []
 
@@ -44,15 +46,15 @@ class FileTree:
 
 		def getFolders(query, parentFolderIDs):
 			items = self.cloudService.listDirectory(customQuery=query)
-			self._filterContents(items, driveID, rootFolderID, parentFolderIDs)
+			self._filterContents(items, parentFolderIDs)
 
 		with threadpool.ThreadPool(self.threadCount) as pool:
 			pool.map(getFolders, queries)
 
 		if self.folderIDs:
-			self._getContents(driveID, rootFolderID)
+			self._getContents()
 
-	def _filterContents(self, items, driveID, rootFolderID, parentFolderIDs):
+	def _filterContents(self, items, parentFolderIDs):
 		paths = set()
 
 		for item in items:
@@ -73,7 +75,7 @@ class FileTree:
 				copy = 1
 
 				if self.syncedIDs:
-					path = self.cache.getUniqueDirectoryPath(driveID, path, paths=paths)
+					path = self.cache.getUniqueDirectoryPath(self.driveID, path, paths=paths)
 
 				while path.lower() in paths:
 					path = f"{path_} ({copy})"

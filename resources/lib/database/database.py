@@ -1,6 +1,8 @@
 import sqlite3
 import threading
 
+from . import db_helpers
+
 
 class Database:
 
@@ -13,13 +15,17 @@ class Database:
 		def wrapper(self, *args, **kwargs):
 
 			with self.dbLock:
-				return func(self, *args, **kwargs)
+
+				try:
+					return func(self, *args, **kwargs)
+				except sqlite3.Error:
+					return
 
 		return wrapper
 
 	@lock
 	def count(self, table, condition):
-		condition = self._joinConditions(condition)
+		condition = db_helpers.joinConditions(condition)
 		query = f"SELECT COUNT(*) FROM {table} {condition}"
 		self._connect()
 		self.cursor.execute(query)
@@ -38,7 +44,7 @@ class Database:
 
 	@lock
 	def delete(self, table, condition):
-		condition = self._joinConditions(condition)
+		condition = db_helpers.joinConditions(condition)
 		query = f"DELETE FROM {table} {condition}"
 		self._connect()
 		self.cursor.execute(query)
@@ -69,7 +75,7 @@ class Database:
 		query = f"SELECT {column} FROM {table}"
 
 		if condition:
-			query += f" {self._joinConditions(condition)}"
+			query += f" {db_helpers.joinConditions(condition)}"
 
 		if not caseSensitive:
 			query += " COLLATE NOCASE"
@@ -85,7 +91,7 @@ class Database:
 		query = f"SELECT * FROM {table}"
 
 		if condition:
-			query += f" {self._joinConditions(condition)}"
+			query += f" {db_helpers.joinConditions(condition)}"
 
 		if not caseSensitive:
 			query += " COLLATE NOCASE"
@@ -94,12 +100,12 @@ class Database:
 		self.cursor.execute(query)
 		rows = self.cursor.fetchall()
 		self._close()
-		return self._convertToDic(rows)
+		return db_helpers.convertRowsToDic(rows)
 
 	@lock
 	def update(self, table, data, condition):
 		setValues = ", ".join([f"{column} = :{column}" for column in data.keys()])
-		condition = self._joinConditions(condition)
+		condition = db_helpers.joinConditions(condition)
 		query = f"UPDATE {table} SET {setValues} {condition}"
 		self._connect()
 		self.cursor.execute(query, data)
@@ -113,15 +119,3 @@ class Database:
 		self.conn = sqlite3.connect(self.database, check_same_thread=False, timeout=15)
 		self.conn.row_factory = sqlite3.Row
 		self.cursor = self.conn.cursor()
-
-	@staticmethod
-	def _convertToDic(rows):
-
-		if rows:
-			return [dict(row) for row in rows]
-		else:
-			return []
-
-	@staticmethod
-	def _joinConditions(data):
-		return "WHERE " + " AND ".join([f'{k}="{v}"' if str(v)[0] != "(" else f"{k}={v}" for k, v in data.items()])

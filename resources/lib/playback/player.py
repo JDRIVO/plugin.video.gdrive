@@ -52,7 +52,7 @@ class Player(xbmc.Player):
 
 		try:
 			videoProgress = self.time / self.videoDuration * 100
-		except Exception:
+		except TypeError:
 			return
 
 		if videoProgress >= self.markedWatchedPoint:

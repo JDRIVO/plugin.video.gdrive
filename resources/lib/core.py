@@ -136,12 +136,12 @@ class Core:
 
 		try:
 			email = keyFile["client_email"]
-		except Exception:
+		except KeyError:
 			error.append("email")
 
 		try:
 			key = keyFile["private_key"]
-		except Exception:
+		except KeyError:
 			error.append("key")
 
 		if error:
@@ -230,7 +230,7 @@ class Core:
 
 			contextMenu = [
 				(
-					self.settings.getLocalizedString(30800),
+					self.settings.getLocalizedString(30600),
 					f"RunPlugin({self.pluginURL}?mode=force_sync_drive&drive_id={driveID})",
 				),
 				(
@@ -702,20 +702,20 @@ class Core:
 		self.settings.setSetting("account_override", accounts[selection][1])
 
 	def setTMDBlanguage(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30810), filesystem.helpers.TMDB_LANGUAGES)
+		selection = self.dialog.select(self.settings.getLocalizedString(30610), filesystem.constants.TMDB_LANGUAGES)
 
 		if selection == -1:
 			return
 
-		self.settings.setSetting("tmdb_language", filesystem.helpers.TMDB_LANGUAGES[selection])
+		self.settings.setSetting("tmdb_language", filesystem.constants.TMDB_LANGUAGES[selection])
 
 	def setTMDBregion(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30811), filesystem.helpers.TMDB_REGIONS)
+		selection = self.dialog.select(self.settings.getLocalizedString(30611), filesystem.constants.TMDB_REGIONS)
 
 		if selection == -1:
 			return
 
-		self.settings.setSetting("tmdb_region", filesystem.helpers.TMDB_REGIONS[selection])
+		self.settings.setSetting("tmdb_region", filesystem.constants.TMDB_REGIONS[selection])
 
 	def showAccountsContextMenu(self):
 		options = [

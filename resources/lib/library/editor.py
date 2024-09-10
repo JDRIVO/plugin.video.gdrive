@@ -25,16 +25,16 @@ class DatabaseEditor(Database):
 		if not fileID:
 			return
 
-		videoData = self._extractMediaData(fileID, strmData, "video")
-		audioData = self._extractMediaData(fileID, strmData, "audio")
+		videoData = self._extractStreamData(fileID, strmData, "video")
+		audioData = self._extractStreamData(fileID, strmData, "audio")
 
 		if videoData:
-			self._addMediaData(fileID, videoData, "video")
+			self._addStreamData(fileID, videoData, "video")
 
 		if audioData:
-			self._addMediaData(fileID, audioData, "audio")
+			self._addStreamData(fileID, audioData, "audio")
 
-	def _addMediaData(self, fileID, data, mediaType):
+	def _addStreamData(self, fileID, data, mediaType):
 		streamType = "0" if mediaType == "video" else "1"
 
 		if self.selectAll("streamdetails", {"idFile": fileID, "iStreamType": streamType}):
@@ -42,7 +42,7 @@ class DatabaseEditor(Database):
 		else:
 			self.insert("streamdetails", data)
 
-	def _extractMediaData(self, fileID, data, mediaType):
+	def _extractStreamData(self, fileID, data, mediaType):
 
 		if mediaType == "video":
 			streamType = "0"

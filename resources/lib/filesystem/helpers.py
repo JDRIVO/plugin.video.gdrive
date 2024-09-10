@@ -3,19 +3,15 @@ import re
 import math
 import time
 import difflib
-import datetime
 
-from .. import ptn
 from . import video
 from .file import File
-from .. import network
 from .constants import *
 from .subtitles import Subtitles
+from .. import ptn
+from .. import network
+from helpers import convertTime
 
-
-def convertTime(time):
-	# RFC 3339 to timestamp
-	return datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=datetime.timezone.utc).timestamp()
 
 def createSTRMContents(driveID, fileID, encrypted, contents):
 	contents.update({"drive_id": driveID, "file_id": fileID, "encrypted": str(encrypted)})
@@ -101,15 +97,10 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 		response = None
 
 		for _ in range(attempts):
+			response = network.requester.makeRequest(query)
 
-			try:
-				response = network.requester.makeRequest(query)
-
-				if response:
-					break
-
-			except Exception:
-				pass
+			if response:
+				break
 
 			time.sleep(delay)
 
@@ -195,16 +186,11 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 		attempts = 3
 
 		for _ in range(attempts):
+			response = network.requester.makeRequest(query)
 
-			try:
-				response = network.requester.makeRequest(query)
-
-				if response:
-					apiMatches = re.search('"titleNameText":"(.*?)".*?"titleReleaseText":"(.*?)"', response)
-					break
-
-			except Exception:
-				pass
+			if response:
+				apiMatches = re.search('"titleNameText":"(.*?)".*?"titleReleaseText":"(.*?)"', response)
+				break
 
 			time.sleep(delay)
 
