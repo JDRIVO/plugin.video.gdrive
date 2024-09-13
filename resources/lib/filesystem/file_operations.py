@@ -74,7 +74,7 @@ class FileOperations:
 			with open(filePath, "rb") as file:
 				return pickle.load(file)
 
-		except pickle.PickleError:
+		except FileNotFoundError:
 			return
 
 	@staticmethod
