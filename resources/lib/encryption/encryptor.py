@@ -21,7 +21,7 @@ except Exception:
 	from Crypto.Signature import pkcs1_15
 
 
-class Encrypter:
+class Encryptor:
 	# salt size in bytes
 	SALT_SIZE = 32
 	# number of iterations in the key generation

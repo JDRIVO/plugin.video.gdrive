@@ -2,10 +2,10 @@ import os
 import re
 import threading
 
-from . import helpers
-from .constants import ARTWORK
-from ..library import editor
-from ..threadpool import threadpool
+from .fs_constants import ARTWORK
+from .fs_helpers import createSTRMContents
+from ..threadpool.threadpool import ThreadPool
+from ..library.library_editor import DatabaseEditor
 
 
 class RemoteFileProcessor:
@@ -15,7 +15,7 @@ class RemoteFileProcessor:
 		self.fileOperations = fileOperations
 		self.settings = settings
 		self.cache = cache
-		self.dbEditor = editor.DatabaseEditor()
+		self.dbEditor = DatabaseEditor()
 
 	def processFiles(self, folder, folderSettings, syncRootPath, driveID, rootFolderID, threadCount, progressDialog=None):
 		files = folder.files
@@ -30,7 +30,7 @@ class RemoteFileProcessor:
 
 		if strm:
 
-			with threadpool.ThreadPool(threadCount) as pool:
+			with ThreadPool(threadCount) as pool:
 				[
 					pool.submit(
 						self._processSTRM,
@@ -53,7 +53,7 @@ class RemoteFileProcessor:
 
 		if videos:
 
-			with threadpool.ThreadPool(threadCount) as pool:
+			with ThreadPool(threadCount) as pool:
 				[
 					pool.submit(
 						self._processVideo,
@@ -71,7 +71,7 @@ class RemoteFileProcessor:
 
 		if mediaAssets:
 
-			with threadpool.ThreadPool(threadCount) as pool:
+			with ThreadPool(threadCount) as pool:
 				[
 					pool.submit(
 						self._processMediaAssets,
@@ -138,7 +138,7 @@ class RemoteFileProcessor:
 		fileID = file.id
 		remoteName = file.name
 		filename = f"{file.basename}.strm"
-		strmContent = helpers.createSTRMContents(driveID, fileID, file.encrypted, file.contents)
+		strmContent = createSTRMContents(driveID, fileID, file.encrypted, file.contents)
 		filePath = self.fileOperations.createFile(dirPath, filename, strmContent, modifiedTime=file.modifiedTime, mode="w+")
 		localName = os.path.basename(filePath)
 		file.name = localName
@@ -194,7 +194,7 @@ class LocalFileProcessor:
 				if folderSettings[key]:
 					tmdbSettings[value] = folderSettings[key]
 
-			with threadpool.ThreadPool(threadCount) as pool:
+			with ThreadPool(threadCount) as pool:
 				[
 					pool.submit(
 						self._processVideo,
@@ -212,7 +212,7 @@ class LocalFileProcessor:
 
 		if mediaAssets:
 
-			with threadpool.ThreadPool(threadCount) as pool:
+			with ThreadPool(threadCount) as pool:
 				[
 					pool.submit(
 						self._processMediaAssets,

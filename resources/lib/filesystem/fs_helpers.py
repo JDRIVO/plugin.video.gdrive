@@ -4,12 +4,13 @@ import math
 import time
 import difflib
 
-from . import video
+from .video import *
 from .file import File
-from .constants import *
+from .fs_constants import *
 from .subtitles import Subtitles
 from .. import ptn
-from .. import network
+from ..network import http_requester
+from ..network.network_helpers import addQueryString
 from helpers import convertTime
 
 
@@ -97,7 +98,7 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 		response = None
 
 		for _ in range(attempts):
-			response = network.requester.makeRequest(query)
+			response = http_requester.request(query)
 
 			if response:
 				break
@@ -141,8 +142,8 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 		movie = False
 
 	queries = (
-		network.helpers.addQueryString(url, {"query": title, "year" if movie else "first_air_date_year": year, **tmdbSettings}),
-		network.helpers.addQueryString(url, {"query": title, **tmdbSettings}),
+		addQueryString(url, {"query": title, "year" if movie else "first_air_date_year": year, **tmdbSettings}),
+		addQueryString(url, {"query": title, **tmdbSettings}),
 	)
 
 	if year:
@@ -178,7 +179,7 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 		"ttype": "ft",
 		"ref_": "fn_ft",
 	}
-	query = network.helpers.addQueryString(url, {"q": f"{title} {year}", **params})
+	query = addQueryString(url, {"q": f"{title} {year}", **params})
 	apiMatches = None
 
 	with imdbLock:
@@ -186,7 +187,7 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 		attempts = 3
 
 		for _ in range(attempts):
-			response = network.requester.makeRequest(query)
+			response = http_requester.request(query)
 
 			if response:
 				apiMatches = re.search('"titleNameText":"(.*?)".*?"titleReleaseText":"(.*?)"', response)
@@ -204,7 +205,7 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 	if matches:
 		return matches[max(matches)]
 
-def makeFile(file, excludedTypes, encrypter):
+def makeFile(file, excludedTypes, encryptor):
 	fileID = file["id"]
 	filename = file["name"]
 	mimeType = file["mimeType"]
@@ -212,8 +213,8 @@ def makeFile(file, excludedTypes, encrypter):
 	fileExtension = file.get("fileExtension")
 	metadata = file.get("videoMediaMetadata", {})
 
-	if encrypter and mimeType == "application/octet-stream" and not fileExtension:
-		filename = encrypter.decryptFilename(filename)
+	if encryptor and mimeType == "application/octet-stream" and not fileExtension:
+		filename = encryptor.decryptFilename(filename)
 
 		if not filename:
 			return
@@ -240,11 +241,11 @@ def makeFile(file, excludedTypes, encrypter):
 		if fileType == "subtitles":
 			file = Subtitles()
 		elif media == "episode":
-			file = video.Episode()
+			file = Episode()
 		elif media == "movie":
-			file = video.Movie()
+			file = Movie()
 		else:
-			file = video.Video()
+			file = Video()
 
 		file.media = media
 		file.setData(videoData, metadata)

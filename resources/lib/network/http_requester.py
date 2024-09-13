@@ -11,7 +11,7 @@ HEADERS = {"User-Agent": USER_AGENT}
 HEADERS_JSON_ENCODED = {"User-Agent": USER_AGENT, "Content-Type": "application/json"}
 
 
-def makeRequest(url, data=None, headers=HEADERS, cookie=False, download=False, method="GET"):
+def request(url, data=None, headers=HEADERS, cookie=False, download=False, method="GET"):
 
 	if method == "POST":
 		headers = HEADERS_JSON_ENCODED

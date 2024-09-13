@@ -6,10 +6,11 @@ import xbmcgui
 import xbmcaddon
 
 import constants
-from . import dialogs
-from .. import sync
-from .. import filesystem
-from ..network import requester
+from .dialogs import Dialog
+from ..sync.sync_cache import Cache
+from ..network import http_requester
+from ..filesystem.fs_helpers import removeProhibitedFSchars
+from ..filesystem.fs_constants import TMDB_LANGUAGES, TMDB_REGIONS
 
 
 class SyncSettings(xbmcgui.WindowDialog):
@@ -42,8 +43,9 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.foldersToSync = kwargs.get("folders")
 		self.folderName = kwargs.get("folder_name")
 		self.accounts = kwargs.get("accounts")
-		self.cache = sync.cache.Cache()
-		self.dialog = dialogs.Dialog()
+		self.settings = constants.settings
+		self.cache = Cache()
+		self.dialog = Dialog()
 		texturesPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
 		self.radioButtonFocus = os.path.join(texturesPath, "radiobutton-focus.png")
 		self.radioButtonNoFocus = os.path.join(texturesPath, "radiobutton-nofocus.png")
@@ -76,7 +78,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			y=self.windowBottom - 60,
 			width=100,
 			height=self.buttonHeight,
-			label=constants.settings.getLocalizedString(30066),
+			label=self.settings.getLocalizedString(30066),
 			font=self.font,
 			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.buttonFocusTexture,
@@ -87,7 +89,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			y=self.windowBottom - 60,
 			width=100,
 			height=self.buttonHeight,
-			label=constants.settings.getLocalizedString(30067),
+			label=self.settings.getLocalizedString(30067),
 			font=self.font,
 			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.buttonFocusTexture,
@@ -101,14 +103,14 @@ class SyncSettings(xbmcgui.WindowDialog):
 	def _createDriveSettingsButtons(self):
 		driveSettings = self.cache.getDrive(self.driveID)
 		self.functions = {
-			constants.settings.getLocalizedString(30049): self._setSyncMode,
-			constants.settings.getLocalizedString(30050): self._setSyncFrequency,
-			constants.settings.getLocalizedString(30061): self._stopSyncingFolders,
-			constants.settings.getLocalizedString(30062): self._stopSyncingFoldersAndDelete,
+			self.settings.getLocalizedString(30049): self._setSyncMode,
+			self.settings.getLocalizedString(30050): self._setSyncFrequency,
+			self.settings.getLocalizedString(30061): self._stopSyncingFolders,
+			self.settings.getLocalizedString(30062): self._stopSyncingFoldersAndDelete,
 		}
 		self.syncMode = driveSettings["task_mode"]
 		self.syncFrequency = driveSettings["task_frequency"]
-		settings = {constants.settings.getLocalizedString(30051): driveSettings["startup_sync"]}
+		settings = {self.settings.getLocalizedString(30051): driveSettings["startup_sync"]}
 		self._setup(len(self.functions) + len(settings))
 
 		for setting, value in settings.items():
@@ -143,9 +145,9 @@ class SyncSettings(xbmcgui.WindowDialog):
 				noFocusTexture=self.dGrayTexture,
 			)
 
-			if func == constants.settings.getLocalizedString(30049):
+			if func == self.settings.getLocalizedString(30049):
 				button.setLabel(label2=self.syncMode)
-			elif func == constants.settings.getLocalizedString(30050):
+			elif func == self.settings.getLocalizedString(30050):
 				button.setLabel(label2=self.syncFrequency)
 
 			self.pushButtons[button] = func
@@ -162,31 +164,31 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		if not self.displayMode == "new" and folderSettings:
 			self.functions = {
-				constants.settings.getLocalizedString(30063): self._stopSyncingFolder,
-				constants.settings.getLocalizedString(30064): self._stopSyncingFolderAndDelete,
+				self.settings.getLocalizedString(30063): self._stopSyncingFolder,
+				self.settings.getLocalizedString(30064): self._stopSyncingFolderAndDelete,
 			}
 		else:
 
 			if not self.cache.getSyncRootPath():
-				self.functions.update({constants.settings.getLocalizedString(30048): self._setSyncPath})
+				self.functions.update({self.settings.getLocalizedString(30048): self._setSyncPath})
 
 			if not self.cache.getDrive(self.driveID):
-				settings.update({constants.settings.getLocalizedString(30051): False})
+				settings.update({self.settings.getLocalizedString(30051): False})
 				self.functions.update(
 					{
-						constants.settings.getLocalizedString(30049): self._setSyncMode,
-						constants.settings.getLocalizedString(30050): self._setSyncFrequency,
+						self.settings.getLocalizedString(30049): self._setSyncMode,
+						self.settings.getLocalizedString(30050): self._setSyncFrequency,
 					}
 				)
 
 		settings.update(
 			{
-				constants.settings.getLocalizedString(30604): folderSettings["contains_encrypted"] if folderSettings else constants.settings.getSetting("contains_encrypted"),
-				constants.settings.getLocalizedString(30605): folderSettings["file_renaming"] if  folderSettings else constants.settings.getSetting("file_renaming"),
-				constants.settings.getLocalizedString(30606): folderSettings["folder_restructure"] if folderSettings else constants.settings.getSetting("folder_restructure"),
-				constants.settings.getLocalizedString(30607): folderSettings["sync_nfo"] if folderSettings else constants.settings.getSetting("sync_nfo"),
-				constants.settings.getLocalizedString(30608): folderSettings["sync_subtitles"] if folderSettings else constants.settings.getSetting("sync_subtitles"),
-				constants.settings.getLocalizedString(30609): folderSettings["sync_artwork"] if folderSettings else constants.settings.getSetting("sync_artwork"),
+				self.settings.getLocalizedString(30604): folderSettings["contains_encrypted"] if folderSettings else self.settings.getSetting("contains_encrypted"),
+				self.settings.getLocalizedString(30605): folderSettings["file_renaming"] if  folderSettings else self.settings.getSetting("file_renaming"),
+				self.settings.getLocalizedString(30606): folderSettings["folder_restructure"] if folderSettings else self.settings.getSetting("folder_restructure"),
+				self.settings.getLocalizedString(30607): folderSettings["sync_nfo"] if folderSettings else self.settings.getSetting("sync_nfo"),
+				self.settings.getLocalizedString(30608): folderSettings["sync_subtitles"] if folderSettings else self.settings.getSetting("sync_subtitles"),
+				self.settings.getLocalizedString(30609): folderSettings["sync_artwork"] if folderSettings else self.settings.getSetting("sync_artwork"),
 			}
 		)
 		self._setup(len(self.functions) + len(settings))
@@ -232,9 +234,9 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 	def _createFolderSettingsTMDBButtons(self):
 		functions = {
-			constants.settings.getLocalizedString(30058): self._setSearchLanguage,
-			constants.settings.getLocalizedString(30059): self._setCountry,
-			constants.settings.getLocalizedString(30060): self._setAdultContent,
+			self.settings.getLocalizedString(30058): self._setSearchLanguage,
+			self.settings.getLocalizedString(30059): self._setCountry,
+			self.settings.getLocalizedString(30060): self._setAdultContent,
 		}
 		self.functions.update(functions)
 		buttonGeneral = xbmcgui.ControlButton(
@@ -242,7 +244,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			y=self.y + 60,
 			width=140,
 			height=self.buttonHeight,
-			label=constants.settings.getLocalizedString(30065),
+			label=self.settings.getLocalizedString(30065),
 			font=self.font,
 			focusTexture=self.buttonFocusTexture,
 			noFocusTexture=self.dGrayTexture,
@@ -279,9 +281,9 @@ class SyncSettings(xbmcgui.WindowDialog):
 			]
 		else:
 			values = [
-				constants.settings.getSetting("tmdb_language") if constants.settings.getSetting("tmdb_language") else "",
-				constants.settings.getSetting("tmdb_region") if constants.settings.getSetting("tmdb_region") else "",
-				"true" if constants.settings.getSetting("tmdb_adult") else "false",
+				self.settings.getSetting("tmdb_language") if self.settings.getSetting("tmdb_language") else "",
+				self.settings.getSetting("tmdb_region") if self.settings.getSetting("tmdb_region") else "",
+				"true" if self.settings.getSetting("tmdb_adult") else "false",
 			]
 
 		for func, value in zip(functions, values):
@@ -390,7 +392,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 	def _setAdultContent(self, button):
 		options = ["true", "false"]
-		selection = self.dialog.select(constants.settings.getLocalizedString(30612), options)
+		selection = self.dialog.select(self.settings.getLocalizedString(30612), options)
 
 		if selection == -1:
 			return
@@ -398,20 +400,20 @@ class SyncSettings(xbmcgui.WindowDialog):
 		button.setLabel(label2=options[selection])
 
 	def _setCountry(self, button):
-		selection = self.dialog.select(constants.settings.getLocalizedString(30611), filesystem.constants.TMDB_REGIONS)
+		selection = self.dialog.select(self.settings.getLocalizedString(30611), TMDB_REGIONS)
 
 		if selection == -1:
 			return
 
-		button.setLabel(label2=filesystem.constants.TMDB_REGIONS[selection])
+		button.setLabel(label2=TMDB_REGIONS[selection])
 
 	def _setSearchLanguage(self, button):
-		selection = self.dialog.select(constants.settings.getLocalizedString(30610), filesystem.constants.TMDB_LANGUAGES)
+		selection = self.dialog.select(self.settings.getLocalizedString(30610), TMDB_LANGUAGES)
 
 		if selection == -1:
 			return
 
-		button.setLabel(label2=filesystem.constants.TMDB_LANGUAGES[selection])
+		button.setLabel(label2=TMDB_LANGUAGES[selection])
 
 	def _setSettings(self):
 		globalSettings, driveSettings, folderSettings = {}, {}, {}
@@ -432,25 +434,25 @@ class SyncSettings(xbmcgui.WindowDialog):
 				continue
 
 		if folderSettings.get("contains_encrypted"):
-			cryptoSalt = constants.settings.getSetting("crypto_salt")
-			cryptoPassword = constants.settings.getSetting("crypto_password")
+			cryptoSalt = self.settings.getSetting("crypto_salt")
+			cryptoPassword = self.settings.getSetting("crypto_password")
 
 			if not cryptoSalt or not cryptoPassword:
-				self.dialog.ok(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30078))
+				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30078))
 				return
 
 		if globalSettings and not globalSettings["local_path"]:
-			self.dialog.ok(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30079))
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30079))
 			return
 
 		if self.displayMode == "drive" or not self.cache.getDrive(self.driveID):
 
 			if not driveSettings["task_mode"]:
-				self.dialog.ok(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30080))
+				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30080))
 				return
 
 			if driveSettings["task_frequency"] == " ":
-				self.dialog.ok(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30081))
+				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30081))
 				return
 
 		self.close()
@@ -460,14 +462,14 @@ class SyncSettings(xbmcgui.WindowDialog):
 			if driveSettings:
 				self.cache.updateDrive(driveSettings, self.driveID)
 				data = {"drive_id": self.driveID}
-				url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/reset_task"
-				requester.makeRequest(url, data)
+				url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/reset_task"
+				http_requester.request(url, data)
 
 			if folderSettings:
 				self.cache.updateFolder(folderSettings, self.folderID)
 
 		else:
-			self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30082))
+			self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30082))
 
 			if globalSettings:
 				globalSettings.update({"operating_system": os.name})
@@ -497,7 +499,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 				syncTaskData.append(folder)
 				folderName = folder["name"]
-				folderName = folderName_ = filesystem.helpers.removeProhibitedFSchars(folderName)
+				folderName = folderName_ = removeProhibitedFSchars(folderName)
 				dirPath = self.cache.getUniqueFolderPath(self.driveID, folderName)
 				folder["name"] = folderName
 				folder["path"] = dirPath
@@ -511,26 +513,26 @@ class SyncSettings(xbmcgui.WindowDialog):
 				)
 				self.cache.addFolder(folderSettings)
 
-			url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/add_sync_task"
+			url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/add_sync_task"
 			xbmc.executebuiltin("Container.Refresh")
-			requester.makeRequest(url, syncTaskData)
+			http_requester.request(url, syncTaskData)
 
 	def _setSyncFrequency(self, button):
 
 		if not self.syncMode:
 			return
 
-		if self.syncMode == constants.settings.getLocalizedString(30068):
-			syncFrequency = self.dialog.numeric(0, constants.settings.getLocalizedString(30070))
+		if self.syncMode == self.settings.getLocalizedString(30068):
+			syncFrequency = self.dialog.numeric(0, self.settings.getLocalizedString(30070))
 		else:
-			syncFrequency = self.dialog.numeric(2, constants.settings.getLocalizedString(30071))
+			syncFrequency = self.dialog.numeric(2, self.settings.getLocalizedString(30071))
 
 		if syncFrequency:
 			button.setLabel(label2=syncFrequency)
 
 	def _setSyncMode(self, button):
-		modes = [constants.settings.getLocalizedString(30068), constants.settings.getLocalizedString(30069)]
-		selection = self.dialog.select(constants.settings.getLocalizedString(30049), modes)
+		modes = [self.settings.getLocalizedString(30068), self.settings.getLocalizedString(30069)]
+		selection = self.dialog.select(self.settings.getLocalizedString(30049), modes)
 
 		if selection == -1:
 			return
@@ -538,17 +540,17 @@ class SyncSettings(xbmcgui.WindowDialog):
 		selection =  modes[selection]
 
 		if selection != self.syncMode:
-			[button.setLabel(label2=" ") for button, setting in self.pushButtons.items() if setting == constants.settings.getLocalizedString(30050)]
+			[button.setLabel(label2=" ") for button, setting in self.pushButtons.items() if setting == self.settings.getLocalizedString(30050)]
 			self.syncMode = selection
 			button.setLabel(label2=self.syncMode)
 
 	def _setSyncPath(self, button):
-		syncRootPath = self.dialog.browse(3, constants.settings.getLocalizedString(30077), "")
+		syncRootPath = self.dialog.browse(3, self.settings.getLocalizedString(30077), "")
 
 		if not syncRootPath:
 			return
 
-		syncRootPath = os.path.join(syncRootPath, constants.settings.getLocalizedString(30000))
+		syncRootPath = os.path.join(syncRootPath, self.settings.getLocalizedString(30000))
 		button.setLabel(label2=syncRootPath)
 
 	def _setup(self, buttonAmount):
@@ -570,54 +572,54 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.center = int((self.x + self.windowWidth / 2) - (self.buttonWidth / 2))
 		background = xbmcgui.ControlImage(self.x, self.y, self.windowWidth, self.windowHeight, self.grayTexture)
 		bar = xbmcgui.ControlImage(self.x, self.y, self.windowWidth, 40, self.blueTexture)
-		label = xbmcgui.ControlLabel(self.x + 10, self.y + 5, 0, 0, constants.settings.getLocalizedString(30012))
+		label = xbmcgui.ControlLabel(self.x + 10, self.y + 5, 0, 0, self.settings.getLocalizedString(30012))
 		self.addControls([background, bar, label])
 
 	def _stopSyncingFolder(self, *args):
-		selection = self.dialog.yesno(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30072))
+		selection = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30072))
 
 		if not selection:
 			return
 
 		self.close()
 		data = {"folder_id": self.folderID, "delete": False}
-		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_syncing_folder"
-		requester.makeRequest(url, data)
+		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folder"
+		http_requester.request(url, data)
 
 	def _stopSyncingFolderAndDelete(self, *args):
-		selection = self.dialog.yesno(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30074))
+		selection = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30074))
 
 		if not selection:
 			return
 
 		self.close()
-		self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30075))
+		self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30075))
 		data = {"folder_id": self.folderID, "delete": True}
-		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_syncing_folder"
-		requester.makeRequest(url, data)
+		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folder"
+		http_requester.request(url, data)
 
 	def _stopSyncingFolders(self, *args):
-		selection = self.dialog.yesno(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30073))
+		selection = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30073))
 
 		if not selection:
 			return
 
 		self.close()
 		data = {"drive_id": self.driveID, "delete": False}
-		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
-		requester.makeRequest(url, data)
+		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
+		http_requester.request(url, data)
 
 	def _stopSyncingFoldersAndDelete(self, *args):
-		selection = self.dialog.yesno(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30076))
+		selection = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30076))
 
 		if not selection:
 			return
 
 		self.close()
-		self.dialog.notification(constants.settings.getLocalizedString(30000), constants.settings.getLocalizedString(30075))
+		self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30075))
 		data = {"drive_id": self.driveID, "delete": True}
-		url = f"http://localhost:{constants.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
-		requester.makeRequest(url, data)
+		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
+		http_requester.request(url, data)
 
 	def _updateList(self, direction):
 		currentIndex = self.menuButtonIDs.index(self.buttonID)

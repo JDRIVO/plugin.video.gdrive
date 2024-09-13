@@ -3,9 +3,10 @@ import re
 import datetime
 import urllib.parse
 
-from .. import network
-from .. import encryption
-from .. import filesystem
+from ..network import http_requester
+from ..network.network_helpers import addQueryString, mergePaths
+from ..encryption.jwt import JsonWebToken
+from ..filesystem.fs_helpers import removeProhibitedFSchars
 
 API_VERSION = "3"
 GDRIVE_URL = "https://www.googleapis.com/drive/v3"
@@ -27,8 +28,8 @@ class GoogleDrive:
 
 	def downloadFile(self, fileID):
 		params = {"alt": "media"}
-		url = network.helpers.addQueryString(network.helpers.mergePaths(API["files"], fileID), params)
-		return network.requester.makeRequest(url, headers=self.getHeaders(), download=True)
+		url = addQueryString(mergePaths(API["files"], fileID), params)
+		return http_requester.request(url, headers=self.getHeaders(), download=True)
 
 	def getAuthURL(self, clientID, port):
 		params = {
@@ -39,7 +40,7 @@ class GoogleDrive:
 			"access_type": "offline",
 			"prompt": "consent",
 		}
-		return network.helpers.addQueryString(GOOGLE_AUTH_URL, params)
+		return addQueryString(GOOGLE_AUTH_URL, params)
 
 	def getChanges(self, pageToken):
 
@@ -56,8 +57,8 @@ class GoogleDrive:
 		changes = []
 
 		while pageToken:
-			url = network.helpers.addQueryString(API["changes"], params)
-			response = network.requester.makeRequest(url, headers=self.getHeaders())
+			url = addQueryString(API["changes"], params)
+			response = http_requester.request(url, headers=self.getHeaders())
 			pageToken = response.get("nextPageToken")
 			changes += response.get("changes")
 			params["pageToken"] = pageToken
@@ -75,15 +76,15 @@ class GoogleDrive:
 		}
 
 		while not cachedDirectory and not cachedFolder:
-			url = network.helpers.addQueryString(network.helpers.mergePaths(API["files"], folderID), params)
-			response = network.requester.makeRequest(url, headers=self.getHeaders())
+			url = addQueryString(mergePaths(API["files"], folderID), params)
+			response = http_requester.request(url, headers=self.getHeaders())
 
 			try:
 				dirName, folderID = response["name"], response["parents"][0]
 			except KeyError:
 				return None, None
 
-			dirName = filesystem.helpers.removeProhibitedFSchars(dirName)
+			dirName = removeProhibitedFSchars(dirName)
 			dirPath = os.path.join(dirName, dirPath)
 			cachedDirectory = cache.getDirectory({"folder_id": folderID})
 			cachedFolder = cache.getFolder({"folder_id": folderID})
@@ -103,11 +104,11 @@ class GoogleDrive:
 			"supportsAllDrives": "true",
 			"alt": "media",
 		}
-		return network.helpers.addQueryString(network.helpers.mergePaths(API["files"], fileID), params)
+		return addQueryString(mergePaths(API["files"], fileID), params)
 
 	def getDriveID(self):
-		url = network.helpers.mergePaths(API["files"], "root")
-		response = network.requester.makeRequest(url, headers=self.getHeaders())
+		url = mergePaths(API["files"], "root")
+		response = http_requester.request(url, headers=self.getHeaders())
 
 		if response:
 			return response.get("id")
@@ -118,8 +119,8 @@ class GoogleDrive:
 		pageToken = True
 
 		while pageToken:
-			url = network.helpers.addQueryString(API["drives"], params)
-			response = network.requester.makeRequest(url, headers=self.getHeaders())
+			url = addQueryString(API["drives"], params)
+			response = http_requester.request(url, headers=self.getHeaders())
 			pageToken = response.get("nextPageToken")
 			drives += response.get("drives")
 			params["pageToken"] = pageToken
@@ -147,8 +148,8 @@ class GoogleDrive:
 
 	def getPageToken(self):
 		params = {"supportsAllDrives": "true"}
-		url = network.helpers.addQueryString(network.helpers.mergePaths(API["changes"], "startPageToken"), params)
-		response = network.requester.makeRequest(url, headers=self.getHeaders())
+		url = addQueryString(mergePaths(API["changes"], "startPageToken"), params)
+		response = http_requester.request(url, headers=self.getHeaders())
 		return response.get("startPageToken")
 
 	def getParentDirectoryID(self, fileID):
@@ -157,8 +158,8 @@ class GoogleDrive:
 			"supportsAllDrives": "true",
 			"includeItemsFromAllDrives": "true",
 		}
-		url = network.helpers.addQueryString(network.helpers.mergePaths(API["files"], fileID), params)
-		response = network.requester.makeRequest(url, headers=self.getHeaders())
+		url = addQueryString(mergePaths(API["files"], fileID), params)
+		response = http_requester.request(url, headers=self.getHeaders())
 		id = response.get("parents")
 
 		if id:
@@ -167,7 +168,7 @@ class GoogleDrive:
 	def getStreams(self, fileID, resolutionPriority=None):
 		url = f"https://drive.google.com/get_video_info?docid={fileID}"
 		self.account.driveStream = None
-		responseData, cookie = network.requester.makeRequest(url, headers=self.getHeaders(), cookie=True)
+		responseData, cookie = http_requester.request(url, headers=self.getHeaders(), cookie=True)
 		self.account.driveStream = re.search("DRIVE_STREAM=(.*?);", cookie).group(1)
 
 		for _ in range(5):
@@ -221,7 +222,7 @@ class GoogleDrive:
 			"grant_type": "authorization_code",
 			"redirect_uri": f"http://localhost:{port}/status",
 		}
-		return network.requester.makeRequest(GOOGLE_TOKEN_URL, data, method="POST")
+		return http_requester.request(GOOGLE_TOKEN_URL, data, method="POST")
 
 	def listDirectory(self, folderID="root", sharedWithMe=False, foldersOnly=False, starred=False, search=False, customQuery=False):
 		params = {
@@ -250,8 +251,8 @@ class GoogleDrive:
 		pageToken = True
 
 		while pageToken:
-			url = network.helpers.addQueryString(API["files"], params)
-			response = network.requester.makeRequest(url, headers=self.getHeaders())
+			url = addQueryString(API["files"], params)
+			response = http_requester.request(url, headers=self.getHeaders())
 			pageToken = response.get("nextPageToken")
 			items += response.get("files")
 			params["pageToken"] = pageToken
@@ -262,7 +263,7 @@ class GoogleDrive:
 		key = self.account.key
 
 		if key:
-			jwt = encryption.json_web_token.JsonWebToken(self.account.email, key, SCOPE_URL, GOOGLE_TOKEN_URL).create()
+			jwt = JsonWebToken(self.account.email, key, SCOPE_URL, GOOGLE_TOKEN_URL).create()
 			data = {
 				"assertion": jwt,
 				"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
@@ -275,7 +276,7 @@ class GoogleDrive:
 				"grant_type": "refresh_token",
 			}
 
-		response = network.requester.makeRequest(GOOGLE_TOKEN_URL, data, method="POST")
+		response = http_requester.request(GOOGLE_TOKEN_URL, data, method="POST")
 
 		if not response:
 			return

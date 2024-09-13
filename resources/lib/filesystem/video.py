@@ -1,5 +1,5 @@
-from . import helpers
 from .file import File
+from . import fs_helpers
 
 
 class Video(File):
@@ -30,7 +30,7 @@ class Movie(Video):
 		self.ptnName = str((self.title, self.year))
 
 	def formatName(self, tmdbSettings, imdbLock):
-		data = helpers.getTMDBtitle("movie", self.title, self.year, tmdbSettings, imdbLock)
+		data = fs_helpers.getTMDBtitle("movie", self.title, self.year, tmdbSettings, imdbLock)
 
 		if data:
 			title, year = data
@@ -55,7 +55,7 @@ class Episode(Video):
 		else:
 			episode = "-".join(f"{e:02d}" for e in self.episode)
 
-		data = helpers.getTMDBtitle("episode", self.title, self.year, tmdbSettings, imdbLock)
+		data = fs_helpers.getTMDBtitle("episode", self.title, self.year, tmdbSettings, imdbLock)
 
 		if data:
 			title, year = data

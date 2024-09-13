@@ -1,21 +1,21 @@
 import os
 
-from . import helpers
 from .folder import Folder
-from .constants import MEDIA_ASSETS
-from ..threadpool import threadpool
+from .fs_constants import MEDIA_ASSETS
+from .fs_helpers import makeFile, removeProhibitedFSchars
+from ..threadpool.threadpool import ThreadPool
 
 
 class FileTree:
 
-	def __init__(self, cloudService, cache, driveID, drivePath, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs):
+	def __init__(self, cloudService, cache, driveID, drivePath, progressDialog, threadCount, encryptor, excludedTypes, syncedIDs):
 		self.cloudService = cloudService
 		self.cache = cache
 		self.driveID = driveID
 		self.drivePath = drivePath
 		self.progressDialog = progressDialog
 		self.threadCount = threadCount
-		self.encrypter = encrypter
+		self.encryptor = encryptor
 		self.excludedTypes = excludedTypes
 		self.syncedIDs = syncedIDs
 		self.folderIDs = []
@@ -48,7 +48,7 @@ class FileTree:
 			items = self.cloudService.listDirectory(customQuery=query)
 			self._filterContents(items, parentFolderIDs)
 
-		with threadpool.ThreadPool(self.threadCount) as pool:
+		with ThreadPool(self.threadCount) as pool:
 			pool.map(getFolders, queries)
 
 		if self.folderIDs:
@@ -70,7 +70,7 @@ class FileTree:
 					continue
 
 			if isFolder:
-				folderName = helpers.removeProhibitedFSchars(item["name"])
+				folderName = removeProhibitedFSchars(item["name"])
 				path = path_ = os.path.join(self.fileTree[parentFolderID].remotePath, folderName)
 				copy = 1
 
@@ -85,7 +85,7 @@ class FileTree:
 				self.folderIDs.append(id)
 				self.fileTree[id] = Folder(id, parentFolderID, folderName, path, os.path.join(self.drivePath, path), item["modifiedTime"])
 			else:
-				file = helpers.makeFile(item, self.excludedTypes, self.encrypter)
+				file = makeFile(item, self.excludedTypes, self.encryptor)
 
 				if not file:
 					continue

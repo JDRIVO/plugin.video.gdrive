@@ -1,10 +1,10 @@
 import sqlite3
 import threading
 
-from . import db_helpers
+from .db_helpers import convertRowsToDic, joinConditions
 
 
-class Database:
+class DatabaseManager:
 
 	def __init__(self, database):
 		self.database = database
@@ -25,7 +25,7 @@ class Database:
 
 	@lock
 	def count(self, table, condition):
-		condition = db_helpers.joinConditions(condition)
+		condition = joinConditions(condition)
 		query = f"SELECT COUNT(*) FROM {table} {condition}"
 		self._connect()
 		self.cursor.execute(query)
@@ -44,7 +44,7 @@ class Database:
 
 	@lock
 	def delete(self, table, condition):
-		condition = db_helpers.joinConditions(condition)
+		condition = joinConditions(condition)
 		query = f"DELETE FROM {table} {condition}"
 		self._connect()
 		self.cursor.execute(query)
@@ -75,7 +75,7 @@ class Database:
 		query = f"SELECT {column} FROM {table}"
 
 		if condition:
-			query += f" {db_helpers.joinConditions(condition)}"
+			query += f" {joinConditions(condition)}"
 
 		if not caseSensitive:
 			query += " COLLATE NOCASE"
@@ -91,7 +91,7 @@ class Database:
 		query = f"SELECT * FROM {table}"
 
 		if condition:
-			query += f" {db_helpers.joinConditions(condition)}"
+			query += f" {joinConditions(condition)}"
 
 		if not caseSensitive:
 			query += " COLLATE NOCASE"
@@ -100,12 +100,12 @@ class Database:
 		self.cursor.execute(query)
 		rows = self.cursor.fetchall()
 		self._close()
-		return db_helpers.convertRowsToDic(rows)
+		return convertRowsToDic(rows)
 
 	@lock
 	def update(self, table, data, condition):
 		setValues = ", ".join([f"{column} = :{column}" for column in data.keys()])
-		condition = db_helpers.joinConditions(condition)
+		condition = joinConditions(condition)
 		query = f"UPDATE {table} SET {setValues} {condition}"
 		self._connect()
 		self.cursor.execute(query, data)

@@ -11,15 +11,17 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import xbmc
 
 import constants
-from . import helpers
 from . import registration
-from .. import ui
-from .. import sync
-from .. import accounts
-from .. import playback
-from .. import encryption
-from .. import filesystem
-from .. import google_api
+from .network_helpers import parseQuery, parseURL
+from ..ui.dialogs import Dialog
+from ..sync.sync_cache import Cache
+from ..sync.task_manager import TaskManager
+from ..accounts.account import Account
+from ..accounts.account_manager import AccountManager
+from ..encryption.encryptor import Encryptor
+from ..playback.video_player import VideoPlayer
+from ..google_api.google_drive import GoogleDrive
+from ..filesystem.file_operations import FileOperations
 
 
 class ServerRunner(Thread):
@@ -48,13 +50,13 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 		super().__init__(*args, **kwargs)
 		self.settings = constants.settings
 		self.monitor = xbmc.Monitor()
-		self.accountManager = accounts.manager.AccountManager(self.settings)
-		self.cloudService = google_api.drive.GoogleDrive()
-		self.cache = sync.cache.Cache()
-		self.taskManager = sync.tasker.Tasker(self.settings, self.accountManager)
+		self.accountManager = AccountManager(self.settings)
+		self.cloudService = GoogleDrive()
+		self.cache = Cache()
+		self.taskManager = TaskManager(self.settings, self.accountManager)
 		self.taskManager.run()
-		self.fileOperations = filesystem.operations.FileOperations()
-		self.dialog = ui.dialogs.Dialog()
+		self.fileOperations = FileOperations()
+		self.dialog = Dialog()
 		self.shutdownRequest = False
 		self.failed = False
 
@@ -75,7 +77,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			)
 
 	def decryptStream(self, response, startOffset):
-		decrypt = encryption.encrypter.Encrypter(self.server.settings.getSetting("crypto_salt"), self.server.settings.getSetting("crypto_password"))
+		decrypt = Encryptor(self.server.settings.getSetting("crypto_salt"), self.server.settings.getSetting("crypto_password"))
 
 		try:
 			decrypt.decryptStreamChunkOld(response, self.wfile, startOffset=startOffset)
@@ -90,10 +92,10 @@ class ServerHandler(BaseHTTPRequestHandler):
 		return json.loads(self.getPostData())
 
 	def handleAccountRegistration(self):
-		queries = helpers.parseQuery(self.getPostData())
+		queries = parseQuery(self.getPostData())
 		clientID = queries["client_id"]
 		authURL = self.server.cloudService.getAuthURL(clientID, self.server.server_port)
-		self.server.account = accounts.account.Account()
+		self.server.account = Account()
 		self.server.account.name = urllib.parse.unquote_plus(queries["account"])
 		self.server.account.clientID = clientID
 		self.server.account.clientSecret = queries["client_secret"]
@@ -212,7 +214,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		dbID = postData["db_id"]
 		dbType = postData["db_type"]
 		trackProgress = False if dbID is None else True
-		player = playback.player.Player(dbID, dbType, trackProgress)
+		player = VideoPlayer(dbID, dbType, trackProgress)
 
 		while not self.server.monitor.abortRequested() and not player.close:
 
@@ -346,7 +348,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			"/sync_all": self.handleSyncAll,
 			"/status": self.handleStatusRequest,
 		}
-		parsedURL = helpers.parseURL(self.path)
+		parsedURL = parseURL(self.path)
 		path = parsedURL["path"]
 		query = parsedURL["query"]
 		handler = pathHandlers.get(path)

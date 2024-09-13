@@ -1,7 +1,7 @@
 import xbmc
 
 from resources.lib.network.server import ServerRunner
-from resources.lib.library.monitor import LibraryMonitor
+from resources.lib.library.library_monitor import LibraryMonitor
 
 
 if __name__ == "__main__":

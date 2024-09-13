@@ -3,10 +3,10 @@ import os
 import xbmcvfs
 import xbmcaddon
 
-from ..ui import dialogs
-from ..filesystem import operations
-from ..database.database import Database
-from constants import settings
+import constants
+from ..ui.dialogs import FileDeletionDialog
+from ..database.db_manager import DatabaseManager
+from ..filesystem.file_operations import FileOperations
 
 ADDON_PATH = xbmcvfs.translatePath(xbmcaddon.Addon().getAddonInfo("profile"))
 
@@ -16,12 +16,13 @@ if not os.path.exists(ADDON_PATH):
 CACHE_PATH = os.path.join(ADDON_PATH, "cache.db")
 
 
-class Cache(Database):
+class Cache(DatabaseManager):
 
 	def __init__(self):
 		newDB = not os.path.exists(CACHE_PATH)
 		super().__init__(CACHE_PATH)
-		self.fileOperations = operations.FileOperations()
+		self.settings = constants.settings
+		self.fileOperations = FileOperations()
 
 		if newDB:
 			self._createTables()
@@ -223,11 +224,11 @@ class Cache(Database):
 		drive = self.getDrive(driveID)
 		syncRootPath = self.getSyncRootPath()
 		drivePath = os.path.join(syncRootPath, drive["local_path"])
-		progressDialog = settings.getSetting("file_deletion_dialog")
+		progressDialog = self.settings.getSetting("file_deletion_dialog")
 
 		if deleteFiles and progressDialog:
 			fileTotal = self.getFileCount({"root_folder_id": folderID})
-			progressDialog = dialogs.FileDeletionDialog(fileTotal)
+			progressDialog = FileDeletionDialog(fileTotal)
 			progressDialog.create()
 		else:
 			progressDialog = None
@@ -248,11 +249,11 @@ class Cache(Database):
 		drive = self.getDrive(driveID)
 		syncRootPath = self.getSyncRootPath()
 		drivePath = os.path.join(syncRootPath, drive["local_path"])
-		progressDialog = settings.getSetting("file_deletion_dialog")
+		progressDialog = self.settings.getSetting("file_deletion_dialog")
 
 		if progressDialog:
 			fileTotal = self.getFileCount({"drive_id": driveID})
-			progressDialog = dialogs.FileDeletionDialog(fileTotal)
+			progressDialog = FileDeletionDialog(fileTotal)
 			progressDialog.create()
 
 		for folder in folders:

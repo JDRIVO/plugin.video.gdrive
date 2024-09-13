@@ -6,29 +6,30 @@ import traceback
 
 import xbmc
 
-import helpers
-from . import cache
-from .. import sync
-from .. import google_api
-from .. import encryption
-from .. import filesystem
-from ..ui import dialogs
-from ..threadpool import threadpool
+from .syncer import Syncer
+from .sync_cache import Cache
+from ..filesystem.folder import Folder
+from ..encryption.encryptor import Encryptor
+from ..threadpool.threadpool import ThreadPool
+from ..google_api.google_drive import GoogleDrive
+from ..ui.dialogs import Dialog, SyncProgressionDialog
+from ..filesystem.file_operations import FileOperations
+from helpers import getCurrentTime, strptime
 
 
-class Tasker:
+class TaskManager:
 
 	def __init__(self, settings, accountManager):
 		self.settings = settings
 		self.accountManager = accountManager
 		self.accounts = self.accountManager.accounts
-		self.cloudService = google_api.drive.GoogleDrive()
-		self.encrypter = encryption.encrypter.Encrypter(settings=self.settings)
-		self.cache = cache.Cache()
-		self.fileOperations = filesystem.operations.FileOperations(cloud_service=self.cloudService, encryption=self.encrypter)
-		self.syncer = sync.syncer.Syncer(self.accountManager, self.cloudService, self.encrypter, self.fileOperations, self.settings, self.cache)
+		self.cloudService = GoogleDrive()
+		self.encryptor = Encryptor(settings=self.settings)
+		self.cache = Cache()
+		self.fileOperations = FileOperations(cloud_service=self.cloudService, encryption=self.encryptor)
+		self.syncer = Syncer(self.accountManager, self.cloudService, self.encryptor, self.fileOperations, self.settings, self.cache)
 		self.monitor = xbmc.Monitor()
-		self.dialog = dialogs.Dialog()
+		self.dialog = Dialog()
 		self.taskLock = threading.Lock()
 		self.idLock = threading.Lock()
 		self.tasks = {}
@@ -37,7 +38,7 @@ class Tasker:
 
 	def addTask(self, driveID, folders):
 		self.activeTasks.append(driveID)
-		self.encrypter.setup(settings=self.settings)
+		self.encryptor.setup(settings=self.settings)
 		self.accountManager.setAccounts()
 		self.accounts = self.accountManager.accounts
 		account = self.accountManager.getAccount(driveID)
@@ -54,14 +55,14 @@ class Tasker:
 		threadCount = self.settings.getSettingInt("thread_count", 1)
 
 		if self.settings.getSetting("sync_progress_dialog"):
-			progressDialog = dialogs.SyncProgressionDialog(folderTotal)
+			progressDialog = SyncProgressionDialog(folderTotal)
 			progressDialog.create()
 		else:
 			progressDialog = None
 
 		with self.taskLock:
 
-			with threadpool.ThreadPool(threadCount) as pool:
+			with ThreadPool(threadCount) as pool:
 
 				for folder in folders:
 					folderID = folder["id"]
@@ -69,7 +70,7 @@ class Tasker:
 					dirPath = folder["path"]
 					modifiedTime = folder["modifiedTime"]
 					folderSettings = self.cache.getFolder({"folder_id": folderID})
-					folder = filesystem.folder.Folder(folderID, folderID, folderName, dirPath, os.path.join(drivePath, dirPath), modifiedTime)
+					folder = Folder(folderID, folderID, folderName, dirPath, os.path.join(drivePath, dirPath), modifiedTime)
 					pool.submit(self.syncer.syncFolderAdditions, syncRootPath, drivePath, folder, folderSettings, progressDialog)
 
 		if progressDialog:
@@ -149,7 +150,7 @@ class Tasker:
 		self.tasks[driveID] = taskID
 
 		if taskMode == "schedule":
-			taskFrequency = helpers.strptime(taskFrequency.lstrip(), "%H:%M")
+			taskFrequency = strptime(taskFrequency.lstrip(), "%H:%M")
 			threading.Thread(target=self._startScheduledTask, args=(startupSync, taskFrequency, driveID, taskID, startUpRun)).start()
 		else:
 			taskFrequency = int(taskFrequency) * 60
@@ -191,7 +192,7 @@ class Tasker:
 				startUpRun = False
 				continue
 
-			currentTime = helpers.getCurrentTime()
+			currentTime = getCurrentTime()
 
 			if currentTime != taskFrequency and not startUpRun:
 

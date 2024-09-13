@@ -10,13 +10,18 @@ import xbmcgui
 import xbmcplugin
 
 import constants
-from . import ui
-from . import sync
-from . import accounts
-from . import filesystem
-from . import google_api
-from . import threadpool
-from .network import requester
+from .ui.dialogs import Dialog
+from .ui.sync_settings import SyncSettings
+from .ui.resolution_order import ResolutionOrder
+from .ui.resolution_selector import ResolutionSelector
+from .sync.sync_cache import Cache
+from .network import http_requester
+from .accounts.account import Account
+from .accounts.account_manager import AccountManager
+from .threadpool.threadpool import ThreadPool
+from .google_api.google_drive import GoogleDrive
+from .filesystem.fs_helpers import removeProhibitedFSchars
+from .filesystem.fs_constants import TMDB_LANGUAGES, TMDB_REGIONS
 
 
 class Core:
@@ -26,11 +31,11 @@ class Core:
 		self.pluginHandle = int(sys.argv[1])
 		self.settings = constants.settings
 		self.mode = self.settings.getParameter("mode", "main")
-		self.cache = sync.cache.Cache()
-		self.accountManager = accounts.manager.AccountManager(self.settings)
+		self.cache = Cache()
+		self.accountManager = AccountManager(self.settings)
 		self.accounts = self.accountManager.accounts
-		self.cloudService = google_api.drive.GoogleDrive()
-		self.dialog = ui.dialogs.Dialog()
+		self.cloudService = GoogleDrive()
+		self.dialog = Dialog()
 		self.succeeded = True
 		self.cacheToDisk = True
 
@@ -155,7 +160,7 @@ class Core:
 
 			return
 
-		account = accounts.account.Account()
+		account = Account()
 		account.name = accountName
 		account.email = email
 		account.key = key
@@ -289,7 +294,7 @@ class Core:
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/delete_drive"
 		data = {"drive_id": driveID}
-		requester.makeRequest(url, data)
+		http_requester.request(url, data)
 
 	def exportAccounts(self):
 		filePath = self.dialog.browse(0, self.settings.getLocalizedString(30034), "")
@@ -318,12 +323,12 @@ class Core:
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/sync"
 		data = {"drive_id": driveID}
-		requester.makeRequest(url, data)
+		http_requester.request(url, data)
 
 	def forceSyncDrives(self):
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/sync_all"
-		requester.makeRequest(url)
+		http_requester.request(url)
 
 	def getFolders(self, driveID, folderID, search=False):
 		account = self.accountManager.getAccount(driveID)
@@ -357,7 +362,7 @@ class Core:
 			queries.append(("mimeType='application/vnd.google-apps.folder' and not trashed and (" + " or ".join(f"'{id}' in parents" for id in ids) + ")",))
 			folderIDs = folderIDs[maxIDs:]
 
-		with threadpool.threadpool.ThreadPool(threadCount) as pool:
+		with ThreadPool(threadCount) as pool:
 			pool.map(getFolders, queries)
 
 		if folderIDs:
@@ -369,7 +374,7 @@ class Core:
 		folderName = self.settings.getParameter("folder_name")
 		mode = self.settings.getParameter("sync_mode")
 		self.succeeded = False
-		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, folder_id=folderID, accounts=self.accounts, folder_name=folderName, mode=mode)
+		syncSettings = SyncSettings(drive_id=driveID, folder_id=folderID, accounts=self.accounts, folder_name=folderName, mode=mode)
 		syncSettings.doModal()
 		del syncSettings
 
@@ -547,7 +552,7 @@ class Core:
 				streams = self.cloudService.getStreams(fileID)
 
 				if streams and len(streams) > 1:
-					resolutionSelector = ui.resolution_selector.ResolutionSelector(resolutions=streams)
+					resolutionSelector = ResolutionSelector(resolutions=streams)
 					resolutionSelector.doModal()
 
 					if resolutionSelector.closed:
@@ -577,7 +582,7 @@ class Core:
 			"file_id": fileID,
 			"transcoded": transcoded,
 		}
-		requester.makeRequest(url, data)
+		http_requester.request(url, data)
 		item = xbmcgui.ListItem(path=f"http://localhost:{serverPort}/play")
 
 		if self.settings.getSetting("subtitles_format") == "Subtitles are named the same as STRM":
@@ -590,7 +595,7 @@ class Core:
 		xbmcplugin.setResolvedUrl(self.pluginHandle, True, item)
 		url = f"http://localhost:{serverPort}/start_player"
 		data = {"db_id": dbID, "db_type": dbType}
-		requester.makeRequest(url, data)
+		http_requester.request(url, data)
 
 	def refreshToken(self, expiry):
 		timeNow = datetime.datetime.now()
@@ -624,7 +629,7 @@ class Core:
 
 	def resolutionPriority(self):
 		resolutions = self.settings.getSetting("resolution_priority").split(", ")
-		resolutionOrder = ui.resolution_order.ResolutionOrder(resolutions=resolutions)
+		resolutionOrder = ResolutionOrder(resolutions=resolutions)
 		resolutionOrder.doModal()
 		newOrder = resolutionOrder.priorityList
 		del resolutionOrder
@@ -679,7 +684,7 @@ class Core:
 			return
 
 		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
-		alias = filesystem.helpers.removeProhibitedFSchars(alias)
+		alias = removeProhibitedFSchars(alias)
 
 		if alias in self.accountManager.aliases:
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30015))
@@ -688,7 +693,7 @@ class Core:
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/set_alias"
 		data = {"drive_id": driveID, "alias": alias}
-		requester.makeRequest(url, data)
+		http_requester.request(url, data)
 
 	def setPlaybackAccount(self):
 		accounts = self.accountManager.getDrives()
@@ -702,20 +707,20 @@ class Core:
 		self.settings.setSetting("account_override", accounts[selection][1])
 
 	def setTMDBlanguage(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30610), filesystem.constants.TMDB_LANGUAGES)
+		selection = self.dialog.select(self.settings.getLocalizedString(30610), TMDB_LANGUAGES)
 
 		if selection == -1:
 			return
 
-		self.settings.setSetting("tmdb_language", filesystem.constants.TMDB_LANGUAGES[selection])
+		self.settings.setSetting("tmdb_language", TMDB_LANGUAGES[selection])
 
 	def setTMDBregion(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30611), filesystem.constants.TMDB_REGIONS)
+		selection = self.dialog.select(self.settings.getLocalizedString(30611), TMDB_REGIONS)
 
 		if selection == -1:
 			return
 
-		self.settings.setSetting("tmdb_region", filesystem.constants.TMDB_REGIONS[selection])
+		self.settings.setSetting("tmdb_region", TMDB_REGIONS[selection])
 
 	def showAccountsContextMenu(self):
 		options = [
@@ -779,7 +784,7 @@ class Core:
 		mode = self.settings.getParameter("sync_mode")
 		self.succeeded = False
 		folders = self.getFolders(driveID, parentFolderID)
-		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
+		syncSettings = SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
 		syncSettings.doModal()
 		del syncSettings
 
@@ -791,7 +796,7 @@ class Core:
 		folders = [{"id": folderID, "name": folderName, "modifiedTime": modifiedTime}]
 		mode = self.settings.getParameter("sync_mode")
 		self.succeeded = False
-		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
+		syncSettings = SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
 		syncSettings.doModal()
 		del syncSettings
 
@@ -808,7 +813,7 @@ class Core:
 			return
 
 		folders = [folders[folderNames[index][1]] for index in chosenFolders]
-		syncSettings = ui.sync_settings.SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
+		syncSettings = SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
 		syncSettings.doModal()
 		del syncSettings
 

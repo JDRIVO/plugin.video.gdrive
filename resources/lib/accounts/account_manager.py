@@ -3,7 +3,7 @@ import os
 import xbmcvfs
 import xbmcaddon
 
-from .. import filesystem
+from ..filesystem.file_operations import FileOperations
 
 ADDON_PATH = xbmcvfs.translatePath(xbmcaddon.Addon().getAddonInfo("profile"))
 
@@ -17,7 +17,7 @@ class AccountManager:
 
 	def __init__(self, settings):
 		self.settings = settings
-		self.fileOperations = filesystem.operations.FileOperations()
+		self.fileOperations = FileOperations()
 		self.setAccounts()
 
 	def addAccount(self, account, driveID):

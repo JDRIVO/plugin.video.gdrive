@@ -3,16 +3,16 @@ import os
 import xbmcvfs
 
 import constants
-from .. import filesystem
-from ..database.database import Database
+from ..database.db_manager import DatabaseManager
+from ..filesystem.file_operations import FileOperations
 
 
-class DatabaseEditor(Database):
+class DatabaseEditor(DatabaseManager):
 
 	def __init__(self):
 		super().__init__(self._getVideoDB())
 		self.settings = constants.settings
-		self.fileOperations = filesystem.operations.FileOperations()
+		self.fileOperations = FileOperations()
 
 	def processData(self, strmPath, dirPath, filename):
 		strmData = self.settings.parseQuery(self.fileOperations.readFile(strmPath))

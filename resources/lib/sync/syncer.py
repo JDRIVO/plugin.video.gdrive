@@ -2,25 +2,25 @@ import os
 
 import xbmc
 
-from ..filesystem import helpers
-from ..filesystem import processor
-from ..threadpool import threadpool
-from ..filesystem.tree import FileTree
 from ..filesystem.folder import Folder
-from ..filesystem.constants import MEDIA_ASSETS
+from ..filesystem.fs_tree import FileTree
+from ..filesystem.fs_constants import MEDIA_ASSETS
+from ..filesystem.file_processor import LocalFileProcessor, RemoteFileProcessor
+from ..filesystem.fs_helpers import getExcludedTypes, makeFile, removeProhibitedFSchars
+from ..threadpool.threadpool import ThreadPool
 
 
 class Syncer:
 
-	def __init__(self, accountManager, cloudService, encrypter, fileOperations, settings, cache):
+	def __init__(self, accountManager, cloudService, encryptor, fileOperations, settings, cache):
 		self.accountManager = accountManager
 		self.cloudService = cloudService
-		self.encrypter = encrypter
+		self.encryptor = encryptor
 		self.fileOperations = fileOperations
 		self.settings = settings
 		self.cache = cache
-		self.remoteFileProcessor = processor.RemoteFileProcessor(self.cloudService, self.fileOperations, self.settings, self.cache)
-		self.localFileProcessor = processor.LocalFileProcessor(self.cloudService, self.fileOperations, self.settings, self.cache)
+		self.remoteFileProcessor = RemoteFileProcessor(self.cloudService, self.fileOperations, self.settings, self.cache)
+		self.localFileProcessor = LocalFileProcessor(self.cloudService, self.fileOperations, self.settings, self.cache)
 
 	def syncChanges(self, driveID):
 		account = self.accountManager.getAccount(driveID)
@@ -79,7 +79,7 @@ class Syncer:
 
 	def syncFolderAdditions(self, syncRootPath, drivePath, folder, folderSettings, progressDialog=None, syncedIDs=None):
 		syncRootPath = syncRootPath + os.sep
-		excludedTypes = helpers.getExcludedTypes(folderSettings)
+		excludedTypes = getExcludedTypes(folderSettings)
 		driveID = folderSettings["drive_id"]
 		rootFolderID = folderSettings["folder_id"]
 		folderRestructure = folderSettings["folder_restructure"]
@@ -87,14 +87,14 @@ class Syncer:
 		threadCount = self.settings.getSettingInt("thread_count", 1)
 
 		if folderSettings["contains_encrypted"]:
-			encrypter = self.encrypter
+			encryptor = self.encryptor
 		else:
-			encrypter = None
+			encryptor = None
 
-		fileTree = FileTree(self.cloudService, self.cache, driveID, drivePath, progressDialog, threadCount, encrypter, excludedTypes, syncedIDs)
+		fileTree = FileTree(self.cloudService, self.cache, driveID, drivePath, progressDialog, threadCount, encryptor, excludedTypes, syncedIDs)
 		fileTree.buildTree(folder)
 
-		with threadpool.ThreadPool(threadCount) as pool:
+		with ThreadPool(threadCount) as pool:
 
 			for folder in fileTree:
 				directory = {
@@ -113,7 +113,7 @@ class Syncer:
 
 		if folderRestructure or fileRenaming:
 
-			with threadpool.ThreadPool(threadCount) as pool:
+			with ThreadPool(threadCount) as pool:
 
 				for folder in fileTree:
 					pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, syncRootPath, threadCount, progressDialog)
@@ -131,7 +131,7 @@ class Syncer:
 		threadCount = self.settings.getSettingInt("thread_count", 1)
 		folders = []
 
-		with threadpool.ThreadPool(threadCount) as pool:
+		with ThreadPool(threadCount) as pool:
 
 			for rootFolderID, directories in files.items():
 				folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
@@ -144,7 +144,7 @@ class Syncer:
 					if folderRestructure or fileRenaming:
 						folders.append((folder, folderSettings))
 
-		with threadpool.ThreadPool(threadCount) as pool:
+		with ThreadPool(threadCount) as pool:
 
 			for folder, folderSettings in folders:
 				pool.submit(self.localFileProcessor.processFiles, folder, folderSettings, syncRootPath, threadCount)
@@ -228,14 +228,14 @@ class Syncer:
 			self.cache.addDirectory(directory)
 
 		folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
-		excludedTypes = helpers.getExcludedTypes(folderSettings)
+		excludedTypes = getExcludedTypes(folderSettings)
 
 		if folderSettings["contains_encrypted"]:
-			encrypter = self.encrypter
+			encryptor = self.encryptor
 		else:
-			encrypter = None
+			encryptor = None
 
-		file = helpers.makeFile(file, excludedTypes, encrypter)
+		file = makeFile(file, excludedTypes, encryptor)
 
 		if not file:
 			return
@@ -378,7 +378,7 @@ class Syncer:
 				trashed.append(item)
 				continue
 
-			item["name"] = helpers.removeProhibitedFSchars(item["name"])
+			item["name"] = removeProhibitedFSchars(item["name"])
 
 			if item["mimeType"] == "application/vnd.google-apps.folder":
 				cachedDirectory = self.cache.getDirectory({"folder_id": item["id"]})

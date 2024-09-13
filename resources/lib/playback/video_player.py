@@ -5,7 +5,7 @@ import xbmc
 import constants
 
 
-class Player(xbmc.Player):
+class VideoPlayer(xbmc.Player):
 
 	def __init__(self, dbID, dbType, trackProgress):
 		self.dbID = dbID

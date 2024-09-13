@@ -4,7 +4,7 @@ import json
 import xbmc
 
 import constants
-from . import editor
+from .library_editor import DatabaseEditor
 from helpers import sendJSONRPCCommand
 
 
@@ -12,7 +12,7 @@ class LibraryMonitor(xbmc.Monitor):
 
 	def __init__(self):
 		self.settings = constants.settings
-		self.dbEditor = editor.DatabaseEditor()
+		self.dbEditor = DatabaseEditor()
 		self.enabled = self._isEnabled()
 
 	def onNotification(self, sender, method, data):

@@ -16,6 +16,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 
 	def __init__(self, *args, **kwargs):
 		self.resolutions = kwargs["resolutions"]
+		self.settings = constants.settings
 		mediaPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
 		self.blueTexture = os.path.join(mediaPath, "blue.png")
 		self.grayTexture = os.path.join(mediaPath, "gray.png")
@@ -28,7 +29,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 		self.y = int((viewportHeight - h) / 2)
 		background = xbmcgui.ControlImage(self.x, self.y, w, h, self.grayTexture)
 		bar = xbmcgui.ControlImage(self.x, self.y, w, 40, self.blueTexture)
-		label = xbmcgui.ControlLabel(self.x + 10, self.y + 5, 0, 0, constants.settings.getLocalizedString(30083))
+		label = xbmcgui.ControlLabel(self.x + 10, self.y + 5, 0, 0, self.settings.getLocalizedString(30083))
 		self.addControls([background, bar, label])
 		self.priorityList = None
 		self.shift = False
@@ -98,7 +99,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 			self.y + spacing,
 			80,
 			buttonHeight,
-			constants.settings.getLocalizedString(30066),
+			self.settings.getLocalizedString(30066),
 			font=font,
 			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.blueTexture,
@@ -109,7 +110,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 			self.y + spacing + 35,
 			80,
 			buttonHeight,
-			constants.settings.getLocalizedString(30084),
+			self.settings.getLocalizedString(30084),
 			font=font,
 			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.blueTexture,

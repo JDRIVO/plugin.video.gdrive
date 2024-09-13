@@ -3,7 +3,7 @@ import pickle
 import shutil
 import threading
 
-from . import helpers
+from .fs_helpers import duplicateFileCheck, generateFilePath, getCreationDate
 
 
 class FileOperations:
@@ -27,7 +27,7 @@ class FileOperations:
 		self.createDirs(dirPath)
 
 		with self.fileLock:
-			filePath = helpers.generateFilePath(dirPath, filename)
+			filePath = generateFilePath(dirPath, filename)
 
 			with open(filePath, mode) as file:
 				file.write(content)
@@ -58,7 +58,7 @@ class FileOperations:
 			if encrypted:
 
 				with self.fileLock:
-					filePath = helpers.generateFilePath(dirPath, filename)
+					filePath = generateFilePath(dirPath, filename)
 					self.encryption.decryptStream(file, filePath, modifiedTime=modifiedTime)
 
 			else:
@@ -85,10 +85,10 @@ class FileOperations:
 
 	def renameFile(self, syncRootPath, oldPath, dirPath, filename):
 		self.createDirs(dirPath)
-		creationDate = helpers.getCreationDate(oldPath)
+		creationDate = getCreationDate(oldPath)
 
 		with self.fileLock:
-			newPath = helpers.duplicateFileCheck(dirPath, filename, creationDate)
+			newPath = duplicateFileCheck(dirPath, filename, creationDate)
 			shutil.move(oldPath, newPath)
 
 		self._deleteEmptyDirs(syncRootPath, os.path.dirname(oldPath))
