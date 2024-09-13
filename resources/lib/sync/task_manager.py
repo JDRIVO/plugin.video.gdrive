@@ -14,7 +14,7 @@ from ..threadpool.threadpool import ThreadPool
 from ..google_api.google_drive import GoogleDrive
 from ..ui.dialogs import Dialog, SyncProgressionDialog
 from ..filesystem.file_operations import FileOperations
-from helpers import getCurrentTime, strptime
+from helpers import convertDateStrToDT, getCurrentTime
 
 
 class TaskManager:
@@ -150,7 +150,7 @@ class TaskManager:
 		self.tasks[driveID] = taskID
 
 		if taskMode == "schedule":
-			taskFrequency = strptime(taskFrequency.lstrip(), "%H:%M")
+			taskFrequency = convertDateStrToDT(taskFrequency.lstrip())
 			threading.Thread(target=self._startScheduledTask, args=(startupSync, taskFrequency, driveID, taskID, startUpRun)).start()
 		else:
 			taskFrequency = int(taskFrequency) * 60

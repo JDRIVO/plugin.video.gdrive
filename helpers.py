@@ -1,23 +1,31 @@
 import json
+import time
 import datetime
 
 import xbmc
 
 
-def convertTime(time):
+def convertDateStrToDT(dateString, format="%H:%M"):
+	return strptime(dateString, format).time()
+
+def convertTime(dateString):
 	# RFC 3339 to timestamp
-	return datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=datetime.timezone.utc).timestamp()
+	return strptime(dateString, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=datetime.timezone.utc).timestamp()
 
 def floorDT(dt, interval):
 	replace = (dt.minute // interval) * interval
 	return dt.replace(minute = replace, second=0, microsecond=0)
 
 def getCurrentTime():
-	floorDT(datetime.datetime.now().time(), 1)
+	return floorDT(datetime.datetime.now().time(), 1)
 
 def sendJSONRPCCommand(query):
 	query = json.dumps(query)
 	return json.loads(xbmc.executeJSONRPC(query))
 
 def strptime(dateString, format):
-	return datetime.datetime(*(time.strptime(dateString, format)[:6])).time()
+
+	try:
+		return datetime.datetime.strptime(dateString, format)
+	except TypeError:
+		return datetime.datetime(*time.strptime(dateString, format)[:6])
