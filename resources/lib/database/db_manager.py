@@ -1,7 +1,7 @@
 import sqlite3
 import threading
 
-from .db_helpers import convertRowsToDic, joinConditions
+from .db_helpers import joinConditions, rowsToDict
 
 
 class DatabaseManager:
@@ -100,7 +100,7 @@ class DatabaseManager:
 		self.cursor.execute(query)
 		rows = self.cursor.fetchall()
 		self._close()
-		return convertRowsToDic(rows)
+		return rowsToDict(rows)
 
 	@lock
 	def update(self, table, data, condition):

@@ -204,7 +204,7 @@ class Encryptor:
 			elif len(nextChunk) == 0 and adjEnd > 0:
 				wfile.write(responseChunk[:len(responseChunk) - adjEnd])
 				adjEnd = 0
-			elif len(nextChunk) == 0:  # adjEnd = 0
+			elif len(nextChunk) == 0: # adjEnd = 0
 				wfile.write(responseChunk.strip())
 			else:
 				wfile.write(responseChunk)

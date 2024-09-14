@@ -184,7 +184,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		settings.update(
 			{
 				self.settings.getLocalizedString(30604): folderSettings["contains_encrypted"] if folderSettings else self.settings.getSetting("contains_encrypted"),
-				self.settings.getLocalizedString(30605): folderSettings["file_renaming"] if  folderSettings else self.settings.getSetting("file_renaming"),
+				self.settings.getLocalizedString(30605): folderSettings["file_renaming"] if folderSettings else self.settings.getSetting("file_renaming"),
 				self.settings.getLocalizedString(30606): folderSettings["folder_restructure"] if folderSettings else self.settings.getSetting("folder_restructure"),
 				self.settings.getLocalizedString(30607): folderSettings["sync_nfo"] if folderSettings else self.settings.getSetting("sync_nfo"),
 				self.settings.getLocalizedString(30608): folderSettings["sync_subtitles"] if folderSettings else self.settings.getSetting("sync_subtitles"),
@@ -537,7 +537,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		if selection == -1:
 			return
 
-		selection =  modes[selection]
+		selection = modes[selection]
 
 		if selection != self.syncMode:
 			[button.setLabel(label2=" ") for button, setting in self.pushButtons.items() if setting == self.settings.getLocalizedString(30050)]

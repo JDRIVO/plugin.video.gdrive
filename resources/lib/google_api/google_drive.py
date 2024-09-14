@@ -55,6 +55,7 @@ class GoogleDrive:
 			"pageSize": "1000",
 		}
 		changes = []
+		pageToken = True
 
 		while pageToken:
 			url = addQueryString(API["changes"], params)

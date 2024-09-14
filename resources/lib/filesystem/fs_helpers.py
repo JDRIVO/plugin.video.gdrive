@@ -4,14 +4,14 @@ import math
 import time
 import difflib
 
-from .video import *
 from .file import File
-from .fs_constants import *
 from .subtitles import Subtitles
+from .video import Episode, Movie, Video
+from .fs_constants import ARTWORK, MEDIA_ASSETS, SUBTITLE_EXTENSIONS, VIDEO_EXTENSIONS
 from .. import ptn
 from ..network import http_requester
 from ..network.network_helpers import addQueryString
-from helpers import convertTime
+from helpers import rfcToTimestamp
 
 
 def createSTRMContents(driveID, fileID, encrypted, contents):
@@ -256,7 +256,7 @@ def makeFile(file, excludedTypes, encryptor):
 	file.type = fileType
 	file.encrypted = encrypted
 	file.extension = fileExtension
-	file.modifiedTime = convertTime(modifiedTime)
+	file.modifiedTime = rfcToTimestamp(modifiedTime)
 	return file
 
 def removeProhibitedFSchars(name):

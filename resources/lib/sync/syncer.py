@@ -3,7 +3,7 @@ import os
 import xbmc
 
 from ..filesystem.folder import Folder
-from ..filesystem.fs_tree import FileTree
+from ..filesystem.file_tree import FileTree
 from ..filesystem.fs_constants import MEDIA_ASSETS
 from ..filesystem.file_processor import LocalFileProcessor, RemoteFileProcessor
 from ..filesystem.fs_helpers import getExcludedTypes, makeFile, removeProhibitedFSchars
