@@ -24,6 +24,10 @@ class Syncer:
 
 	def syncChanges(self, driveID):
 		account = self.accountManager.getAccount(driveID)
+
+		if not account:
+			return
+
 		self.cloudService.setAccount(account)
 		self.cloudService.refreshToken()
 		driveSettings = self.cache.getDrive(driveID)
@@ -85,12 +89,7 @@ class Syncer:
 		folderRestructure = folderSettings["folder_restructure"]
 		fileRenaming = folderSettings["file_renaming"]
 		threadCount = self.settings.getSettingInt("thread_count", 1)
-
-		if folderSettings["contains_encrypted"]:
-			encryptor = self.encryptor
-		else:
-			encryptor = None
-
+		encryptor = self.encryptor if folderSettings["contains_encrypted"] else None
 		fileTree = FileTree(self.cloudService, self.cache, driveID, drivePath, progressDialog, threadCount, encryptor, excludedTypes, syncedIDs)
 		fileTree.buildTree(folder)
 
@@ -229,12 +228,7 @@ class Syncer:
 
 		folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
 		excludedTypes = getExcludedTypes(folderSettings)
-
-		if folderSettings["contains_encrypted"]:
-			encryptor = self.encryptor
-		else:
-			encryptor = None
-
+		encryptor = self.encryptor if folderSettings["contains_encrypted"] else None
 		file = makeFile(file, excludedTypes, encryptor)
 
 		if not file:

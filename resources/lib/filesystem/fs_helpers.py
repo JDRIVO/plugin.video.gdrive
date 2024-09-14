@@ -145,12 +145,7 @@ def getTMDBtitle(type, title, year, tmdbSettings, imdbLock):
 		addQueryString(url, {"query": title, "year" if movie else "first_air_date_year": year, **tmdbSettings}),
 		addQueryString(url, {"query": title, **tmdbSettings}),
 	)
-
-	if year:
-		query = queries[0]
-	else:
-		query = queries[1]
-
+	query = queries[0] if year else queries[1]
 	totalResults, apiMatches = getMatches(url, query, movie)
 	titleLowerCase = title.replace(" ", "").casefold()
 	yearStr = str(year)

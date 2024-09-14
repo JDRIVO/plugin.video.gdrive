@@ -4,6 +4,13 @@ import urllib.parse
 def addQueryString(url, params):
 	return f"{url}?{urllib.parse.urlencode(params)}"
 
+def mergePaths(baseURL, paths):
+
+	if isinstance(paths, str):
+		return f"{baseURL}/{paths}"
+	else:
+		return f"{baseURL}/{'/'.join(paths)}"
+
 def parseQuery(query):
 	return dict(urllib.parse.parse_qsl(query))
 
@@ -15,13 +22,6 @@ def parseURL(urlString):
 		query = parseQuery(query)
 
 	return {"path": url.path, "query": query}
-
-def mergePaths(baseURL, paths):
-
-	if isinstance(paths, str):
-		return f"{baseURL}/{paths}"
-	else:
-		return f"{baseURL}/{'/'.join(paths)}"
 
 def quote(string):
 	return urllib.parse.quote(string)

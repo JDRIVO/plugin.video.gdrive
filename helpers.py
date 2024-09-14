@@ -12,13 +12,13 @@ def floorDT(dt, interval):
 def getCurrentTime():
 	return floorDT(datetime.datetime.now().time(), 1)
 
-def sendJSONRPCCommand(query):
-	query = json.dumps(query)
-	return json.loads(xbmc.executeJSONRPC(query))
-
 def rfcToTimestamp(dateString):
 	# RFC 3339 str to timestamp
 	return strptime(dateString, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=datetime.timezone.utc).timestamp()
+
+def sendJSONRPCCommand(query):
+	query = json.dumps(query)
+	return json.loads(xbmc.executeJSONRPC(query))
 
 def strptime(dateString, format):
 

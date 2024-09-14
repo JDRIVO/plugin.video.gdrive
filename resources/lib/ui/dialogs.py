@@ -60,17 +60,17 @@ class SyncProgressionDialog(xbmcgui.DialogProgressBG):
 	def _getFolderHeading(self):
 		return f"{self.settings.getLocalizedString(30000)}: {self.settings.getLocalizedString(30052)} ({self.processedFolders}/{self.folderTotal})"
 
-	def _getSyncedFilesPercentage(self):
-
-		try:
-			return int(self.processedFiles / self.fileCount * 100)
-		except ZeroDivisionError:
-			return 0
-
 	def _getRenamedFilesPercentage(self):
 
 		try:
 			return int(self.renamedFiles / self.fileCount * 100)
+		except ZeroDivisionError:
+			return 0
+
+	def _getSyncedFilesPercentage(self):
+
+		try:
+			return int(self.processedFiles / self.fileCount * 100)
 		except ZeroDivisionError:
 			return 0
 
