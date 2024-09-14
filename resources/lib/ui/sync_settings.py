@@ -7,8 +7,8 @@ import xbmcaddon
 
 import constants
 from .dialogs import Dialog
-from ..sync.sync_cache import Cache
 from ..network import http_requester
+from ..sync.cache_manager import CacheManager
 from ..filesystem.fs_helpers import removeProhibitedFSchars
 from ..filesystem.fs_constants import TMDB_LANGUAGES, TMDB_REGIONS
 
@@ -44,7 +44,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.folderName = kwargs.get("folder_name")
 		self.accounts = kwargs.get("accounts")
 		self.settings = constants.settings
-		self.cache = Cache()
+		self.cache = CacheManager()
 		self.dialog = Dialog()
 		texturesPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
 		self.radioButtonFocus = os.path.join(texturesPath, "radiobutton-focus.png")

@@ -7,7 +7,7 @@ import traceback
 import xbmc
 
 from .syncer import Syncer
-from .sync_cache import Cache
+from .cache_manager import CacheManager
 from ..filesystem.folder import Folder
 from ..encryption.encryptor import Encryptor
 from ..threadpool.threadpool import ThreadPool
@@ -25,7 +25,7 @@ class TaskManager:
 		self.accounts = self.accountManager.accounts
 		self.cloudService = GoogleDrive()
 		self.encryptor = Encryptor(settings=self.settings)
-		self.cache = Cache()
+		self.cache = CacheManager()
 		self.fileOperations = FileOperations(cloud_service=self.cloudService, encryption=self.encryptor)
 		self.syncer = Syncer(self.accountManager, self.cloudService, self.encryptor, self.fileOperations, self.settings, self.cache)
 		self.monitor = xbmc.Monitor()

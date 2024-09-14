@@ -16,7 +16,7 @@ if not os.path.exists(ADDON_PATH):
 CACHE_PATH = os.path.join(ADDON_PATH, "cache.db")
 
 
-class Cache(DatabaseManager):
+class CacheManager(DatabaseManager):
 
 	def __init__(self):
 		newDB = not os.path.exists(CACHE_PATH)

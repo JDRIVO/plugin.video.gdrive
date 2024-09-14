@@ -14,10 +14,10 @@ import constants
 from . import registration
 from .network_helpers import parseQuery, parseURL
 from ..ui.dialogs import Dialog
-from ..sync.sync_cache import Cache
-from ..sync.task_manager import TaskManager
 from ..accounts.account import Account
 from ..accounts.account_manager import AccountManager
+from ..sync.task_manager import TaskManager
+from ..sync.cache_manager import CacheManager
 from ..encryption.encryptor import Encryptor
 from ..playback.video_player import VideoPlayer
 from ..google_api.google_drive import GoogleDrive
@@ -52,7 +52,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 		self.monitor = xbmc.Monitor()
 		self.accountManager = AccountManager(self.settings)
 		self.cloudService = GoogleDrive()
-		self.cache = Cache()
+		self.cache = CacheManager()
 		self.taskManager = TaskManager(self.settings, self.accountManager)
 		self.taskManager.run()
 		self.fileOperations = FileOperations()

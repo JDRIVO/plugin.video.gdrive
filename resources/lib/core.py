@@ -14,10 +14,10 @@ from .ui.dialogs import Dialog
 from .ui.sync_settings import SyncSettings
 from .ui.resolution_order import ResolutionOrder
 from .ui.resolution_selector import ResolutionSelector
-from .sync.sync_cache import Cache
 from .network import http_requester
 from .accounts.account import Account
 from .accounts.account_manager import AccountManager
+from .sync.cache_manager import CacheManager
 from .threadpool.threadpool import ThreadPool
 from .google_api.google_drive import GoogleDrive
 from .filesystem.fs_helpers import removeProhibitedFSchars
@@ -31,7 +31,7 @@ class Core:
 		self.pluginHandle = int(sys.argv[1])
 		self.settings = constants.settings
 		self.mode = self.settings.getParameter("mode", "main")
-		self.cache = Cache()
+		self.cache = CacheManager()
 		self.accountManager = AccountManager(self.settings)
 		self.accounts = self.accountManager.accounts
 		self.cloudService = GoogleDrive()
