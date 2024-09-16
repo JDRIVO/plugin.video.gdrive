@@ -80,8 +80,13 @@ class FileOperations:
 	@staticmethod
 	def readFile(filePath):
 
-		with open(filePath, "r") as file:
-			return file.read()
+		try:
+
+			with open(filePath, "r") as file:
+				return file.read()
+
+		except FileNotFoundError:
+			return
 
 	def renameFile(self, syncRootPath, oldPath, dirPath, filename):
 		self.createDirs(dirPath)

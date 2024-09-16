@@ -8,6 +8,7 @@ from ..filesystem.fs_constants import MEDIA_ASSETS
 from ..filesystem.file_processor import LocalFileProcessor, RemoteFileProcessor
 from ..filesystem.fs_helpers import getExcludedTypes, makeFile, removeProhibitedFSchars
 from ..threadpool.threadpool import ThreadPool
+from helpers import sendJSONRPCCommand
 
 
 class Syncer:
@@ -77,7 +78,13 @@ class Syncer:
 			if os.name == "nt":
 				syncRootPath = syncRootPath.replace("\\", "\\\\")
 
-			xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.Clean", "params": {"showdialogs": false, "content": "video", "directory": "%s"}}' % syncRootPath)
+			query = {
+				"jsonrpc": "2.0",
+				"id": 1,
+				"method": "VideoLibrary.Clean",
+				"params": {"showdialogs": False, "content": "video", "directory": syncRootPath},
+			}
+			sendJSONRPCCommand(query)
 
 		self.cache.updateDrive({"page_token": pageToken}, driveID)
 

@@ -308,6 +308,7 @@ class Core:
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30037))
 		else:
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30036))
+			xbmc.executebuiltin("Container.Refresh")
 
 	def forceSyncDrive(self):
 		driveID = self.settings.getParameter("drive_id")

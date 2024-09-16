@@ -3,6 +3,7 @@ from threading import Thread
 import xbmc
 
 import constants
+from helpers import sendJSONRPCCommand
 
 
 class VideoPlayer(xbmc.Player):
@@ -12,6 +13,7 @@ class VideoPlayer(xbmc.Player):
 		self.dbType = dbType
 		self.trackProgress = trackProgress
 		self.close = False
+		self.time = None
 		self.videoDuration = None
 		self.monitor = xbmc.Monitor()
 
@@ -58,9 +60,21 @@ class VideoPlayer(xbmc.Player):
 		if videoProgress >= self.markedWatchedPoint:
 
 			if self.dbType == "movie":
-				xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "playcount": 1, "resume": {"position": 0, "total": 0}}}' % self.dbID)
+				query = {
+					"jsonrpc": "2.0",
+					"id": 1,
+					"method": "VideoLibrary.SetMovieDetails",
+					"params": {"movieid": self.dbID, "playcount": 1, "resume": {"position": 0, "total": 0}},
+				}
+				sendJSONRPCCommand(query)
 			elif self.dbType == "episode":
-				xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "playcount": 1, "resume": {"position": 0, "total": 0}}}' % self.dbID)
+				query = {
+					"jsonrpc": "2.0",
+					"id": 1,
+					"method": "VideoLibrary.SetEpisodeDetails",
+					"params": {"episodeid": self.dbID, "playcount": 1, "resume": {"position": 0, "total": 0}},
+				}
+				sendJSONRPCCommand(query)
 
 	def _updateTime(self):
 
