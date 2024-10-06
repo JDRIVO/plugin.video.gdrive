@@ -17,7 +17,7 @@ from ..ui.dialogs import Dialog
 from ..accounts.account import Account
 from ..accounts.account_manager import AccountManager
 from ..sync.task_manager import TaskManager
-from ..sync.cache_manager import CacheManager
+from ..sync.sync_cache_manager import SyncCacheManager
 from ..encryption.encryptor import Encryptor
 from ..playback.video_player import VideoPlayer
 from ..google_api.google_drive import GoogleDrive
@@ -52,7 +52,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 		self.monitor = xbmc.Monitor()
 		self.accountManager = AccountManager(self.settings)
 		self.cloudService = GoogleDrive()
-		self.cache = CacheManager()
+		self.cache = SyncCacheManager()
 		self.taskManager = TaskManager(self.settings, self.accountManager)
 		self.taskManager.run()
 		self.fileOperations = FileOperations()
@@ -213,7 +213,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.handleResponse(200)
 		dbID = postData["db_id"]
 		dbType = postData["db_type"]
-		trackProgress = False if dbID is None else True
+		trackProgress = dbID is not None
 		player = VideoPlayer(dbID, dbType, trackProgress)
 
 		while not self.server.monitor.abortRequested() and not player.close:

@@ -72,7 +72,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 				self.setFocusId(self.buttonIDs[0])
 
 		elif action == self.ACTION_SELECT_ITEM:
-			self.shift = True if not self.shift else False
+			self.shift = self.shift == False
 
 	def onControl(self, control):
 		self.buttonID = control.getId()

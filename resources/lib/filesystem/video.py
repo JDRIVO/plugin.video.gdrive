@@ -1,53 +1,57 @@
 from .file import File
-from . import fs_helpers
 
 
 class Video(File):
-	media = None
-	title = None
-	year = None
-	ptnName = None
-	duration = None
-	videoWidth = None
-	videoHeight = None
-	aspectRatio = None
-	videoCodec = None
-	audioCodec = None
-	audioChannels = None
-	hdr = None
-	contents = None
+
+	def __init__(self):
+		super().__init__()
+		self.media = None
+		self.title = None
+		self.year = None
+		self.language = None
+		self.metadata = None
+
+	def getSTRMContents(self, driveID):
+		self.metadata.update({"drive_id": driveID, "file_id": self.id, "encrypted": str(self.encrypted)})
+		return "plugin://plugin.video.gdrive/?mode=video" + "".join([f"&{k}={v}"for k, v in self.metadata.items() if v])
 
 	def setData(self, video, metadata):
 		self.title = video.get("title")
 		self.year = video.get("year")
-		self.contents = metadata
+		self.language = video.get("language")
+		self.metadata = metadata
 
 
 class Movie(Video):
 
-	def setData(self, video, metadata):
-		super().setData(video, metadata)
-		self.ptnName = str((self.title, self.year))
+	def formatName(self, cacheManager, titleIdentifier):
+		titleInfo = cacheManager.getMovie({"original_title": self.title, "original_year": self.year})
 
-	def formatName(self, tmdbSettings, imdbLock):
-		data = fs_helpers.getTMDBtitle("movie", self.title, self.year, tmdbSettings, imdbLock)
+		if titleInfo:
+			title = titleInfo["new_title"]
+			year = titleInfo["new_year"]
+			return {"title": title, "year": year, "filename": f"{title} ({year})"}
 
-		if data:
-			title, year = data
+		titleInfo = titleIdentifier.processTitle(self.title, self.year, "movie")
+
+		if titleInfo:
+			title, year = titleInfo
+			titleInfo = cacheManager.addMovie({"original_title": self.title, "original_year": self.year, "new_title": title, "new_year": year})
 			return {"title": title, "year": year, "filename": f"{title} ({year})"}
 
 
 class Episode(Video):
-	season = None
-	episode = None
+
+	def __init(self):
+		self.season = None
+		self.episode = None
 
 	def setData(self, video, metadata):
 		super().setData(video, metadata)
 		self.season = video.get("season")
 		self.episode = video.get("episode")
-		self.ptnName = str((self.title, self.year, self.season, self.episode))
 
-	def formatName(self, tmdbSettings, imdbLock):
+	def formatName(self, cacheManager, titleIdentifier):
 		season = f"{int(self.season):02d}"
 
 		if isinstance(self.episode, int):
@@ -55,8 +59,15 @@ class Episode(Video):
 		else:
 			episode = "-".join(f"{e:02d}" for e in self.episode)
 
-		data = fs_helpers.getTMDBtitle("episode", self.title, self.year, tmdbSettings, imdbLock)
+		titleInfo = cacheManager.getSeries({"original_title": self.title, "original_year": self.year})
 
-		if data:
-			title, year = data
+		if titleInfo:
+			title = titleInfo["new_title"]
+			return {"title": title, "year": titleInfo["new_year"], "filename": f"{title} S{season}E{episode}"}
+
+		titleInfo = titleIdentifier.processTitle(self.title, self.year, "episode")
+
+		if titleInfo:
+			title, year = titleInfo
+			titleInfo = cacheManager.addSeries({"original_title": self.title, "original_year": self.year, "new_title": title, "new_year": year})
 			return {"title": title, "year": year, "filename": f"{title} S{season}E{episode}"}

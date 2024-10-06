@@ -7,7 +7,7 @@ import traceback
 import xbmc
 
 from .syncer import Syncer
-from .cache_manager import CacheManager
+from .sync_cache_manager import SyncCacheManager
 from ..filesystem.folder import Folder
 from ..encryption.encryptor import Encryptor
 from ..threadpool.threadpool import ThreadPool
@@ -25,7 +25,7 @@ class TaskManager:
 		self.accounts = self.accountManager.accounts
 		self.cloudService = GoogleDrive()
 		self.encryptor = Encryptor(settings=self.settings)
-		self.cache = CacheManager()
+		self.cache = SyncCacheManager()
 		self.fileOperations = FileOperations(cloud_service=self.cloudService, encryption=self.encryptor)
 		self.syncer = Syncer(self.accountManager, self.cloudService, self.encryptor, self.fileOperations, self.settings, self.cache)
 		self.monitor = xbmc.Monitor()
@@ -70,7 +70,7 @@ class TaskManager:
 					dirPath = folder["path"]
 					modifiedTime = folder["modifiedTime"]
 					folderSettings = self.cache.getFolder({"folder_id": folderID})
-					folder = Folder(folderID, folderID, folderName, dirPath, os.path.join(drivePath, dirPath), modifiedTime)
+					folder = Folder(folderID, folderID, folderID, driveID, folderName, dirPath, os.path.join(drivePath, dirPath), syncRootPath, folderSettings["folder_restructure"], modifiedTime)
 					pool.submit(self.syncer.syncFolderAdditions, syncRootPath, drivePath, folder, folderSettings, progressDialog)
 
 		if progressDialog:

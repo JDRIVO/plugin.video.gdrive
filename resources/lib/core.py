@@ -17,9 +17,9 @@ from .ui.resolution_selector import ResolutionSelector
 from .network import http_requester
 from .accounts.account import Account
 from .accounts.account_manager import AccountManager
-from .sync.cache_manager import CacheManager
 from .threadpool.threadpool import ThreadPool
 from .google_api.google_drive import GoogleDrive
+from .sync.sync_cache_manager import SyncCacheManager
 from .filesystem.fs_helpers import removeProhibitedFSchars
 from .filesystem.fs_constants import TMDB_LANGUAGES, TMDB_REGIONS
 
@@ -31,7 +31,7 @@ class Core:
 		self.pluginHandle = int(sys.argv[1])
 		self.settings = constants.settings
 		self.mode = self.settings.getParameter("mode", "main")
-		self.cache = CacheManager()
+		self.cache = SyncCacheManager()
 		self.accountManager = AccountManager(self.settings)
 		self.accounts = self.accountManager.accounts
 		self.cloudService = GoogleDrive()

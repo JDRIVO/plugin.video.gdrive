@@ -16,7 +16,7 @@ if not os.path.exists(ADDON_PATH):
 CACHE_PATH = os.path.join(ADDON_PATH, "cache.db")
 
 
-class CacheManager(DatabaseManager):
+class SyncCacheManager(DatabaseManager):
 
 	def __init__(self):
 		newDB = not os.path.exists(CACHE_PATH)
@@ -30,10 +30,11 @@ class CacheManager(DatabaseManager):
 	def addDirectories(self, values):
 		columns = (
 			"drive_id",
+			"root_folder_id",
+			"parent_folder_id",
 			"folder_id",
 			"local_path",
-			"parent_folder_id",
-			"root_folder_id",
+			"remote_name",
 		)
 		self.insertMany("directories", columns, values)
 
@@ -62,6 +63,24 @@ class CacheManager(DatabaseManager):
 
 	def addFolder(self, data):
 		self.insert("folders", data)
+
+	def addFolders(self, values):
+		columns = (
+			"drive_id",
+			"folder_id",
+			"local_path",
+			"remote_name",
+			"file_renaming",
+			"folder_restructure",
+			"contains_encrypted",
+			"sync_artwork",
+			"sync_nfo",
+			"sync_subtitles",
+			"tmdb_language",
+			"tmdb_region",
+			"tmdb_adult",
+		)
+		self.insertMany("folders", columns, values)
 
 	def addGlobalData(self, data):
 		self.insert("global", data)
@@ -297,18 +316,18 @@ class CacheManager(DatabaseManager):
 		self.update("global", {"local_path": path}, {"local_path": "TEXT"})
 
 	def _createDirectoriesTable(self):
-		columns = [
+		columns = (
 			"drive_id TEXT",
 			"root_folder_id TEXT",
 			"parent_folder_id TEXT",
 			"folder_id TEXT",
 			"local_path TEXT",
 			"remote_name TEXT",
-		]
+		)
 		self.createTable("directories", columns)
 
 	def _createDriveTable(self):
-		columns = [
+		columns = (
 			"drive_id TEXT",
 			"local_path TEXT",
 			"page_token INTEGER",
@@ -316,11 +335,11 @@ class CacheManager(DatabaseManager):
 			"task_mode TEXT",
 			"task_frequency TEXT",
 			"startup_sync INTEGER",
-		]
+		)
 		self.createTable("drives", columns)
 
 	def _createFilesTable(self):
-		columns = [
+		columns = (
 			"drive_id TEXT",
 			"root_folder_id TEXT",
 			"parent_folder_id TEXT",
@@ -330,11 +349,11 @@ class CacheManager(DatabaseManager):
 			"remote_name TEXT",
 			"original_name INTEGER",
 			"original_folder INTEGER",
-		]
+		)
 		self.createTable("files", columns)
 
 	def _createFoldersTable(self):
-		columns = [
+		columns = (
 			"drive_id TEXT",
 			"folder_id TEXT",
 			"local_path TEXT",
@@ -348,14 +367,14 @@ class CacheManager(DatabaseManager):
 			"tmdb_language TEXT",
 			"tmdb_region TEXT",
 			"tmdb_adult TEXT",
-		]
+		)
 		self.createTable("folders", columns)
 
 	def _createGlobalTable(self):
-		columns = [
+		columns = (
 			"local_path TEXT",
 			"operating_system TEXT",
-		]
+		)
 		self.createTable("global", columns)
 
 	def _createTables(self):

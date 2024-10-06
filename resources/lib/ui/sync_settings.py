@@ -8,7 +8,7 @@ import xbmcaddon
 import constants
 from .dialogs import Dialog
 from ..network import http_requester
-from ..sync.cache_manager import CacheManager
+from ..sync.sync_cache_manager import SyncCacheManager
 from ..filesystem.fs_helpers import removeProhibitedFSchars
 from ..filesystem.fs_constants import TMDB_LANGUAGES, TMDB_REGIONS
 
@@ -44,7 +44,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.folderName = kwargs.get("folder_name")
 		self.accounts = kwargs.get("accounts")
 		self.settings = constants.settings
-		self.cache = CacheManager()
+		self.cache = SyncCacheManager()
 		self.dialog = Dialog()
 		texturesPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
 		self.radioButtonFocus = os.path.join(texturesPath, "radiobutton-focus.png")
@@ -489,6 +489,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				self.cache.addDrive(driveSettings)
 
 			syncTaskData = [self.driveID]
+			folders = []
 
 			for folder in self.foldersToSync:
 				folderID = folder["id"]
@@ -503,16 +504,25 @@ class SyncSettings(xbmcgui.WindowDialog):
 				dirPath = self.cache.getUniqueFolderPath(self.driveID, folderName)
 				folder["name"] = folderName
 				folder["path"] = dirPath
-				folderSettings.update(
-					{
-						"drive_id": self.driveID,
-						"folder_id": folderID,
-						"local_path": dirPath,
-						"remote_name": folderName,
-					}
+				folders.append(
+					(
+						self.driveID,
+						folderID,
+						dirPath,
+						folderName,
+						folderSettings["file_renaming"],
+						folderSettings["folder_restructure"],
+						folderSettings["contains_encrypted"],
+						folderSettings["sync_artwork"],
+						folderSettings["sync_nfo"],
+						folderSettings["sync_subtitles"],
+						folderSettings["tmdb_language"],
+						folderSettings["tmdb_region"],
+						folderSettings["tmdb_adult"],
+					)
 				)
-				self.cache.addFolder(folderSettings)
 
+			self.cache.addFolders(folders)
 			url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/add_sync_task"
 			xbmc.executebuiltin("Container.Refresh")
 			http_requester.request(url, syncTaskData)

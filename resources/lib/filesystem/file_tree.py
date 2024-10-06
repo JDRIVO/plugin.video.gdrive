@@ -1,23 +1,29 @@
 import os
 
 from .folder import Folder
+from .file_maker import makeFile
 from .fs_constants import MEDIA_ASSETS
-from .fs_helpers import makeFile, removeProhibitedFSchars
+from .fs_helpers import removeProhibitedFSchars
 from ..threadpool.threadpool import ThreadPool
 
 
 class FileTree:
 
-	def __init__(self, cloudService, cache, driveID, drivePath, progressDialog, threadCount, encryptor, excludedTypes, syncedIDs):
+	def __init__(self, fileProcessor, cloudService, cache, cacheUpdater, driveID, syncRootPath, drivePath, renameFolder, renameFile, threadCount, encryptor, excludedTypes, syncedIDs):
+		self.fileProcessor = fileProcessor
 		self.cloudService = cloudService
 		self.cache = cache
+		self.cacheUpdater = cacheUpdater
 		self.driveID = driveID
+		self.syncRootPath = syncRootPath
 		self.drivePath = drivePath
-		self.progressDialog = progressDialog
+		self.renameFolder = renameFolder
+		self.renameFile = renameFile
 		self.threadCount = threadCount
 		self.encryptor = encryptor
 		self.excludedTypes = excludedTypes
 		self.syncedIDs = syncedIDs
+		self.rename = renameFile or renameFolder
 		self.folderIDs = []
 		self.fileTree = {}
 
@@ -25,9 +31,10 @@ class FileTree:
 		return iter(self.fileTree.values())
 
 	def buildTree(self, rootFolder):
-		rootFolderID = rootFolder.id
-		self.folderIDs.append(rootFolderID)
-		self.fileTree[rootFolderID] = rootFolder
+		self.cacheUpdater.addDirectory(rootFolder)
+		self.rootFolderID = rootFolder.id
+		self.folderIDs.append(self.rootFolderID)
+		self.fileTree[self.rootFolderID] = rootFolder
 		self._getContents()
 
 	def _getContents(self):
@@ -81,21 +88,23 @@ class FileTree:
 					path = f"{path_} ({copy})"
 					copy += 1
 
+				folder = Folder(id, parentFolderID, self.rootFolderID, self.driveID, folderName, path, os.path.join(self.drivePath, path), self.syncRootPath, self.renameFolder, item["modifiedTime"])
+				self.fileTree[id] = folder
+				self.cacheUpdater.addDirectory(folder)
 				paths.add(path.lower())
 				self.folderIDs.append(id)
-				self.fileTree[id] = Folder(id, parentFolderID, folderName, path, os.path.join(self.drivePath, path), item["modifiedTime"])
 			else:
-				file = makeFile(item, self.excludedTypes, self.encryptor)
+				file = makeFile(item, self.excludedTypes, self.encryptor, self.renameFile)
 
 				if not file:
 					continue
 
-				if self.progressDialog:
-					self.progressDialog.incrementFile()
+				self.fileProcessor.addFile((file, self.fileTree[parentFolderID]))
 
-				files = self.fileTree[parentFolderID].files
+				if self.rename:
+					files = self.fileTree[parentFolderID].files
 
-				if file.type in MEDIA_ASSETS:
-					files["media_assets"].setdefault(file.ptnName, []).append(file)
-				else:
-					files[file.type].append(file)
+					if file.type in MEDIA_ASSETS:
+						files["media_asset"].append(file)
+					else:
+						files[file.type].append(file)

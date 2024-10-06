@@ -21,7 +21,7 @@ class ThreadPool(queue.Queue, xbmc.Monitor):
 	def __enter__(self):
 		return self
 
-	def __exit__(self, exc_type, exc_val, exc_tb):
+	def __exit__(self, excType, excValue, excTraceback):
 		self._shutdown()
 
 	def map(self, func, args):
@@ -68,6 +68,7 @@ class ThreadPool(queue.Queue, xbmc.Monitor):
 
 				func, args = data
 				func(*args)
+
 			except queue.Empty:
 
 				if self.waitForAbort(0.1):

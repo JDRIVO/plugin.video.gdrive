@@ -19,13 +19,22 @@ def request(url, data=None, headers=HEADERS, cookie=False, download=False, metho
 	if data:
 		data = json.dumps(data).encode("utf-8")
 
+	attempts = 3
 	req = urllib.request.Request(url, data, headers)
 
-	try:
-		response = urllib.request.urlopen(req)
-	except urllib.error.URLError as e:
-		xbmc.log(f"gdrive error: {e}", xbmc.LOGERROR)
-		return {}
+	for attempt in range(attempts):
+
+		try:
+			response = urllib.request.urlopen(req)
+			break
+		except urllib.error.URLError as e:
+			attempts -= 1
+
+			if not attempts:
+				xbmc.log(f"gdrive error: {e}", xbmc.LOGERROR)
+				return {}
+
+			xbmc.sleep(1000)
 
 	if download:
 		return response
