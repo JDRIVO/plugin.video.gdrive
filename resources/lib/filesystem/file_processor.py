@@ -1,8 +1,8 @@
 import os
 import re
 import queue
-import traceback
 import threading
+import traceback
 
 import xbmc
 
@@ -115,6 +115,7 @@ class RemoteFileProcessor(queue.Queue):
 			except queue.Empty:
 
 				if self.monitor.waitForAbort(0.1):
+					self._stop()
 					return
 
 				continue

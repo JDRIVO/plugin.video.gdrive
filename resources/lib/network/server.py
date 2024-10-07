@@ -1,10 +1,11 @@
 import os
 import re
 import json
-import urllib
 import datetime
-import urllib.parse
 from threading import Thread
+from urllib.error import URLError
+from urllib.parse import unquote_plus
+from urllib.request import Request, urlopen
 from socketserver import ThreadingMixIn
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -66,9 +67,9 @@ class ServerHandler(BaseHTTPRequestHandler):
 	def createRequest(self, start, end, startOffset):
 
 		if start == "":
-			return urllib.request.Request(self.server.url, headers=self.server.cloudService.getHeaders())
+			return Request(self.server.url, headers=self.server.cloudService.getHeaders())
 		else:
-			return urllib.request.Request(
+			return Request(
 				self.server.url,
 				headers=self.server.cloudService.getHeaders(
 					additionalHeader="Range",
@@ -96,7 +97,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		clientID = queries["client_id"]
 		authURL = self.server.cloudService.getAuthURL(clientID, self.server.server_port)
 		self.server.account = Account()
-		self.server.account.name = urllib.parse.unquote_plus(queries["account"])
+		self.server.account.name = unquote_plus(queries["account"])
 		self.server.account.clientID = clientID
 		self.server.account.clientSecret = queries["client_secret"]
 		self.sendRedirect(authURL)
@@ -152,8 +153,8 @@ class ServerHandler(BaseHTTPRequestHandler):
 		req = self.createRequest(start, end, startOffset)
 
 		try:
-			response = urllib.request.urlopen(req)
-		except urllib.error.URLError as e:
+			response = urlopen(req)
+		except URLError as e:
 			xbmc.log(f"gdrive error: {e}", xbmc.LOGERROR)
 			return
 
@@ -361,12 +362,12 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.send_error(404)
 
 	def do_HEAD(self):
-		req = urllib.request.Request(self.server.url, headers=self.server.cloudService.getHeaders())
+		req = Request(self.server.url, headers=self.server.cloudService.getHeaders())
 		req.get_method = lambda: "HEAD"
 
 		try:
-			response = urllib.request.urlopen(req)
-		except urllib.error.URLError as e:
+			response = urlopen(req)
+		except URLError as e:
 			self.server.failed = True
 
 			if e.code == 404:
@@ -389,12 +390,12 @@ class ServerHandler(BaseHTTPRequestHandler):
 					if self.server.transcoded:
 						self.server.url = self.server.cloudService.getStreams(self.server.fileID, (self.server.transcoded,))[1]
 
-					req = urllib.request.Request(self.server.url, headers=self.server.cloudService.getHeaders())
+					req = Request(self.server.url, headers=self.server.cloudService.getHeaders())
 					req.get_method = lambda: "HEAD"
 
 					try:
-						response = urllib.request.urlopen(req)
-					except urllib.error.URLError:
+						response = urlopen(req)
+					except URLError:
 						continue
 
 					accountChange = True

@@ -1,6 +1,6 @@
 import json
-import urllib.error
-import urllib.request
+from urllib.error import URLError
+from urllib.request import Request, urlopen
 
 import xbmc
 
@@ -11,7 +11,7 @@ HEADERS = {"User-Agent": USER_AGENT}
 HEADERS_JSON_ENCODED = {"User-Agent": USER_AGENT, "Content-Type": "application/json"}
 
 
-def request(url, data=None, headers=HEADERS, cookie=False, download=False, method="GET"):
+def request(url, data=None, headers=HEADERS, cookie=False, raw=False, method="GET"):
 
 	if method == "POST":
 		headers = HEADERS_JSON_ENCODED
@@ -20,14 +20,22 @@ def request(url, data=None, headers=HEADERS, cookie=False, download=False, metho
 		data = json.dumps(data).encode("utf-8")
 
 	attempts = 3
-	req = urllib.request.Request(url, data, headers)
+	request = Request(url, data, headers)
 
 	for attempt in range(attempts):
 
 		try:
-			response = urllib.request.urlopen(req)
+
+			response = urlopen(request)
+
+			if raw:
+				return response
+
+			data = response.read().decode("utf-8")
+			response.close()
 			break
-		except urllib.error.URLError as e:
+
+		except URLError as e:
 			attempts -= 1
 
 			if not attempts:
@@ -36,22 +44,15 @@ def request(url, data=None, headers=HEADERS, cookie=False, download=False, metho
 
 			xbmc.sleep(1000)
 
-	if download:
-		return response
-
-	responseData = response.read().decode("utf-8")
-
 	if cookie:
 		cookie = response.headers["set-cookie"]
 
-	response.close()
-
 	try:
-		responseData = json.loads(responseData)
+		data = json.loads(data)
 	except json.JSONDecodeError:
 		pass
 
 	if not cookie:
-		return responseData
+		return data
 	else:
-		return responseData, cookie
+		return data, cookie

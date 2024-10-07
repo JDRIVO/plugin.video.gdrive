@@ -29,7 +29,7 @@ class GoogleDrive:
 	def downloadFile(self, fileID):
 		params = {"alt": "media"}
 		url = addQueryString(mergePaths(API["files"], fileID), params)
-		return http_requester.request(url, headers=self.getHeaders(), download=True)
+		return http_requester.request(url, headers=self.getHeaders(), raw=True)
 
 	def getAuthURL(self, clientID, port):
 		params = {
