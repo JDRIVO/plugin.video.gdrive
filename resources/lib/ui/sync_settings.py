@@ -27,10 +27,11 @@ class SyncSettings(xbmcgui.WindowDialog):
 		constants.settings.getLocalizedString(30051): {"type": "drive", "name": "startup_sync"},
 		constants.settings.getLocalizedString(30604): {"type": "folder", "name": "contains_encrypted"},
 		constants.settings.getLocalizedString(30605): {"type": "folder", "name": "file_renaming"},
-		constants.settings.getLocalizedString(30606): {"type": "folder", "name": "folder_restructure"},
+		constants.settings.getLocalizedString(30606): {"type": "folder", "name": "folder_renaming"},
 		constants.settings.getLocalizedString(30607): {"type": "folder", "name": "sync_nfo"},
 		constants.settings.getLocalizedString(30608): {"type": "folder", "name": "sync_subtitles"},
 		constants.settings.getLocalizedString(30609): {"type": "folder", "name": "sync_artwork"},
+		constants.settings.getLocalizedString(30610): {"type": "folder", "name": "sync_strm"},
 		constants.settings.getLocalizedString(30058): {"type": "folder", "name": "tmdb_language"},
 		constants.settings.getLocalizedString(30059): {"type": "folder", "name": "tmdb_region"},
 		constants.settings.getLocalizedString(30060): {"type": "folder", "name": "tmdb_adult"},
@@ -41,7 +42,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.driveID = kwargs.get("drive_id")
 		self.folderID = kwargs.get("folder_id")
 		self.foldersToSync = kwargs.get("folders")
-		self.folderName = kwargs.get("folder_name")
 		self.accounts = kwargs.get("accounts")
 		self.settings = constants.settings
 		self.cache = SyncCacheManager()
@@ -185,10 +185,11 @@ class SyncSettings(xbmcgui.WindowDialog):
 			{
 				self.settings.getLocalizedString(30604): folderSettings["contains_encrypted"] if folderSettings else self.settings.getSetting("contains_encrypted"),
 				self.settings.getLocalizedString(30605): folderSettings["file_renaming"] if folderSettings else self.settings.getSetting("file_renaming"),
-				self.settings.getLocalizedString(30606): folderSettings["folder_restructure"] if folderSettings else self.settings.getSetting("folder_restructure"),
+				self.settings.getLocalizedString(30606): folderSettings["folder_renaming"] if folderSettings else self.settings.getSetting("folder_renaming"),
 				self.settings.getLocalizedString(30607): folderSettings["sync_nfo"] if folderSettings else self.settings.getSetting("sync_nfo"),
 				self.settings.getLocalizedString(30608): folderSettings["sync_subtitles"] if folderSettings else self.settings.getSetting("sync_subtitles"),
 				self.settings.getLocalizedString(30609): folderSettings["sync_artwork"] if folderSettings else self.settings.getSetting("sync_artwork"),
+				self.settings.getLocalizedString(30610): folderSettings["sync_strm"] if folderSettings else self.settings.getSetting("sync_strm"),
 			}
 		)
 		self._setup(len(self.functions) + len(settings))
@@ -392,7 +393,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 	def _setAdultContent(self, button):
 		options = ["true", "false"]
-		selection = self.dialog.select(self.settings.getLocalizedString(30612), options)
+		selection = self.dialog.select(self.settings.getLocalizedString(30613), options)
 
 		if selection == -1:
 			return
@@ -400,7 +401,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		button.setLabel(label2=options[selection])
 
 	def _setCountry(self, button):
-		selection = self.dialog.select(self.settings.getLocalizedString(30611), TMDB_REGIONS)
+		selection = self.dialog.select(self.settings.getLocalizedString(30612), TMDB_REGIONS)
 
 		if selection == -1:
 			return
@@ -408,7 +409,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		button.setLabel(label2=TMDB_REGIONS[selection])
 
 	def _setSearchLanguage(self, button):
-		selection = self.dialog.select(self.settings.getLocalizedString(30610), TMDB_LANGUAGES)
+		selection = self.dialog.select(self.settings.getLocalizedString(30611), TMDB_LANGUAGES)
 
 		if selection == -1:
 			return
@@ -511,11 +512,12 @@ class SyncSettings(xbmcgui.WindowDialog):
 						dirPath,
 						folderName,
 						folderSettings["file_renaming"],
-						folderSettings["folder_restructure"],
+						folderSettings["folder_renaming"],
 						folderSettings["contains_encrypted"],
-						folderSettings["sync_artwork"],
 						folderSettings["sync_nfo"],
 						folderSettings["sync_subtitles"],
+						folderSettings["sync_artwork"],
+						folderSettings["sync_strm"],
 						folderSettings["tmdb_language"],
 						folderSettings["tmdb_region"],
 						folderSettings["tmdb_adult"],
@@ -575,7 +577,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			self.buttonWidth = self.windowWidth - 50
 
 		self.buttonHeight = 40
-		self.windowHeight = int((400 + self.buttonHeight * buttonAmount) * self.viewportHeight / 1080)
+		self.windowHeight = int(self.buttonHeight * buttonAmount + self.buttonSpacing + 90)
 		self.windowBottom = int((self.viewportHeight + self.windowHeight) / 2)
 		self.x = int((self.viewportWidth - self.windowWidth) / 2)
 		self.y = int((self.viewportHeight - self.windowHeight) / 2)

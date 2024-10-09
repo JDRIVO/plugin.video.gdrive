@@ -32,6 +32,8 @@ class SyncCacheUpdater:
 				file.remoteName,
 				file.original,
 				folder.original if file.type != "strm" else True,
+				True if file.type == "video" and file.metadata.get("video_duration") else False,
+				file.modifiedTime,
 			)
 		)
 

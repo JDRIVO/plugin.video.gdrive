@@ -70,7 +70,7 @@ class TaskManager:
 					dirPath = folder["path"]
 					modifiedTime = folder["modifiedTime"]
 					folderSettings = self.cache.getFolder({"folder_id": folderID})
-					folder = Folder(folderID, folderID, folderID, driveID, folderName, dirPath, os.path.join(drivePath, dirPath), syncRootPath, folderSettings["folder_restructure"], modifiedTime)
+					folder = Folder(folderID, folderID, folderID, driveID, folderName, dirPath, os.path.join(drivePath, dirPath), syncRootPath, folderSettings["folder_renaming"], modifiedTime)
 					pool.submit(self.syncer.syncFolderAdditions, syncRootPath, drivePath, folder, folderSettings, progressDialog)
 
 		if progressDialog:

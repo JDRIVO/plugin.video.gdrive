@@ -51,7 +51,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 		super().__init__(*args, **kwargs)
 		self.settings = constants.settings
 		self.monitor = xbmc.Monitor()
-		self.accountManager = AccountManager(self.settings)
+		self.accountManager = AccountManager()
 		self.cloudService = GoogleDrive()
 		self.cache = SyncCacheManager()
 		self.taskManager = TaskManager(self.settings, self.accountManager)

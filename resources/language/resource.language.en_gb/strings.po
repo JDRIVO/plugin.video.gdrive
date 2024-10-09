@@ -482,8 +482,8 @@ msgid "Create a Kodi friendly directory structure"
 msgstr "Create a Kodi friendly directory structure"
 
 msgctxt "#30607"
-msgid "Sync NFOs"
-msgstr "Sync NFOs"
+msgid "Sync nfo"
+msgstr "Sync nfo"
 
 msgctxt "#30608"
 msgid "Sync subtitles"
@@ -494,14 +494,18 @@ msgid "Sync artwork"
 msgstr "Sync artwork"
 
 msgctxt "#30610"
+msgid "Sync strm"
+msgstr "Sync strm"
+
+msgctxt "#30611"
 msgid "TMDB search language"
 msgstr "TMDB search language"
 
-msgctxt "#30611"
+msgctxt "#30612"
 msgid "TMDB region"
 msgstr "TMDB region"
 
-msgctxt "#30612"
+msgctxt "#30613"
 msgid "TMDB adult content"
 msgstr "TMDB adult content"
 

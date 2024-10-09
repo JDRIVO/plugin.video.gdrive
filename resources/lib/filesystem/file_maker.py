@@ -8,7 +8,7 @@ from .. import ptn
 from helpers import rfcToTimestamp
 
 
-def makeFile(file, excludedTypes, encryptor, renameFile):
+def makeFile(file, excludedTypes, encryptor):
 	fileID = file["id"]
 	filename = file["name"]
 	mimeType = file["mimeType"]

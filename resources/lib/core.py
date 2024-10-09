@@ -32,7 +32,7 @@ class Core:
 		self.settings = constants.settings
 		self.mode = self.settings.getParameter("mode", "main")
 		self.cache = SyncCacheManager()
-		self.accountManager = AccountManager(self.settings)
+		self.accountManager = AccountManager()
 		self.accounts = self.accountManager.accounts
 		self.cloudService = GoogleDrive()
 		self.dialog = Dialog()
@@ -695,7 +695,7 @@ class Core:
 		self.settings.setSetting("account_override", accounts[selection][1])
 
 	def setTMDBlanguage(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30610), TMDB_LANGUAGES)
+		selection = self.dialog.select(self.settings.getLocalizedString(30611), TMDB_LANGUAGES)
 
 		if selection == -1:
 			return
@@ -703,7 +703,7 @@ class Core:
 		self.settings.setSetting("tmdb_language", TMDB_LANGUAGES[selection])
 
 	def setTMDBregion(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30611), TMDB_REGIONS)
+		selection = self.dialog.select(self.settings.getLocalizedString(30612), TMDB_REGIONS)
 
 		if selection == -1:
 			return

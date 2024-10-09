@@ -138,7 +138,7 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="folder_restructure" type="boolean" label="30606" help="">
+				<setting id="folder_renaming" type="boolean" label="30606" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
@@ -158,7 +158,12 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="tmdb_language" type="string" label="30610" help="">
+				<setting id="sync_strm" type="boolean" label="30610" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="tmdb_language" type="string" label="30611" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -168,7 +173,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_language)</data>
 					</control>
 				</setting>
-				<setting id="tmdb_region" type="string" label="30611" help="">
+				<setting id="tmdb_region" type="string" label="30612" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -178,7 +183,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_region)</data>
 					</control>
 				</setting>
-				<setting id="tmdb_adult" type="string" label="30612" help="">
+				<setting id="tmdb_adult" type="string" label="30613" help="">
 					<level>0</level>
 					<default>false</default>
 					<constraints>
@@ -188,7 +193,7 @@
 						</options>
 					</constraints>
 					<control type="list" format="string">
-						<heading>30612</heading>
+						<heading>30613</heading>
 					</control>
 				</setting>
 			</group>

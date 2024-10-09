@@ -15,8 +15,7 @@ ACCOUNTS_FILE = os.path.join(ADDON_PATH, "accounts.pkl")
 
 class AccountManager:
 
-	def __init__(self, settings):
-		self.settings = settings
+	def __init__(self):
 		self.fileOperations = FileOperations()
 		self.setAccounts()
 

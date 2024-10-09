@@ -19,11 +19,11 @@ cacheManager = TitleCacheManager()
 
 class RemoteFileProcessor(queue.Queue):
 
-	def __init__(self, fileOperations, cacheUpdater, threads, progressDialog=None):
+	def __init__(self, fileOperations, cacheUpdater, threadCount, progressDialog=None):
 		super().__init__()
 		self.fileOperations = fileOperations
 		self.cacheUpdater = cacheUpdater
-		self.threads = threads
+		self.threadCount = threadCount
 		self.progressDialog = progressDialog
 		self.stop_event = threading.Event()
 		self.monitor = xbmc.Monitor()
@@ -80,7 +80,7 @@ class RemoteFileProcessor(queue.Queue):
 			dbEditor.processData(filePath, dirPath, localName)
 
 	def _startWorkers(self):
-		[threading.Thread(target=self._worker).start() for _ in range(self.threads)]
+		[threading.Thread(target=self._worker).start() for _ in range(self.threadCount)]
 
 	def _stop(self):
 		self.stop_event.set()
@@ -127,19 +127,19 @@ class RemoteFileProcessor(queue.Queue):
 
 class LocalFileProcessor:
 
-	def __init__(self, fileOperations, cache, progressDialog=None):
+	def __init__(self, fileOperations, cache, syncRootPath, progressDialog=None):
 		self.fileOperations = fileOperations
 		self.cache = cache
+		self.syncRootPath = syncRootPath
 		self.progressDialog = progressDialog
 
-	def processFiles(self, folder, folderSettings, syncRootPath, threadCount):
+	def processFiles(self, folder, folderSettings, threadCount):
 		files = folder.files
 		dirPath = folder.localPath
-		processingPath = folder.processingPath
 		videos = files.get("video")
 		mediaAssets = files.get("media_asset")
 		titleIdentifier = TitleIdentifier(getTMDBSettings(folderSettings))
-		folderRestructure = folderSettings["folder_restructure"]
+		folderRenaming = folderSettings["folder_renaming"]
 		fileRenaming = folderSettings["file_renaming"]
 
 		if self.progressDialog:
@@ -155,10 +155,8 @@ class LocalFileProcessor:
 					pool.submit(
 						self._processVideo,
 						file,
-						syncRootPath,
 						dirPath,
-						processingPath,
-						folderRestructure,
+						folderRenaming,
 						fileRenaming,
 						titleIdentifier,
 					) for file in videos
@@ -171,16 +169,14 @@ class LocalFileProcessor:
 					pool.submit(
 						self._processMediaAsset,
 						file,
-						syncRootPath,
 						dirPath,
-						processingPath,
-						folderRestructure,
+						folderRenaming,
 						fileRenaming,
 						titleIdentifier,
 					) for file in mediaAssets
 				]
 
-	def _processMediaAsset(self, file, syncRootPath, dirPath, processingPath, folderRestructure, fileRenaming, titleIdentifier):
+	def _processMediaAsset(self, file, dirPath, folderRenaming, fileRenaming, titleIdentifier):
 		filename = file.localName
 		remoteName = file.remoteName
 		mediaType = file.media
@@ -216,35 +212,35 @@ class LocalFileProcessor:
 
 					filename = f"{newFilename}{fileExtension}"
 
-				if folderRestructure:
+				if folderRenaming:
 					originalFolder = False
 
 					if mediaType == "movie":
-						dirPath = os.path.join(syncRootPath, "[gDrive] Movies", newFilename)
+						dirPath = os.path.join(self.syncRootPath, "[gDrive] Movies", newFilename)
 					else:
 						dirPath = os.path.join(
-							syncRootPath,
+							self.syncRootPath,
 							"[gDrive] Series",
 							f"{modifiedName['title']} ({modifiedName['year']})",
 							f"Season {file.season}",
 						)
 
-		filePath = self.fileOperations.renameFile(syncRootPath, file.localPath, dirPath, filename)
+		filePath = self.fileOperations.renameFile(self.syncRootPath, file.localPath, dirPath, filename)
 
 		if self.progressDialog:
 			self.progressDialog.processRenamedFile(remoteName)
 
 		data = {
-			"local_path": filePath.replace(syncRootPath, "", 1) if not originalFolder else False,
+			"local_path": filePath.replace(self.syncRootPath, "", 1) if not originalFolder else False,
 			"local_name": os.path.basename(filePath),
 			"original_name": originalName,
 			"original_folder": originalFolder,
 		}
 		self.cache.updateFile(data, file.id)
 
-	def _processVideo(self, file, syncRootPath, dirPath, processingPath, folderRestructure, fileRenaming, titleIdentifier):
-		mediaType = file.media
+	def _processVideo(self, file, dirPath, folderRenaming, fileRenaming, titleIdentifier):
 		filename = f"{file.basename}.strm"
+		mediaType = file.media
 		originalName = originalFolder = True
 		newFilename = None
 
@@ -260,20 +256,20 @@ class LocalFileProcessor:
 					filename = f"{newFilename}.strm"
 					originalName = False
 
-				if folderRestructure:
+				if folderRenaming:
 					originalFolder = False
 
 					if mediaType == "movie":
-						dirPath = os.path.join(syncRootPath, "[gDrive] Movies", newFilename)
+						dirPath = os.path.join(self.syncRootPath, "[gDrive] Movies", newFilename)
 					else:
 						dirPath = os.path.join(
-							syncRootPath,
+							self.syncRootPath,
 							"[gDrive] Series",
 							f"{modifiedName['title']} ({modifiedName['year']})",
 							f"Season {file.season}",
 						)
 
-		filePath = self.fileOperations.renameFile(syncRootPath, file.localPath, dirPath, filename)
+		filePath = self.fileOperations.renameFile(self.syncRootPath, file.localPath, dirPath, filename)
 		localName = os.path.basename(filePath)
 
 		if self.progressDialog:
@@ -283,7 +279,7 @@ class LocalFileProcessor:
 			dbEditor.processData(filePath, dirPath, localName)
 
 		data = {
-			"local_path": filePath.replace(syncRootPath, "", 1) if not originalFolder else False,
+			"local_path": filePath.replace(self.syncRootPath, "", 1) if not originalFolder else False,
 			"local_name": localName,
 			"original_name": originalName,
 			"original_folder": originalFolder,

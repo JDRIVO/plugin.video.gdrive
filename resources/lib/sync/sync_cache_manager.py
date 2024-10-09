@@ -13,7 +13,7 @@ ADDON_PATH = xbmcvfs.translatePath(xbmcaddon.Addon().getAddonInfo("profile"))
 if not os.path.exists(ADDON_PATH):
 	os.mkdir(ADDON_PATH)
 
-CACHE_PATH = os.path.join(ADDON_PATH, "cache.db")
+CACHE_PATH = os.path.join(ADDON_PATH, "sync_cache.db")
 
 
 class SyncCacheManager(DatabaseManager):
@@ -58,6 +58,8 @@ class SyncCacheManager(DatabaseManager):
 			"remote_name",
 			"original_name",
 			"original_folder",
+			"has_metadata",
+			"modified_time",
 		)
 		self.insertMany("files", columns, values)
 
@@ -71,11 +73,12 @@ class SyncCacheManager(DatabaseManager):
 			"local_path",
 			"remote_name",
 			"file_renaming",
-			"folder_restructure",
+			"folder_renaming",
 			"contains_encrypted",
-			"sync_artwork",
 			"sync_nfo",
 			"sync_subtitles",
+			"sync_artwork",
+			"sync_strm",
 			"tmdb_language",
 			"tmdb_region",
 			"tmdb_adult",
@@ -349,6 +352,8 @@ class SyncCacheManager(DatabaseManager):
 			"remote_name TEXT",
 			"original_name INTEGER",
 			"original_folder INTEGER",
+			"has_metadata INTEGER",
+			"modified_time INTEGER",
 		)
 		self.createTable("files", columns)
 
@@ -359,11 +364,12 @@ class SyncCacheManager(DatabaseManager):
 			"local_path TEXT",
 			"remote_name TEXT",
 			"file_renaming INTEGER",
-			"folder_restructure INTEGER",
+			"folder_renaming INTEGER",
 			"contains_encrypted INTEGER",
-			"sync_artwork INTEGER",
 			"sync_nfo INTEGER",
 			"sync_subtitles INTEGER",
+			"sync_artwork INTEGER",
+			"sync_strm INTEGER",
 			"tmdb_language TEXT",
 			"tmdb_region TEXT",
 			"tmdb_adult TEXT",

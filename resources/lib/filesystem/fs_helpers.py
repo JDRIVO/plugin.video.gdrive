@@ -46,6 +46,9 @@ def getExcludedTypes(folderSettings):
 	if not folderSettings["sync_nfo"]:
 		excluded.append("nfo")
 
+	if not folderSettings["sync_strm"]:
+		excluded.append("strm")
+
 	return excluded
 
 def removeProhibitedFSchars(name):

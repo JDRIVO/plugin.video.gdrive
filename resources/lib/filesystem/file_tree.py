@@ -9,7 +9,7 @@ from ..threadpool.threadpool import ThreadPool
 
 class FileTree:
 
-	def __init__(self, fileProcessor, cloudService, cache, cacheUpdater, driveID, syncRootPath, drivePath, renameFolder, renameFile, threadCount, encryptor, excludedTypes, syncedIDs):
+	def __init__(self, fileProcessor, cloudService, cache, cacheUpdater, driveID, syncRootPath, drivePath, folderRenaming, fileRenaming, threadCount, encryptor, excludedTypes, syncedIDs):
 		self.fileProcessor = fileProcessor
 		self.cloudService = cloudService
 		self.cache = cache
@@ -17,13 +17,12 @@ class FileTree:
 		self.driveID = driveID
 		self.syncRootPath = syncRootPath
 		self.drivePath = drivePath
-		self.renameFolder = renameFolder
-		self.renameFile = renameFile
+		self.folderRenaming = folderRenaming
 		self.threadCount = threadCount
 		self.encryptor = encryptor
 		self.excludedTypes = excludedTypes
 		self.syncedIDs = syncedIDs
-		self.rename = renameFile or renameFolder
+		self.rename = folderRenaming or fileRenaming
 		self.folderIDs = []
 		self.fileTree = {}
 
@@ -53,7 +52,7 @@ class FileTree:
 
 		def getFolders(query, parentFolderIDs):
 			items = self.cloudService.listDirectory(customQuery=query)
-			self._filterContents(items, parentFolderIDs)
+			self._filterContents(items)
 
 		with ThreadPool(self.threadCount) as pool:
 			pool.map(getFolders, queries)
@@ -61,7 +60,7 @@ class FileTree:
 		if self.folderIDs:
 			self._getContents()
 
-	def _filterContents(self, items, parentFolderIDs):
+	def _filterContents(self, items):
 		paths = set()
 
 		for item in items:
@@ -88,13 +87,13 @@ class FileTree:
 					path = f"{path_} ({copy})"
 					copy += 1
 
-				folder = Folder(id, parentFolderID, self.rootFolderID, self.driveID, folderName, path, os.path.join(self.drivePath, path), self.syncRootPath, self.renameFolder, item["modifiedTime"])
+				folder = Folder(id, parentFolderID, self.rootFolderID, self.driveID, folderName, path, os.path.join(self.drivePath, path), self.syncRootPath, self.folderRenaming, item["modifiedTime"])
 				self.fileTree[id] = folder
 				self.cacheUpdater.addDirectory(folder)
 				paths.add(path.lower())
 				self.folderIDs.append(id)
 			else:
-				file = makeFile(item, self.excludedTypes, self.encryptor, self.renameFile)
+				file = makeFile(item, self.excludedTypes, self.encryptor)
 
 				if not file:
 					continue
