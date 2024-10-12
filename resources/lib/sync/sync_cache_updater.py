@@ -21,18 +21,20 @@ class SyncCacheUpdater:
 		)
 
 	def addFile(self, folder, file):
+		originalFolder = folder.original
+		fileType = file.type
 		self.files.append(
 			(
 				folder.driveID,
 				folder.rootFolderID,
 				folder.id,
 				file.id,
-				False if folder.original or file.type == "strm" else file.localPath,
+				False if originalFolder or fileType == "strm" else file.localPath,
 				file.localName,
 				file.remoteName,
 				file.original,
-				folder.original if file.type != "strm" else True,
-				True if file.type == "video" and file.metadata.get("video_duration") else False,
+				originalFolder if fileType != "strm" else True,
+				True if fileType == "video" and file.metadata.get("video_duration") else False,
 				file.modifiedTime,
 			)
 		)
