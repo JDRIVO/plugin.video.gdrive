@@ -76,7 +76,7 @@ class RemoteFileProcessor(queue.Queue):
 		file.localPath = filePath
 		file.localName = localName
 
-		if not folder.processingPath and file.updateDB:
+		if file.updateDB and not folder.processingPath:
 			dbEditor.processData(filePath, dirPath, localName)
 
 	def _startWorkers(self):

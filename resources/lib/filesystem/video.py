@@ -16,9 +16,9 @@ class Video(File):
 		return "plugin://plugin.video.gdrive/?mode=video" + "".join([f"&{k}={v}"for k, v in self.metadata.items() if v])
 
 	def setData(self, video, metadata):
-		self.title = video.get("title")
-		self.year = video.get("year")
-		self.language = video.get("language")
+		self.title = video["title"]
+		self.year = video["year"]
+		self.language = video["language"]
 		self.metadata = metadata
 
 
@@ -48,8 +48,8 @@ class Episode(Video):
 
 	def setData(self, video, metadata):
 		super().setData(video, metadata)
-		self.season = video.get("season")
-		self.episode = video.get("episode")
+		self.season = video["season"]
+		self.episode = video["episode"]
 
 	def formatName(self, cacheManager, titleIdentifier):
 		season = f"{int(self.season):02d}"
@@ -58,9 +58,6 @@ class Episode(Video):
 			episode = f"{self.episode:02d}"
 		else:
 			episode = "-".join(f"{e:02d}" for e in self.episode)
-
-		if not self.year:
-			self.year = False
 
 		titleInfo = cacheManager.getSeries({"original_title": self.title, "original_year": self.year})
 

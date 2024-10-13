@@ -14,6 +14,12 @@ ARTWORK = (
 
 MEDIA_ASSETS = ("nfo", "subtitles") + ARTWORK
 
+IMAGE_EXTENSIONS = (
+	"jpeg",
+	"jpg",
+	"png",
+)
+
 SUBTITLE_EXTENSIONS = (
 	"ass",
 	"idx",

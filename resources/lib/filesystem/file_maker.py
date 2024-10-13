@@ -3,18 +3,15 @@ import math
 from .file import File
 from .video import Episode, Movie, Video
 from .fs_helpers import removeProhibitedFSchars
-from .fs_constants import MEDIA_ASSETS, SUBTITLE_EXTENSIONS, VIDEO_EXTENSIONS
+from .fs_constants import IMAGE_EXTENSIONS, MEDIA_ASSETS, SUBTITLE_EXTENSIONS, VIDEO_EXTENSIONS
 from .. import ptn
 from helpers import rfcToTimestamp
 
 
-def makeFile(file, excludedTypes, encryptor):
-	fileID = file["id"]
-	filename = file["name"]
-	mimeType = file["mimeType"]
-	modifiedTime = file["modifiedTime"]
-	fileExtension = file.get("fileExtension")
-	metadata = file.get("videoMediaMetadata", {})
+def makeFile(fileData, excludedTypes, encryptor):
+	filename = fileData["name"]
+	mimeType = fileData["mimeType"]
+	fileExtension = fileData.get("fileExtension")
 
 	if encryptor and mimeType == "application/octet-stream" and not fileExtension:
 		filename = encryptor.decryptFilename(filename)
@@ -28,6 +25,9 @@ def makeFile(file, excludedTypes, encryptor):
 	else:
 		encrypted = False
 
+	if not fileExtension:
+		return
+
 	fileType = _identifyFileType(filename, fileExtension, mimeType)
 
 	if not fileType or fileType in excludedTypes:
@@ -39,12 +39,12 @@ def makeFile(file, excludedTypes, encryptor):
 		ptnData = ptn.parse(filename, standardise=True, coherent_types=False)
 		videoData = _identifyVideo(ptnData)
 		media = videoData["media"]
-		metadata = _extractMetadata(metadata, ptnData)
+		metadata = _extractMetadata(fileData.get("videoMediaMetadata", {}), ptnData)
 
-		if media == "episode":
-			file = Episode()
-		elif media == "movie":
+		if media == "movie":
 			file = Movie()
+		elif media == "episode":
+			file = Episode()
 		else:
 			file = Video()
 
@@ -53,11 +53,11 @@ def makeFile(file, excludedTypes, encryptor):
 
 	filename = removeProhibitedFSchars(filename)
 	file.remoteName = filename
-	file.id = fileID
+	file.id = fileData["id"]
 	file.type = fileType
 	file.encrypted = encrypted
 	file.extension = fileExtension
-	file.modifiedTime = rfcToTimestamp(modifiedTime)
+	file.modifiedTime = rfcToTimestamp(fileData["modifiedTime"])
 	return file
 
 def _extractMetadata(metadata, ptnData):
@@ -86,29 +86,24 @@ def _extractMetadata(metadata, ptnData):
 	}
 
 def _identifyFileType(filename, fileExtension, mimeType):
-
-	if not fileExtension:
-		return
-
 	fileExtension = fileExtension.lower()
 
 	if "video" in mimeType or fileExtension in VIDEO_EXTENSIONS:
 		return "video"
 	elif fileExtension == "nfo":
 		return "nfo"
-	elif fileExtension in ("jpeg", "jpg", "png"):
-		return next((type for type in MEDIA_ASSETS if type in filename.lower()), None)
 	elif fileExtension in SUBTITLE_EXTENSIONS:
 		return "subtitles"
+	elif fileExtension in IMAGE_EXTENSIONS:
+		return next((type for type in MEDIA_ASSETS if type in filename.lower()), None)
 	elif fileExtension == "strm":
 		return "strm"
 
 def _identifyVideo(ptnData):
 	title = ptnData.get("title")
-	year = ptnData.get("year")
+	year = ptnData.get("year", False)
 	season = ptnData.get("season")
 	episode = ptnData.get("episode")
-	language = ptnData.get("language")
 	media = None
 
 	if episode is not None and season is not None and title:
@@ -122,5 +117,5 @@ def _identifyVideo(ptnData):
 		"year": year,
 		"season": season,
 		"episode": episode,
-		"language": language,
+		"language": ptnData.get("language"),
 	}

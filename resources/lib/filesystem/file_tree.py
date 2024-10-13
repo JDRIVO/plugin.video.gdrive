@@ -66,8 +66,7 @@ class FileTree:
 		for item in items:
 			id = item["id"]
 			parentFolderID = item["parents"][0]
-			mimeType = item["mimeType"]
-			isFolder = mimeType == "application/vnd.google-apps.folder"
+			isFolder = item["mimeType"] == "application/vnd.google-apps.folder"
 
 			if self.syncedIDs:
 				self.syncedIDs.append(id)
