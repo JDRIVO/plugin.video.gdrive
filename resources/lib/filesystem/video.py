@@ -59,6 +59,9 @@ class Episode(Video):
 		else:
 			episode = "-".join(f"{e:02d}" for e in self.episode)
 
+		if not self.year:
+			self.year = False
+
 		titleInfo = cacheManager.getSeries({"original_title": self.title, "original_year": self.year})
 
 		if titleInfo:
