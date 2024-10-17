@@ -45,12 +45,7 @@ class RemoteFileProcessor(queue.Queue):
 			self.progressDialog.incrementFile()
 
 	def _processMediaAsset(self, file, folder):
-
-		if folder.processingPath:
-			dirPath = folder.processingPath
-		else:
-			dirPath = folder.localPath
-
+		dirPath = folder.processingPath or folder.localPath
 		filePath = self.fileOperations.downloadFile(dirPath, file.remoteName, file.id, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
 		localName = os.path.basename(filePath)
 		file.localPath = filePath
@@ -65,12 +60,7 @@ class RemoteFileProcessor(queue.Queue):
 	def _processVideo(self, file, folder):
 		filename = f"{file.basename}.strm"
 		strmContent = file.getSTRMContents(folder.driveID)
-
-		if folder.processingPath:
-			dirPath = folder.processingPath
-		else:
-			dirPath = folder.localPath
-
+		dirPath = folder.processingPath or folder.localPath
 		filePath = self.fileOperations.createFile(dirPath, filename, strmContent, modifiedTime=file.modifiedTime, mode="w+")
 		localName = os.path.basename(filePath)
 		file.localPath = filePath

@@ -5,11 +5,7 @@ def addQueryString(url, params):
 	return f"{url}?{urllib.parse.urlencode(params)}"
 
 def mergePaths(baseURL, paths):
-
-	if isinstance(paths, str):
-		return f"{baseURL}/{paths}"
-	else:
-		return f"{baseURL}/{'/'.join(paths)}"
+	return f"{baseURL}/{paths}" if isinstance(paths, str) else f"{baseURL}/{'/'.join(paths)}"
 
 def parseQuery(query):
 	return dict(urllib.parse.parse_qsl(query))

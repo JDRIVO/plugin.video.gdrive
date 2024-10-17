@@ -103,7 +103,7 @@ class Core:
 		sharedDriveID = self.settings.getParameter("shared_drive_id")
 
 		if not folderID:
-			folderID = sharedDriveID if sharedDriveID else driveID
+			folderID = sharedDriveID or driveID
 
 		folders = self.getFolders(driveID, folderID)
 		self.listFolders(driveID, folders, folderID)
@@ -223,7 +223,7 @@ class Core:
 
 		for driveID, accountData in self.accounts.items():
 			alias = accountData["alias"]
-			displayName = alias if alias else driveID
+			displayName = alias or driveID
 			contextMenu = [
 				(
 					self.settings.getLocalizedString(30600),
@@ -656,7 +656,7 @@ class Core:
 		self.refreshToken(account.expiry)
 
 		if not folderID:
-			folderID = sharedDriveID if sharedDriveID else driveID
+			folderID = sharedDriveID or driveID
 
 		folders = []
 		folderIDs = [folderID]

@@ -282,8 +282,8 @@ class SyncSettings(xbmcgui.WindowDialog):
 			]
 		else:
 			values = [
-				self.settings.getSetting("tmdb_language") if self.settings.getSetting("tmdb_language") else "",
-				self.settings.getSetting("tmdb_region") if self.settings.getSetting("tmdb_region") else "",
+				self.settings.getSetting("tmdb_language") or "",
+				self.settings.getSetting("tmdb_region") or "",
 				"true" if self.settings.getSetting("tmdb_adult") else "false",
 			]
 
@@ -478,7 +478,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 			if driveSettings:
 				alias = self.accounts[self.driveID]["alias"]
-				drivePath = alias if alias else self.driveID
+				drivePath = alias or self.driveID
 				driveSettings.update(
 					{
 						"drive_id": self.driveID,
@@ -489,6 +489,18 @@ class SyncSettings(xbmcgui.WindowDialog):
 				)
 				self.cache.addDrive(driveSettings)
 
+			folderSettings = (
+				folderSettings["file_renaming"],
+				folderSettings["folder_renaming"],
+				folderSettings["contains_encrypted"],
+				folderSettings["sync_nfo"],
+				folderSettings["sync_subtitles"],
+				folderSettings["sync_artwork"],
+				folderSettings["sync_strm"],
+				folderSettings["tmdb_language"],
+				folderSettings["tmdb_region"],
+				folderSettings["tmdb_adult"],
+			)
 			syncTaskData = [self.driveID]
 			folders = []
 
@@ -511,16 +523,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 						folderID,
 						dirPath,
 						folderName,
-						folderSettings["file_renaming"],
-						folderSettings["folder_renaming"],
-						folderSettings["contains_encrypted"],
-						folderSettings["sync_nfo"],
-						folderSettings["sync_subtitles"],
-						folderSettings["sync_artwork"],
-						folderSettings["sync_strm"],
-						folderSettings["tmdb_language"],
-						folderSettings["tmdb_region"],
-						folderSettings["tmdb_adult"],
+						*folderSettings,
 					)
 				)
 

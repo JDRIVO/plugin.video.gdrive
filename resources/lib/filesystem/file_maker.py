@@ -23,10 +23,11 @@ def makeFile(fileData, excludedTypes, encryptor):
 		encrypted = True
 
 	else:
-		encrypted = False
 
-	if not fileExtension:
-		return
+		if not fileExtension:
+			return
+
+		encrypted = False
 
 	fileType = _identifyFileType(filename, fileExtension, mimeType)
 
