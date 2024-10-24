@@ -297,7 +297,7 @@ class Core:
 		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30035))
 
 	def importAccounts(self):
-		filePath = self.dialog.browse(1, self.settings.getLocalizedString(30033), "files", mask=".pkl")
+		filePath = self.dialog.browse(1, self.settings.getLocalizedString(30033), "", mask=".pkl")
 
 		if not filePath:
 			return

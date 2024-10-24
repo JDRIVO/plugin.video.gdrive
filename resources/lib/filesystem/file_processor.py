@@ -108,8 +108,6 @@ class RemoteFileProcessor(queue.Queue):
 					self._stop()
 					return
 
-				continue
-
 			except Exception as e:
 				xbmc.log(f"gdrive error: {e}: {''.join(traceback.format_tb(e.__traceback__))}", xbmc.LOGERROR)
 				self.task_done()
