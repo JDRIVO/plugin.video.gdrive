@@ -3,6 +3,8 @@ import pickle
 import shutil
 import threading
 
+import xbmcvfs
+
 from .fs_helpers import duplicateFileCheck, generateFilePath, getCreationDate
 
 
@@ -69,13 +71,12 @@ class FileOperations:
 	@staticmethod
 	def loadPickleFile(filePath):
 
-		try:
+		with xbmcvfs.File(filePath) as file:
 
-			with open(filePath, "rb") as file:
-				return pickle.load(file)
-
-		except FileNotFoundError:
-			return
+			try:
+				return pickle.loads(file.readBytes())
+			except EOFError:
+				return
 
 	@staticmethod
 	def readFile(filePath):
@@ -108,7 +109,7 @@ class FileOperations:
 	@staticmethod
 	def savePickleFile(data, filePath):
 
-		with open(filePath, "wb") as file:
+		with xbmcvfs.File(filePath, "wb") as file:
 			pickle.dump(data, file)
 
 	@staticmethod
