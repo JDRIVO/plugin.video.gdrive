@@ -560,7 +560,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			button.setLabel(label2=self.syncMode)
 
 	def _setSyncPath(self, button):
-		syncRootPath = self.dialog.browse(3, self.settings.getLocalizedString(30077), "")
+		syncRootPath = self.dialog.browse(3, self.settings.getLocalizedString(30077), "local")
 
 		if not syncRootPath:
 			return

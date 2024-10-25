@@ -45,8 +45,8 @@ class TitleIdentifier:
 		if titles:
 			self._findMatches(matches, titles, titleLower, year, yearStr)
 
-			if matches:
-				return matches[max(matches)]
+		if matches:
+			return matches[max(matches)]
 
 	def _findMatches(self, matches, candidates, title, year, yearStr):
 
