@@ -42,7 +42,8 @@ class Movie(Video):
 
 class Episode(Video):
 
-	def __init(self):
+	def __init__(self):
+		super().__init__()
 		self.season = None
 		self.episode = None
 

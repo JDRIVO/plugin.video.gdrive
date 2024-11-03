@@ -133,7 +133,6 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 		self.buttonIDs = [button.getId() for button in buttons]
 		self.buttonCloseID = self.buttonClose.getId()
 		self.buttonOKid = self.buttonOK.getId()
-		self.menuButtons = [self.buttonOKid, self.buttonCloseID]
 		self.setFocusId(self.buttonIDs[0])
 
 	def _getButton(self, buttonID):

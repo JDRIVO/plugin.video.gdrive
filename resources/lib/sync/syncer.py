@@ -361,7 +361,7 @@ class Syncer:
 		elif cachedRemoteName != folderName:
 			# folder renamed
 			cachedDirectoryPathHead, _ = os.path.split(cachedDirectoryPath)
-			newDirectoryPath = newDirectoryPath_ = os.path.join(cachedDirectoryPathHead, folderName)
+			newDirectoryPath = os.path.join(cachedDirectoryPathHead, folderName)
 			newDirectoryPath = self.cache.getUniqueDirectoryPath(driveID, newDirectoryPath, folderID)
 			oldPath = os.path.join(drivePath, cachedDirectoryPath)
 			newPath = os.path.join(drivePath, newDirectoryPath)

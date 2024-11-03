@@ -5,7 +5,7 @@ import threading
 
 import xbmcvfs
 
-from .fs_helpers import duplicateFileCheck, generateFilePath, getCreationDate
+from .fs_helpers import duplicateFileCheck, generateFilePath
 
 
 class FileOperations:
@@ -13,7 +13,7 @@ class FileOperations:
 	def __init__(self, **kwargs):
 		self.cloudService = kwargs.get("cloud_service")
 		self.encryption = kwargs.get("encryption")
-		self.fileLock = threading.Lock()
+		self.lock = threading.Lock()
 
 	def createDirs(self, dirPath):
 
@@ -28,7 +28,7 @@ class FileOperations:
 	def createFile(self, dirPath, filename, content, modifiedTime=None, mode="wb"):
 		self.createDirs(dirPath)
 
-		with self.fileLock:
+		with self.lock:
 			filePath = generateFilePath(dirPath, filename)
 
 			with open(filePath, mode) as file:
@@ -59,7 +59,7 @@ class FileOperations:
 
 			if encrypted:
 
-				with self.fileLock:
+				with self.lock:
 					filePath = generateFilePath(dirPath, filename)
 					self.encryption.decryptStream(file, filePath, modifiedTime=modifiedTime)
 
@@ -91,10 +91,9 @@ class FileOperations:
 
 	def renameFile(self, syncRootPath, oldPath, dirPath, filename):
 		self.createDirs(dirPath)
-		creationDate = getCreationDate(oldPath)
 
-		with self.fileLock:
-			newPath = duplicateFileCheck(dirPath, filename, creationDate)
+		with self.lock:
+			newPath = duplicateFileCheck(dirPath, filename, oldPath)
 			shutil.move(oldPath, newPath)
 
 		self._deleteEmptyDirs(syncRootPath, os.path.dirname(oldPath))
@@ -112,14 +111,15 @@ class FileOperations:
 		with xbmcvfs.File(filePath, "wb") as file:
 			pickle.dump(data, file)
 
-	@staticmethod
-	def _deleteEmptyDirs(syncRootPath, dirPath):
+	def _deleteEmptyDirs(self, syncRootPath, dirPath):
 
-		try:
+		with self.lock:
 
-			while dirPath != syncRootPath and os.path.exists(dirPath):
-				os.rmdir(dirPath)
-				dirPath = dirPath.rsplit(os.sep, 1)[0]
+			try:
 
-		except OSError:
-			return
+				while dirPath != syncRootPath and os.path.exists(dirPath):
+					os.rmdir(dirPath)
+					dirPath = dirPath.rsplit(os.sep, 1)[0]
+
+			except OSError:
+				return

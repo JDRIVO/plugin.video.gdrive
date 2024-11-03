@@ -50,7 +50,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.radioButtonFocus = os.path.join(texturesPath, "radiobutton-focus.png")
 		self.radioButtonNoFocus = os.path.join(texturesPath, "radiobutton-nofocus.png")
 		self.buttonFocusTexture = os.path.join(texturesPath, "focus.png")
-		self.blackTexture = os.path.join(texturesPath, "black.png")
 		self.blueTexture = os.path.join(texturesPath, "blue.png")
 		self.grayTexture = os.path.join(texturesPath, "gray.png")
 		self.dGrayTexture = os.path.join(texturesPath, "dgray.png")
@@ -72,7 +71,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 			self._createDriveSettingsButtons()
 
 		self.pushButtonIDs = [button.getId() for button in self.pushButtons]
-		self.radioButtonIDs = [button.getId() for button in self.radioButtons]
 		self.buttonOK = xbmcgui.ControlButton(
 			x=self.center + 80 if self.folders else self.center,
 			y=self.windowBottom - 60,
@@ -512,8 +510,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 					continue
 
 				syncTaskData.append(folder)
-				folderName = folder["name"]
-				folderName = folderName_ = removeProhibitedFSchars(folderName)
+				folderName = removeProhibitedFSchars(folder["name"])
 				dirPath = self.cache.getUniqueFolderPath(self.driveID, folderName)
 				folder["name"] = folderName
 				folder["path"] = dirPath

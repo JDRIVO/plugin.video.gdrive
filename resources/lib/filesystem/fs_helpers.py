@@ -4,35 +4,24 @@ import re
 from .fs_constants import ARTWORK
 
 
-def duplicateFileCheck(dirPath, filename, creationDate=None):
-	filePath = os.path.join(dirPath, filename)
+def duplicateFileCheck(dirPath, filename, filePath=None):
+	filePath = filePath or os.path.join(dirPath, filename)
+	filePathLower = filePath.lower()
 	filename, fileExtension = os.path.splitext(filename)
 	copy = 1
 
 	while os.path.exists(filePath):
+		filePath = os.path.join(dirPath, f"{filename} ({copy}){fileExtension}")
 
-		if creationDate and creationDate == getCreationDate(filePath):
+		if filePathLower == filePath.lower():
 			break
 
-		filePath = os.path.join(dirPath, f"{filename} ({copy}){fileExtension}")
 		copy += 1
 
 	return filePath
 
 def generateFilePath(dirPath, filename):
 	return duplicateFileCheck(dirPath, filename)
-
-def getCreationDate(path):
-
-	if os.name == "nt":
-		return os.path.getctime(path)
-	else:
-		stat = os.stat(path)
-
-		try:
-			return stat.st_birthtime
-		except AttributeError:
-			return stat.st_mtime
 
 def getExcludedTypes(folderSettings):
 	excluded = []
