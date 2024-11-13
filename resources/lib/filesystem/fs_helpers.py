@@ -4,18 +4,18 @@ import re
 from .fs_constants import ARTWORK
 
 
-def duplicateFileCheck(dirPath, filename, filePath=None):
-	filePath = filePath or os.path.join(dirPath, filename)
-	filePathLower = filePath.lower()
+def duplicateFileCheck(dirPath, filename, existingFilePath=None):
+	filePath = os.path.join(dirPath, filename)
+	existingFilePathLower = existingFilePath.lower() if existingFilePath else None
 	filename, fileExtension = os.path.splitext(filename)
 	copy = 1
 
 	while os.path.exists(filePath):
+
+		if filePath.lower() == existingFilePathLower:
+			return filePath
+
 		filePath = os.path.join(dirPath, f"{filename} ({copy}){fileExtension}")
-
-		if filePathLower == filePath.lower():
-			break
-
 		copy += 1
 
 	return filePath
