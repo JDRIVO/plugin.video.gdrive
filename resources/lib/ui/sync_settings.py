@@ -487,20 +487,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				)
 				self.cache.addDrive(driveSettings)
 
-			folderSettings = (
-				folderSettings["file_renaming"],
-				folderSettings["folder_renaming"],
-				folderSettings["contains_encrypted"],
-				folderSettings["sync_nfo"],
-				folderSettings["sync_subtitles"],
-				folderSettings["sync_artwork"],
-				folderSettings["sync_strm"],
-				folderSettings["tmdb_language"],
-				folderSettings["tmdb_region"],
-				folderSettings["tmdb_adult"],
-			)
 			syncTaskData = [self.driveID]
-			folders = []
 
 			for folder in self.foldersToSync:
 				folderID = folder["id"]
@@ -514,17 +501,16 @@ class SyncSettings(xbmcgui.WindowDialog):
 				dirPath = self.cache.getUniqueFolderPath(self.driveID, folderName)
 				folder["name"] = folderName
 				folder["path"] = dirPath
-				folders.append(
-					(
-						self.driveID,
-						folderID,
-						dirPath,
-						folderName,
-						*folderSettings,
-					)
+				folderSettings.update(
+					{
+						"drive_id": self.driveID,
+						"folder_id": folderID,
+						"local_path": dirPath,
+						"remote_name": folderName,
+					}
 				)
+				self.cache.addFolder(folderSettings)
 
-			self.cache.addFolders(folders)
 			url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/add_sync_task"
 			xbmc.executebuiltin("Container.Refresh")
 			http_requester.request(url, syncTaskData)
