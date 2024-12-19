@@ -1,11 +1,7 @@
 import os
 
-import xbmcvfs
-import xbmcaddon
-
+from constants import ADDON_PATH
 from ..filesystem.file_operations import FileOperations
-
-ADDON_PATH = xbmcvfs.translatePath(xbmcaddon.Addon().getAddonInfo("profile"))
 
 if not os.path.exists(ADDON_PATH):
 	os.mkdir(ADDON_PATH)
@@ -62,7 +58,7 @@ class AccountManager:
 		self.saveAccounts()
 
 	def exportAccounts(self, filePath):
-		self.saveAccounts(os.path.join(filePath, "gdrive_accounts.pkl"))
+		self.saveAccounts(filePath)
 
 	def getAccount(self, driveID):
 		accounts = self.accounts.get(driveID)

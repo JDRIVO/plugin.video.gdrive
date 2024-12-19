@@ -9,7 +9,7 @@ from ..threadpool.threadpool import ThreadPool
 
 class FileTree:
 
-	def __init__(self, fileProcessor, cloudService, cache, cacheUpdater, driveID, syncRootPath, drivePath, folderRenaming, fileRenaming, threadCount, encryptor, excludedTypes, syncedIDs):
+	def __init__(self, fileProcessor, cloudService, cache, cacheUpdater, driveID, syncRootPath, drivePath, folderRenaming, fileRenaming, threadCount, encryptor, prefix, suffix, excludedTypes, syncedIDs):
 		self.fileProcessor = fileProcessor
 		self.cloudService = cloudService
 		self.cache = cache
@@ -20,6 +20,8 @@ class FileTree:
 		self.folderRenaming = folderRenaming
 		self.threadCount = threadCount
 		self.encryptor = encryptor
+		self.prefix = prefix
+		self.suffix = suffix
 		self.excludedTypes = excludedTypes
 		self.syncedIDs = syncedIDs
 		self.rename = folderRenaming or fileRenaming
@@ -92,7 +94,7 @@ class FileTree:
 				paths.add(path.lower())
 				self.folderIDs.append(id)
 			else:
-				file = makeFile(item, self.excludedTypes, self.encryptor)
+				file = makeFile(item, self.excludedTypes, self.prefix, self.suffix, self.encryptor)
 
 				if not file:
 					continue

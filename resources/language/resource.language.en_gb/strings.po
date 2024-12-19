@@ -109,6 +109,10 @@ msgctxt "#30023"
 msgid "Validate"
 msgstr "Validate"
 
+msgctxt "#30024"
+msgid "Are you sure you want to delete the accounts file?"
+msgstr "Are you sure you want to delete the accounts file?""
+
 msgctxt "#30025"
 msgid "Account Name"
 msgstr "Account Name"
@@ -129,6 +133,10 @@ msgctxt "#30030"
 msgid "The private key wasn't found in your key file."
 msgstr "The private key wasn't found in your key file."
 
+msgctxt "#30031"
+msgid "Folder moved."
+msgstr "Folder moved."
+
 msgctxt "#30032"
 msgid "Accounts"
 msgstr "Accounts"
@@ -142,8 +150,8 @@ msgid "Select a folder to export to"
 msgstr "Select a folder to export to"
 
 msgctxt "#30035"
-msgid "File exported as gdrive_accounts.pkl"
-msgstr "File exported as gdrive_accounts.pkl"
+msgid "File exported as"
+msgstr "File exported as
 
 msgctxt "#30036"
 msgid "Accounts imported."
@@ -216,6 +224,18 @@ msgstr "Syncing folders"
 msgctxt "#30053"
 msgid "Processing files"
 msgstr "Processing files"
+
+msgctxt "#30054"
+msgid "Are you sure you want to delete the sync cache?"
+msgstr "Are you sure you want to delete the sync cache?"
+
+msgctxt "#30055"
+msgid "Cache deleted."
+msgstr "Cache deleted."
+
+msgctxt "#30056"
+msgid "Failed to delete the cache. See log for details."
+msgstr "Failed to delete the cache. See log for details.""
 
 msgctxt "#30058"
 msgid "Search language"
@@ -333,6 +353,10 @@ msgctxt "#30086"
 msgid "Folder Selection"
 msgstr "Folder Selection"
 
+msgctxt "#30087"
+msgid "manual"
+msgstr "manual"
+
 msgctxt "#30089"
 msgid "Select an operation"
 msgstr "Select an operation"
@@ -344,6 +368,42 @@ msgstr "Sync multiple"
 msgctxt "#30091"
 msgid "Search folder"
 msgstr "Search folder"
+
+msgctxt "#30092"
+msgid "Sync folder isn't set."
+msgstr "Sync folder isn't set."
+
+msgctxt "#30093"
+msgid "Select a folder to move to"
+msgstr "Select a folder to move to"
+
+msgctxt "#30094"
+msgid "Are you sure want to delete the sync folder?"
+msgstr "Are you sure want to delete the sync folder?"
+
+msgctxt "#30095"
+msgid "Sync folder deleted."
+msgstr "Sync folder deleted."
+
+msgctxt "#30096"
+msgid "Failed to delete the sync folder. See log for details."
+msgstr "Failed to delete the sync folder. See log for details."
+
+msgctxt "#30097"
+msgid "Accounts file deleted."
+msgstr "Accounts file deleted."
+
+msgctxt "#30098"
+msgid "Failed to delete the accounts file. See log for details."
+msgstr "Failed to delete the accounts file. See log for details."
+
+msgctxt "#30099"
+msgid "Enter the filename"
+msgstr "Enter the filename"
+
+msgctxt "#30100"
+msgid "The sync folder doesn't exist."
+msgstr "The sync folder doesn't exist."
 
 msgctxt "#30121"
 msgid "Are you sure you want to delete account:"
@@ -434,8 +494,16 @@ msgid "Account"
 msgstr "Account"
 
 msgctxt "#30406"
-msgid ""
-msgstr ""
+msgid "Encryption"
+msgstr "Encryption"
+
+msgctxt "#30407"
+msgid "Password"
+msgstr "Password"
+
+msgctxt "#30408"
+msgid "Salt file"
+msgstr "Salt file"
 
 msgctxt "#30500"
 msgid "Library"
@@ -466,72 +534,76 @@ msgid "Automatically update library"
 msgstr "Automatically update library"
 
 msgctxt "#30603"
+msgid "Move sync folder"
+msgstr "Move sync folder"
+
+msgctxt "#30604"
+msgid "Delete sync cache"
+msgstr "Delete sync cache"
+
+msgctxt "#30605"
+msgid "Delete sync folder"
+msgstr "Delete sync folder"
+
+msgctxt "#30606"
 msgid "Sync defaults"
 msgstr "Sync defaults"
 
-msgctxt "#30604"
+msgctxt "#30607"
 msgid "Folder contains gDrive encrypted files"
 msgstr "Folder contains gDrive encrypted files"
 
-msgctxt "#30605"
+msgctxt "#30608"
 msgid "Rename videos to a Kodi friendly format"
 msgstr "Rename videos to a Kodi friendly format"
 
-msgctxt "#30606"
+msgctxt "#30609"
 msgid "Create a Kodi friendly directory structure"
 msgstr "Create a Kodi friendly directory structure"
 
-msgctxt "#30607"
+msgctxt "#30610"
 msgid "Sync nfo"
 msgstr "Sync nfo"
 
-msgctxt "#30608"
+msgctxt "#30611"
 msgid "Sync subtitles"
 msgstr "Sync subtitles"
 
-msgctxt "#30609"
+msgctxt "#30612"
 msgid "Sync artwork"
 msgstr "Sync artwork"
 
-msgctxt "#30610"
+msgctxt "#30613"
 msgid "Sync strm"
 msgstr "Sync strm"
 
-msgctxt "#30611"
+msgctxt "#30614"
+msgid "STRM prefix"
+msgstr "STRM prefix"
+
+msgctxt "#30615"
+msgid "STRM suffix"
+msgstr "STRM suffix"
+
+msgctxt "#30616"
 msgid "TMDB search language"
 msgstr "TMDB search language"
 
-msgctxt "#30612"
+msgctxt "#30617"
 msgid "TMDB region"
 msgstr "TMDB region"
 
-msgctxt "#30613"
+msgctxt "#30618"
 msgid "TMDB adult content"
 msgstr "TMDB adult content"
 
 msgctxt "#30700"
-msgid "Streamer"
-msgstr "Streamer"
-
-msgctxt "#30701"
 msgid "Server"
 msgstr "Server"
 
-msgctxt "#30702"
+msgctxt "#30701"
 msgid "Server port (requires restart)"
 msgstr "Server port (requires restart)"
-
-msgctxt "#30703"
-msgid "Encryption"
-msgstr "Encryption"
-
-msgctxt "#30704"
-msgid "Password"
-msgstr "Password"
-
-msgctxt "#30705"
-msgid "Salt file"
-msgstr "Salt file"
 
 msgctxt "#30800"
 msgid "Dialogs"
@@ -556,3 +628,7 @@ msgstr "Import accounts"
 msgctxt "#30902"
 msgid "Export accounts"
 msgstr "Export accounts"
+
+msgctxt "#30903"
+msgid "Delete all accounts"
+msgstr "Delete all accounts"

@@ -16,6 +16,22 @@ def rfcToTimestamp(dateString):
 	# RFC 3339 str to timestamp
 	return strptime(dateString, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=datetime.timezone.utc).timestamp()
 
+def secondsToHMS(seconds):
+	hours, remainder = divmod(round(seconds), 3600)
+	minutes, seconds = divmod(remainder, 60)
+	time = ""
+
+	if hours:
+		time += f"{hours}h"
+
+	if minutes:
+		time += f"{minutes}m"
+
+	if seconds:
+		time += f"{seconds}s"
+
+	return time
+
 def sendJSONRPCCommand(query):
 	query = json.dumps(query)
 	return json.loads(xbmc.executeJSONRPC(query))

@@ -1,14 +1,9 @@
 import os
 
-import xbmcvfs
-import xbmcaddon
-
-import constants
+from constants import *
 from ..ui.dialogs import FileDeletionDialog
 from ..database.db_manager import DatabaseManager
 from ..filesystem.file_operations import FileOperations
-
-ADDON_PATH = xbmcvfs.translatePath(xbmcaddon.Addon().getAddonInfo("profile"))
 
 if not os.path.exists(ADDON_PATH):
 	os.mkdir(ADDON_PATH)
@@ -21,7 +16,7 @@ class SyncCacheManager(DatabaseManager):
 	def __init__(self):
 		newDB = not os.path.exists(CACHE_PATH)
 		super().__init__(CACHE_PATH)
-		self.settings = constants.settings
+		self.settings = SETTINGS
 		self.fileOperations = FileOperations()
 
 		if newDB:
@@ -79,6 +74,8 @@ class SyncCacheManager(DatabaseManager):
 			"sync_subtitles",
 			"sync_artwork",
 			"sync_strm",
+			"strm_prefix",
+			"strm_suffix",
 			"tmdb_language",
 			"tmdb_region",
 			"tmdb_adult",
@@ -316,7 +313,7 @@ class SyncCacheManager(DatabaseManager):
 		self.update("folders", data, {"folder_id": folderID})
 
 	def updateSyncRootPath(self, path):
-		self.update("global", {"local_path": path}, {"local_path": "TEXT"})
+		self.update("global", {"local_path": path})
 
 	def _createDirectoriesTable(self):
 		columns = (
@@ -370,6 +367,8 @@ class SyncCacheManager(DatabaseManager):
 			"sync_subtitles INTEGER",
 			"sync_artwork INTEGER",
 			"sync_strm INTEGER",
+			"strm_prefix TEXT",
+			"strm_suffix TEXT",
 			"tmdb_language TEXT",
 			"tmdb_region TEXT",
 			"tmdb_adult TEXT",

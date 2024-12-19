@@ -61,16 +61,39 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_playback_account)</data>
 					</control>
 				</setting>
-				<setting id="playback_account" type="string" label="30406" help="">
+				<setting id="playback_account" type="string" label="" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
 					<control type="edit" format="string">
-						<heading>30406</heading>
+						<heading/>
 					</control>
 					<visible>false</visible>
+				</setting>
+			</group>
+			<group id="2" label="30406">
+				<setting id="crypto_password" type="string" label="30407" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="edit" format="string">
+						<heading>30407</heading>
+					</control>
+				</setting>
+				<setting id="crypto_salt" type="path" label="30408" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<writable>false</writable>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="file">
+						<heading>30408</heading>
+					</control>
 				</setting>
 			</group>
 		</category>
@@ -126,44 +149,94 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="sync_root" type="string" label="30603" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_sync_root)</data>
+					</control>
+				</setting>
+				<setting id="delete_sync_cache" type="string" label="30604" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=delete_sync_cache)</data>
+					</control>
+				</setting>
+				<setting id="delete_sync_folder" type="string" label="30605" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=delete_sync_folder)</data>
+					</control>
+				</setting>
 			</group>
-			<group id="2" label="30603">
-				<setting id="contains_encrypted" type="boolean" label="30604" help="">
+			<group id="2" label="30606">
+				<setting id="contains_encrypted" type="boolean" label="30607" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="file_renaming" type="boolean" label="30605" help="">
+				<setting id="file_renaming" type="boolean" label="30608" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="folder_renaming" type="boolean" label="30606" help="">
+				<setting id="folder_renaming" type="boolean" label="30609" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_nfo" type="boolean" label="30607" help="">
+				<setting id="sync_nfo" type="boolean" label="30610" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_subtitles" type="boolean" label="30608" help="">
+				<setting id="sync_subtitles" type="boolean" label="30611" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_artwork" type="boolean" label="30609" help="">
+				<setting id="sync_artwork" type="boolean" label="30612" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_strm" type="boolean" label="30610" help="">
+				<setting id="sync_strm" type="boolean" label="30613" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="tmdb_language" type="string" label="30611" help="">
+				<setting id="strm_prefix" type="string" label="30614" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_strm_prefix)</data>
+					</control>
+				</setting>
+				<setting id="strm_suffix" type="string" label="30615" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_strm_suffix)</data>
+					</control>
+				</setting>
+				<setting id="tmdb_language" type="string" label="30616" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -173,7 +246,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_language)</data>
 					</control>
 				</setting>
-				<setting id="tmdb_region" type="string" label="30612" help="">
+				<setting id="tmdb_region" type="string" label="30617" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -183,7 +256,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_region)</data>
 					</control>
 				</setting>
-				<setting id="tmdb_adult" type="string" label="30613" help="">
+				<setting id="tmdb_adult" type="string" label="30618" help="">
 					<level>0</level>
 					<default>false</default>
 					<constraints>
@@ -193,41 +266,18 @@
 						</options>
 					</constraints>
 					<control type="list" format="string">
-						<heading>30613</heading>
+						<heading>30616</heading>
 					</control>
 				</setting>
 			</group>
 		</category>
-		<category id="streamer" label="30700" help="">
-			<group id="1" label="30701">
-				<setting id="server_port" type="integer" label="30702" help="">
+		<category id="server" label="30700" help="">
+			<group id="1">
+				<setting id="server_port" type="integer" label="30701" help="">
 					<level>0</level>
 					<default>8011</default>
 					<control type="edit" format="integer">
-						<heading>30702</heading>
-					</control>
-				</setting>
-			</group>
-			<group id="2" label="30703">
-				<setting id="crypto_password" type="string" label="30704" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="edit" format="string">
-						<heading>30704</heading>
-					</control>
-				</setting>
-				<setting id="crypto_salt" type="path" label="30705" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<writable>false</writable>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="button" format="file">
-						<heading>30705</heading>
+						<heading>30701</heading>
 					</control>
 				</setting>
 			</group>
@@ -266,6 +316,16 @@
 					</constraints>
 					<control type="button" format="action">
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=export_accounts)</data>
+					</control>
+				</setting>
+				<setting id="delete_accounts" type="string" label="30903" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=delete_accounts_file)</data>
 					</control>
 				</setting>
 			</group>

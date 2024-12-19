@@ -2,7 +2,7 @@ from threading import Thread
 
 import xbmc
 
-import constants
+from constants import SETTINGS
 from helpers import sendJSONRPCCommand
 
 
@@ -18,9 +18,9 @@ class VideoPlayer(xbmc.Player):
 		self.monitor = xbmc.Monitor()
 
 		if self.dbType == "movie":
-			self.markedWatchedPoint = float(constants.settings.getSetting("movie_watch_time"))
+			self.markedWatchedPoint = float(SETTINGS.getSetting("movie_watch_time"))
 		elif self.dbType == "episode":
-			self.markedWatchedPoint = float(constants.settings.getSetting("tv_watch_time"))
+			self.markedWatchedPoint = float(SETTINGS.getSetting("tv_watch_time"))
 
 		while not self.monitor.abortRequested() and not self.videoDuration and not self.close:
 

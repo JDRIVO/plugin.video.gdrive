@@ -4,7 +4,7 @@ import threading
 import xbmcgui
 import xbmcaddon
 
-import constants
+from constants import SETTINGS
 
 
 class SyncProgressionDialog(xbmcgui.DialogProgressBG):
@@ -12,7 +12,7 @@ class SyncProgressionDialog(xbmcgui.DialogProgressBG):
 	def __init__(self, folderTotal):
 		self.folderTotal = folderTotal
 		self.lock = threading.Lock()
-		self.settings = constants.settings
+		self.settings = SETTINGS
 		self.processedFiles = 0
 		self.processedFolders = 0
 		self.renamedFiles = 0
@@ -79,7 +79,7 @@ class FileDeletionDialog(xbmcgui.DialogProgressBG):
 
 	def __init__(self, fileTotal):
 		self.fileTotal = fileTotal
-		self.settings = constants.settings
+		self.settings = SETTINGS
 		self.processed = 0
 		self.heading = f"{self.settings.getLocalizedString(30000)}: {self.settings.getLocalizedString(30075)}"
 

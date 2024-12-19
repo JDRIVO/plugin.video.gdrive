@@ -8,7 +8,7 @@ from .. import ptn
 from helpers import rfcToTimestamp
 
 
-def makeFile(fileData, excludedTypes, encryptor):
+def makeFile(fileData, excludedTypes, prefix, suffix, encryptor):
 	filename = fileData["name"]
 	mimeType = fileData["mimeType"]
 	fileExtension = fileData.get("fileExtension")
@@ -50,7 +50,7 @@ def makeFile(fileData, excludedTypes, encryptor):
 			file = Video()
 
 		file.media = media
-		file.setData(videoData, metadata)
+		file.setData(videoData, metadata, prefix, suffix)
 
 	filename = removeProhibitedFSchars(filename)
 	file.remoteName = filename

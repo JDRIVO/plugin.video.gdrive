@@ -1,11 +1,7 @@
 import os
 
-import xbmcvfs
-import xbmcaddon
-
+from constants import ADDON_PATH
 from ..database.db_manager import DatabaseManager
-
-ADDON_PATH = xbmcvfs.translatePath(xbmcaddon.Addon().getAddonInfo("profile"))
 
 if not os.path.exists(ADDON_PATH):
 	os.mkdir(ADDON_PATH)

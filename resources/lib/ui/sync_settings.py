@@ -5,8 +5,9 @@ import xbmc
 import xbmcgui
 import xbmcaddon
 
-import constants
+from constants import SETTINGS
 from .dialogs import Dialog
+from .strm_affixer import StrmAffixer
 from ..network import http_requester
 from ..sync.sync_cache_manager import SyncCacheManager
 from ..filesystem.fs_helpers import removeProhibitedFSchars
@@ -21,20 +22,22 @@ class SyncSettings(xbmcgui.WindowDialog):
 	ACTION_SELECT_ITEM = 7
 	ACTION_BACKSPACE = 92
 	LABELS_TO_SETTINGS = {
-		constants.settings.getLocalizedString(30048): {"type": "global", "name": "local_path"},
-		constants.settings.getLocalizedString(30049): {"type": "drive", "name": "task_mode"},
-		constants.settings.getLocalizedString(30050): {"type": "drive", "name": "task_frequency"},
-		constants.settings.getLocalizedString(30051): {"type": "drive", "name": "startup_sync"},
-		constants.settings.getLocalizedString(30604): {"type": "folder", "name": "contains_encrypted"},
-		constants.settings.getLocalizedString(30605): {"type": "folder", "name": "file_renaming"},
-		constants.settings.getLocalizedString(30606): {"type": "folder", "name": "folder_renaming"},
-		constants.settings.getLocalizedString(30607): {"type": "folder", "name": "sync_nfo"},
-		constants.settings.getLocalizedString(30608): {"type": "folder", "name": "sync_subtitles"},
-		constants.settings.getLocalizedString(30609): {"type": "folder", "name": "sync_artwork"},
-		constants.settings.getLocalizedString(30610): {"type": "folder", "name": "sync_strm"},
-		constants.settings.getLocalizedString(30058): {"type": "folder", "name": "tmdb_language"},
-		constants.settings.getLocalizedString(30059): {"type": "folder", "name": "tmdb_region"},
-		constants.settings.getLocalizedString(30060): {"type": "folder", "name": "tmdb_adult"},
+		SETTINGS.getLocalizedString(30048): {"type": "global", "name": "local_path"},
+		SETTINGS.getLocalizedString(30049): {"type": "drive", "name": "task_mode"},
+		SETTINGS.getLocalizedString(30050): {"type": "drive", "name": "task_frequency"},
+		SETTINGS.getLocalizedString(30051): {"type": "drive", "name": "startup_sync"},
+		SETTINGS.getLocalizedString(30607): {"type": "folder", "name": "contains_encrypted"},
+		SETTINGS.getLocalizedString(30608): {"type": "folder", "name": "file_renaming"},
+		SETTINGS.getLocalizedString(30609): {"type": "folder", "name": "folder_renaming"},
+		SETTINGS.getLocalizedString(30610): {"type": "folder", "name": "sync_nfo"},
+		SETTINGS.getLocalizedString(30611): {"type": "folder", "name": "sync_subtitles"},
+		SETTINGS.getLocalizedString(30612): {"type": "folder", "name": "sync_artwork"},
+		SETTINGS.getLocalizedString(30613): {"type": "folder", "name": "sync_strm"},
+		SETTINGS.getLocalizedString(30614): {"type": "folder", "name": "strm_prefix"},
+		SETTINGS.getLocalizedString(30615): {"type": "folder", "name": "strm_suffix"},
+		SETTINGS.getLocalizedString(30058): {"type": "folder", "name": "tmdb_language"},
+		SETTINGS.getLocalizedString(30059): {"type": "folder", "name": "tmdb_region"},
+		SETTINGS.getLocalizedString(30060): {"type": "folder", "name": "tmdb_adult"},
 	}
 
 	def __init__(self, *args, **kwargs):
@@ -43,7 +46,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.folderID = kwargs.get("folder_id")
 		self.foldersToSync = kwargs.get("folders")
 		self.accounts = kwargs.get("accounts")
-		self.settings = constants.settings
+		self.settings = SETTINGS
 		self.cache = SyncCacheManager()
 		self.dialog = Dialog()
 		texturesPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
@@ -56,6 +59,8 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.folders = False
 		self.syncMode = None
 		self.syncFrequency = None
+		self.prefix = []
+		self.suffix = []
 		self._createButtons()
 
 	def _createButtons(self):
@@ -156,22 +161,65 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.generalSettingsButtonIDs = [button.getId() for button in self.generalSettingsButtons]
 		self.menuButtonIDs = self.generalSettingsButtonIDs
 
+	def addConrolButton(self, label, folderSettings):
+		button = xbmcgui.ControlButton(
+			x=self.center + 80,
+			y=self.y + self.buttonSpacing,
+			width=self.buttonWidth,
+			height=self.buttonHeight,
+			label=label,
+			font=self.font,
+			focusTexture=self.buttonFocusTexture,
+			noFocusTexture=self.dGrayTexture,
+		)
+
+		if label == self.settings.getLocalizedString(30614):
+			button.setLabel(label2=folderSettings["strm_prefix"] if folderSettings else self.settings.getSetting("strm_prefix"))
+		elif label == self.settings.getLocalizedString(30615):
+			button.setLabel(label2=folderSettings["strm_suffix"] if folderSettings else self.settings.getSetting("strm_suffix"))
+
+		self.addControl(button)
+		self.pushButtons[button] = label
+		self.buttonSpacing += 40
+
+	def addRadioButton(self, label, isEnabled):
+		button = xbmcgui.ControlRadioButton(
+			x=self.center + 80,
+			y=self.y + self.buttonSpacing,
+			width=self.buttonWidth,
+			height=self.buttonHeight,
+			label=label,
+			font=self.font,
+			noFocusOffTexture=self.radioButtonNoFocus,
+			focusOffTexture=self.radioButtonNoFocus,
+			focusOnTexture=self.radioButtonFocus,
+			noFocusOnTexture=self.radioButtonFocus,
+			focusTexture=self.buttonFocusTexture,
+			noFocusTexture=self.dGrayTexture,
+		)
+		self.addControl(button)
+		self.radioButtons[button] = label
+		button.setSelected(isEnabled)
+		self.buttonSpacing += 40
+
 	def _createFolderSettingsButtons(self):
-		settings = {}
 		folderSettings = self.cache.getFolder({"folder_id": self.folderID})
+		radioButtons = {}
 
 		if not self.displayMode == "new" and folderSettings:
-			self.functions = {
-				self.settings.getLocalizedString(30063): self._stopSyncingFolder,
-				self.settings.getLocalizedString(30064): self._stopSyncingFolderAndDelete,
-			}
+			self.functions.update(
+				{
+					self.settings.getLocalizedString(30063): self._stopSyncingFolder,
+					self.settings.getLocalizedString(30064): self._stopSyncingFolderAndDelete,
+				}
+			)
 		else:
 
 			if not self.cache.getSyncRootPath():
 				self.functions.update({self.settings.getLocalizedString(30048): self._setSyncPath})
 
 			if not self.cache.getDrive(self.driveID):
-				settings.update({self.settings.getLocalizedString(30051): False})
+				radioButtons.update({self.settings.getLocalizedString(30051): False})
 				self.functions.update(
 					{
 						self.settings.getLocalizedString(30049): self._setSyncMode,
@@ -179,53 +227,30 @@ class SyncSettings(xbmcgui.WindowDialog):
 					}
 				)
 
-		settings.update(
+		radioButtons.update(
 			{
-				self.settings.getLocalizedString(30604): folderSettings["contains_encrypted"] if folderSettings else self.settings.getSetting("contains_encrypted"),
-				self.settings.getLocalizedString(30605): folderSettings["file_renaming"] if folderSettings else self.settings.getSetting("file_renaming"),
-				self.settings.getLocalizedString(30606): folderSettings["folder_renaming"] if folderSettings else self.settings.getSetting("folder_renaming"),
-				self.settings.getLocalizedString(30607): folderSettings["sync_nfo"] if folderSettings else self.settings.getSetting("sync_nfo"),
-				self.settings.getLocalizedString(30608): folderSettings["sync_subtitles"] if folderSettings else self.settings.getSetting("sync_subtitles"),
-				self.settings.getLocalizedString(30609): folderSettings["sync_artwork"] if folderSettings else self.settings.getSetting("sync_artwork"),
-				self.settings.getLocalizedString(30610): folderSettings["sync_strm"] if folderSettings else self.settings.getSetting("sync_strm"),
+				self.settings.getLocalizedString(30607): folderSettings["contains_encrypted"] if folderSettings else self.settings.getSetting("contains_encrypted"),
+				self.settings.getLocalizedString(30608): folderSettings["file_renaming"] if folderSettings else self.settings.getSetting("file_renaming"),
+				self.settings.getLocalizedString(30609): folderSettings["folder_renaming"] if folderSettings else self.settings.getSetting("folder_renaming"),
+				self.settings.getLocalizedString(30610): folderSettings["sync_nfo"] if folderSettings else self.settings.getSetting("sync_nfo"),
+				self.settings.getLocalizedString(30611): folderSettings["sync_subtitles"] if folderSettings else self.settings.getSetting("sync_subtitles"),
+				self.settings.getLocalizedString(30612): folderSettings["sync_artwork"] if folderSettings else self.settings.getSetting("sync_artwork"),
+				self.settings.getLocalizedString(30613): folderSettings["sync_strm"] if folderSettings else self.settings.getSetting("sync_strm"),
 			}
 		)
-		self._setup(len(self.functions) + len(settings))
+		self.functions.update(
+			{
+				self.settings.getLocalizedString(30614): self._setPrefix,
+				self.settings.getLocalizedString(30615): self._setSuffix,
+			}
+		)
+		self._setup(len(self.functions) + len(radioButtons))
 
 		for setting in self.functions:
-			button = xbmcgui.ControlButton(
-				x=self.center + 80,
-				y=self.y + self.buttonSpacing,
-				width=self.buttonWidth,
-				height=self.buttonHeight,
-				label=setting,
-				font=self.font,
-				focusTexture=self.buttonFocusTexture,
-				noFocusTexture=self.dGrayTexture,
-			)
-			self.pushButtons[button] = setting
-			self.addControl(button)
-			self.buttonSpacing += 40
+			self.addConrolButton(setting, folderSettings)
 
-		for setting, value in settings.items():
-			button = xbmcgui.ControlRadioButton(
-				x=self.center + 80,
-				y=self.y + self.buttonSpacing,
-				width=self.buttonWidth,
-				height=self.buttonHeight,
-				label=setting,
-				font=self.font,
-				noFocusOffTexture=self.radioButtonNoFocus,
-				focusOffTexture=self.radioButtonNoFocus,
-				focusOnTexture=self.radioButtonFocus,
-				noFocusOnTexture=self.radioButtonFocus,
-				focusTexture=self.buttonFocusTexture,
-				noFocusTexture=self.dGrayTexture,
-			)
-			self.radioButtons[button] = setting
-			self.addControl(button)
-			button.setSelected(value)
-			self.buttonSpacing += 40
+		for setting, isEnabled in radioButtons.items():
+			self.addRadioButton(setting, isEnabled)
 
 		self.generalSettingsButtons = list(self.pushButtons.keys()) + list(self.radioButtons.keys())
 		self.generalSettingsButtonIDs = [button.getId() for button in self.generalSettingsButtons]
@@ -391,23 +416,53 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 	def _setAdultContent(self, button):
 		options = ["true", "false"]
-		selection = self.dialog.select(self.settings.getLocalizedString(30613), options)
+		selection = self.dialog.select(self.settings.getLocalizedString(30616), options)
 
 		if selection == -1:
 			return
 
 		button.setLabel(label2=options[selection])
 
+	def _setAffix(self, button, affix):
+		folderSettings = self.cache.getFolder({"folder_id": self.folderID})
+		excluded = ["duration", "extension", "resolution"]
+
+		if button.getLabel2():
+			included = [a for a in button.getLabel2().split(", ") if a != " "]
+		else:
+			included = [a for a in folderSettings[f"strm_{affix.lower()}"].split(", ") if a] if folderSettings else [a for a in self.settings.getSetting(f"strm_{affix.lower()}").split(", ") if a]
+
+		for prefix in included:
+			excluded.remove(prefix)
+
+		strmAffixer = StrmAffixer(included=included, excluded=excluded, title=f"STRM {affix}")
+		strmAffixer.doModal()
+		closed = strmAffixer.closed
+		del strmAffixer
+
+		if closed:
+			return
+
+		newLabel = ", ".join(included)
+
+		if newLabel:
+			button.setLabel(label2=newLabel)
+		else:
+			button.setLabel(label2=" ")
+
 	def _setCountry(self, button):
-		selection = self.dialog.select(self.settings.getLocalizedString(30612), TMDB_REGIONS)
+		selection = self.dialog.select(self.settings.getLocalizedString(30615), TMDB_REGIONS)
 
 		if selection == -1:
 			return
 
 		button.setLabel(label2=TMDB_REGIONS[selection])
 
+	def _setPrefix(self, button):
+		self._setAffix(button, "Prefix")
+
 	def _setSearchLanguage(self, button):
-		selection = self.dialog.select(self.settings.getLocalizedString(30611), TMDB_LANGUAGES)
+		selection = self.dialog.select(self.settings.getLocalizedString(30614), TMDB_LANGUAGES)
 
 		if selection == -1:
 			return
@@ -428,7 +483,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			try:
 				setting = self.LABELS_TO_SETTINGS[label]
 				settingType = setting["type"]
-				settingTypes[settingType].update({setting["name"]: button.getLabel2()})
+				settingTypes[settingType].update({setting["name"]: button if (button := button.getLabel2()) != " " else ""})
 			except KeyError:
 				continue
 
@@ -450,7 +505,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30080))
 				return
 
-			if driveSettings["task_frequency"] == " ":
+			if not driveSettings["task_frequency"] and driveSettings["task_mode"] != "manual":
 				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30081))
 				return
 
@@ -473,6 +528,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			if globalSettings:
 				globalSettings.update({"operating_system": os.name})
 				self.cache.addGlobalData(globalSettings)
+				self.settings.setSetting("sync_root", globalSettings["local_path"])
 
 			if driveSettings:
 				alias = self.accounts[self.driveID]["alias"]
@@ -515,9 +571,12 @@ class SyncSettings(xbmcgui.WindowDialog):
 			xbmc.executebuiltin("Container.Refresh")
 			http_requester.request(url, syncTaskData)
 
+	def _setSuffix(self, button):
+		self._setAffix(button, "Suffix")
+
 	def _setSyncFrequency(self, button):
 
-		if not self.syncMode:
+		if not self.syncMode or self.syncMode == self.settings.getLocalizedString(30087):
 			return
 
 		if self.syncMode == self.settings.getLocalizedString(30068):
@@ -529,7 +588,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			button.setLabel(label2=syncFrequency)
 
 	def _setSyncMode(self, button):
-		modes = [self.settings.getLocalizedString(30068), self.settings.getLocalizedString(30069)]
+		modes = [self.settings.getLocalizedString(30068), self.settings.getLocalizedString(30069), self.settings.getLocalizedString(30087)]
 		selection = self.dialog.select(self.settings.getLocalizedString(30049), modes)
 
 		if selection == -1:

@@ -9,8 +9,9 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
-import constants
+from constants import *
 from .ui.dialogs import Dialog
+from .ui.strm_affixer import StrmAffixer
 from .ui.sync_settings import SyncSettings
 from .ui.resolution_order import ResolutionOrder
 from .ui.resolution_selector import ResolutionSelector
@@ -20,6 +21,7 @@ from .accounts.account_manager import AccountManager
 from .threadpool.threadpool import ThreadPool
 from .google_api.google_drive import GoogleDrive
 from .sync.sync_cache_manager import SyncCacheManager
+from .filesystem.file_operations import FileOperations
 from .filesystem.fs_helpers import removeProhibitedFSchars
 from .filesystem.fs_constants import TMDB_LANGUAGES, TMDB_REGIONS
 
@@ -29,7 +31,7 @@ class Core:
 	def __init__(self):
 		self.pluginURL = sys.argv[0]
 		self.pluginHandle = int(sys.argv[1])
-		self.settings = constants.settings
+		self.settings = SETTINGS
 		self.mode = self.settings.getParameter("mode", "main")
 		self.cache = SyncCacheManager()
 		self.accountManager = AccountManager()
@@ -49,7 +51,10 @@ class Core:
 			"accounts_cm": self.showAccountsContextMenu,
 			"add_service_account": self.addServiceAccount,
 			"delete_accounts": self.accountDeletion,
+			"delete_accounts_file": self.deleteAccountsFile,
 			"delete_drive": self.deleteDrive,
+			"delete_sync_cache": self.deleteSyncCache,
+			"delete_sync_folder": self.deleteSyncFolder,
 			"export_accounts": self.exportAccounts,
 			"import_accounts": self.importAccounts,
 			"force_sync_drive": self.forceSyncDrive,
@@ -68,6 +73,9 @@ class Core:
 			"search_folder": self.searchFolder,
 			"set_alias": self.setAlias,
 			"set_playback_account": self.setPlaybackAccount,
+			"set_strm_prefix": self.setStrmPrefix,
+			"set_strm_suffix": self.setStrmSuffix,
+			"set_sync_root": self.setSyncRoot,
 			"set_tmdb_language": self.setTMDBlanguage,
 			"set_tmdb_region": self.setTMDBregion,
 			"sync_all_folders": self.syncAllFolders,
@@ -271,6 +279,22 @@ class Core:
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_FILE)
 		self.cacheToDisk = False
 
+	def deleteAccountsFile(self):
+		confirmation = self.dialog.yesno(
+			self.settings.getLocalizedString(30000),
+			self.settings.getLocalizedString(30024),
+		)
+
+		if not confirmation:
+			return
+
+		deleted = FileOperations().deleteFile(filePath=os.path.join(ADDON_PATH, "accounts.pkl"))
+
+		if deleted:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30097))
+		else:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30098))
+
 	def deleteDrive(self):
 		confirmation = self.dialog.yesno(
 			self.settings.getLocalizedString(30000),
@@ -287,14 +311,82 @@ class Core:
 		data = {"drive_id": driveID}
 		http_requester.request(url, data)
 
-	def exportAccounts(self):
-		filePath = self.dialog.browse(0, self.settings.getLocalizedString(30034), "")
+	def deleteSyncCache(self):
+		confirmation = self.dialog.yesno(
+			self.settings.getLocalizedString(30000),
+			self.settings.getLocalizedString(30054),
+		)
 
-		if not filePath:
+		if not confirmation:
 			return
 
+		for _ in range(3):
+			deleted = FileOperations().deleteFile(filePath=os.path.join(ADDON_PATH, "sync_cache.db"))
+
+			if deleted:
+				break
+
+			time.sleep(0.1)
+
+		if deleted:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30055))
+		else:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30056))
+
+	def deleteSyncFolder(self):
+		syncRootCache = self.cache.getSyncRootPath()
+		syncRoot = syncRootCache or self.settings.getSetting("sync_root")
+
+		if not syncRoot:
+			syncRoot = self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30092))
+			self.settings.setSetting("sync_root", "")
+			return
+
+		if not os.path.exists(syncRoot):
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30100))
+
+			if not syncRootCache:
+				self.settings.setSetting("sync_root", "")
+
+			return
+
+		confirmation = self.dialog.yesno(
+			self.settings.getLocalizedString(30000),
+			self.settings.getLocalizedString(30094),
+		)
+
+		if not confirmation:
+			return
+
+		deleted = FileOperations().deleteFolder(syncRoot)
+
+		if deleted:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30095))
+
+			if not self.cache.getSyncRootPath():
+				self.settings.setSetting("sync_root", "")
+
+		else:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30096))
+
+	def exportAccounts(self):
+		dirPath = self.dialog.browse(3, self.settings.getLocalizedString(30034), "")
+
+		if not dirPath:
+			return
+
+		filename = xbmcgui.Dialog().input(self.settings.getLocalizedString(30099), "gdrive_accounts")
+
+		if not filename:
+			return
+
+		filename = f"{filename}.pkl"
+		filePath = os.path.join(dirPath, filename)
 		self.accountManager.exportAccounts(filePath)
-		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30035))
+		self.dialog.ok(
+			self.settings.getLocalizedString(30000),
+			f"{self.settings.getLocalizedString(30035)} {filename}",
+		)
 
 	def importAccounts(self):
 		filePath = self.dialog.browse(1, self.settings.getLocalizedString(30033), "", mask=".pkl")
@@ -664,6 +756,23 @@ class Core:
 		self.getSpecificFolders(searchQuery, folders, folderIDs, threadCount)
 		self.listFolders(driveID, folders)
 
+	def setAffix(self, affix):
+		excluded = ["duration", "extension", "resolution"]
+		included = [a for a in self.settings.getSetting(f"strm_{affix.lower()}").split(", ") if a]
+
+		for include in included:
+			excluded.remove(include)
+
+		strmAffixer = StrmAffixer(included=included, excluded=excluded, title=f"STRM {affix}")
+		strmAffixer.doModal()
+		closed = strmAffixer.closed
+		del strmAffixer
+
+		if closed:
+			return
+
+		self.settings.setSetting(f"strm_{affix.lower()}", ", ".join(included))
+
 	def setAlias(self):
 		driveID = self.settings.getParameter("drive_id")
 		alias = self.dialog.input(self.settings.getLocalizedString(30004))
@@ -694,8 +803,42 @@ class Core:
 		self.settings.setSetting("playback_account", accounts[selection][0])
 		self.settings.setSetting("account_override", accounts[selection][1])
 
+	def setStrmPrefix(self):
+		self.setAffix("Prefix")
+
+	def setStrmSuffix(self):
+		self.setAffix("Suffix")
+
+	def setSyncRoot(self):
+		syncRootCache = self.cache.getSyncRootPath()
+		syncRoot = syncRootCache or self.settings.getSetting("sync_root")
+
+		if not syncRoot:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30092))
+			self.settings.setSetting("sync_root", "")
+			return
+
+		if not os.path.exists(syncRoot):
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30100))
+
+			if not syncRootCache:
+				self.settings.setSetting("sync_root", "")
+
+			return
+
+		syncRootNew = self.dialog.browse(3, self.settings.getLocalizedString(30093), "local")
+
+		if not syncRootNew or syncRoot in syncRootNew:
+			return
+
+		syncRootNew = os.path.join(syncRootNew, self.settings.getLocalizedString(30000))
+		serverPort = self.settings.getSettingInt("server_port", 8011)
+		url = f"http://localhost:{serverPort}/set_sync_root"
+		data = {"sync_root_new": syncRootNew, "sync_root_old": syncRoot}
+		http_requester.request(url, data)
+
 	def setTMDBlanguage(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30611), TMDB_LANGUAGES)
+		selection = self.dialog.select(self.settings.getLocalizedString(30614), TMDB_LANGUAGES)
 
 		if selection == -1:
 			return
@@ -703,7 +846,7 @@ class Core:
 		self.settings.setSetting("tmdb_language", TMDB_LANGUAGES[selection])
 
 	def setTMDBregion(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30612), TMDB_REGIONS)
+		selection = self.dialog.select(self.settings.getLocalizedString(30615), TMDB_REGIONS)
 
 		if selection == -1:
 			return

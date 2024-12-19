@@ -3,6 +3,7 @@ import pickle
 import shutil
 import threading
 
+import xbmc
 import xbmcvfs
 
 from .fs_helpers import duplicateFileCheck, generateFilePath
@@ -39,7 +40,7 @@ class FileOperations:
 
 		return filePath
 
-	def deleteFile(self, syncRootPath, dirPath=None, filename=None, filePath=None):
+	def deleteFile(self, syncRootPath=None, dirPath=None, filename=None, filePath=None):
 
 		if not filePath:
 			filePath = os.path.join(dirPath, filename)
@@ -47,9 +48,28 @@ class FileOperations:
 			dirPath, filename = os.path.split(filePath)
 
 		if os.path.exists(filePath):
-			os.remove(filePath)
 
-		self._deleteEmptyDirs(syncRootPath, dirPath)
+			try:
+				os.remove(filePath)
+			except Exception as e:
+				xbmc.log(f"Couldn't delete file: {e}", xbmc.LOGERROR)
+				return
+
+		if syncRootPath:
+			self._deleteEmptyDirs(syncRootPath, dirPath)
+
+		return True
+
+	@staticmethod
+	def deleteFolder(path):
+
+		try:
+			shutil.rmtree(path)
+		except Exception as e:
+			xbmc.log(f"Couldn't delete folder: {e}", xbmc.LOGERROR)
+			return
+
+		return True
 
 	def downloadFile(self, dirPath, filename, fileID, modifiedTime=None, encrypted=False):
 		self.createDirs(dirPath)
@@ -75,7 +95,7 @@ class FileOperations:
 
 			try:
 				return pickle.loads(file.readBytes())
-			except EOFError:
+			except Exception:
 				return
 
 	@staticmethod
@@ -99,11 +119,13 @@ class FileOperations:
 		self._deleteEmptyDirs(syncRootPath, os.path.dirname(oldPath))
 		return newPath
 
-	def renameFolder(self, syncRootPath, oldPath, newPath):
+	def renameFolder(self, syncRootPath, oldPath, newPath, deleteEmptyDirs=True):
 
 		if os.path.exists(oldPath):
 			shutil.move(oldPath, newPath)
-			self._deleteEmptyDirs(syncRootPath, os.path.dirname(oldPath))
+
+			if deleteEmptyDirs:
+				self._deleteEmptyDirs(syncRootPath, os.path.dirname(oldPath))
 
 	@staticmethod
 	def savePickleFile(data, filePath):

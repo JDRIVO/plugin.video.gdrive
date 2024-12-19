@@ -103,10 +103,13 @@ class DatabaseManager:
 		return [dict(row) for row in rows]
 
 	@lock
-	def update(self, table, data, condition):
+	def update(self, table, data, condition=None):
 		setValues = ", ".join([f"{column} = :{column}" for column in data.keys()])
-		condition = joinConditions(condition)
-		query = f"UPDATE {table} SET {setValues} {condition}"
+		query = f"UPDATE {table} SET {setValues}"
+
+		if condition:
+			query += f" {joinConditions(condition)}"
+
 		self._connect()
 		self.cursor.execute(query, data)
 		self.conn.commit()

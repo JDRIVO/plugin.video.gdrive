@@ -3,7 +3,7 @@ import os
 import xbmcgui
 import xbmcaddon
 
-import constants
+from constants import SETTINGS
 
 
 class ResolutionOrder(xbmcgui.WindowDialog):
@@ -13,26 +13,22 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 	ACTION_MOVE_DOWN = 4
 	ACTION_SELECT_ITEM = 7
 	ACTION_BACKSPACE = 92
+	ACTION_MOUSE_LEFT_CLICK = 100
+	ACTION_MOUSE_RIGHT_CLICK = 101
+	ACTION_TOUCH_TAP = 401
 
 	def __init__(self, *args, **kwargs):
 		self.resolutions = kwargs["resolutions"]
-		self.settings = constants.settings
-		mediaPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
-		self.blueTexture = os.path.join(mediaPath, "blue.png")
-		self.grayTexture = os.path.join(mediaPath, "gray.png")
-		self.dGrayTexture = os.path.join(mediaPath, "dgray.png")
-		viewportWidth = self.getWidth()
-		viewportHeight = self.getHeight()
-		w = int(350 * viewportWidth / 1920)
-		h = int(350 * viewportHeight / 1080)
-		self.x = int((viewportWidth - w) / 2)
-		self.y = int((viewportHeight - h) / 2)
-		background = xbmcgui.ControlImage(self.x, self.y, w, h, self.grayTexture)
-		bar = xbmcgui.ControlImage(self.x, self.y, w, 40, self.blueTexture)
-		label = xbmcgui.ControlLabel(self.x + 10, self.y + 5, 0, 0, self.settings.getLocalizedString(30083))
-		self.addControls([background, bar, label])
+		self.settings = SETTINGS
 		self.priorityList = None
 		self.shift = False
+		self.buttonWidth = 120
+		self.buttonHeight = 30
+		self.font = "font14"
+		self._initializePaths()
+		self._calculateViewport()
+		self._addBackground()
+		self._addLabels()
 		self._createButtons()
 
 	def onAction(self, action):
@@ -74,6 +70,18 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 		elif action == self.ACTION_SELECT_ITEM:
 			self.shift = self.shift == False
 
+		elif action in (self.ACTION_MOUSE_LEFT_CLICK, self.ACTION_TOUCH_TAP):
+
+			if self.buttonID in self.buttonIDs:
+				self.shift = True
+				self._updateList("down", setFocus=False)
+
+		elif action == self.ACTION_MOUSE_RIGHT_CLICK:
+
+			if self.buttonID in self.buttonIDs:
+				self.shift = True
+				self._updateList("up", setFocus=False)
+
 	def onControl(self, control):
 		self.buttonID = control.getId()
 
@@ -83,54 +91,53 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 			self.priorityList = [self._getLabel(button) for button in self.buttonIDs]
 			self.close()
 
-	def _createButtons(self):
-		buttons = []
-		spacing = 60
-		buttonWidth = 120
-		buttonHeight = 30
-		font = "font14"
+	def _addBackground(self):
+		background = xbmcgui.ControlImage(self.x, self.y, self.w, self.h, self.grayTexture)
+		bar = xbmcgui.ControlImage(self.x, self.y, self.w, 40, self.blueTexture)
+		self.addControls([background, bar])
 
-		self.buttonOK = xbmcgui.ControlButton(
-			self.x + buttonWidth + 20,
-			self.y + spacing,
-			80,
+	def _addControlButton(self, x, y, buttonWidth, buttonHeight, label=""):
+		button = xbmcgui.ControlButton(
+			x,
+			y,
+			buttonWidth,
 			buttonHeight,
-			self.settings.getLocalizedString(30066),
-			font=font,
+			label,
 			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.blueTexture,
+			font=self.font,
 			alignment=2 + 4,
 		)
-		self.buttonClose = xbmcgui.ControlButton(
-			self.x + buttonWidth + 20,
-			self.y + spacing + 35,
-			80,
-			buttonHeight,
-			self.settings.getLocalizedString(30084),
-			font=font,
-			noFocusTexture=self.dGrayTexture,
-			focusTexture=self.blueTexture,
-			alignment=2 + 4,
-		)
+		return button
+
+	def _addLabels(self):
+		labelTitle = xbmcgui.ControlLabel(self.x + 10, self.y + 5, 0, 0, self.settings.getLocalizedString(30083))
+		self.addControl(labelTitle)
+
+	def addShiftableButtons(self, y):
+		buttons = []
 
 		for res in self.resolutions:
-			buttons.append(
-				xbmcgui.ControlButton(
-					self.x + 10,
-					self.y + spacing,
-					buttonWidth,
-					buttonHeight,
-					res,
-					noFocusTexture=self.dGrayTexture,
-					focusTexture=self.blueTexture,
-					font=font,
-					alignment=2 + 4,
-				)
-			)
-			spacing += 30
+			buttons.append(self._addControlButton(self.x + 10, self.y + y, self.buttonWidth, self.buttonHeight, res))
+			y += 30
 
-		self.addControls(buttons + [self.buttonOK, self.buttonClose])
-		self.buttonIDs = [button.getId() for button in buttons]
+		return buttons
+
+	def _calculateViewport(self):
+		viewportWidth = self.getWidth()
+		viewportHeight = self.getHeight()
+		self.w = int(350 * viewportWidth / 1920)
+		self.h = int(350 * viewportHeight / 1080)
+		self.x = (viewportWidth - self.w) // 2
+		self.y = (viewportHeight - self.h) // 2
+
+	def _createButtons(self):
+		y = 60
+		shiftableButtons = self.addShiftableButtons(y)
+		self.buttonOK = self._addControlButton(self.x + self.buttonWidth + 20, self.y + y, 80, self.buttonHeight, self.settings.getLocalizedString(30066))
+		self.buttonClose = self._addControlButton(self.x + self.buttonWidth + 20, self.y + y + 35, 80, self.buttonHeight, label=self.settings.getLocalizedString(30084))
+		self.addControls(shiftableButtons + [self.buttonOK, self.buttonClose])
+		self.buttonIDs = [button.getId() for button in shiftableButtons]
 		self.buttonCloseID = self.buttonClose.getId()
 		self.buttonOKid = self.buttonOK.getId()
 		self.setFocusId(self.buttonIDs[0])
@@ -141,7 +148,13 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 	def _getLabel(self, buttonID):
 		return self._getButton(buttonID).getLabel()
 
-	def _updateList(self, direction):
+	def _initializePaths(self):
+		mediaPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
+		self.blueTexture = os.path.join(mediaPath, "blue.png")
+		self.grayTexture = os.path.join(mediaPath, "gray.png")
+		self.dGrayTexture = os.path.join(mediaPath, "dgray.png")
+
+	def _updateList(self, direction, setFocus=True):
 		currentIndex = self.buttonIDs.index(self.buttonID)
 
 		if direction == "up":
@@ -169,4 +182,5 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 				currentButton.setLabel(newButtonName)
 				newButton.setLabel(currentButtonName)
 
-		self.setFocus(newButton)
+		if setFocus:
+			self.setFocus(newButton)

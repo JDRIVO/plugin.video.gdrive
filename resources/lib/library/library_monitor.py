@@ -3,7 +3,7 @@ import json
 
 import xbmc
 
-import constants
+from constants import SETTINGS
 from .library_editor import DatabaseEditor
 from helpers import sendJSONRPCCommand
 
@@ -11,7 +11,7 @@ from helpers import sendJSONRPCCommand
 class LibraryMonitor(xbmc.Monitor):
 
 	def __init__(self):
-		self.settings = constants.settings
+		self.settings = SETTINGS
 		self.dbEditor = DatabaseEditor()
 		self.enabled = self._isEnabled()
 

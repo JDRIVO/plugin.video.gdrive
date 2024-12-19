@@ -36,8 +36,11 @@ class Syncer:
 		drivePath = os.path.join(syncRootPath, driveSettings["local_path"])
 		changes, pageToken = self.cloudService.getChanges(driveSettings["page_token"])
 
-		if not changes or not pageToken:
+		if not pageToken:
 			return
+
+		if not changes:
+			return True
 
 		changes = self._sortChanges(changes)
 		self.deleted = False
@@ -87,6 +90,7 @@ class Syncer:
 			sendJSONRPCCommand(query)
 
 		self.cache.updateDrive({"page_token": pageToken}, driveID)
+		return True
 
 	def syncFolderAdditions(self, syncRootPath, drivePath, folder, folderSettings, progressDialog=None, syncedIDs=None):
 		syncRootPath = syncRootPath + os.sep
@@ -94,12 +98,14 @@ class Syncer:
 		driveID = folderSettings["drive_id"]
 		folderRenaming = folderSettings["folder_renaming"]
 		fileRenaming = folderSettings["file_renaming"]
+		prefix = [p for p in folderSettings["strm_prefix"].split(", ") if p]
+		suffix = [s for s in folderSettings["strm_suffix"].split(", ") if s]
 		threadCount = self.settings.getSettingInt("thread_count", 1)
 		encryptor = self.encryptor if folderSettings["contains_encrypted"] else None
 		cacheUpdater = SyncCacheUpdater(self.cache)
 
 		with RemoteFileProcessor(self.fileOperations, cacheUpdater, threadCount, progressDialog) as fileProcessor:
-			fileTree = FileTree(fileProcessor, self.cloudService, self.cache, cacheUpdater, driveID, syncRootPath, drivePath, folderRenaming, fileRenaming, threadCount, encryptor, excludedTypes, syncedIDs)
+			fileTree = FileTree(fileProcessor, self.cloudService, self.cache, cacheUpdater, driveID, syncRootPath, drivePath, folderRenaming, fileRenaming, threadCount, encryptor, prefix, suffix, excludedTypes, syncedIDs)
 			fileTree.buildTree(folder)
 
 		if progressDialog:
@@ -229,10 +235,12 @@ class Syncer:
 			self.cache.addDirectory(directory)
 
 		folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
-		folderRenaming = folderSettings["folder_renaming"]
 		excludedTypes = getExcludedTypes(folderSettings)
+		folderRenaming = folderSettings["folder_renaming"]
+		prefix = [p for p in folderSettings["strm_prefix"].split(", ") if p]
+		suffix = [s for s in folderSettings["strm_suffix"].split(", ") if s]
 		encryptor = self.encryptor if folderSettings["contains_encrypted"] else None
-		file = makeFile(file, excludedTypes, encryptor)
+		file = makeFile(file, excludedTypes, prefix, suffix, encryptor)
 
 		if not file:
 			return

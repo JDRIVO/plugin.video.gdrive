@@ -80,8 +80,14 @@ class TaskManager:
 			self.cache.updateDrive({"page_token": self.cloudService.getPageToken()}, driveID)
 
 		self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30044))
-		self._spawnTask(driveSettings, startUpRun=False)
+		self.spawnTask(driveSettings, startUpRun=False)
 		self.activeTasks.remove(driveID)
+
+	def removeAllTasks(self):
+		drives = self.cache.getDrives()
+
+		for drive in drives:
+			self.removeTask(drive["drive_id"])
 
 	def removeTask(self, driveID):
 
@@ -94,7 +100,7 @@ class TaskManager:
 
 	def resetTask(self, driveID):
 		self.removeTask(driveID)
-		self._spawnTask(self.cache.getDrive(driveID), startUpRun=False)
+		self.spawnTask(self.cache.getDrive(driveID), startUpRun=False)
 
 	def run(self):
 		drives = self.cache.getDrives()
@@ -103,20 +109,45 @@ class TaskManager:
 			return
 
 		for driveSettings in drives:
-			self._spawnTask(driveSettings)
+			self.spawnTask(driveSettings)
+
+	def spawnTask(self, driveSettings, startUpRun=True):
+		taskMode = driveSettings["task_mode"]
+		startupSync = driveSettings["startup_sync"]
+		driveID = driveSettings["drive_id"]
+
+		if taskMode == "manual":
+
+			if startUpRun and startupSync:
+				self.sync(driveID)
+
+			return
+
+		taskFrequency = driveSettings["task_frequency"]
+		taskID = self._createTaskID()
+		self.tasks[driveID] = taskID
+
+		if taskMode == "schedule":
+			taskFrequency = strToDatetime(taskFrequency.lstrip())
+			threading.Thread(target=self._startScheduledTask, args=(startupSync, taskFrequency, driveID, taskID, startUpRun)).start()
+		else:
+			taskFrequency = int(taskFrequency) * 60
+			threading.Thread(target=self._startIntervalTask, args=(startupSync, taskFrequency, driveID, taskID, startUpRun)).start()
 
 	def sync(self, driveID):
 		self.activeTasks.append(driveID)
+		synced = False
 
 		try:
 
 			with self.taskLock:
-				self.syncer.syncChanges(driveID)
+				synced = self.syncer.syncChanges(driveID)
 
 		except Exception as e:
 			xbmc.log(f"gdrive error: {e}: {''.join(traceback.format_tb(e.__traceback__))}", xbmc.LOGERROR)
 
 		self.activeTasks.remove(driveID)
+		return synced
 
 	def syncAll(self):
 		drives = self.cache.getDrives()
@@ -124,8 +155,8 @@ class TaskManager:
 		if not drives:
 			return
 
-		for driveSettings in drives:
-			self.sync(driveSettings["drive_id"])
+		if all(self.sync(drive["drive_id"]) for drive in drives):
+			return True
 
 	def _createTaskID(self):
 
@@ -137,21 +168,6 @@ class TaskManager:
 
 			self.ids.append(id)
 			return id
-
-	def _spawnTask(self, driveSettings, startUpRun=True):
-		driveID = driveSettings["drive_id"]
-		taskMode = driveSettings["task_mode"]
-		taskFrequency = driveSettings["task_frequency"]
-		startupSync = driveSettings["startup_sync"]
-		taskID = self._createTaskID()
-		self.tasks[driveID] = taskID
-
-		if taskMode == "schedule":
-			taskFrequency = strToDatetime(taskFrequency.lstrip())
-			threading.Thread(target=self._startScheduledTask, args=(startupSync, taskFrequency, driveID, taskID, startUpRun)).start()
-		else:
-			taskFrequency = int(taskFrequency) * 60
-			threading.Thread(target=self._startIntervalTask, args=(startupSync, taskFrequency, driveID, taskID, startUpRun)).start()
 
 	def _startIntervalTask(self, startupSync, taskFrequency, driveID, taskID, startUpRun=True):
 		lastUpdate = time.time()

@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import time
 import datetime
 from threading import Thread
 from urllib.error import URLError
@@ -11,7 +12,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import xbmc
 
-import constants
+from constants import SETTINGS
 from . import registration
 from .network_helpers import parseQuery, parseURL
 from ..ui.dialogs import Dialog
@@ -31,7 +32,7 @@ class ServerRunner(Thread):
 		super().__init__()
 
 	def run(self):
-		self.server = ThreadedHTTPServer(("", constants.settings.getSettingInt("server_port", 8011)), ServerHandler)
+		self.server = ThreadedHTTPServer(("", SETTINGS.getSettingInt("server_port", 8011)), ServerHandler)
 		self.server.daemon_threads = True
 
 		try:
@@ -49,7 +50,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.settings = constants.settings
+		self.settings = SETTINGS
 		self.monitor = xbmc.Monitor()
 		self.accountManager = AccountManager()
 		self.cloudService = GoogleDrive()
@@ -204,10 +205,34 @@ class ServerHandler(BaseHTTPRequestHandler):
 		syncRootPath = self.server.cache.getSyncRootPath()
 		drivePathOld = os.path.join(syncRootPath, driveSettings["local_path"])
 		drivePathNew = os.path.join(syncRootPath, alias)
+		self.server.taskManager.removeTask(driveID)
 		self.server.cache.updateDrive({"local_path": alias}, driveID)
 		self.server.fileOperations.renameFolder(syncRootPath, drivePathOld, drivePathNew)
+		self.server.taskManager.spawnTask(driveSettings, startUpRun=False)
 		xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
 		xbmc.executebuiltin("Container.Refresh")
+
+	def handleSetSyncRoot(self):
+		postData = self.getPostDataJSON()
+		self.handleResponse(200)
+		newSyncPath = postData["sync_root_new"]
+		oldSyncPath = postData["sync_root_old"]
+		self.server.taskManager.removeAllTasks()
+
+		if os.path.exists(oldSyncPath):
+			self.server.fileOperations.renameFolder(newSyncPath, oldSyncPath, newSyncPath, deleteEmptyDirs=False)
+			self.server.dialog.ok(
+				self.server.settings.getLocalizedString(30000),
+				self.server.settings.getLocalizedString(30031),
+			)
+
+		self.server.cache.updateSyncRootPath(newSyncPath)
+
+		while self.server.settings.getSetting("sync_root") != newSyncPath:
+			self.server.settings.setSetting("sync_root", newSyncPath)
+			time.sleep(0.1)
+
+		self.server.taskManager.run()
 
 	def handleStartPlayer(self):
 		postData = self.getPostDataJSON()
@@ -286,11 +311,29 @@ class ServerHandler(BaseHTTPRequestHandler):
 	def handleSync(self):
 		postData = self.getPostDataJSON()
 		self.handleResponse(200)
-		self.server.taskManager.sync(postData["drive_id"])
+		driveID = postData["drive_id"]
+		drive = self.server.cache.getDrive(driveID)
+
+		if not drive:
+			return
+
+		synced = self.server.taskManager.sync(driveID)
+
+		if synced:
+			self.server.dialog.notification(
+				self.server.settings.getLocalizedString(30000),
+				self.server.settings.getLocalizedString(30044),
+			)
 
 	def handleSyncAll(self):
 		self.handleResponse(200)
-		self.server.taskManager.syncAll()
+		synced = self.server.taskManager.syncAll()
+
+		if synced:
+			self.server.dialog.notification(
+				self.server.settings.getLocalizedString(30000),
+				self.server.settings.getLocalizedString(30044),
+			)
 
 	def sendPlayResponse(self, start, end, response, startOffset):
 
@@ -439,6 +482,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			"/register": self.handleAccountRegistration,
 			"/reset_task": self.handleResetTask,
 			"/set_alias": self.handleSetAlias,
+			"/set_sync_root": self.handleSetSyncRoot,
 			"/start_player": self.handleStartPlayer,
 			"/stop_syncing_folder": self.handleStopSyncingFolder,
 			"/stop_syncing_folders": self.handleStopSyncingFolders,
