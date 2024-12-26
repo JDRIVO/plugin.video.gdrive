@@ -82,14 +82,9 @@ class Core:
 			"sync_folder": self.syncFolder,
 			"sync_multiple_folders": self.syncMultipleFolders,
 			"validate_accounts": self.validateAccounts,
-			"video": self.playVideo,
+			"video": lambda: self.playVideo(dbID, dbType, filePath),
 		}
-
-		if self.mode == "video":
-			modes[self.mode](dbID, dbType, filePath)
-		else:
-			modes[self.mode]()
-
+		modes[self.mode]()
 		xbmcplugin.endOfDirectory(self.pluginHandle, succeeded=self.succeeded, cacheToDisc=self.cacheToDisk)
 
 	def accountDeletion(self):
@@ -320,18 +315,9 @@ class Core:
 		if not confirmation:
 			return
 
-		for _ in range(3):
-			deleted = FileOperations().deleteFile(filePath=os.path.join(ADDON_PATH, "sync_cache.db"))
-
-			if deleted:
-				break
-
-			time.sleep(0.1)
-
-		if deleted:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30055))
-		else:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30056))
+		serverPort = self.settings.getSettingInt("server_port", 8011)
+		url = f"http://localhost:{serverPort}/delete_sync_cache"
+		http_requester.request(url)
 
 	def deleteSyncFolder(self):
 		syncRootCache = self.cache.getSyncRootPath()

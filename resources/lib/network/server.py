@@ -12,7 +12,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import xbmc
 
-from constants import SETTINGS
+from constants import *
 from . import registration
 from .network_helpers import parseQuery, parseURL
 from ..ui.dialogs import Dialog
@@ -119,6 +119,24 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.server.accountManager.deleteDrive(driveID)
 		xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
 		xbmc.executebuiltin("Container.Refresh")
+
+	def handleDeleteSyncCache(self):
+		self.handleResponse(200)
+		self.server.taskManager.removeAllTasks()
+
+		for _ in range(3):
+			deleted = self.server.fileOperations.deleteFile(filePath=os.path.join(ADDON_PATH, "sync_cache.db"))
+
+			if deleted:
+				break
+
+			time.sleep(0.1)
+
+		if deleted:
+			self.server.cache.createTables()
+			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30055))
+		else:
+			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30056))
 
 	def handleInitializeStream(self):
 		postData = self.getPostDataJSON()
@@ -386,20 +404,19 @@ class ServerHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
 		pathHandlers = {
 			"/play": self.handlePlayRequest,
+			"/delete_sync_cache": self.handleDeleteSyncCache,
 			"/register": self.handleRegisterRequest,
 			"/registration_failed": self.handleRegistrationFailed,
 			"/registration_succeeded": self.handleRegistrationSucceeded,
 			"/sync_all": self.handleSyncAll,
-			"/status": self.handleStatusRequest,
+			"/status": lambda: self.handleStatusRequest(query),
 		}
 		parsedURL = parseURL(self.path)
 		path = parsedURL["path"]
 		query = parsedURL["query"]
 		handler = pathHandlers.get(path)
 
-		if "/status" in path:
-			handler(query)
-		elif handler:
+		if handler:
 			handler()
 		else:
 			self.send_error(404)

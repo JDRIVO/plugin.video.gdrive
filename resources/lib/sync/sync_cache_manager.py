@@ -20,7 +20,7 @@ class SyncCacheManager(DatabaseManager):
 		self.fileOperations = FileOperations()
 
 		if newDB:
-			self._createTables()
+			self.createTables()
 
 	def addDirectories(self, values):
 		columns = (
@@ -90,6 +90,13 @@ class SyncCacheManager(DatabaseManager):
 		self.deleteDirectory(driveID, column="drive_id")
 		self.deleteFolder(driveID, column="drive_id")
 
+	def createTables(self):
+		self._createGlobalTable()
+		self._createDriveTable()
+		self._createFoldersTable()
+		self._createDirectoriesTable()
+		self._createFilesTable()
+
 	def deleteDirectory(self, value, column="folder_id"):
 		self.delete("directories", {column: value})
 
@@ -142,6 +149,9 @@ class SyncCacheManager(DatabaseManager):
 
 	def getSyncRootPath(self):
 		return self.select("global", "local_path")
+
+	def getTable(self):
+		return self.select("sqlite_master", "name", {"type": "table", "name": "global"})
 
 	def getUniqueDirectoryPath(self, driveID, path, folderID=None, paths=set()):
 		path_ = path
@@ -381,10 +391,3 @@ class SyncCacheManager(DatabaseManager):
 			"operating_system TEXT",
 		)
 		self.createTable("global", columns)
-
-	def _createTables(self):
-		self._createGlobalTable()
-		self._createDriveTable()
-		self._createFoldersTable()
-		self._createDirectoriesTable()
-		self._createFilesTable()

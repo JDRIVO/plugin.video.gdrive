@@ -84,10 +84,11 @@ class TaskManager:
 		self.activeTasks.remove(driveID)
 
 	def removeAllTasks(self):
-		drives = self.cache.getDrives()
 
-		for drive in drives:
-			self.removeTask(drive["drive_id"])
+		if drives := self.cache.getDrives():
+
+			for drive in drives:
+				self.removeTask(drive["drive_id"])
 
 	def removeTask(self, driveID):
 
