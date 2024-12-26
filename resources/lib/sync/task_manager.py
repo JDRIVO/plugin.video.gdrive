@@ -84,17 +84,15 @@ class TaskManager:
 		self.activeTasks.remove(driveID)
 
 	def removeAllTasks(self):
+		drives = self.cache.getDrives()
 
-		if drives := self.cache.getDrives():
-
-			for drive in drives:
-				self.removeTask(drive["drive_id"])
+		for drive in drives:
+			self.removeTask(drive["drive_id"])
 
 	def removeTask(self, driveID):
 
 		if driveID in self.tasks:
 			del self.tasks[driveID]
-			time.sleep(2)
 
 			while driveID in self.activeTasks:
 				time.sleep(0.1)
@@ -105,9 +103,6 @@ class TaskManager:
 
 	def run(self):
 		drives = self.cache.getDrives()
-
-		if not drives:
-			return
 
 		for driveSettings in drives:
 			self.spawnTask(driveSettings)
@@ -152,9 +147,6 @@ class TaskManager:
 
 	def syncAll(self):
 		drives = self.cache.getDrives()
-
-		if not drives:
-			return
 
 		if all(self.sync(drive["drive_id"]) for drive in drives):
 			return True
