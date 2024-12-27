@@ -123,6 +123,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 	def handleDeleteSyncCache(self):
 		self.handleResponse(200)
 		self.server.taskManager.removeAllTasks()
+		syncRoot = self.server.cache.getSyncRootPath()
 
 		for _ in range(3):
 			deleted = self.server.fileOperations.deleteFile(filePath=os.path.join(ADDON_PATH, "sync_cache.db"))
@@ -132,11 +133,38 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 			time.sleep(0.1)
 
-		if deleted:
-			self.server.cache.createTables()
-			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30055))
-		else:
+		if not deleted:
 			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30056))
+			return
+
+		self.server.cache.createTables()
+		self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30055))
+
+		if syncRoot and not os.path.exists(syncRoot):
+
+			while self.server.settings.getSetting("sync_root"):
+				self.server.settings.setSetting("sync_root", "")
+				time.sleep(0.1)
+
+	def handleDeleteSyncFolder(self):
+		postData = self.getPostDataJSON()
+		self.handleResponse(200)
+		syncRoot = postData["sync_root"]
+		self.server.taskManager.removeAllTasks()
+		deleted = self.server.fileOperations.deleteFolder(syncRoot)
+
+		if not deleted:
+			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30096))
+		else:
+			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30095))
+
+			if not self.server.cache.getSyncRootPath():
+
+				while self.server.settings.getSetting("sync_root"):
+					self.server.settings.setSetting("sync_root", "")
+					time.sleep(0.1)
+
+		self.server.taskManager.run()
 
 	def handleInitializeStream(self):
 		postData = self.getPostDataJSON()
@@ -236,6 +264,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		newSyncPath = postData["sync_root_new"]
 		oldSyncPath = postData["sync_root_old"]
 		self.server.taskManager.removeAllTasks()
+		self.server.cache.updateSyncRootPath(newSyncPath)
 
 		if os.path.exists(oldSyncPath):
 			self.server.fileOperations.renameFolder(newSyncPath, oldSyncPath, newSyncPath, deleteEmptyDirs=False)
@@ -243,8 +272,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 				self.server.settings.getLocalizedString(30000),
 				self.server.settings.getLocalizedString(30031),
 			)
-
-		self.server.cache.updateSyncRootPath(newSyncPath)
 
 		while self.server.settings.getSetting("sync_root") != newSyncPath:
 			self.server.settings.setSetting("sync_root", newSyncPath)
@@ -495,6 +522,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		pathHandlers = {
 			"/add_sync_task": self.handleAddSyncTask,
 			"/delete_drive": self.handleDeleteDrive,
+			"/delete_sync_folder": self.handleDeleteSyncFolder,
 			"/initialize_stream": self.handleInitializeStream,
 			"/register": self.handleAccountRegistration,
 			"/reset_task": self.handleResetTask,

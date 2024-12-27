@@ -344,16 +344,10 @@ class Core:
 		if not confirmation:
 			return
 
-		deleted = FileOperations().deleteFolder(syncRoot)
-
-		if deleted:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30095))
-
-			if not self.cache.getSyncRootPath():
-				self.settings.setSetting("sync_root", "")
-
-		else:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30096))
+		serverPort = self.settings.getSettingInt("server_port", 8011)
+		url = f"http://localhost:{serverPort}/delete_sync_folder"
+		data = {"sync_root": syncRoot}
+		http_requester.request(url, data)
 
 	def exportAccounts(self):
 		dirPath = self.dialog.browse(3, self.settings.getLocalizedString(30034), "")
@@ -814,10 +808,18 @@ class Core:
 
 		syncRootNew = self.dialog.browse(3, self.settings.getLocalizedString(30093), "local")
 
-		if not syncRootNew or syncRoot in syncRootNew:
+		if not syncRootNew:
 			return
 
 		syncRootNew = os.path.join(syncRootNew, self.settings.getLocalizedString(30000))
+
+		if syncRoot in syncRootNew:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30101))
+			return
+		elif os.path.exists(syncRootNew):
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30102))
+			return
+
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/set_sync_root"
 		data = {"sync_root_new": syncRootNew, "sync_root_old": syncRoot}

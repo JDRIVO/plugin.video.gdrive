@@ -405,6 +405,14 @@ msgctxt "#30100"
 msgid "The sync folder doesn't exist."
 msgstr "The sync folder doesn't exist."
 
+msgctxt "#30101"
+msgid "Failed to move the folder. The folder can't be moved into itself."
+msgstr "Failed to move the folder. The folder can't be moved into itself."
+
+msgctxt "#30102"
+msgid "Failed to move the folder. The folder already exists."
+msgstr "Failed to move the folder. The folder already exists."
+
 msgctxt "#30121"
 msgid "Are you sure you want to delete account:"
 msgstr "Are you sure you want to delete account:"

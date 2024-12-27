@@ -40,6 +40,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		self.buttonID = self.getFocusId()
 
 		if action == self.ACTION_BACKSPACE:
+			self.closed = True
 			self.close()
 		elif action == self.ACTION_MOVE_UP:
 
@@ -69,7 +70,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 				self._updateList("down", self.includedButtonIDs)
 			elif self.buttonID == self.buttonOKid:
 				self.setFocus(self.buttonClose)
-			else:
+			elif self.buttonID == self.buttonCloseID:
 				self.setFocus(self.buttonOK)
 
 		elif action == self.ACTION_MOVE_RIGHT:
