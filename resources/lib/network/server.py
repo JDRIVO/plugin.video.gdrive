@@ -273,7 +273,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 				self.server.settings.getLocalizedString(30031),
 			)
 
-		while self.server.settings.getSetting("sync_root") != newSyncPath:
+		while self.server.settings.getSetting("sync_root") != newSyncPath and self.server.cache.getSyncRootPath() == newSyncPath:
 			self.server.settings.setSetting("sync_root", newSyncPath)
 			time.sleep(0.1)
 
