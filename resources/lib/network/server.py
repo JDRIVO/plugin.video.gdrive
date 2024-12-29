@@ -264,7 +264,12 @@ class ServerHandler(BaseHTTPRequestHandler):
 		newSyncPath = postData["sync_root_new"]
 		oldSyncPath = postData["sync_root_old"]
 		self.server.taskManager.removeAllTasks()
-		self.server.cache.updateSyncRootPath(newSyncPath)
+		syncRoot = self.server.cache.getSyncRootPath()
+
+		if syncRoot:
+			self.server.cache.updateSyncRootPath(newSyncPath)
+		else:
+			self.server.cache.setSyncRootPath(newSyncPath)
 
 		if os.path.exists(oldSyncPath):
 			self.server.fileOperations.renameFolder(newSyncPath, oldSyncPath, newSyncPath, deleteEmptyDirs=False)
