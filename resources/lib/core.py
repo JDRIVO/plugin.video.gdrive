@@ -790,20 +790,11 @@ class Core:
 		self.setAffix("Suffix")
 
 	def setSyncRoot(self):
-		syncRootCache = self.cache.getSyncRootPath()
-		syncRoot = syncRootCache or self.settings.getSetting("sync_root")
+		syncRoot = self.cache.getSyncRootPath() or self.settings.getSetting("sync_root")
 
 		if not syncRoot:
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30092))
 			self.settings.setSetting("sync_root", "")
-			return
-
-		if not os.path.exists(syncRoot):
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30100))
-
-			if not syncRootCache:
-				self.settings.setSetting("sync_root", "")
-
 			return
 
 		syncRootNew = self.dialog.browse(3, self.settings.getLocalizedString(30093), "local")

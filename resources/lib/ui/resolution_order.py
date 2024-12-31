@@ -104,15 +104,16 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 			buttonHeight,
 			label,
 			noFocusTexture=self.dGrayTexture,
-			focusTexture=self.blueTexture,
+			focusTexture=self.focusTexture,
 			font=self.font,
 			alignment=2 + 4,
 		)
 		return button
 
 	def _addLabels(self):
-		labelTitle = xbmcgui.ControlLabel(self.x + 10, self.y + 5, 0, 0, self.settings.getLocalizedString(30083))
-		self.addControl(labelTitle)
+		labelTitle = xbmcgui.ControlLabel(self.x + 20, self.y + 5, 0, 0, f"[B]{self.settings.getLocalizedString(30083)}[/B]")
+		labelTitleShadow = xbmcgui.ControlLabel(self.x + 20, self.y + 6, 0, 0, f"[B][COLOR black]{self.settings.getLocalizedString(30083)}[/COLOR][/B]")
+		self.addControls([labelTitleShadow, labelTitle])
 
 	def addShiftableButtons(self, y):
 		buttons = []
@@ -153,6 +154,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 		self.blueTexture = os.path.join(mediaPath, "blue.png")
 		self.grayTexture = os.path.join(mediaPath, "gray.png")
 		self.dGrayTexture = os.path.join(mediaPath, "dgray.png")
+		self.focusTexture = os.path.join(mediaPath, "focus.png")
 
 	def _updateList(self, direction, setFocus=True):
 		currentIndex = self.buttonIDs.index(self.buttonID)

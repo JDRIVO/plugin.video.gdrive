@@ -184,17 +184,18 @@ class StrmAffixer(xbmcgui.WindowDialog):
 			buttonHeight,
 			label,
 			noFocusTexture=self.dGrayTexture,
-			focusTexture=self.blueTexture,
+			focusTexture=self.focusTexture,
 			font=self.font,
 			alignment=2 + 4,
 		)
 		return button
 
 	def _addLabels(self):
-		labelTitle = xbmcgui.ControlLabel(self.x + 10, self.y + 5, 0, 0, self.title)
+		labelTitle = xbmcgui.ControlLabel(self.x + 20, self.y + 5, 0, 0, f"[B]{self.title}[/B]")
+		labelTitleShadow = xbmcgui.ControlLabel(self.x + 20, self.y + 6, 0, 0, f"[B][COLOR black]{self.title}[/COLOR][/B]")
 		labelExclude = xbmcgui.ControlLabel(self.x + 10, self.y + 50, 120, 30, "[COLOR FF0F85A5]Exclude[/COLOR]", alignment=2 + 4)
 		labelInclude = xbmcgui.ControlLabel(self.x + 140, self.y + 50, 120, 30, "[COLOR FF0F85A5]Include[/COLOR]", alignment=2 + 4)
-		self.addControls([labelTitle, labelExclude, labelInclude])
+		self.addControls([labelTitleShadow, labelTitle, labelExclude, labelInclude])
 
 	def _calculateViewport(self):
 		viewportWidth = self.getWidth()
@@ -240,6 +241,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		self.blueTexture = os.path.join(mediaPath, "blue.png")
 		self.grayTexture = os.path.join(mediaPath, "gray.png")
 		self.dGrayTexture = os.path.join(mediaPath, "dgray.png")
+		self.focusTexture = os.path.join(mediaPath, "focus.png")
 
 	def _resetShiftableButtons(self, currentIndex, excluded):
 

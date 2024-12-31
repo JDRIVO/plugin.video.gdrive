@@ -5,9 +5,7 @@ from urllib.request import Request, urlopen
 import xbmc
 
 USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.38 Safari/532.0"
-
 HEADERS = {"User-Agent": USER_AGENT}
-
 HEADERS_JSON_ENCODED = {"User-Agent": USER_AGENT, "Content-Type": "application/json"}
 
 

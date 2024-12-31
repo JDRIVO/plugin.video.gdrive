@@ -125,13 +125,11 @@ class AccountManager:
 	def setAccounts(self):
 		self.accountData = self._loadAccounts()
 
-		if self.accountData:
-			self.accounts = self.accountData["drives"]
-			self.aliases = self.accountData["aliases"]
-		else:
+		if not self.accountData:
 			self.accountData = {"aliases": {}, "drives": {}}
-			self.accounts = self.accountData["drives"]
-			self.aliases = self.accountData["aliases"]
+
+		self.accounts = self.accountData["drives"]
+		self.aliases = self.accountData["aliases"]
 
 	def setAlias(self, driveID, alias):
 		currentAlias = self.getAlias(driveID)

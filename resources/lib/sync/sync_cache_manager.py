@@ -127,8 +127,7 @@ class SyncCacheManager(DatabaseManager):
 		if drive: return drive[0]
 
 	def getDrives(self):
-		drives = self.selectAll("drives")
-		return drives
+		return self.selectAll("drives")
 
 	def getFile(self, condition):
 		file = self.selectAll("files", condition)

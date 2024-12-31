@@ -138,13 +138,19 @@ class ServerHandler(BaseHTTPRequestHandler):
 			return
 
 		self.server.cache.createTables()
-		self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30055))
 
 		if syncRoot and not os.path.exists(syncRoot):
+			xbmc.executebuiltin("Dialog.Close(all,true)")
 
 			while self.server.settings.getSetting("sync_root"):
 				self.server.settings.setSetting("sync_root", "")
 				time.sleep(0.1)
+
+			xbmc.executebuiltin("Addon.OpenSettings(plugin.video.gdrive)")
+			xbmc.executebuiltin("SetFocus(-98)")
+			xbmc.executebuiltin("SetFocus(-77)")
+
+		self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30055))
 
 	def handleDeleteSyncFolder(self):
 		postData = self.getPostDataJSON()
@@ -156,13 +162,19 @@ class ServerHandler(BaseHTTPRequestHandler):
 		if not deleted:
 			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30096))
 		else:
-			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30095))
 
 			if not self.server.cache.getSyncRootPath():
+				xbmc.executebuiltin("Dialog.Close(all,true)")
 
 				while self.server.settings.getSetting("sync_root"):
 					self.server.settings.setSetting("sync_root", "")
 					time.sleep(0.1)
+
+				xbmc.executebuiltin("Addon.OpenSettings(plugin.video.gdrive)")
+				xbmc.executebuiltin("SetFocus(-98)")
+				xbmc.executebuiltin("SetFocus(-76)")
+
+			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30095))
 
 		self.server.taskManager.run()
 
@@ -264,12 +276,16 @@ class ServerHandler(BaseHTTPRequestHandler):
 		newSyncPath = postData["sync_root_new"]
 		oldSyncPath = postData["sync_root_old"]
 		self.server.taskManager.removeAllTasks()
-		syncRoot = self.server.cache.getSyncRootPath()
+		self.server.cache.updateSyncRootPath(newSyncPath)
+		xbmc.executebuiltin("Dialog.Close(all,true)")
 
-		if syncRoot:
-			self.server.cache.updateSyncRootPath(newSyncPath)
-		else:
-			self.server.cache.setSyncRootPath(newSyncPath)
+		while self.server.settings.getSetting("sync_root") != newSyncPath:
+			self.server.settings.setSetting("sync_root", newSyncPath)
+			time.sleep(0.1)
+
+		xbmc.executebuiltin("Addon.OpenSettings(plugin.video.gdrive)")
+		xbmc.executebuiltin("SetFocus(-98)")
+		xbmc.executebuiltin("SetFocus(-78)")
 
 		if os.path.exists(oldSyncPath):
 			self.server.fileOperations.renameFolder(newSyncPath, oldSyncPath, newSyncPath, deleteEmptyDirs=False)
@@ -277,10 +293,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 				self.server.settings.getLocalizedString(30000),
 				self.server.settings.getLocalizedString(30031),
 			)
-
-		while self.server.settings.getSetting("sync_root") != newSyncPath and self.server.cache.getSyncRootPath() == newSyncPath:
-			self.server.settings.setSetting("sync_root", newSyncPath)
-			time.sleep(0.1)
 
 		self.server.taskManager.run()
 

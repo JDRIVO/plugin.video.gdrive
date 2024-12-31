@@ -629,8 +629,9 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.center = int((self.x + self.windowWidth / 2) - (self.buttonWidth / 2))
 		background = xbmcgui.ControlImage(self.x, self.y, self.windowWidth, self.windowHeight, self.grayTexture)
 		bar = xbmcgui.ControlImage(self.x, self.y, self.windowWidth, 40, self.blueTexture)
-		label = xbmcgui.ControlLabel(self.x + 10, self.y + 5, 0, 0, self.settings.getLocalizedString(30012))
-		self.addControls([background, bar, label])
+		labelTitle = xbmcgui.ControlLabel(self.x + 20, self.y + 5, 0, 0, f"[B]{self.settings.getLocalizedString(30012)}[/B]")
+		labelTitleShadow = xbmcgui.ControlLabel(self.x + 20, self.y + 6, 0, 0, f"[B][COLOR black]{self.settings.getLocalizedString(30012)}[/COLOR][/B]")
+		self.addControls([background, bar, labelTitleShadow, labelTitle])
 
 	def _stopSyncingFolder(self, *args):
 		selection = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30072))

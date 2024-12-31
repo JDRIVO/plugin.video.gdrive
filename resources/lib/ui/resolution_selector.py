@@ -12,7 +12,7 @@ class ResolutionSelector(xbmcgui.WindowDialog):
 	def __init__(self, *args, **kwargs):
 		resolutions = kwargs["resolutions"]
 		mediaPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
-		focusTexture = os.path.join(mediaPath, "blue.png")
+		focusTexture = os.path.join(mediaPath, "focus.png")
 		noFucusTexture = os.path.join(mediaPath, "gray.png")
 		viewportWidth = self.getWidth()
 		viewportHeight = self.getHeight()
