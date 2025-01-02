@@ -94,7 +94,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 
 	def _addBackground(self):
 		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
-		background = xbmcgui.ControlImage(self.x, self.y, self.w, self.h, self.grayTexture)
+		background = xbmcgui.ControlButton(self.x, self.y, self.w, self.h, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
 		bar = xbmcgui.ControlImage(self.x, self.y, self.w, 40, self.blueTexture)
 		self.addControls([backgroundInvis, background, bar])
 		self.backgroundID = backgroundInvis.getId()

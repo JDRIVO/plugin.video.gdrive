@@ -629,7 +629,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.y = int((self.viewportHeight - self.windowHeight) / 2)
 		self.center = int((self.x + self.windowWidth / 2) - (self.buttonWidth / 2))
 		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
-		background = xbmcgui.ControlImage(self.x, self.y, self.windowWidth, self.windowHeight, self.grayTexture)
+		background = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, self.windowHeight, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
 		bar = xbmcgui.ControlImage(self.x, self.y, self.windowWidth, 40, self.blueTexture)
 		labelTitle = xbmcgui.ControlLabel(self.x + 20, self.y + 5, 0, 0, f"[B]{self.settings.getLocalizedString(30012)}[/B]")
 		labelTitleShadow = xbmcgui.ControlLabel(self.x + 20, self.y + 6, 0, 0, f"[B][COLOR black]{self.settings.getLocalizedString(30012)}[/COLOR][/B]")
