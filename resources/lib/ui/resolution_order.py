@@ -29,7 +29,6 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 		self._initializePaths()
 		self._calculateViewport()
 		self._addBackground()
-		self._addLabels()
 		self._createButtons()
 
 	def onAction(self, action):
@@ -95,7 +94,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 	def _addBackground(self):
 		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
 		background = xbmcgui.ControlButton(self.x, self.y, self.w, self.h, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
-		bar = xbmcgui.ControlImage(self.x, self.y, self.w, 40, self.blueTexture)
+		bar = xbmcgui.ControlButton(self.x, self.y, self.w, 40, f"[B]{self.settings.getLocalizedString(30083)}[/B]", focusTexture=self.blueTexture, noFocusTexture=self.blueTexture, shadowColor="0xFF000000", textOffsetX=20)
 		self.addControls([backgroundInvis, background, bar])
 		self.backgroundID = backgroundInvis.getId()
 
@@ -112,11 +111,6 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 			alignment=2 + 4,
 		)
 		return button
-
-	def _addLabels(self):
-		labelTitle = xbmcgui.ControlLabel(self.x + 20, self.y + 5, 0, 0, f"[B]{self.settings.getLocalizedString(30083)}[/B]")
-		labelTitleShadow = xbmcgui.ControlLabel(self.x + 20, self.y + 6, 0, 0, f"[B][COLOR black]{self.settings.getLocalizedString(30083)}[/COLOR][/B]")
-		self.addControls([labelTitleShadow, labelTitle])
 
 	def addShiftableButtons(self, y):
 		buttons = []

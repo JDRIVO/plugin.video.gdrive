@@ -173,7 +173,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 	def _addBackground(self):
 		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
 		background = xbmcgui.ControlButton(self.x, self.y, self.w, self.h, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
-		bar = xbmcgui.ControlImage(self.x, self.y, self.w, 40, self.blueTexture)
+		bar = xbmcgui.ControlButton(self.x, self.y, self.w, 40, f"[B]{self.title}[/B]", focusTexture=self.blueTexture, noFocusTexture=self.blueTexture, shadowColor="0xFF000000", textOffsetX=20)	
 		excludeBG = xbmcgui.ControlImage(self.x + 11, self.y + 85, self.buttonWidth, self.buttonHeight * self.buttonAmount, self.dGrayTexture)
 		includeBG = xbmcgui.ControlImage(self.x + self.buttonWidth + 20, self.y + 85, self.buttonWidth, self.buttonHeight * self.buttonAmount, self.dGrayTexture)
 		self.addControls([backgroundInvis, background, bar, includeBG, excludeBG])
@@ -194,11 +194,9 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		return button
 
 	def _addLabels(self):
-		labelTitle = xbmcgui.ControlLabel(self.x + 20, self.y + 5, 0, 0, f"[B]{self.title}[/B]")
-		labelTitleShadow = xbmcgui.ControlLabel(self.x + 20, self.y + 6, 0, 0, f"[B][COLOR black]{self.title}[/COLOR][/B]")
 		labelExclude = xbmcgui.ControlLabel(self.x + 10, self.y + 50, 120, 30, "[COLOR FF0F85A5]Exclude[/COLOR]", alignment=2 + 4)
 		labelInclude = xbmcgui.ControlLabel(self.x + 140, self.y + 50, 120, 30, "[COLOR FF0F85A5]Include[/COLOR]", alignment=2 + 4)
-		self.addControls([labelTitleShadow, labelTitle, labelExclude, labelInclude])
+		self.addControls([labelExclude, labelInclude])
 
 	def _calculateViewport(self):
 		self.viewportWidth = self.getWidth()
