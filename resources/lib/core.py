@@ -307,6 +307,7 @@ class Core:
 		http_requester.request(url, data)
 
 	def deleteSyncCache(self):
+		cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()
 		confirmation = self.dialog.yesno(
 			self.settings.getLocalizedString(30000),
 			self.settings.getLocalizedString(30054),
@@ -317,7 +318,8 @@ class Core:
 
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/delete_sync_cache"
-		http_requester.request(url)
+		data = {"cid": cid}
+		http_requester.request(url, data)
 
 	def deleteSyncFolder(self):
 		syncRootCache = self.cache.getSyncRootPath()
@@ -336,6 +338,7 @@ class Core:
 
 			return
 
+		cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()
 		confirmation = self.dialog.yesno(
 			self.settings.getLocalizedString(30000),
 			self.settings.getLocalizedString(30094),
@@ -346,7 +349,7 @@ class Core:
 
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/delete_sync_folder"
-		data = {"sync_root": syncRoot}
+		data = {"sync_root": syncRoot, "cid": cid}
 		http_requester.request(url, data)
 
 	def exportAccounts(self):
@@ -797,6 +800,7 @@ class Core:
 			self.settings.setSetting("sync_root", "")
 			return
 
+		cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()
 		syncRootNew = self.dialog.browse(3, self.settings.getLocalizedString(30093), "local")
 
 		if not syncRootNew:
@@ -813,7 +817,7 @@ class Core:
 
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/set_sync_root"
-		data = {"sync_root_new": syncRootNew, "sync_root_old": syncRoot}
+		data = {"sync_root_new": syncRootNew, "sync_root_old": syncRoot, "cid": cid}
 		http_requester.request(url, data)
 
 	def setTMDBlanguage(self):

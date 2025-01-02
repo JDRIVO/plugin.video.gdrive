@@ -121,7 +121,9 @@ class ServerHandler(BaseHTTPRequestHandler):
 		xbmc.executebuiltin("Container.Refresh")
 
 	def handleDeleteSyncCache(self):
+		postData = self.getPostDataJSON()
 		self.handleResponse(200)
+		cid = postData["cid"]
 		self.server.taskManager.removeAllTasks()
 		syncRoot = self.server.cache.getSyncRootPath()
 
@@ -147,8 +149,8 @@ class ServerHandler(BaseHTTPRequestHandler):
 				time.sleep(0.1)
 
 			xbmc.executebuiltin("Addon.OpenSettings(plugin.video.gdrive)")
-			xbmc.executebuiltin("SetFocus(-98)")
-			xbmc.executebuiltin("SetFocus(-77)")
+			xbmc.executebuiltin(f"SetFocus({cid - 21})")
+			xbmc.executebuiltin(f"SetFocus({cid})")
 
 		self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30055))
 
@@ -156,6 +158,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		postData = self.getPostDataJSON()
 		self.handleResponse(200)
 		syncRoot = postData["sync_root"]
+		cid = postData["cid"]
 		self.server.taskManager.removeAllTasks()
 		deleted = self.server.fileOperations.deleteFolder(syncRoot)
 
@@ -171,8 +174,8 @@ class ServerHandler(BaseHTTPRequestHandler):
 					time.sleep(0.1)
 
 				xbmc.executebuiltin("Addon.OpenSettings(plugin.video.gdrive)")
-				xbmc.executebuiltin("SetFocus(-98)")
-				xbmc.executebuiltin("SetFocus(-76)")
+				xbmc.executebuiltin(f"SetFocus({cid - 22})")
+				xbmc.executebuiltin(f"SetFocus({cid})")
 
 			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30095))
 
@@ -275,6 +278,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.handleResponse(200)
 		newSyncPath = postData["sync_root_new"]
 		oldSyncPath = postData["sync_root_old"]
+		cid = postData["cid"]
 		self.server.taskManager.removeAllTasks()
 		self.server.cache.updateSyncRootPath(newSyncPath)
 		xbmc.executebuiltin("Dialog.Close(all,true)")
@@ -284,8 +288,8 @@ class ServerHandler(BaseHTTPRequestHandler):
 			time.sleep(0.1)
 
 		xbmc.executebuiltin("Addon.OpenSettings(plugin.video.gdrive)")
-		xbmc.executebuiltin("SetFocus(-98)")
-		xbmc.executebuiltin("SetFocus(-78)")
+		xbmc.executebuiltin(f"SetFocus({cid - 20})")
+		xbmc.executebuiltin(f"SetFocus({cid})")
 
 		if os.path.exists(oldSyncPath):
 			self.server.fileOperations.renameFolder(newSyncPath, oldSyncPath, newSyncPath, deleteEmptyDirs=False)
@@ -448,7 +452,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
 		pathHandlers = {
 			"/play": self.handlePlayRequest,
-			"/delete_sync_cache": self.handleDeleteSyncCache,
 			"/register": self.handleRegisterRequest,
 			"/registration_failed": self.handleRegistrationFailed,
 			"/registration_succeeded": self.handleRegistrationSucceeded,
@@ -539,6 +542,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		pathHandlers = {
 			"/add_sync_task": self.handleAddSyncTask,
 			"/delete_drive": self.handleDeleteDrive,
+			"/delete_sync_cache": self.handleDeleteSyncCache,
 			"/delete_sync_folder": self.handleDeleteSyncFolder,
 			"/initialize_stream": self.handleInitializeStream,
 			"/register": self.handleAccountRegistration,

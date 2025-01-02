@@ -12,6 +12,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 	ACTION_MOVE_UP = 3
 	ACTION_MOVE_DOWN = 4
 	ACTION_SELECT_ITEM = 7
+	ACTION_PREVIOUS_MENU = 10
 	ACTION_BACKSPACE = 92
 	ACTION_MOUSE_LEFT_CLICK = 100
 	ACTION_MOUSE_RIGHT_CLICK = 101
@@ -35,7 +36,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 		action = action.getId()
 		self.buttonID = self.getFocusId()
 
-		if action == self.ACTION_BACKSPACE:
+		if action in (self.ACTION_PREVIOUS_MENU, self.ACTION_BACKSPACE):
 			self.close()
 		elif action == self.ACTION_MOVE_UP:
 
@@ -85,16 +86,18 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 	def onControl(self, control):
 		self.buttonID = control.getId()
 
-		if self.buttonID == self.buttonCloseID:
+		if self.buttonID in (self.backgroundID, self.buttonCloseID):
 			self.close()
 		elif self.buttonID == self.buttonOKid:
 			self.priorityList = [self._getLabel(button) for button in self.buttonIDs]
 			self.close()
 
 	def _addBackground(self):
+		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
 		background = xbmcgui.ControlImage(self.x, self.y, self.w, self.h, self.grayTexture)
 		bar = xbmcgui.ControlImage(self.x, self.y, self.w, 40, self.blueTexture)
-		self.addControls([background, bar])
+		self.addControls([backgroundInvis, background, bar])
+		self.backgroundID = backgroundInvis.getId()
 
 	def _addControlButton(self, x, y, buttonWidth, buttonHeight, label=""):
 		button = xbmcgui.ControlButton(
@@ -125,12 +128,12 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 		return buttons
 
 	def _calculateViewport(self):
-		viewportWidth = self.getWidth()
-		viewportHeight = self.getHeight()
-		self.w = int(350 * viewportWidth / 1920)
-		self.h = int(350 * viewportHeight / 1080)
-		self.x = (viewportWidth - self.w) // 2
-		self.y = (viewportHeight - self.h) // 2
+		self.viewportWidth = self.getWidth()
+		self.viewportHeight = self.getHeight()
+		self.w = int(350 * self.viewportWidth / 1920)
+		self.h = int(350 * self.viewportHeight / 1080)
+		self.x = (self.viewportWidth - self.w) // 2
+		self.y = (self.viewportHeight - self.h) // 2
 
 	def _createButtons(self):
 		y = 60

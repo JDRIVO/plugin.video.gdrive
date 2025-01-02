@@ -7,6 +7,7 @@ import xbmcaddon
 class ResolutionSelector(xbmcgui.WindowDialog):
 	ACTION_MOVE_UP = 3
 	ACTION_MOVE_DOWN = 4
+	ACTION_PREVIOUS_MENU = 10
 	ACTION_BACKSPACE = 92
 
 	def __init__(self, *args, **kwargs):
@@ -32,7 +33,7 @@ class ResolutionSelector(xbmcgui.WindowDialog):
 		action = action.getId()
 		self.buttonId = self.getFocusId()
 
-		if action == self.ACTION_BACKSPACE:
+		if action in (self.ACTION_PREVIOUS_MENU, self.ACTION_BACKSPACE):
 			self.closed = True
 			self.close()
 		elif action == self.ACTION_MOVE_UP:

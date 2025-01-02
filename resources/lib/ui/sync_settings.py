@@ -20,6 +20,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 	ACTION_MOVE_UP = 3
 	ACTION_MOVE_DOWN = 4
 	ACTION_SELECT_ITEM = 7
+	ACTION_PREVIOUS_MENU = 10
 	ACTION_BACKSPACE = 92
 	LABELS_TO_SETTINGS = {
 		SETTINGS.getLocalizedString(30048): {"type": "global", "name": "local_path"},
@@ -336,7 +337,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		action = action.getId()
 		self.buttonID = self.getFocusId()
 
-		if action == self.ACTION_BACKSPACE:
+		if action in (self.ACTION_PREVIOUS_MENU, self.ACTION_BACKSPACE):
 			self.close()
 		elif action == self.ACTION_MOVE_UP:
 
@@ -397,7 +398,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 	def onControl(self, control):
 		self.buttonID = control.getId()
 
-		if self.buttonID == self.buttonCloseID:
+		if self.buttonID in (self.backgroundID, self.buttonCloseID):
 			self.close()
 		elif self.buttonID == self.buttonOKID:
 			self._setSettings()
@@ -627,11 +628,13 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.x = int((self.viewportWidth - self.windowWidth) / 2)
 		self.y = int((self.viewportHeight - self.windowHeight) / 2)
 		self.center = int((self.x + self.windowWidth / 2) - (self.buttonWidth / 2))
+		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
 		background = xbmcgui.ControlImage(self.x, self.y, self.windowWidth, self.windowHeight, self.grayTexture)
 		bar = xbmcgui.ControlImage(self.x, self.y, self.windowWidth, 40, self.blueTexture)
 		labelTitle = xbmcgui.ControlLabel(self.x + 20, self.y + 5, 0, 0, f"[B]{self.settings.getLocalizedString(30012)}[/B]")
 		labelTitleShadow = xbmcgui.ControlLabel(self.x + 20, self.y + 6, 0, 0, f"[B][COLOR black]{self.settings.getLocalizedString(30012)}[/COLOR][/B]")
-		self.addControls([background, bar, labelTitleShadow, labelTitle])
+		self.addControls([backgroundInvis, background, bar, labelTitleShadow, labelTitle])
+		self.backgroundID = backgroundInvis.getId()
 
 	def _stopSyncingFolder(self, *args):
 		selection = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30072))
