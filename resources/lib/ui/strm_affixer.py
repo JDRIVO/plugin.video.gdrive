@@ -281,11 +281,11 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		currentIndex = list.index(self.buttonID)
 
 		if direction == "up":
-			newIndex = (currentIndex - 1) % self.buttonAmount
+			newIndex = currentIndex - 1
 			newButton = next((self._getButton(button) for button in list[newIndex::-1] if self._getButton(button).isVisible()))
 
 		elif direction == "down":
-			newIndex = (currentIndex + 1) % self.buttonAmount
+			newIndex = currentIndex + 1
 			newButton = next((self._getButton(button) for button in list[newIndex:] if self._getButton(button).isVisible()), self._getButton(list[0]))
 
 		if self.shift:
