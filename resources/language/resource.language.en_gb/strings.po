@@ -382,8 +382,8 @@ msgid "Are you sure want to delete the sync folder?"
 msgstr "Are you sure want to delete the sync folder?"
 
 msgctxt "#30095"
-msgid "Sync folder deleted."
-msgstr "Sync folder deleted."
+msgid "Folder deleted."
+msgstr "Folder deleted."
 
 msgctxt "#30096"
 msgid "Failed to delete the sync folder. See log for details."

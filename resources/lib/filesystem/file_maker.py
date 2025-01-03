@@ -96,7 +96,8 @@ def _identifyFileType(filename, fileExtension, mimeType):
 	elif fileExtension in SUBTITLE_EXTENSIONS:
 		return "subtitles"
 	elif fileExtension in IMAGE_EXTENSIONS:
-		return next((type for type in MEDIA_ASSETS if type in filename.lower()), None)
+		filename = filename.lower()
+		return next((type for type in MEDIA_ASSETS if type in filename), None)
 	elif fileExtension == "strm":
 		return "strm"
 

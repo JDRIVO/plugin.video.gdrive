@@ -173,7 +173,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 	def _addBackground(self):
 		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
 		background = xbmcgui.ControlButton(self.x, self.y, self.w, self.h, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
-		bar = xbmcgui.ControlButton(self.x, self.y, self.w, 40, f"[B]{self.title}[/B]", focusTexture=self.blueTexture, noFocusTexture=self.blueTexture, shadowColor="0xFF000000", textOffsetX=20)	
+		bar = xbmcgui.ControlButton(self.x, self.y, self.w, 40, f"[B]{self.title}[/B]", focusTexture=self.blueTexture, noFocusTexture=self.blueTexture, shadowColor="0xFF000000", textOffsetX=20)
 		excludeBG = xbmcgui.ControlImage(self.x + 11, self.y + 85, self.buttonWidth, self.buttonHeight * self.buttonAmount, self.dGrayTexture)
 		includeBG = xbmcgui.ControlImage(self.x + self.buttonWidth + 20, self.y + 85, self.buttonWidth, self.buttonHeight * self.buttonAmount, self.dGrayTexture)
 		self.addControls([backgroundInvis, background, bar, includeBG, excludeBG])
@@ -212,13 +212,11 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		self._addAffixButtons(self.excluded, self.excludedButtons, self.x + 11)
 		self._addAffixButtons(self.included, self.includedButtons, self.x + self.buttonWidth + 20)
 
-		for idx, label in enumerate(self.excluded):
-			button = self.excludedButtons[idx]
+		for button, label in zip(self.excludedButtons, self.excluded):
 			button.setLabel(label)
 			button.setVisible(True)
 
-		for idx, label in enumerate(self.included):
-			button = self.includedButtons[idx]
+		for button, label in zip(self.includedButtons, self.included):
 			button.setLabel(label)
 			button.setVisible(True)
 
@@ -260,8 +258,8 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		buttons = buttonsOutgoing[:]
 		movedAffix = buttons.pop(currentIndex).getLabel()
 
-		for idx, button in enumerate(buttons):
-			buttonsOutgoing[idx].setLabel(button.getLabel())
+		for button, button_ in zip(buttons, buttonsOutgoing):
+			button_.setLabel(button.getLabel())
 
 		for button in buttonsOutgoing[::-1]:
 
@@ -283,20 +281,12 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		currentIndex = list.index(self.buttonID)
 
 		if direction == "up":
-			newIndex = currentIndex - 1
-
-			if self._getButton(list[newIndex]).isVisible():
-				newButton = self._getButton(list[newIndex])
-			else:
-				newButton = next((self._getButton(button) for button in list[::-1] if self._getButton(button).isVisible()), None)
+			newIndex = (currentIndex - 1) % self.buttonAmount
+			newButton = next((self._getButton(button) for button in list[newIndex::-1] if self._getButton(button).isVisible()))
 
 		elif direction == "down":
-			newIndex = currentIndex + 1
-
-			try:
-				newButton = [self._getButton(button) for button in list[newIndex:] if self._getButton(button).isVisible()][0]
-			except:
-				newButton = self._getButton(list[0])
+			newIndex = (currentIndex + 1) % self.buttonAmount
+			newButton = next((self._getButton(button) for button in list[newIndex:] if self._getButton(button).isVisible()), self._getButton(list[0]))
 
 		if self.shift:
 
