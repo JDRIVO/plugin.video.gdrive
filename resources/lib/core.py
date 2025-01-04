@@ -698,11 +698,8 @@ class Core:
 		resolutions = self.settings.getSetting("resolution_priority").split(", ")
 		resolutionOrder = ResolutionOrder(resolutions=resolutions)
 		resolutionOrder.doModal()
-		newOrder = resolutionOrder.priorityList
 		del resolutionOrder
-
-		if newOrder:
-			self.settings.setSetting("resolution_priority", ", ".join(newOrder))
+		self.settings.setSetting("resolution_priority", ", ".join(resolutions))
 
 	def searchDrive(self):
 		searchQuery = self.dialog.input(self.settings.getLocalizedString(30043))

@@ -1,4 +1,5 @@
 import os
+import time
 
 import xbmcgui
 import xbmcaddon
@@ -26,9 +27,10 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		self.settings = SETTINGS
 		self.shift = False
 		self.closed = False
-		self.font = "font14"
+		self.lastUpdate = 0
 		self.buttonWidth = 120
 		self.buttonHeight = 30
+		self.font = "font14"
 		self.buttonAmount = len(self.excluded) + len(self.included)
 		self._initializePaths()
 		self._calculateViewport()
@@ -38,25 +40,25 @@ class StrmAffixer(xbmcgui.WindowDialog):
 
 	def onAction(self, action):
 		action = action.getId()
-		self.buttonID = self.getFocusId()
+		self.focusedButtonID = self.getFocusId()
 
 		if action in (self.ACTION_PREVIOUS_MENU, self.ACTION_BACKSPACE):
 			self.closed = True
 			self.close()
 		elif action == self.ACTION_MOVE_UP:
 
-			if self.buttonID in self.excludedButtonIDs:
-				self._updateList("up", self.excludedButtonIDs)
-			elif self.buttonID in self.includedButtonIDs:
-				self._updateList("up", self.includedButtonIDs)
-			elif self.buttonID == self.buttonOKid:
+			if self.focusedButtonID in self.excludedButtonIDs:
+				self._updateList("up", True)
+			elif self.focusedButtonID in self.includedButtonIDs:
+				self._updateList("up", False)
+			elif self.focusedButtonID == self.buttonOKid:
 
 				if self.excludedButtons[0].isVisible():
 					self.setFocus(self.excludedButtons[0])
 				else:
 					self.setFocus(self.includedButtons[0])
 
-			elif self.buttonID == self.buttonCloseID:
+			elif self.focusedButtonID == self.buttonCloseID:
 
 				if self.includedButtons[0].isVisible():
 					self.setFocus(self.includedButtons[0])
@@ -65,100 +67,112 @@ class StrmAffixer(xbmcgui.WindowDialog):
 
 		elif action == self.ACTION_MOVE_DOWN:
 
-			if self.buttonID in self.excludedButtonIDs:
-				self._updateList("down", self.excludedButtonIDs)
-			elif self.buttonID in self.includedButtonIDs:
-				self._updateList("down", self.includedButtonIDs)
-			elif self.buttonID == self.buttonOKid:
+			if self.focusedButtonID in self.excludedButtonIDs:
+				self._updateList("down", True)
+			elif self.focusedButtonID in self.includedButtonIDs:
+				self._updateList("down", False)
+			elif self.focusedButtonID == self.buttonOKid:
 				self.setFocus(self.buttonClose)
-			elif self.buttonID == self.buttonCloseID:
+			elif self.focusedButtonID == self.buttonCloseID:
 				self.setFocus(self.buttonOK)
 
 		elif action == self.ACTION_MOVE_RIGHT:
 
-			if self.buttonID in self.excludedButtonIDs:
+			if self.focusedButtonID in self.excludedButtonIDs:
 
 				if self.shift:
-					self._updateList("right", self.excludedButtonIDs)
+					self._updateList("right", True)
 				elif self.includedButtons[0].isVisible():
 					self.setFocusId(self.includedButtonIDs[0])
 				else:
 					self.setFocus(self.buttonClose)
 
-			elif self.buttonID in self.includedButtonIDs:
+			elif self.focusedButtonID in self.includedButtonIDs:
+				self._getButton(self.focusedButtonID).setLabel(focusedColor="0xFFFFFFFF")
 				self.shift = False
 				self.setFocus(self.buttonClose)
 
-			elif self.buttonID == self.buttonCloseID:
+			elif self.focusedButtonID == self.buttonCloseID:
 
 				if self.includedButtons[0].isVisible():
 					self.setFocus(self.includedButtons[0])
 				else:
 					self.setFocus(self.excludedButtons[0])
 
-			elif self.buttonID == self.buttonOKid:
+			elif self.focusedButtonID == self.buttonOKid:
 				self.setFocus(self.buttonClose)
 
 		elif action == self.ACTION_MOVE_LEFT:
 
-			if self.buttonID in self.excludedButtonIDs:
+			if self.focusedButtonID in self.excludedButtonIDs:
 				self.shift = False
 				self.setFocus(self.buttonOK)
-			elif self.buttonID in self.includedButtonIDs:
+			elif self.focusedButtonID in self.includedButtonIDs:
+				self._getButton(self.focusedButtonID).setLabel(focusedColor="0xFFFFFFFF")
 
 				if self.shift:
-					self._updateList("left", self.includedButtonIDs)
+					self._updateList("left", False)
 				elif self.excludedButtons[0].isVisible():
-						self.setFocusId(self.excludedButtonIDs[0])
+					self.setFocusId(self.excludedButtonIDs[0])
 				else:
 					self.setFocus(self.buttonOK)
 
-			elif self.buttonID == self.buttonOKid:
+			elif self.focusedButtonID == self.buttonOKid:
 
 				if self.excludedButtons[0].isVisible():
 					self.setFocus(self.excludedButtons[0])
 				else:
 					self.setFocus(self.includedButtons[0])
 
-			elif self.buttonID == self.buttonCloseID:
+			elif self.focusedButtonID == self.buttonCloseID:
 				self.setFocusId(self.buttonOKid)
 
 		elif action == self.ACTION_SELECT_ITEM:
 
-			if self.buttonID in self.excludedButtonIDs:
+			if self.focusedButtonID in self.excludedButtonIDs:
 				self.shift = True
-				self._updateList("right", self.excludedButtonIDs)
+				self._updateList("right", True)
 			else:
 				self.shift = self.shift == False
 
+				if self.focusedButtonID in self.includedButtonIDs:
+					button = self._getButton(self.focusedButtonID)
+
+					if self.shift:
+						button.setLabel(focusedColor="0xFFFFB70F")
+					else:
+						button.setLabel(focusedColor="0xFFFFFFFF")
+
+					self.setFocus(button)
+
 		elif action in (self.ACTION_MOUSE_LEFT_CLICK, self.ACTION_TOUCH_TAP):
 
-			if not self._getButton(self.buttonID).isVisible():
+			if not self._getButton(self.focusedButtonID).isVisible():
 				return
-			elif self.buttonID in self.includedButtonIDs:
-					self.shift = True
-					self._updateList("left", self.includedButtonIDs, setFocus=False)
-			elif self.buttonID in self.excludedButtonIDs:
-					self.shift = True
-					self._updateList("right", self.excludedButtonIDs, setFocus=False)
+			elif self.focusedButtonID in self.includedButtonIDs:
+				self.shift = True
+				self._updateList("left", False, setFocus=False)
+			elif self.focusedButtonID in self.excludedButtonIDs:
+				self.shift = True
+				self._updateList("right", True, setFocus=False)
 
 		elif action in (self.ACTION_MOUSE_RIGHT_CLICK, self.ACTION_TOUCH_LONGPRESS):
 
-			if not self._getButton(self.buttonID).isVisible():
+			if not self._getButton(self.focusedButtonID).isVisible():
 				return
-			elif self.buttonID in self.includedButtonIDs:
+			elif self.focusedButtonID in self.includedButtonIDs:
 				self.shift = True
-				self._updateList("down", self.includedButtonIDs, setFocus=False)
+				self._updateList("down", False, setFocus=False)
 
 	def onControl(self, control):
-		self.buttonID = control.getId()
+		self.focusedButtonID = control.getId()
 
-		if self.buttonID in (self.backgroundID, self.buttonCloseID):
+		if self.focusedButtonID in (self.backgroundID, self.buttonCloseID):
 			self.closed = True
 			self.close()
-		elif self.buttonID == self.buttonOKid:
+		elif self.focusedButtonID == self.buttonOKid:
 			self.included.clear()
-			[self.included.append(self._getLabel(buttonID)) for buttonID in self.includedButtonIDs if self._getButton(buttonID).isVisible()]
+			[self.included.append(button.getLabel()) for button in self.includedButtons if button.isVisible()]
 			self.close()
 
 	def _addAffixButtons(self, items, buttons, x):
@@ -172,8 +186,8 @@ class StrmAffixer(xbmcgui.WindowDialog):
 
 	def _addBackground(self):
 		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
-		background = xbmcgui.ControlButton(self.x, self.y, self.w, self.h, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
-		bar = xbmcgui.ControlButton(self.x, self.y, self.w, 40, f"[B]{self.title}[/B]", focusTexture=self.blueTexture, noFocusTexture=self.blueTexture, shadowColor="0xFF000000", textOffsetX=20)
+		background = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, self.windowHeight, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
+		bar = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, 40, f"[B]{self.title}[/B]", focusTexture=self.blueTexture, noFocusTexture=self.blueTexture, shadowColor="0xFF000000", textOffsetX=20)
 		excludeBG = xbmcgui.ControlImage(self.x + 11, self.y + 85, self.buttonWidth, self.buttonHeight * self.buttonAmount, self.dGrayTexture)
 		includeBG = xbmcgui.ControlImage(self.x + self.buttonWidth + 20, self.y + 85, self.buttonWidth, self.buttonHeight * self.buttonAmount, self.dGrayTexture)
 		self.addControls([backgroundInvis, background, bar, includeBG, excludeBG])
@@ -201,10 +215,10 @@ class StrmAffixer(xbmcgui.WindowDialog):
 	def _calculateViewport(self):
 		self.viewportWidth = self.getWidth()
 		self.viewportHeight = self.getHeight()
-		self.w = int(406 * self.viewportWidth / 1920)
-		self.h = int(350 * self.viewportHeight / 1080)
-		self.x = (self.viewportWidth - self.w) // 2
-		self.y = (self.viewportHeight - self.h) // 2
+		self.windowWidth = int(406 * self.viewportWidth / 1920)
+		self.windowHeight = int(350 * self.viewportHeight / 1080)
+		self.x = (self.viewportWidth - self.windowWidth) // 2
+		self.y = (self.viewportHeight - self.windowHeight) // 2
 
 	def _createButtons(self):
 		self.excludedButtons = []
@@ -231,9 +245,6 @@ class StrmAffixer(xbmcgui.WindowDialog):
 
 	def _getButton(self, buttonID):
 		return self.getControl(buttonID)
-
-	def _getLabel(self, buttonID):
-		return self._getButton(buttonID).getLabel()
 
 	def _initializePaths(self):
 		mediaPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
@@ -277,28 +288,37 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		outgoing.remove(movedAffix)
 		incoming.append(movedAffix)
 
-	def _updateList(self, direction, list, setFocus=True):
-		currentIndex = list.index(self.buttonID)
+	def _updateList(self, direction, excluded, setFocus=True):
+		currentTime = time.time()
+
+		if currentTime - self.lastUpdate < 0.05:
+			return
+
+		self.lastUpdate = currentTime
+
+		if excluded:
+			currentIndex = self.excludedButtonIDs.index(self.focusedButtonID)
+			list = self.excludedButtons
+		else:
+			currentIndex = self.includedButtonIDs.index(self.focusedButtonID)
+			list = self.includedButtons
 
 		if direction == "up":
 			newIndex = currentIndex - 1
-			newButton = next((self._getButton(button) for button in list[newIndex::-1] if self._getButton(button).isVisible()))
-
+			newButton = next((button for button in list[newIndex::-1] if button.isVisible()))
 		elif direction == "down":
 			newIndex = currentIndex + 1
-			newButton = next((self._getButton(button) for button in list[newIndex:] if self._getButton(button).isVisible()), self._getButton(list[0]))
+			newButton = next((button for button in list[newIndex:] if button.isVisible()), list[0])
 
 		if self.shift:
 
 			if currentIndex == 0 and direction == "up":
-				labels = [self._getLabel(buttonID) for buttonID in list[1:] if self._getButton(buttonID).isVisible()] + [self._getLabel(list[0])]
-				[self._getButton(buttonID).setLabel(labels[index]) for index, buttonID in enumerate(list) if self._getButton(buttonID).isVisible()]
-
+				labels = [button.getLabel() for button in list[1:] if button.isVisible()] + [list[0].getLabel()]
+				[button.setLabel(labels[index]) for index, button in enumerate(list) if button.isVisible()]
 			elif currentIndex == len(list) - 1 and direction == "down":
-				labels = [self._getLabel(list[-1])] + [self._getLabel(button) for button in list[:-1]]
-				[self._getButton(buttonID).setLabel(labels[index]) for index, buttonID in enumerate(list)]
-
-			elif direction == "right" and list == self.excludedButtonIDs:
+				labels = [list[-1].getLabel()] + [button.getLabel() for button in list[:-1]]
+				[button.setLabel(labels[index]) for index, button in enumerate(list)]
+			elif direction == "right" and list == self.excludedButtons:
 				self.shift = False
 				self._resetShiftableButtons(currentIndex, True)
 				currentIndex = max(currentIndex - 1, 0)
@@ -308,7 +328,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 				else:
 					newButton = self.includedButtons[0]
 
-			elif direction == "left" and list == self.includedButtonIDs:
+			elif direction == "left" and list == self.includedButtons:
 				self.shift = False
 				self._resetShiftableButtons(currentIndex, False)
 				currentIndex = max(currentIndex - 1, 0)
@@ -319,11 +339,15 @@ class StrmAffixer(xbmcgui.WindowDialog):
 					newButton = self.excludedButtons[0]
 
 			else:
-				currentButton = self._getButton(list[currentIndex])
+				currentButton = list[currentIndex]
 				currentButtonName = currentButton.getLabel()
 				newButtonName = newButton.getLabel()
 				currentButton.setLabel(newButtonName)
 				newButton.setLabel(currentButtonName)
+
+			if direction in ("up", "down") and setFocus:
+				newButton.setLabel(focusedColor="0xFFFFB70F")
+				self.includedButtons[currentIndex].setLabel(focusedColor="0xFFFFFFFF")
 
 		if setFocus:
 			self.setFocus(newButton)
