@@ -61,6 +61,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 					self.setFocus(self.buttonOK)
 
 		elif action in (self.ACTION_MOVE_RIGHT, self.ACTION_MOVE_LEFT):
+			self._getButton(self.focusedButtonID).setLabel(focusedColor="0xFFFFFFFF")
 			self.shift = False
 
 			if self.focusedButtonID in self.buttonIDs:
