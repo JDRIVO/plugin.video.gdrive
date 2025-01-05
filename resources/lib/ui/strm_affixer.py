@@ -88,8 +88,8 @@ class StrmAffixer(xbmcgui.WindowDialog):
 					self.setFocus(self.buttonClose)
 
 			elif self.focusedButtonID in self.includedButtonIDs:
-				self._getButton(self.focusedButtonID).setLabel(focusedColor="0xFFFFFFFF")
 				self.shift = False
+				self._getButton(self.focusedButtonID).setLabel(focusedColor="0xFFFFFFFF")
 				self.setFocus(self.buttonClose)
 
 			elif self.focusedButtonID == self.buttonCloseID:

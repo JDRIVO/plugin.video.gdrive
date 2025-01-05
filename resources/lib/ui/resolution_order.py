@@ -22,6 +22,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 	def __init__(self, *args, **kwargs):
 		self.resolutions = kwargs["resolutions"]
 		self.settings = SETTINGS
+		self.orderedResolutions = None
 		self.shift = False
 		self.lastUpdate = 0
 		self.buttonWidth = 120
@@ -61,8 +62,8 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 					self.setFocus(self.buttonOK)
 
 		elif action in (self.ACTION_MOVE_RIGHT, self.ACTION_MOVE_LEFT):
-			self._getButton(self.focusedButtonID).setLabel(focusedColor="0xFFFFFFFF")
 			self.shift = False
+			self._getButton(self.focusedButtonID).setLabel(focusedColor="0xFFFFFFFF")
 
 			if self.focusedButtonID in self.buttonIDs:
 				self.setFocus(self.buttonOK)
@@ -98,8 +99,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 		if self.focusedButtonID in (self.backgroundID, self.buttonCloseID):
 			self.close()
 		elif self.focusedButtonID == self.buttonOKid:
-			self.resolutions.clear()
-			[self.resolutions.append(button.getLabel()) for button in self.buttons]
+			self.orderedResolutions = [button.getLabel() for button in self.buttons]
 			self.close()
 
 	def _addBackground(self):
