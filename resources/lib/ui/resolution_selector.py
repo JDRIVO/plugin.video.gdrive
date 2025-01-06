@@ -5,90 +5,116 @@ import xbmcaddon
 
 
 class ResolutionSelector(xbmcgui.WindowDialog):
+	ACTION_MOVE_LEFT = 1
+	ACTION_MOVE_RIGHT = 2
 	ACTION_MOVE_UP = 3
 	ACTION_MOVE_DOWN = 4
 	ACTION_PREVIOUS_MENU = 10
 	ACTION_BACKSPACE = 92
 
 	def __init__(self, *args, **kwargs):
-		resolutions = kwargs["resolutions"]
-		mediaPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
-		focusTexture = os.path.join(mediaPath, "focus.png")
-		noFucusTexture = os.path.join(mediaPath, "gray.png")
-		viewportWidth = self.getWidth()
-		viewportHeight = self.getHeight()
-		windowWidth = int(260 * viewportWidth / 1920)
-		buttonWidth = windowWidth
-		buttonHeight = 40
-		windowHeight = int(len(resolutions) * buttonHeight * viewportHeight / 1080)
-		x = int((viewportWidth - windowWidth) / 2)
-		x = int((x + windowWidth / 2) - (buttonWidth / 2))
-		y = int((viewportHeight - windowHeight) / 2)
-		background = xbmcgui.ControlButton(0, 0, viewportWidth, viewportHeight, "", focusTexture="", noFocusTexture="")
-		self.addControl(background)
+		self.resolutions = kwargs["resolutions"]
 		self.closed = False
-		self._createButtons(resolutions, x, y, buttonWidth, buttonHeight, noFucusTexture, focusTexture)
+		self.buttonHeight = 40
+		self.buttonAmount = len(self.resolutions)
+		self.font = "font13"
+		self._initializePaths()
+		self._calculateViewport()
+		self._addBackground()
+		self._createButtons()
 
 	def onAction(self, action):
 		action = action.getId()
-		self.buttonId = self.getFocusId()
+		self.focusedButtonID = self.getFocusId()
 
 		if action in (self.ACTION_PREVIOUS_MENU, self.ACTION_BACKSPACE):
 			self.closed = True
 			self.close()
 		elif action == self.ACTION_MOVE_UP:
-			self._updateList("up")
+
+			if self.focusedButtonID in self.buttonIDs:
+				self._updateList("up")
+			else:
+				self.setFocusId(self.buttonIDs[0])
+
 		elif action == self.ACTION_MOVE_DOWN:
-			self._updateList("down")
+
+			if self.focusedButtonID in self.buttonIDs:
+				self._updateList("down")
+			else:
+				self.setFocusId(self.buttonIDs[0])
+
+		elif action == self.ACTION_MOVE_RIGHT:
+
+			if self.focusedButtonID not in self.buttonIDs:
+				self.setFocusId(self.buttonIDs[0])
+
+		elif action == self.ACTION_MOVE_LEFT:
+
+			if self.focusedButtonID not in self.buttonIDs:
+				self.setFocusId(self.buttonIDs[0])
 
 	def onControl(self, control):
-		controlId = control.getId()
+		controlID = control.getId()
 
-		if controlId not in self.buttonIds:
+		if controlID not in self.buttonIDs:
 			self.closed = True
 		else:
 			self.resolution = control.getLabel()
 
 		self.close()
 
-	def _createButtons(self, resolutions, x, y, buttonWidth, buttonHeight, noFucusTexture, focusTexture):
+	def _addBackground(self):
+		background = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
+		self.addControl(background)
+
+	def _calculateViewport(self):
+		self.viewportWidth = self.getWidth()
+		self.viewportHeight = self.getHeight()
+		self.windowWidth = int(260 * self.viewportWidth / 1920)
+		self.windowHeight = int(self.buttonAmount * self.buttonHeight * self.viewportHeight / 1080)
+		self.x = (self.viewportWidth - self.windowWidth) // 2
+		self.y = (self.viewportHeight - self.windowHeight) // 2
+
+	def _createButtons(self):
 		buttons = []
 		spacing = 0
-		font = "font13"
 
-		for resolution in resolutions:
+		for resolution in self.resolutions:
 			buttons.append(
 				xbmcgui.ControlButton(
-					x=x,
-					y=y + spacing,
-					width=buttonWidth,
-					height=buttonHeight,
+					x=self.x,
+					y=self.y + spacing,
+					width=self.windowWidth,
+					height=self.buttonHeight,
 					label=resolution,
-					font=font,
-					noFocusTexture=noFucusTexture,
-					focusTexture=focusTexture,
+					font=self.font,
+					noFocusTexture=self.grayTexture,
+					focusTexture=self.focusTexture,
 					alignment=2 + 4,
 				)
 			)
-			spacing += buttonHeight
+			spacing += self.buttonHeight
 
 		self.addControls(buttons)
-		self.buttonIds = [button.getId() for button in buttons]
-		self.setFocusId(self.buttonIds[0])
+		self.buttonIDs = [button.getId() for button in buttons]
+		self.setFocusId(self.buttonIDs[0])
 
-	def _getButton(self, buttonId):
-		return self.getControl(buttonId)
+	def _getButton(self, buttonID):
+		return self.getControl(buttonID)
+
+	def _initializePaths(self):
+		mediaPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
+		self.grayTexture = os.path.join(mediaPath, "gray.png")
+		self.focusTexture = os.path.join(mediaPath, "focus.png")
 
 	def _updateList(self, direction):
-		currentIndex = self.buttonIds.index(self.buttonId)
+		currentIndex = self.buttonIDs.index(self.focusedButtonID)
 
 		if direction == "up":
 			newIndex = currentIndex - 1
 		elif direction == "down":
-			newIndex = currentIndex + 1
+			newIndex = (currentIndex + 1) % self.buttonAmount
 
-			if newIndex == len(self.buttonIds):
-				newIndex = 0
-
-		newButton = self._getButton(self.buttonIds[newIndex])
+		newButton = self._getButton(self.buttonIDs[newIndex])
 		self.setFocus(newButton)

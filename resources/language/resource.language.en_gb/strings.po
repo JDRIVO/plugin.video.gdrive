@@ -413,6 +413,14 @@ msgctxt "#30102"
 msgid "Failed to move the folder. The folder already exists."
 msgstr "Failed to move the folder. The folder already exists."
 
+msgctxt "#30103"
+msgid "Exclude"
+msgstr "Exclude"
+
+msgctxt "#30104"
+msgid "Include"
+msgstr "Include"
+
 msgctxt "#30121"
 msgid "Are you sure you want to delete account:"
 msgstr "Are you sure you want to delete account:"

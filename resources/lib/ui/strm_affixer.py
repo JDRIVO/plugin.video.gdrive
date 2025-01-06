@@ -30,8 +30,8 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		self.lastUpdate = 0
 		self.buttonWidth = 120
 		self.buttonHeight = 30
-		self.font = "font14"
 		self.buttonAmount = len(self.excluded) + len(self.included)
+		self.font = "font14"
 		self._initializePaths()
 		self._calculateViewport()
 		self._addBackground()
@@ -65,6 +65,13 @@ class StrmAffixer(xbmcgui.WindowDialog):
 				else:
 					self.setFocus(self.excludedButtons[0])
 
+			else:
+
+				if self.excludedButtons[0].isVisible():
+					self.setFocus(self.excludedButtons[0])
+				else:
+					self.setFocus(self.includedButtons[0])
+
 		elif action == self.ACTION_MOVE_DOWN:
 
 			if self.focusedButtonID in self.excludedButtonIDs:
@@ -75,6 +82,12 @@ class StrmAffixer(xbmcgui.WindowDialog):
 				self.setFocus(self.buttonClose)
 			elif self.focusedButtonID == self.buttonCloseID:
 				self.setFocus(self.buttonOK)
+			else:
+
+				if self.excludedButtons[0].isVisible():
+					self.setFocus(self.excludedButtons[0])
+				else:
+					self.setFocus(self.includedButtons[0])
 
 		elif action == self.ACTION_MOVE_RIGHT:
 
@@ -101,6 +114,12 @@ class StrmAffixer(xbmcgui.WindowDialog):
 
 			elif self.focusedButtonID == self.buttonOKid:
 				self.setFocus(self.buttonClose)
+			else:
+
+				if self.excludedButtons[0].isVisible():
+					self.setFocus(self.excludedButtons[0])
+				else:
+					self.setFocus(self.includedButtons[0])
 
 		elif action == self.ACTION_MOVE_LEFT:
 
@@ -126,6 +145,12 @@ class StrmAffixer(xbmcgui.WindowDialog):
 
 			elif self.focusedButtonID == self.buttonCloseID:
 				self.setFocusId(self.buttonOKid)
+			else:
+
+				if self.excludedButtons[0].isVisible():
+					self.setFocus(self.excludedButtons[0])
+				else:
+					self.setFocus(self.includedButtons[0])
 
 		elif action == self.ACTION_SELECT_ITEM:
 
@@ -208,8 +233,8 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		return button
 
 	def _addLabels(self):
-		labelExclude = xbmcgui.ControlLabel(self.x + 10, self.y + 50, 120, 30, "[COLOR FF0F85A5]Exclude[/COLOR]", alignment=2 + 4)
-		labelInclude = xbmcgui.ControlLabel(self.x + 140, self.y + 50, 120, 30, "[COLOR FF0F85A5]Include[/COLOR]", alignment=2 + 4)
+		labelExclude = xbmcgui.ControlLabel(self.x + 10, self.y + 50, 120, 30, f"[COLOR FF0F85A5]{self.settings.getLocalizedString(30103)}[/COLOR]", alignment=2 + 4)
+		labelInclude = xbmcgui.ControlLabel(self.x + 140, self.y + 50, 120, 30, f"[COLOR FF0F85A5]{self.settings.getLocalizedString(30104)}[/COLOR]", alignment=2 + 4)
 		self.addControls([labelExclude, labelInclude])
 
 	def _calculateViewport(self):
@@ -346,8 +371,8 @@ class StrmAffixer(xbmcgui.WindowDialog):
 				newButton.setLabel(currentButtonName)
 
 			if direction in ("up", "down") and setFocus:
-				newButton.setLabel(focusedColor="0xFFFFB70F")
 				self.includedButtons[currentIndex].setLabel(focusedColor="0xFFFFFFFF")
+				newButton.setLabel(focusedColor="0xFFFFB70F")
 
 		if setFocus:
 			self.setFocus(newButton)

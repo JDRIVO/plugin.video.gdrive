@@ -22,11 +22,12 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 	def __init__(self, *args, **kwargs):
 		self.resolutions = kwargs["resolutions"]
 		self.settings = SETTINGS
-		self.orderedResolutions = None
 		self.shift = False
+		self.closed = False
 		self.lastUpdate = 0
 		self.buttonWidth = 120
 		self.buttonHeight = 30
+		self.buttonAmount = len(self.resolutions)
 		self.font = "font14"
 		self._initializePaths()
 		self._calculateViewport()
@@ -38,28 +39,29 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 		self.focusedButtonID = self.getFocusId()
 
 		if action in (self.ACTION_PREVIOUS_MENU, self.ACTION_BACKSPACE):
+			self.closed = True
 			self.close()
 		elif action == self.ACTION_MOVE_UP:
 
 			if self.focusedButtonID in self.buttonIDs:
 				self._updateList("up")
+			elif self.focusedButtonID == self.buttonOKid:
+				self.setFocus(self.buttonClose)
+			elif self.focusedButtonID == self.buttonCloseID:
+				self.setFocus(self.buttonOK)
 			else:
-
-				if self.focusedButtonID == self.buttonOKid:
-					self.setFocus(self.buttonClose)
-				else:
-					self.setFocus(self.buttonOK)
+				self.setFocusId(self.buttonIDs[0])
 
 		elif action == self.ACTION_MOVE_DOWN:
 
 			if self.focusedButtonID in self.buttonIDs:
 				self._updateList("down")
+			elif self.focusedButtonID == self.buttonOKid:
+				self.setFocus(self.buttonClose)
+			elif self.focusedButtonID == self.buttonCloseID:
+				self.setFocus(self.buttonOK)
 			else:
-
-				if self.focusedButtonID == self.buttonOKid:
-					self.setFocus(self.buttonClose)
-				else:
-					self.setFocus(self.buttonOK)
+				self.setFocusId(self.buttonIDs[0])
 
 		elif action in (self.ACTION_MOVE_RIGHT, self.ACTION_MOVE_LEFT):
 			self.shift = False
@@ -97,9 +99,10 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 		self.focusedButtonID = control.getId()
 
 		if self.focusedButtonID in (self.backgroundID, self.buttonCloseID):
+			self.closed = True
 			self.close()
 		elif self.focusedButtonID == self.buttonOKid:
-			self.orderedResolutions = [button.getLabel() for button in self.buttons]
+			self.resolutions = [button.getLabel() for button in self.buttons]
 			self.close()
 
 	def _addBackground(self):
@@ -140,7 +143,6 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 		self.buttonClose = self._addControlButton(self.x + self.buttonWidth + 20, self.y + y + 35, 80, self.buttonHeight, label=self.settings.getLocalizedString(30084))
 		self.addControls(self.buttons + [self.buttonOK, self.buttonClose])
 		self.buttonIDs = [button.getId() for button in self.buttons]
-		self.buttonAmount = len(self.buttons)
 		self.buttonCloseID = self.buttonClose.getId()
 		self.buttonOKid = self.buttonOK.getId()
 		self.setFocusId(self.buttonIDs[0])
@@ -184,8 +186,8 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 			[button.setLabel(labels[idx]) for idx, button in enumerate(self.buttons)]
 
 			if setFocus:
-				newButton.setLabel(focusedColor="0xFFFFB70F")
 				self.buttons[currentIndex].setLabel(focusedColor="0xFFFFFFFF")
+				newButton.setLabel(focusedColor="0xFFFFB70F")
 
 		if setFocus:
 			self.setFocus(newButton)
