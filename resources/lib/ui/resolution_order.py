@@ -108,7 +108,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 	def _addBackground(self):
 		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
 		background = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, self.windowHeight, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
-		# Control image needed to overcome bug that prevents window from closing
+		# ControlImage needed to overcome bug that prevents window from closing
 		_ = xbmcgui.ControlImage(self.x, self.y, self.windowWidth, 40, self.blueTexture)
 		bar = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, 40, f"[B]{self.settings.getLocalizedString(30083)}[/B]", focusTexture=self.blueTexture, noFocusTexture=self.blueTexture, shadowColor="0xFF000000", textOffsetX=20)
 		self.addControls([backgroundInvis, background, _, bar])

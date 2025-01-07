@@ -346,7 +346,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 			elif direction == "right" and list == self.excludedButtons:
 				self.shift = False
 				self._resetShiftableButtons(currentIndex, True)
-				currentIndex = max(currentIndex - 1, 0)
+				currentIndex = currentIndex if self.excludedButtons[currentIndex].isVisible() else currentIndex - 1
 
 				if self.excludedButtons[currentIndex].isVisible():
 					newButton = self.excludedButtons[currentIndex]
@@ -356,7 +356,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 			elif direction == "left" and list == self.includedButtons:
 				self.shift = False
 				self._resetShiftableButtons(currentIndex, False)
-				currentIndex = max(currentIndex - 1, 0)
+				currentIndex = currentIndex if self.includedButtons[currentIndex].isVisible() else currentIndex - 1
 
 				if self.includedButtons[currentIndex].isVisible():
 					newButton = self.includedButtons[currentIndex]
