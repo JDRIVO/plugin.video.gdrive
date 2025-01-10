@@ -125,7 +125,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.handleResponse(200)
 		cid = postData["cid"]
 		self.server.taskManager.removeAllTasks()
-		syncRoot = self.server.cache.getSyncRootPath()
+		syncRoot = self.server.cache.getSyncRootPath() or self.server.settings.getSetting("sync_root")
 
 		for _ in range(3):
 			deleted = self.server.fileOperations.deleteFile(filePath=os.path.join(ADDON_PATH, "sync_cache.db"))

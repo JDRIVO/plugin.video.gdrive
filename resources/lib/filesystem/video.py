@@ -36,8 +36,8 @@ class Video(File):
 			"extension": getExtension,
 			"resolution": getResolution,
 		}
-		prefix = " ".join(f"[{value}]" for item in self.prefix if (value := valueMap[item]())) + " " if self.prefix else ""
-		suffix = " " + " ".join(f"[{value}]" for item in self.suffix if (value := valueMap[item]())) if self.suffix else ""
+		prefix = "".join(f"[{value}] " for item in self.prefix if (value := valueMap[item]())) if self.prefix else ""
+		suffix = "".join(f" [{value}]" for item in self.suffix if (value := valueMap[item]())) if self.suffix else ""
 		return f"{prefix}{os.path.splitext(self.remoteName)[0]}{suffix}"
 
 	def getSTRMContents(self, driveID):
