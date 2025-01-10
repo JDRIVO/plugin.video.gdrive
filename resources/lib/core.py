@@ -21,7 +21,6 @@ from .accounts.account_manager import AccountManager
 from .threadpool.threadpool import ThreadPool
 from .google_api.google_drive import GoogleDrive
 from .sync.sync_cache_manager import SyncCacheManager
-from .filesystem.file_operations import FileOperations
 from .filesystem.fs_helpers import removeProhibitedFSchars
 from .filesystem.fs_constants import TMDB_LANGUAGES, TMDB_REGIONS
 
@@ -283,12 +282,9 @@ class Core:
 		if not confirmation:
 			return
 
-		deleted = FileOperations().deleteFile(filePath=os.path.join(ADDON_PATH, "accounts.pkl"))
-
-		if deleted:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30097))
-		else:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30098))
+		serverPort = self.settings.getSettingInt("server_port", 8011)
+		url = f"http://localhost:{serverPort}/delete_accounts_file"
+		http_requester.request(url)
 
 	def deleteDrive(self):
 		confirmation = self.dialog.yesno(
@@ -767,6 +763,7 @@ class Core:
 		alias = removeProhibitedFSchars(alias)
 
 		if alias in self.accountManager.aliases:
+			xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30015))
 			return
 

@@ -110,6 +110,17 @@ class ServerHandler(BaseHTTPRequestHandler):
 		folders = postData[1:]
 		self.server.taskManager.addTask(driveID, folders)
 
+	def handleDeleteAccountsFile(self):
+		self.handleResponse(200)
+		deleted = self.server.fileOperations.deleteFile(filePath=os.path.join(ADDON_PATH, "accounts.pkl"))
+
+		if deleted:
+			self.server.accountManager.setAccounts()
+			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30097))
+			xbmc.executebuiltin("Container.Refresh")
+		else:
+			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30098))
+
 	def handleDeleteDrive(self):
 		postData = self.getPostDataJSON()
 		self.handleResponse(200)
@@ -256,11 +267,13 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.handleResponse(200)
 		driveID = postData["drive_id"]
 		alias = postData["alias"]
+		self.server.accountManager.setAccounts()
 		self.server.accountManager.setAlias(driveID, alias)
 		driveSettings = self.server.cache.getDrive(driveID)
 
 		if not driveSettings:
 			xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
+			xbmc.executebuiltin("Container.Refresh")
 			return
 
 		syncRootPath = self.server.cache.getSyncRootPath()
@@ -452,6 +465,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
 		pathHandlers = {
 			"/play": self.handlePlayRequest,
+			"/delete_accounts_file": self.handleDeleteAccountsFile,
 			"/register": self.handleRegisterRequest,
 			"/registration_failed": self.handleRegistrationFailed,
 			"/registration_succeeded": self.handleRegistrationSucceeded,
