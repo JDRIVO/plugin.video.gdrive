@@ -125,8 +125,9 @@ class ServerHandler(BaseHTTPRequestHandler):
 		postData = self.getPostDataJSON()
 		self.handleResponse(200)
 		driveID = postData["drive_id"]
+		deleteFiles = postData["delete_files"]
 		self.server.taskManager.removeTask(driveID)
-		self.server.cache.deleteDrive(driveID)
+		self.server.cache.deleteDrive(driveID, deleteFiles)
 		self.server.accountManager.deleteDrive(driveID)
 		xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
 		xbmc.executebuiltin("Container.Refresh")

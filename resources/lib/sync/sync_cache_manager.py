@@ -100,13 +100,13 @@ class SyncCacheManager(DatabaseManager):
 	def deleteDirectory(self, value, column="folder_id"):
 		self.delete("directories", {column: value})
 
-	def deleteDrive(self, driveID):
+	def deleteDrive(self, driveID, deleteFiles):
 		drive = self.getDrive(driveID)
 
 		if not drive:
 			return
 
-		self.cleanCache(driveID)
+		self.removeFolders(driveID, deleteFiles=deleteFiles)
 		self.delete("drives", {"drive_id": driveID})
 
 	def deleteFile(self, value, column="file_id"):

@@ -41,7 +41,7 @@ class Video(File):
 		return f"{prefix}{os.path.splitext(self.remoteName)[0]}{suffix}"
 
 	def getSTRMContents(self, driveID):
-		self.metadata.update({"drive_id": driveID, "file_id": self.id, "encrypted": str(self.encrypted)})
+		self.metadata.update({"encrypted": str(self.encrypted), "drive_id": driveID, "file_id": self.id})
 		return "plugin://plugin.video.gdrive/?mode=video" + "".join([f"&{k}={v}"for k, v in self.metadata.items() if v])
 
 	def setData(self, video, metadata, prefix, suffix):

@@ -50,23 +50,168 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.settings = SETTINGS
 		self.cache = SyncCacheManager()
 		self.dialog = Dialog()
-		texturesPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
-		self.radioButtonFocus = os.path.join(texturesPath, "radiobutton-focus.png")
-		self.radioButtonNoFocus = os.path.join(texturesPath, "radiobutton-nofocus.png")
-		self.buttonFocusTexture = os.path.join(texturesPath, "focus.png")
-		self.blueTexture = os.path.join(texturesPath, "blue.png")
-		self.grayTexture = os.path.join(texturesPath, "gray.png")
-		self.dGrayTexture = os.path.join(texturesPath, "dgray.png")
+		self.driveSettings = self.cache.getDrive(self.driveID)
+		self.syncMode = self.driveSettings["task_mode"] if self.driveSettings else None
+		self.syncFrequency = self.driveSettings["task_frequency"] if self.driveSettings else None
 		self.folders = False
-		self.syncMode = None
-		self.syncFrequency = None
-		self.prefix = []
-		self.suffix = []
+		self.font = "font13"
+		self.buttonSpacing = 60
+		self._initializePaths()
 		self._createButtons()
 
+	def onAction(self, action):
+		action = action.getId()
+		self.buttonID = self.getFocusId()
+
+		if action in (self.ACTION_PREVIOUS_MENU, self.ACTION_BACKSPACE):
+			self.close()
+		elif action == self.ACTION_MOVE_UP:
+
+			if self.buttonID == self.menuButtonIDs[0]:
+				self.setFocus(self.buttonOK)
+			elif self.buttonID in (self.buttonCloseID, self.buttonOKid):
+				self.setFocusId(self.menuButtonIDs[-1])
+			elif self.buttonID in self.menuButtonIDs:
+				self._updateList("up")
+
+		elif action == self.ACTION_MOVE_DOWN:
+
+			if self.buttonID == self.menuButtonIDs[-1]:
+				self.setFocus(self.buttonOK)
+			elif self.buttonID in (self.buttonCloseID, self.buttonOKid):
+				self.setFocusId(self.menuButtonIDs[0])
+			elif self.buttonID in self.menuButtonIDs:
+				self._updateList("down")
+
+		elif action == self.ACTION_MOVE_RIGHT:
+
+			if self.folders:
+
+				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonOKid:
+					self.setFocus(self.buttonClose)
+				elif self.buttonID in self.buttonSwitchesIDs:
+					self.setFocusId(self.menuButtonIDs[0])
+				elif self.buttonID == self.buttonCloseID:
+					self.setFocusId(self.menuButtonIDs[0])
+
+			else:
+
+				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonOKid:
+					self.setFocus(self.buttonClose)
+				elif self.buttonID == self.buttonCloseID:
+					self.setFocusId(self.menuButtonIDs[0])
+
+		elif action == self.ACTION_MOVE_LEFT:
+
+			if self.folders:
+
+				if self.buttonID in self.menuButtonIDs:
+					self.setFocusId(self.buttonSwitchesIDs[0])
+				elif self.buttonID in self.buttonSwitchesIDs:
+					self.setFocus(self.buttonOK)
+				elif self.buttonID == self.buttonCloseID:
+					self.setFocus(self.buttonOK)
+				elif self.buttonID == self.buttonOKid:
+					self.setFocusId(self.menuButtonIDs[0])
+
+			else:
+
+				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonCloseID:
+					self.setFocus(self.buttonOK)
+				elif self.buttonID == self.buttonOKid:
+					self.setFocusId(self.menuButtonIDs[0])
+
+	def onControl(self, control):
+		self.buttonID = control.getId()
+
+		if self.buttonID in (self.backgroundID, self.buttonCloseID):
+			self.close()
+		elif self.buttonID == self.buttonOKid:
+			self._setSettings()
+		elif self.buttonID in self.pushButtonIDs:
+			self.functions[control.getLabel()](control)
+		elif self.buttonID in self.buttonSwitchesIDs:
+
+			if self.buttonID == self.buttonSwitchesIDs[0]:
+				[button.setVisible(False) for button in self.TMDBButtons]
+				[button.setVisible(True) for button in self.generalSettingsButtons]
+				self.menuButtonIDs = self.generalSettingsButtonIDs
+			else:
+				[button.setVisible(False) for button in self.generalSettingsButtons]
+				[button.setVisible(True) for button in self.TMDBButtons]
+				self.menuButtonIDs = self.TMDBButtonIDs
+
+	def _addBackground(self):
+		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
+		background = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, self.windowHeight, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
+		bar = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, 40, f"[B]{self.settings.getLocalizedString(30012)}[/B]", focusTexture=self.blueTexture, noFocusTexture=self.blueTexture, shadowColor="0xFF000000", textOffsetX=20)
+		self.addControls([backgroundInvis, background, bar])
+		self.backgroundID = backgroundInvis.getId()
+
+	def _addControlButton(self, label, x, folderSettings=None):
+		button = xbmcgui.ControlButton(
+			x=x,
+			y=self.y + self.buttonSpacing,
+			width=self.buttonWidth,
+			height=self.buttonHeight,
+			label=label,
+			font=self.font,
+			focusTexture=self.focusTexture,
+			noFocusTexture=self.dGrayTexture,
+		)
+
+		if label == self.settings.getLocalizedString(30614):
+			button.setLabel(label2=folderSettings["strm_prefix"] if folderSettings else self.settings.getSetting("strm_prefix"))
+		elif label == self.settings.getLocalizedString(30615):
+			button.setLabel(label2=folderSettings["strm_suffix"] if folderSettings else self.settings.getSetting("strm_suffix"))
+		elif label == self.settings.getLocalizedString(30049):
+			button.setLabel(label2=self.syncMode)
+		elif label == self.settings.getLocalizedString(30050):
+			button.setLabel(label2=self.syncFrequency)
+
+		self.addControl(button)
+		self.pushButtons[button] = label
+		self.buttonSpacing += 40
+
+	def _addRadioButton(self, label, isEnabled, x):
+		button = xbmcgui.ControlRadioButton(
+			x=x,
+			y=self.y + self.buttonSpacing,
+			width=self.buttonWidth,
+			height=self.buttonHeight,
+			label=label,
+			font=self.font,
+			noFocusOffTexture=self.focusOffTexture,
+			focusOffTexture=self.focusOffTexture,
+			focusOnTexture=self.focusOnTexture,
+			noFocusOnTexture=self.focusOnTexture,
+			focusTexture=self.focusTexture,
+			noFocusTexture=self.dGrayTexture,
+		)
+		self.addControl(button)
+		self.radioButtons[button] = label
+		button.setSelected(isEnabled)
+		self.buttonSpacing += 40
+
+	def _calculateViewport(self):
+		self.viewportWidth = self.getWidth()
+		self.viewportHeight = self.getHeight()
+		self.windowWidth = int(1000 * self.viewportWidth / 1920)
+
+		if self.folders:
+			self.buttonWidth = self.windowWidth - 200
+		else:
+			self.buttonWidth = self.windowWidth - 50
+
+		self.buttonHeight = 40
+		self.windowHeight = int(self.buttonHeight * self.buttonAmount + self.buttonSpacing + 90)
+		self.windowBottom = int((self.viewportHeight + self.windowHeight) / 2)
+		self.x = int((self.viewportWidth - self.windowWidth) / 2)
+		self.y = int((self.viewportHeight - self.windowHeight) / 2)
+		self.center = int((self.x + self.windowWidth / 2) - (self.buttonWidth / 2))
+
 	def _createButtons(self):
-		self.buttonSpacing = 60
-		self.radioButtons, self.pushButtons, self.functions = {}, {}, {}
+		self.radioButtons, self.pushButtons = {}, {}
 		self.buttonSwitchesIDs = []
 
 		if self.displayMode in ("new", "folder"):
@@ -85,7 +230,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			label=self.settings.getLocalizedString(30066),
 			font=self.font,
 			noFocusTexture=self.dGrayTexture,
-			focusTexture=self.buttonFocusTexture,
+			focusTexture=self.focusTexture,
 			alignment=2 + 4,
 		)
 		self.buttonClose = xbmcgui.ControlButton(
@@ -96,116 +241,39 @@ class SyncSettings(xbmcgui.WindowDialog):
 			label=self.settings.getLocalizedString(30067),
 			font=self.font,
 			noFocusTexture=self.dGrayTexture,
-			focusTexture=self.buttonFocusTexture,
+			focusTexture=self.focusTexture,
 			alignment=2 + 4,
 		)
 		self.addControls([self.buttonOK, self.buttonClose])
 		self.buttonCloseID = self.buttonClose.getId()
-		self.buttonOKID = self.buttonOK.getId()
+		self.buttonOKid = self.buttonOK.getId()
 		self.setFocusId(self.menuButtonIDs[0])
 
 	def _createDriveSettingsButtons(self):
-		driveSettings = self.cache.getDrive(self.driveID)
 		self.functions = {
 			self.settings.getLocalizedString(30049): self._setSyncMode,
 			self.settings.getLocalizedString(30050): self._setSyncFrequency,
 			self.settings.getLocalizedString(30061): self._stopSyncingFolders,
 			self.settings.getLocalizedString(30062): self._stopSyncingFoldersAndDelete,
 		}
-		self.syncMode = driveSettings["task_mode"]
-		self.syncFrequency = driveSettings["task_frequency"]
-		settings = {self.settings.getLocalizedString(30051): driveSettings["startup_sync"]}
-		self._setup(len(self.functions) + len(settings))
+		radioButtons = {self.settings.getLocalizedString(30051): self.driveSettings["startup_sync"]}
+		self.buttonAmount = len(self.functions) + len(radioButtons)
+		self._calculateViewport()
+		self._addBackground()
 
-		for setting, value in settings.items():
-			button = xbmcgui.ControlRadioButton(
-				x=self.center,
-				y=self.y + self.buttonSpacing,
-				width=self.buttonWidth,
-				height=self.buttonHeight,
-				label=setting,
-				font=self.font,
-				noFocusOffTexture=self.radioButtonNoFocus,
-				focusOffTexture=self.radioButtonNoFocus,
-				focusOnTexture=self.radioButtonFocus,
-				noFocusOnTexture=self.radioButtonFocus,
-				focusTexture=self.buttonFocusTexture,
-				noFocusTexture=self.dGrayTexture,
-			)
-			self.radioButtons[button] = setting
-			self.addControl(button)
-			button.setSelected(value)
-			self.buttonSpacing += 40
+		for setting, isEnabled in radioButtons.items():
+			self._addRadioButton(setting, isEnabled, self.center)
 
-		for func in self.functions:
-			button = xbmcgui.ControlButton(
-				x=self.center,
-				y=self.y + self.buttonSpacing,
-				width=self.buttonWidth,
-				height=self.buttonHeight,
-				label=func,
-				font=self.font,
-				focusTexture=self.buttonFocusTexture,
-				noFocusTexture=self.dGrayTexture,
-			)
-
-			if func == self.settings.getLocalizedString(30049):
-				button.setLabel(label2=self.syncMode)
-			elif func == self.settings.getLocalizedString(30050):
-				button.setLabel(label2=self.syncFrequency)
-
-			self.pushButtons[button] = func
-			self.addControl(button)
-			self.buttonSpacing += 40
+		for setting in self.functions:
+			self._addControlButton(setting, self.center)
 
 		self.generalSettingsButtons = list(self.radioButtons.keys()) + list(self.pushButtons.keys())
 		self.generalSettingsButtonIDs = [button.getId() for button in self.generalSettingsButtons]
 		self.menuButtonIDs = self.generalSettingsButtonIDs
 
-	def addConrolButton(self, label, folderSettings):
-		button = xbmcgui.ControlButton(
-			x=self.center + 80,
-			y=self.y + self.buttonSpacing,
-			width=self.buttonWidth,
-			height=self.buttonHeight,
-			label=label,
-			font=self.font,
-			focusTexture=self.buttonFocusTexture,
-			noFocusTexture=self.dGrayTexture,
-		)
-
-		if label == self.settings.getLocalizedString(30614):
-			button.setLabel(label2=folderSettings["strm_prefix"] if folderSettings else self.settings.getSetting("strm_prefix"))
-		elif label == self.settings.getLocalizedString(30615):
-			button.setLabel(label2=folderSettings["strm_suffix"] if folderSettings else self.settings.getSetting("strm_suffix"))
-
-		self.addControl(button)
-		self.pushButtons[button] = label
-		self.buttonSpacing += 40
-
-	def addRadioButton(self, label, isEnabled):
-		button = xbmcgui.ControlRadioButton(
-			x=self.center + 80,
-			y=self.y + self.buttonSpacing,
-			width=self.buttonWidth,
-			height=self.buttonHeight,
-			label=label,
-			font=self.font,
-			noFocusOffTexture=self.radioButtonNoFocus,
-			focusOffTexture=self.radioButtonNoFocus,
-			focusOnTexture=self.radioButtonFocus,
-			noFocusOnTexture=self.radioButtonFocus,
-			focusTexture=self.buttonFocusTexture,
-			noFocusTexture=self.dGrayTexture,
-		)
-		self.addControl(button)
-		self.radioButtons[button] = label
-		button.setSelected(isEnabled)
-		self.buttonSpacing += 40
-
 	def _createFolderSettingsButtons(self):
 		folderSettings = self.cache.getFolder({"folder_id": self.folderID})
-		radioButtons = {}
+		self.functions, radioButtons = {}, {}
 
 		if not self.displayMode == "new" and folderSettings:
 			self.functions.update(
@@ -245,13 +313,15 @@ class SyncSettings(xbmcgui.WindowDialog):
 				self.settings.getLocalizedString(30615): self._setSuffix,
 			}
 		)
-		self._setup(len(self.functions) + len(radioButtons))
+		self.buttonAmount = len(self.functions) + len(radioButtons)
+		self._calculateViewport()
+		self._addBackground()
 
 		for setting in self.functions:
-			self.addConrolButton(setting, folderSettings)
+			self._addControlButton(setting, self.center + 80, folderSettings)
 
 		for setting, isEnabled in radioButtons.items():
-			self.addRadioButton(setting, isEnabled)
+			self._addRadioButton(setting, isEnabled, self.center + 80)
 
 		self.generalSettingsButtons = list(self.pushButtons.keys()) + list(self.radioButtons.keys())
 		self.generalSettingsButtonIDs = [button.getId() for button in self.generalSettingsButtons]
@@ -271,7 +341,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			height=self.buttonHeight,
 			label=self.settings.getLocalizedString(30065),
 			font=self.font,
-			focusTexture=self.buttonFocusTexture,
+			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
 			alignment=2 + 4,
 		)
@@ -284,7 +354,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			height=self.buttonHeight,
 			label="TMDB",
 			font=self.font,
-			focusTexture=self.buttonFocusTexture,
+			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
 			alignment=2 + 4,
 		)
@@ -319,7 +389,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				height=self.buttonHeight,
 				label=func,
 				font=self.font,
-				focusTexture=self.buttonFocusTexture,
+				focusTexture=self.focusTexture,
 				noFocusTexture=self.dGrayTexture,
 			)
 			button.setVisible(False)
@@ -333,87 +403,14 @@ class SyncSettings(xbmcgui.WindowDialog):
 	def _getButton(self, buttonID):
 		return self.getControl(buttonID)
 
-	def onAction(self, action):
-		action = action.getId()
-		self.buttonID = self.getFocusId()
-
-		if action in (self.ACTION_PREVIOUS_MENU, self.ACTION_BACKSPACE):
-			self.close()
-		elif action == self.ACTION_MOVE_UP:
-
-			if self.buttonID == self.menuButtonIDs[0]:
-				self.setFocus(self.buttonOK)
-			elif self.buttonID in (self.buttonCloseID, self.buttonOKID):
-				self.setFocusId(self.menuButtonIDs[-1])
-			elif self.buttonID in self.menuButtonIDs:
-				self._updateList("up")
-
-		elif action == self.ACTION_MOVE_DOWN:
-
-			if self.buttonID == self.menuButtonIDs[-1]:
-				self.setFocus(self.buttonOK)
-			elif self.buttonID in (self.buttonCloseID, self.buttonOKID):
-				self.setFocusId(self.menuButtonIDs[0])
-			elif self.buttonID in self.menuButtonIDs:
-				self._updateList("down")
-
-		elif action == self.ACTION_MOVE_RIGHT:
-
-			if self.folders:
-
-				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonOKID:
-					self.setFocus(self.buttonClose)
-				elif self.buttonID in self.buttonSwitchesIDs:
-					self.setFocusId(self.menuButtonIDs[0])
-				elif self.buttonID == self.buttonCloseID:
-					self.setFocusId(self.menuButtonIDs[0])
-
-			else:
-
-				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonOKID:
-					self.setFocus(self.buttonClose)
-				elif self.buttonID == self.buttonCloseID:
-					self.setFocusId(self.menuButtonIDs[0])
-
-		elif action == self.ACTION_MOVE_LEFT:
-
-			if self.folders:
-
-				if self.buttonID in self.menuButtonIDs:
-					self.setFocusId(self.buttonSwitchesIDs[0])
-				elif self.buttonID in self.buttonSwitchesIDs:
-					self.setFocus(self.buttonOK)
-				elif self.buttonID == self.buttonCloseID:
-					self.setFocus(self.buttonOK)
-				elif self.buttonID == self.buttonOKID:
-					self.setFocusId(self.menuButtonIDs[0])
-
-			else:
-
-				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonCloseID:
-					self.setFocus(self.buttonOK)
-				elif self.buttonID == self.buttonOKID:
-					self.setFocusId(self.menuButtonIDs[0])
-
-	def onControl(self, control):
-		self.buttonID = control.getId()
-
-		if self.buttonID in (self.backgroundID, self.buttonCloseID):
-			self.close()
-		elif self.buttonID == self.buttonOKID:
-			self._setSettings()
-		elif self.buttonID in self.pushButtonIDs:
-			self.functions[control.getLabel()](control)
-		elif self.buttonID in self.buttonSwitchesIDs:
-
-			if self.buttonID == self.buttonSwitchesIDs[0]:
-				[button.setVisible(False) for button in self.TMDBButtons]
-				[button.setVisible(True) for button in self.generalSettingsButtons]
-				self.menuButtonIDs = self.generalSettingsButtonIDs
-			else:
-				[button.setVisible(False) for button in self.generalSettingsButtons]
-				[button.setVisible(True) for button in self.TMDBButtons]
-				self.menuButtonIDs = self.TMDBButtonIDs
+	def _initializePaths(self):
+		mediaPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
+		self.blueTexture = os.path.join(mediaPath, "blue.png")
+		self.grayTexture = os.path.join(mediaPath, "gray.png")
+		self.dGrayTexture = os.path.join(mediaPath, "dgray.png")
+		self.focusTexture = os.path.join(mediaPath, "focus.png")
+		self.focusOnTexture = os.path.join(mediaPath, "radiobutton-focus.png")
+		self.focusOffTexture = os.path.join(mediaPath, "radiobutton-nofocus.png")
 
 	def _setAdultContent(self, button):
 		options = ["true", "false"]
@@ -611,29 +608,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 		syncRootPath = os.path.join(syncRootPath, self.settings.getLocalizedString(30000))
 		button.setLabel(label2=syncRootPath)
 
-	def _setup(self, buttonAmount):
-		self.font = "font13"
-		self.viewportWidth = self.getWidth()
-		self.viewportHeight = self.getHeight()
-		self.windowWidth = int(1000 * self.viewportWidth / 1920)
-
-		if self.folders:
-			self.buttonWidth = self.windowWidth - 200
-		else:
-			self.buttonWidth = self.windowWidth - 50
-
-		self.buttonHeight = 40
-		self.windowHeight = int(self.buttonHeight * buttonAmount + self.buttonSpacing + 90)
-		self.windowBottom = int((self.viewportHeight + self.windowHeight) / 2)
-		self.x = int((self.viewportWidth - self.windowWidth) / 2)
-		self.y = int((self.viewportHeight - self.windowHeight) / 2)
-		self.center = int((self.x + self.windowWidth / 2) - (self.buttonWidth / 2))
-		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
-		background = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, self.windowHeight, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
-		bar = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, 40, f"[B]{self.settings.getLocalizedString(30012)}[/B]", focusTexture=self.blueTexture, noFocusTexture=self.blueTexture, shadowColor="0xFF000000", textOffsetX=20)
-		self.addControls([backgroundInvis, background, bar])
-		self.backgroundID = backgroundInvis.getId()
-
 	def _stopSyncingFolder(self, *args):
 		selection = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30072))
 
@@ -686,10 +660,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		if direction == "up":
 			newIndex = currentIndex - 1
 		elif direction == "down":
-			newIndex = currentIndex + 1
-
-			if newIndex == len(self.menuButtonIDs):
-				newIndex = 0
+			newIndex = (currentIndex + 1) % len(self.menuButtonIDs)
 
 		newButton = self._getButton(self.menuButtonIDs[newIndex])
 		self.setFocus(newButton)

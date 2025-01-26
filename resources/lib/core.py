@@ -179,8 +179,6 @@ class Core:
 		if not account:
 			return
 
-		self.cloudService.setAccount(account)
-		self.refreshToken(account.expiry)
 		driveSettings = self.cache.getDrive(driveID)
 
 		if driveSettings:
@@ -295,11 +293,15 @@ class Core:
 		if not confirmation:
 			return
 
+		deleteFiles = self.dialog.yesno(
+			self.settings.getLocalizedString(30000),
+			self.settings.getLocalizedString(30027),
+		)
 		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
 		driveID = self.settings.getParameter("drive_id")
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/delete_drive"
-		data = {"drive_id": driveID}
+		data = {"drive_id": driveID, "delete_files": deleteFiles}
 		http_requester.request(url, data)
 
 	def deleteSyncCache(self):
@@ -443,13 +445,9 @@ class Core:
 
 	def listAccounts(self):
 		driveID = self.settings.getParameter("drive_id")
-		account = self.accountManager.getAccount(driveID)
 
-		if not account:
+		if not self.accountManager.getAccount(driveID):
 			return
-
-		self.cloudService.setAccount(account)
-		self.refreshToken(account.expiry)
 
 		self.addMenuItem(
 			f"{self.pluginURL}?mode=add_service_account&drive_id={driveID}",

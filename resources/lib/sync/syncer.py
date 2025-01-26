@@ -24,7 +24,7 @@ class Syncer:
 		self.cache = cache
 
 	def syncChanges(self, driveID):
-		account = self.accountManager.setAccounts()
+		self.accountManager.setAccounts()
 		account = self.accountManager.getAccount(driveID)
 
 		if not account:
