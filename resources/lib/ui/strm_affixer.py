@@ -17,6 +17,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 	ACTION_BACKSPACE = 92
 	ACTION_MOUSE_LEFT_CLICK = 100
 	ACTION_MOUSE_RIGHT_CLICK = 101
+	ACTION_MOUSE_DOUBLE_CLICK = 103
 	ACTION_TOUCH_TAP = 401
 	ACTION_TOUCH_LONGPRESS = 411
 
@@ -170,7 +171,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 
 					self.setFocus(button)
 
-		elif action in (self.ACTION_MOUSE_LEFT_CLICK, self.ACTION_TOUCH_TAP):
+		elif action in (self.ACTION_MOUSE_LEFT_CLICK, self.ACTION_MOUSE_DOUBLE_CLICK, self.ACTION_TOUCH_TAP):
 
 			if not self._getButton(self.focusedButtonID).isVisible():
 				return

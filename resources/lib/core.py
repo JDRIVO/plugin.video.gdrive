@@ -235,7 +235,7 @@ class Core:
 				),
 				(
 					self.settings.getLocalizedString(30159),
-					f"RunPlugin({self.pluginURL}?mode=delete_drive&drive_id={driveID})",
+					f"RunPlugin({self.pluginURL}?mode=delete_drive&drive_id={driveID}&drive_name={displayName})",
 				)
 			]
 			self.addMenuItem(
@@ -297,11 +297,12 @@ class Core:
 			self.settings.getLocalizedString(30000),
 			self.settings.getLocalizedString(30027),
 		)
-		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
 		driveID = self.settings.getParameter("drive_id")
+		driveName = self.settings.getParameter("drive_name")
+		self.dialog.notification(self.settings.getLocalizedString(30000), f"{self.settings.getLocalizedString(30105)} {driveName}")
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/delete_drive"
-		data = {"drive_id": driveID, "delete_files": deleteFiles}
+		data = {"drive_id": driveID, "drive_name": driveName, "delete_files": deleteFiles}
 		http_requester.request(url, data)
 
 	def deleteSyncCache(self):
@@ -439,7 +440,7 @@ class Core:
 		folderName = self.settings.getParameter("folder_name")
 		mode = self.settings.getParameter("sync_mode")
 		self.succeeded = False
-		syncSettings = SyncSettings(drive_id=driveID, folder_id=folderID, accounts=self.accounts, folder_name=folderName, mode=mode)
+		syncSettings = SyncSettings(drive_id=driveID, folder_id=folderID, folder_name=folderName, accounts=self.accounts, mode=mode)
 		syncSettings.doModal()
 		del syncSettings
 
@@ -566,7 +567,7 @@ class Core:
 			folderName = folder["local_path"]
 			folderID = folder["folder_id"]
 			self.addMenuItem(
-				f"{self.pluginURL}?mode=get_sync_settings&drive_id={driveID}&folder_id={folderID}&sync_mode=folder",
+				f"{self.pluginURL}?mode=get_sync_settings&drive_id={driveID}&folder_id={folderID}&folder_name={folderName}&sync_mode=folder",
 				f"[COLOR lime][B]{folderName}[/B][/COLOR]",
 			)
 
@@ -684,7 +685,7 @@ class Core:
 		)
 
 		if help:
-			url = "https://github.com/user-attachments/assets/b3d0e86f-2597-40c8-8485-6d11ad085372"
+			url = "https://github.com/user-attachments/assets/4365514d-95df-427e-a717-a4f7270531cc"
 			listItem = xbmcgui.ListItem("Client ID and Client Secret creation")
 			xbmc.Player().play(url, listItem)
 
@@ -905,7 +906,7 @@ class Core:
 		folders = [{"id": folderID, "name": folderName, "modifiedTime": modifiedTime}]
 		mode = self.settings.getParameter("sync_mode")
 		self.succeeded = False
-		syncSettings = SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
+		syncSettings = SyncSettings(drive_id=driveID, folder_name=folderName, accounts=self.accounts, folders=folders, mode=mode)
 		syncSettings.doModal()
 		del syncSettings
 

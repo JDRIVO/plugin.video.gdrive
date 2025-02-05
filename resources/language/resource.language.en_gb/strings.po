@@ -425,6 +425,14 @@ msgctxt "#30104"
 msgid "Include"
 msgstr "Include"
 
+msgctxt "#30105"
+msgid "Deleting Drive:"
+msgstr "Deleting Drive:"
+
+msgctxt "#30106"
+msgid "Deleted Drive:"
+msgstr "Deleted Drive:"
+
 msgctxt "#30121"
 msgid "Are you sure you want to delete account:"
 msgstr "Are you sure you want to delete account:"

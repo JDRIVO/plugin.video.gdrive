@@ -45,6 +45,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.displayMode = kwargs.get("mode")
 		self.driveID = kwargs.get("drive_id")
 		self.folderID = kwargs.get("folder_id")
+		self.folderName = kwargs.get("folder_name")
 		self.foldersToSync = kwargs.get("folders")
 		self.accounts = kwargs.get("accounts")
 		self.settings = SETTINGS
@@ -144,7 +145,17 @@ class SyncSettings(xbmcgui.WindowDialog):
 	def _addBackground(self):
 		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
 		background = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, self.windowHeight, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
-		bar = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, 40, f"[B]{self.settings.getLocalizedString(30012)}[/B]", focusTexture=self.blueTexture, noFocusTexture=self.blueTexture, shadowColor="0xFF000000", textOffsetX=20)
+		bar = xbmcgui.ControlButton(
+			self.x,
+			self.y,
+			self.windowWidth,
+			40,
+			f"[B]{self.settings.getLocalizedString(30012)}{': ' + self.folderName if self.folderName else ''}[/B]",
+			focusTexture=self.blueTexture,
+			noFocusTexture=self.blueTexture,
+			shadowColor="0xFF000000",
+			textOffsetX=20
+		)
 		self.addControls([backgroundInvis, background, bar])
 		self.backgroundID = backgroundInvis.getId()
 

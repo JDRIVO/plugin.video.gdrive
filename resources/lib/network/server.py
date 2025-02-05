@@ -125,11 +125,12 @@ class ServerHandler(BaseHTTPRequestHandler):
 		postData = self.getPostDataJSON()
 		self.handleResponse(200)
 		driveID = postData["drive_id"]
+		driveName = postData["drive_name"]
 		deleteFiles = postData["delete_files"]
 		self.server.taskManager.removeTask(driveID)
 		self.server.cache.deleteDrive(driveID, deleteFiles)
 		self.server.accountManager.deleteDrive(driveID)
-		xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
+		self.server.dialog.notification(self.server.settings.getLocalizedString(30000), f"{self.server.settings.getLocalizedString(30106)} {driveName}")
 		xbmc.executebuiltin("Container.Refresh")
 
 	def handleDeleteSyncCache(self):
