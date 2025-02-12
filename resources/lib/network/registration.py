@@ -28,7 +28,7 @@ form = """
 			height: 250px;
 			justify-content: center;
 			padding: 20px;
-			width: 300px;
+			width: 325px;
 		}
 
 		form {
@@ -117,7 +117,7 @@ def status(output):
 			justify-content: center;
 			padding: 20px;
 			position: relative;
-			width: 300px;
+			width: 325px;
 		}
 
 		.inner-box {

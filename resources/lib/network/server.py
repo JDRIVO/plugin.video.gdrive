@@ -66,17 +66,12 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 class ServerHandler(BaseHTTPRequestHandler):
 
 	def createRequest(self, start, end, startOffset):
+		headers = self.server.cloudService.getHeaders()
 
-		if start == "":
-			return Request(self.server.url, headers=self.server.cloudService.getHeaders())
-		else:
-			return Request(
-				self.server.url,
-				headers=self.server.cloudService.getHeaders(
-					additionalHeader="Range",
-					additionalValue=f"bytes={start - startOffset}-{end}",
-				)
-			)
+		if start != "":
+			headers["Range"] = f"bytes={start - startOffset}-{end}"
+
+		return Request(self.server.url, headers=headers)
 
 	def decryptStream(self, response, startOffset):
 		decrypt = Encryptor(self.server.settings.getSetting("crypto_salt"), self.server.settings.getSetting("crypto_password"))
@@ -223,7 +218,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		startOffset = 0
 
 		if self.server.encrypted and start != "" and start > 16 and end == "":
-			startOffset = 16 - ((int(self.server.length) - start) % 16) + 8
+			startOffset = 16 - ((self.server.length - start) % 16) + 8
 
 		req = self.createRequest(start, end, startOffset)
 
@@ -417,24 +412,20 @@ class ServerHandler(BaseHTTPRequestHandler):
 			)
 
 	def sendPlayResponse(self, start, end, response, startOffset):
+		headers = {
+			"Content-Type": response.headers.get("Content-Type"),
+			"Cache-Control": response.headers.get("Cache-Control"),
+			"Date": response.headers.get("Date"),
+			"Accept-Ranges": "bytes",
+		}
 
 		if start == "":
-			self.handleResponse(200, {
-				"Content-Length": response.info().get("Content-Length"),
-				"Content-Type": response.info().get("Content-Type"),
-				"Cache-Control": response.info().get("Cache-Control"),
-				"Date": response.info().get("Date"),
-				"Accept-Ranges": "bytes",
-			})
+			headers["Content-Length"] = response.headers.get("Content-Length")
+			self.handleResponse(200, headers)
 		else:
-			self.handleResponse(206, {
-				"Content-Length": str(int(response.info().get("Content-Length")) - startOffset),
-				"Content-Range": f"bytes {start}-{end}/{self.server.length}" if end else f"bytes {start}-{int(self.server.length) - 1}/{self.server.length}",
-				"Content-Type": response.info().get("Content-Type"),
-				"Cache-Control": response.info().get("Cache-Control"),
-				"Date": response.info().get("Date"),
-				"Accept-Ranges": "bytes",
-			})
+			headers["Content-Length"] = str(int(response.headers.get("Content-Length")) - startOffset)
+			headers["Content-Range"] = f"bytes {start}-{end}/{self.server.length}" if end else f"bytes {start}-{self.server.length - 1}/{self.server.length}",
+			self.handleResponse(206, headers)
 
 		if self.server.encrypted:
 			self.decryptStream(response, startOffset)
@@ -544,15 +535,15 @@ class ServerHandler(BaseHTTPRequestHandler):
 				return
 
 		self.server.failed = False
+		self.server.length = int(response.headers.get("Content-Length"))
 		self.handleResponse(200, {
-			"Content-Length": response.info().get("Content-Length"),
-			"Content-Type": response.info().get("Content-Type"),
-			"Cache-Control": response.info().get("Cache-Control"),
-			"Date": response.info().get("Date"),
+			"Content-Length": self.server.length,
+			"Content-Type": response.headers.get("Content-Type"),
+			"Cache-Control": response.headers.get("Cache-Control"),
+			"Date": response.headers.get("Date"),
 			"Accept-Ranges": "bytes",
 		})
 		response.close()
-		self.server.length = response.info().get("Content-Length")
 
 	def do_POST(self):
 		pathHandlers = {

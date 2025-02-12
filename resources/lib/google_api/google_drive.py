@@ -128,21 +128,11 @@ class GoogleDrive:
 
 		return drives
 
-	def getHeaders(self, accessToken=None, additionalHeader=None, additionalValue=None):
-		cookie = self.account.driveStream
-		accessToken = self.account.accessToken
-		if not accessToken: accessToken = ""
-		if not cookie: cookie = ""
-
-		headers = {
-			"Cookie": f"DRIVE_STREAM={cookie}",
-			"Authorization": f"Bearer {accessToken}",
+	def getHeaders(self, accessToken=None):
+		return {
+			"Cookie": f"DRIVE_STREAM={self.account.driveStream or ''}",
+			"Authorization": f"Bearer {self.account.accessToken or ''}",
 		}
-
-		if additionalHeader:
-			headers[additionalHeader] = additionalValue
-
-		return headers
 
 	def getHeadersEncoded(self):
 		return urllib.parse.urlencode(self.getHeaders())
