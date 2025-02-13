@@ -128,7 +128,7 @@ class GoogleDrive:
 
 		return drives
 
-	def getHeaders(self, accessToken=None):
+	def getHeaders(self):
 		return {
 			"Cookie": f"DRIVE_STREAM={self.account.driveStream or ''}",
 			"Authorization": f"Bearer {self.account.accessToken or ''}",
