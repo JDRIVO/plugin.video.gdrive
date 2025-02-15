@@ -634,8 +634,8 @@ msgid "Server port (requires restart)"
 msgstr "Server port (requires restart)"
 
 msgctxt "#30800"
-msgid "Dialogs"
-msgstr "Dialogs"
+msgid "GUI"
+msgstr "GUI"
 
 msgctxt "#30801"
 msgid "Display initial sync progress dialog"
@@ -644,6 +644,10 @@ msgstr "Display initial sync progress dialog"
 msgctxt "#30802"
 msgid "Display file deletion dialog"
 msgstr "Display file deletion dialog"
+
+msgctxt "#30803"
+msgid "Display time since last sync in drive selection menu"
+msgstr "Display time since last sync in drive selection menu"
 
 msgctxt "#30900"
 msgid "Accounts"

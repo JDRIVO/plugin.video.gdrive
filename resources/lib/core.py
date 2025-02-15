@@ -10,6 +10,7 @@ import xbmcgui
 import xbmcplugin
 
 from constants import *
+from helpers import getElapsedTime
 from .ui.dialogs import Dialog
 from .ui.strm_affixer import StrmAffixer
 from .ui.sync_settings import SyncSettings
@@ -215,6 +216,7 @@ class Core:
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
 
 	def createDrivesMenu(self):
+		displayLastSync = self.settings.getSetting("display_last_sync")
 		self.addMenuItem(
 			f"{self.pluginURL}?mode=register_account",
 			f"[B][COLOR yellow]{self.settings.getLocalizedString(30207)}[/COLOR][/B]",
@@ -240,7 +242,7 @@ class Core:
 			]
 			self.addMenuItem(
 				f"{self.pluginURL}?mode=list_drive&drive_id={driveID}",
-				displayName,
+				f"{displayName} | {getElapsedTime(self.cache.getLastSync(driveID))}" if displayLastSync else displayName,
 				contextMenu,
 			)
 

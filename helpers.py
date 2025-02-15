@@ -12,6 +12,20 @@ def floorDT(dt, interval):
 def getCurrentTime():
 	return floorDT(datetime.datetime.now().time(), 1)
 
+def getElapsedTime(timestamp):
+	secondsElapsed = time.time() - float(timestamp)
+	hours, remainder = divmod(round(secondsElapsed), 3600)
+
+	if hours:
+		return f"{hours} hours" if hours > 1 else f"{hours} hour"
+
+	minutes, seconds = divmod(remainder, 60)
+
+	if minutes:
+		return f"{minutes} minutes" if minutes > 1 else f"{minutes} minute"
+	else:
+		return f"{seconds} seconds" if seconds > 1 else f"{seconds} second"
+
 def rfcToTimestamp(dateString):
 	# RFC 3339 str to timestamp
 	return strptime(dateString, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=datetime.timezone.utc).timestamp()

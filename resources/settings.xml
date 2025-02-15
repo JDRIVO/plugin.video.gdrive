@@ -294,6 +294,11 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="display_last_sync" type="boolean" label="30803" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
 			</group>
 		</category>
 		<category id="accounts" label="30900" help="">

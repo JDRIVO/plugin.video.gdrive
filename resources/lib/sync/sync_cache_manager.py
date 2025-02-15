@@ -146,6 +146,9 @@ class SyncCacheManager(DatabaseManager):
 	def getFolders(self, condition):
 		return self.selectAll("folders", condition)
 
+	def getLastSync(self, driveID):
+		return self.select("drives", "last_update", {"drive_id": driveID})
+
 	def getSyncRootPath(self):
 		return self.select("global", "local_path")
 

@@ -1,4 +1,5 @@
 import os
+import time
 
 import xbmc
 
@@ -41,6 +42,7 @@ class Syncer:
 			return
 
 		if not changes:
+			self.cache.updateDrive({"last_update": time.time()}, driveID)
 			return True
 
 		changes = self._sortChanges(changes)
@@ -90,7 +92,7 @@ class Syncer:
 			}
 			sendJSONRPCCommand(query)
 
-		self.cache.updateDrive({"page_token": pageToken}, driveID)
+		self.cache.updateDrive({"page_token": pageToken, "last_update": time.time()}, driveID)
 		return True
 
 	def syncFolderAdditions(self, syncRootPath, drivePath, folder, folderSettings, progressDialog=None, syncedIDs=None):
