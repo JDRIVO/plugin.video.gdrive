@@ -242,7 +242,7 @@ class Core:
 			]
 			self.addMenuItem(
 				f"{self.pluginURL}?mode=list_drive&drive_id={driveID}",
-				f"{displayName} | {getElapsedTime(self.cache.getLastSync(driveID))}" if displayLastSync else displayName,
+				f"{displayName} | {getElapsedTime(lastSync)}" if displayLastSync and (lastSync := self.cache.getLastSync(driveID)) else displayName,
 				contextMenu,
 			)
 
