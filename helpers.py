@@ -38,6 +38,11 @@ def secondsToHMS(seconds):
 	if hours:
 		time += f"{hours}h"
 
+		if minutes:
+			time += f"{minutes}m"
+
+		return time
+
 	if minutes:
 		time += f"{minutes}m"
 

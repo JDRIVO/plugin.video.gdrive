@@ -174,15 +174,7 @@ class GoogleDrive:
 			resolution = min(int(r1), int(r2))
 
 			if resolution not in resolutions:
-
-				if resolution >= 1080:
-					resolution = 1080
-				elif resolution >= 720:
-					resolution = 720
-				elif resolution >= 480:
-					resolution = 480
-				else:
-					resolution = 360
+				resolution = min(resolutions, key=lambda x: abs(x - resolution))
 
 			resolution = f"{resolution}P"
 			resolutionMap[resolution] = itag

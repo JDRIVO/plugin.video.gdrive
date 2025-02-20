@@ -626,7 +626,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			return
 
 		self.close()
-		data = {"folder_id": self.folderID, "delete": False}
+		data = {"drive_id": self.driveID, "folder_id": self.folderID, "delete": False}
 		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folder"
 		http_requester.request(url, data)
 
@@ -638,7 +638,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		self.close()
 		self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30075))
-		data = {"folder_id": self.folderID, "delete": True}
+		data = {"drive_id": self.driveID, "folder_id": self.folderID, "delete": True}
 		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folder"
 		http_requester.request(url, data)
 
