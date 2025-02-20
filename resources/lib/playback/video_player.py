@@ -9,7 +9,7 @@ from helpers import sendJSONRPCCommand
 class VideoPlayer(xbmc.Player):
 
 	def __init__(self, dbID, dbType, trackProgress):
-		self.dbID = dbID
+		self.dbID = int(dbID)
 		self.dbType = dbType
 		self.trackProgress = trackProgress
 		self.close = False
