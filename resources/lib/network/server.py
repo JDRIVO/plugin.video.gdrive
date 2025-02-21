@@ -315,8 +315,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.handleResponse(200)
 		dbID = postData["db_id"]
 		dbType = postData["db_type"]
-		trackProgress = dbID is not None
-		player = VideoPlayer(dbID, dbType, trackProgress)
+		player = VideoPlayer(dbID, dbType)
 
 		while not self.server.monitor.abortRequested() and not player.close:
 

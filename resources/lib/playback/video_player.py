@@ -8,10 +8,9 @@ from helpers import sendJSONRPCCommand
 
 class VideoPlayer(xbmc.Player):
 
-	def __init__(self, dbID, dbType, trackProgress):
+	def __init__(self, dbID, dbType):
 		self.dbID = int(dbID) if dbID else dbID
 		self.dbType = dbType
-		self.trackProgress = trackProgress
 		self.close = False
 		self.time = None
 		self.videoDuration = None
@@ -42,7 +41,7 @@ class VideoPlayer(xbmc.Player):
 
 	def onPlayBackStopped(self):
 
-		if self.trackProgress and self.dbType in ("movie", "episode"):
+		if self.dbID and self.dbType in ("movie", "episode"):
 
 			for _ in range(3):
 				self._markVideoWatched()
