@@ -9,7 +9,7 @@ from helpers import sendJSONRPCCommand
 class VideoPlayer(xbmc.Player):
 
 	def __init__(self, dbID, dbType, trackProgress):
-		self.dbID = int(dbID)
+		self.dbID = int(dbID) if dbID else dbID
 		self.dbType = dbType
 		self.trackProgress = trackProgress
 		self.close = False
@@ -66,15 +66,15 @@ class VideoPlayer(xbmc.Player):
 					"method": "VideoLibrary.SetMovieDetails",
 					"params": {"movieid": self.dbID, "playcount": 1, "resume": {"position": 0, "total": 0}},
 				}
-				sendJSONRPCCommand(query)
-			elif self.dbType == "episode":
+			else:
 				query = {
 					"jsonrpc": "2.0",
 					"id": 1,
 					"method": "VideoLibrary.SetEpisodeDetails",
 					"params": {"episodeid": self.dbID, "playcount": 1, "resume": {"position": 0, "total": 0}},
 				}
-				sendJSONRPCCommand(query)
+
+			sendJSONRPCCommand(query)
 
 	def _updateTime(self):
 
