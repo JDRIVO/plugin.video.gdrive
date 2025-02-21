@@ -131,6 +131,10 @@ class TaskManager:
 			threading.Thread(target=self._startIntervalTask, args=(startupSync, taskFrequency, driveID, taskID, startUpRun)).start()
 
 	def sync(self, driveID):
+
+		if not self.cache.getFolder({"drive_id": driveID}):
+			return
+
 		self.activeTasks.append(driveID)
 		synced = False
 
@@ -147,9 +151,7 @@ class TaskManager:
 
 	def syncAll(self):
 		drives = self.cache.getDrives()
-
-		if all(self.sync(drive["drive_id"]) for drive in drives):
-			return True
+		return any([self.sync(drive["drive_id"]) for drive in drives])
 
 	def _createTaskID(self):
 
