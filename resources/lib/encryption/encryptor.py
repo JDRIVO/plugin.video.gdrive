@@ -138,8 +138,8 @@ class Encryptor:
 
 			with open(outFilename, "wb") as outFile:
 
-				while True:
-					chunk = response.read(chunkSize)
+				for chunk in response.stream(chunkSize):
+					self.wfile.write(chunk)
 
 					if len(chunk) == 0:
 						break

@@ -73,18 +73,18 @@ class FileOperations:
 
 	def downloadFile(self, dirPath, filename, fileID, modifiedTime=None, encrypted=False):
 		self.createDirs(dirPath)
-		file = self.cloudService.downloadFile(fileID)
+		fileContent = self.cloudService.downloadFile(fileID)
 
-		if file:
+		if fileContent:
 
 			if encrypted:
 
 				with self.lock:
 					filePath = generateFilePath(dirPath, filename)
-					self.encryption.decryptStream(file, filePath, modifiedTime=modifiedTime)
+					self.encryption.decryptStream(fileContent, filePath, modifiedTime=modifiedTime)
 
 			else:
-				filePath = self.createFile(dirPath, filename, file.read(), modifiedTime=modifiedTime)
+				filePath = self.createFile(dirPath, filename, fileContent, modifiedTime=modifiedTime)
 
 			return filePath
 

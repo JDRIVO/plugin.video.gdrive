@@ -2,11 +2,10 @@ import os
 import re
 import json
 import time
+import urllib3
 import datetime
 from threading import Thread
-from urllib.error import URLError
 from urllib.parse import unquote_plus
-from urllib.request import Request, urlopen
 from socketserver import ThreadingMixIn
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -59,19 +58,12 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 		self.taskManager.run()
 		self.fileOperations = FileOperations()
 		self.dialog = Dialog()
+		self.http = urllib3.PoolManager()
 		self.shutdownRequest = False
 		self.failed = False
 
 
 class ServerHandler(BaseHTTPRequestHandler):
-
-	def createRequest(self, start, end, startOffset):
-		headers = self.server.cloudService.getHeaders()
-
-		if start != "":
-			headers["Range"] = f"bytes={start - startOffset}-{end}"
-
-		return Request(self.server.url, headers=headers)
 
 	def decryptStream(self, response, startOffset):
 		decrypt = Encryptor(self.server.settings.getSetting("crypto_salt"), self.server.settings.getSetting("crypto_password"))
@@ -216,16 +208,19 @@ class ServerHandler(BaseHTTPRequestHandler):
 			end = ""
 
 		startOffset = 0
+		headers = self.server.cloudService.getHeaders()
 
-		if self.server.encrypted and start != "" and start > 16 and end == "":
-			startOffset = 16 - ((self.server.length - start) % 16) + 8
+		if start:
 
-		req = self.createRequest(start, end, startOffset)
+			if self.server.encrypted and start > 16 and not end:
+				startOffset = 16 - ((self.server.length - start) % 16) + 8
+
+			headers["Range"] = f"bytes={start - startOffset}-{end}"
 
 		try:
-			response = urlopen(req)
-		except URLError as e:
-			xbmc.log(f"gdrive error: {e}", xbmc.LOGERROR)
+			response = self.server.http.request("GET", self.server.url, headers=headers, preload_content=False)
+		except urllib3.exceptions.HTTPError as e:
+			log(f"gdrive error: {e}", xbmc.LOGERROR)
 			return
 
 		self.sendPlayResponse(start, end, response, startOffset)
@@ -423,20 +418,20 @@ class ServerHandler(BaseHTTPRequestHandler):
 			"Accept-Ranges": "bytes",
 		}
 
-		if start == "":
-			headers["Content-Length"] = response.headers.get("Content-Length")
-			self.handleResponse(200, headers)
-		else:
+		if start:
 			headers["Content-Length"] = str(int(response.headers.get("Content-Length")) - startOffset)
 			headers["Content-Range"] = f"bytes {start}-{end}/{self.server.length}" if end else f"bytes {start}-{self.server.length - 1}/{self.server.length}",
 			self.handleResponse(206, headers)
+		else:
+			headers["Content-Length"] = response.headers.get("Content-Length")
+			self.handleResponse(200, headers)
 
 		if self.server.encrypted:
 			self.decryptStream(response, startOffset)
 		else:
 			self.streamResponse(response)
 
-		response.close()
+		response.release_conn()
 
 	def sendRedirect(self, location):
 		self.send_response(303)
@@ -444,16 +439,11 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.end_headers()
 
 	def streamResponse(self, response):
-		CHUNK = 16 * 1024
+		CHUNK_SIZE = 16 * 1024
 
 		try:
 
-			while True:
-				chunk = response.read(CHUNK)
-
-				if not chunk:
-					break
-
+			for chunk in response.stream(CHUNK_SIZE):
 				self.wfile.write(chunk)
 
 		except Exception as e:
@@ -480,21 +470,25 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.send_error(404)
 
 	def do_HEAD(self):
-		req = Request(self.server.url, headers=self.server.cloudService.getHeaders())
-		req.get_method = lambda: "HEAD"
 
 		try:
-			response = urlopen(req)
-		except URLError as e:
+			response = self.server.http.request("HEAD", self.server.url, headers=self.server.cloudService.getHeaders())
+
+			if response.status >= 400:
+				raise urllib3.exceptions.HTTPError({"status": response.status})
+
+		except urllib3.exceptions.HTTPError as e:
+			args = args[0] if (args := e.args) else {}
+			statusCode = args.get("status")
 			self.server.failed = True
 
-			if e.code == 404:
+			if statusCode == 404:
 				self.server.dialog.ok(self.server.settings.getLocalizedString(30003), self.server.settings.getLocalizedString(30209))
 				return
-			elif e.code == 401:
+			elif statusCode == 401:
 				self.server.dialog.ok(self.server.settings.getLocalizedString(30003), self.server.settings.getLocalizedString(30018))
 				return
-			elif e.code == 403 or e.code == 429:
+			elif statusCode in (403, 429):
 				accountChange = False
 				accounts = self.server.accountManager.getAccounts(self.server.driveID)
 
@@ -508,12 +502,13 @@ class ServerHandler(BaseHTTPRequestHandler):
 					if self.server.transcoded:
 						self.server.url = self.server.cloudService.getStreams(self.server.fileID, (self.server.transcoded,))[1]
 
-					req = Request(self.server.url, headers=self.server.cloudService.getHeaders())
-					req.get_method = lambda: "HEAD"
-
 					try:
-						response = urlopen(req)
-					except URLError:
+						response = self.server.http.request("HEAD", self.server.url, headers=self.server.cloudService.getHeaders())
+
+						if response.status >= 400:
+							raise urllib3.exceptions.HTTPError({"status": response.status})
+
+					except urllib3.exceptions.HTTPError as e:
 						continue
 
 					accountChange = True
@@ -547,7 +542,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 			"Date": response.headers.get("Date"),
 			"Accept-Ranges": "bytes",
 		})
-		response.close()
 
 	def do_POST(self):
 		pathHandlers = {

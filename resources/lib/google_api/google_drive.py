@@ -205,7 +205,7 @@ class GoogleDrive:
 			"grant_type": "authorization_code",
 			"redirect_uri": f"http://localhost:{port}/status",
 		}
-		return http_requester.request(GOOGLE_TOKEN_URL, data, method="POST")
+		return http_requester.request(GOOGLE_TOKEN_URL, data)
 
 	def listDirectory(self, folderID="root", sharedWithMe=False, foldersOnly=False, starred=False, search=False, customQuery=False):
 		params = {
@@ -259,7 +259,7 @@ class GoogleDrive:
 				"grant_type": "refresh_token",
 			}
 
-		response = http_requester.request(GOOGLE_TOKEN_URL, data, method="POST")
+		response = http_requester.request(GOOGLE_TOKEN_URL, data)
 
 		if not response:
 			return
