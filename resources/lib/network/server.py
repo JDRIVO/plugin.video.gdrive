@@ -2,7 +2,6 @@ import os
 import re
 import json
 import time
-import urllib3
 import datetime
 from threading import Thread
 from urllib.parse import unquote_plus
@@ -10,6 +9,7 @@ from socketserver import ThreadingMixIn
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import xbmc
+import urllib3
 
 from constants import *
 from . import registration

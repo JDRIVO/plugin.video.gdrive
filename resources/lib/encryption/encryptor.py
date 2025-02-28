@@ -139,11 +139,6 @@ class Encryptor:
 			with open(outFilename, "wb") as outFile:
 
 				for chunk in response.stream(chunkSize):
-					self.wfile.write(chunk)
-
-					if len(chunk) == 0:
-						break
-
 					outFile.write(decryptor.decrypt(chunk))
 
 				outFile.truncate(origSize)
