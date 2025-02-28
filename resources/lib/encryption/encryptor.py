@@ -22,83 +22,15 @@ except Exception:
 
 
 class Encryptor:
-	# salt size in bytes
+	# Salt size in bytes
 	SALT_SIZE = 32
-	# number of iterations in the key generation
+	# Number of iterations in the key generation
 	NUMBER_OF_ITERATIONS = 20
-	# the size multiple required for AES
+	# The size multiple required for AES
 	AES_MULTIPLE = 16
 
 	def __init__(self, saltFile=None, saltPassword=None, settings=None):
-		self.setup(saltFile, saltPassword, settings)
-
-	def setup(self, saltFile=None, saltPassword=None, settings=None):
-
-		if settings:
-			saltFile = settings.getSetting("crypto_salt")
-			saltPassword = settings.getSetting("crypto_password")
-
-		try:
-
-			try:
-
-				with open(saltFile, "rb") as salt:
-					self.salt = salt.read()
-
-			except Exception:
-
-				with open(saltFile, "wb") as salt:
-					self.salt = self.generateSalt()
-					salt.write(self.salt)
-
-		except Exception:
-			return
-
-		if saltPassword:
-			self.key = self.generateKey(saltPassword)
-
-	def decryptFilename(self, filename):
-		decryptedFilename = self.decryptString(filename)
-
-		if decryptedFilename:
-			return decryptedFilename.decode("utf-8")
-
-	def generateKey(self, password, iterations=NUMBER_OF_ITERATIONS):
-
-		if not iterations > 0:
-			return
-
-		key = password.encode("utf-8") + self.salt
-
-		for i in range(iterations):
-			key = hashlib.sha256(key).digest()
-
-		return key
-
-	def generateSalt(self, size=SALT_SIZE):
-		return "".join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(size)).encode("utf-8")
-
-	def padText(text, multiple):
-		extraBytes = len(text) % multiple
-		paddingSize = multiple - extraBytes
-		padding = chr(paddingSize) * paddingSize
-		paddedText = text + padding
-		return paddedText
-
-	def unpadText(paddedText):
-		paddingSize = ord(paddedText[-1])
-		text = paddedText[:-paddingSize]
-		return text
-
-	def encryptFilename(filename):
-		return base64.b64encode(filename)
-
-	def decrypt(filename):
-
-		try:
-			return base64.b64decode(filename)
-		except Exception:
-			return ""
+		self._setup(saltFile, saltPassword, settings)
 
 	def decryptFile(self, inFilename, outFilename=None, chunkSize=24 * 1024):
 		""" Decrypts a file using AES (CBC mode) with the
@@ -116,7 +48,7 @@ class Encryptor:
 			origSize = struct.unpack("<Q", inFile.read(struct.calcsize("Q")))[0]
 			# iv = inFile.read(16)
 			# decryptor = AES.new(key, AES.MODE_CBC, iv)
-			# key = generateKey(password, salt, NUMBER_OF_ITERATIONS)
+			# key = _generateKey(password, salt, NUMBER_OF_ITERATIONS)
 			decryptor = AES.new(self.key, AES.MODE_ECB)
 
 			with open(outFilename, "wb") as outFile:
@@ -131,115 +63,38 @@ class Encryptor:
 
 				outFile.truncate(origSize)
 
-	def decryptStream(self, response, outFilename, modifiedTime=None, chunkSize=24 * 1024):
-		# with open(inFilename, "rb") as inFile:
-			origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
-			decryptor = AES.new(self.key, AES.MODE_ECB)
+	def decryptFilename(self, filename):
+		decryptedFilename = self.decryptString(filename)
 
-			with open(outFilename, "wb") as outFile:
+		if decryptedFilename:
+			return decryptedFilename.decode("utf-8")
 
-				for chunk in response.stream(chunkSize):
-					outFile.write(decryptor.decrypt(chunk))
-
-				outFile.truncate(origSize)
-
-			if modifiedTime:
-				os.utime(outFilename, (modifiedTime, modifiedTime))
-
-	def decryptStreamChunkOld(self, response, wfile, chunkSize=24 * 1024, startOffset=0):
-		# with open(inFilename, "rb") as inFile:
-			origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
-			decryptor = AES.new(self.key, AES.MODE_ECB)
-			count = 0
-
-			while True:
-				chunk = response.read(chunkSize)
-				count += 1
-
-				if len(chunk) == 0:
-					break
-
-				responseChunk = decryptor.decrypt(chunk)
-
-				if count == 1 and startOffset != 0:
-					wfile.write(responseChunk[startOffset:])
-				elif len(chunk) < len(responseChunk.strip()):
-					wfile.write(responseChunk.strip())
-				else:
-					wfile.write(responseChunk)
-
-	def decryptStreamChunk(self, response, wfile, adjStart=0, adjEnd=0, chunkSize=16 * 1024):
-		# origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
+	def decryptStreamChunk(self, response, wfile, chunkSize=24 * 1024, startOffset=0):
+		origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
 		decryptor = AES.new(self.key, AES.MODE_ECB)
-		responseChunk = ""
-		count = sending = 0
+		count = 0
 
-		# firstChunkSize = chunkSize + adjStart
-		# if adjStart > 0:
-			# firstChunk = response.read(adjStart)
-			# adjStart = 0
-
-		chunk = response.read(chunkSize)
-
-		while True:
-			nextChunk = response.read(chunkSize)
+		while chunk := response.read(chunkSize):
 			count += 1
+			decryptedChunk = decryptor.decrypt(chunk)
 
-			if len(chunk) == 0:
-				break
-
-			responseChunk = decryptor.decrypt(chunk)
-
-			if count == 1 and adjStart > 0 and len(nextChunk) == 0:
-				wfile.write(responseChunk[adjStart:].strip())
-				adjStart = 0
-			elif count == 1 and adjStart > 0:
-				wfile.write(responseChunk[adjStart:])
-				adjStart = 0
-			elif len(nextChunk) == 0 and adjEnd > 0:
-				wfile.write(responseChunk[:len(responseChunk) - adjEnd])
-				adjEnd = 0
-			elif len(nextChunk) == 0: # adjEnd = 0
-				wfile.write(responseChunk.strip())
+			if count == 1 and startOffset != 0:
+				wfile.write(decryptedChunk[startOffset:])
+			elif len(chunk) < len(decryptedChunk.strip()):
+				wfile.write(decryptedChunk.strip())
 			else:
-				wfile.write(responseChunk)
+				wfile.write(decryptedChunk)
 
-			chunk = nextChunk
+	def decryptString(self, stringEncrypted):
+		decryptor = AES.new(self.key, AES.MODE_ECB)
 
-	def decryptCalculatePadding(self, response, chunkSize=24 * 1024):
-		# with open(inFilename, "rb") as inFile:
-			origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
-			decryptor = AES.new(self.key, AES.MODE_ECB)
-			count = 0
+		if len(stringEncrypted) == 0:
+			return
 
-			while True:
-				chunk = response.read(chunkSize)
-				count += 1
-
-				if len(chunk) == 0:
-					break
-
-				responseChunk = decryptor.decrypt(chunk)
-				return int(len(chunk) - len(responseChunk.strip()))
-
-	def decryptCalculateSizing(self, response):
-		# with open(inFilename, "rb") as inFile:
-			origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
-			decryptor = AES.new(self.key, AES.MODE_ECB)
-			return origSize
-
-	def decryptStreamChunk2(self, response, wfile, chunkSize=24 * 1024, startOffset=0):
-		# with open(inFilename, "rb") as inFile:
-			origSize = struct.unpack("<Q", response.read(struct.calcsize("Q")))[0]
-			decryptor = AES.new(self.key, AES.MODE_ECB)
-
-			while True:
-				chunk = response.read(chunkSize)
-
-				if len(chunk) == 0:
-					break
-
-				wfile.write(decryptor.decrypt(chunk))
+		try:
+			return decryptor.decrypt(base64.b64decode(stringEncrypted.replace("---", "/").encode("utf-8"))).rstrip()
+		except Exception:
+			return
 
 	def encryptFile(self, inFilename, outFilename=None, chunkSize=64 * 1024):
 		""" Encrypts a file using AES (CBC mode) with the
@@ -266,7 +121,7 @@ class Encryptor:
 		if not outFilename:
 			outFilename = inFilename + ".enc"
 
-		# key = generateKey(key, salt, NUMBER_OF_ITERATIONS)
+		# key = _generateKey(key, salt, NUMBER_OF_ITERATIONS)
 		# iv = "".join(chr(random.randint(0, 0xFF)) for i in range(16))
 		encryptor = AES.new(self.key, AES.MODE_ECB)
 		fileSize = os.path.getsize(inFilename)
@@ -287,8 +142,11 @@ class Encryptor:
 
 					outFile.write(encryptor.encrypt(chunk))
 
+	def encryptFilename(filename):
+		return base64.b64encode(filename)
+
 	def encryptString(self, stringDecrypted):
-		# key = generateKey(key, salt, NUMBER_OF_ITERATIONS)
+		# key = _generateKey(key, salt, NUMBER_OF_ITERATIONS)
 		# iv = "".join(chr(random.randint(0, 0xFF)) for i in range(16))
 		encryptor = AES.new(self.key, AES.MODE_ECB)
 
@@ -299,13 +157,42 @@ class Encryptor:
 
 		return base64.b64encode(encryptor.encrypt(stringDecrypted.encode("utf-8"))).replace(b"/", b"---")
 
-	def decryptString(self, stringEncrypted):
-		decryptor = AES.new(self.key, AES.MODE_ECB)
+	def _generateKey(self, password, iterations=NUMBER_OF_ITERATIONS):
 
-		if len(stringEncrypted) == 0:
+		if not iterations > 0:
 			return
+
+		key = password.encode("utf-8") + self.salt
+
+		for i in range(iterations):
+			key = hashlib.sha256(key).digest()
+
+		return key
+
+	def _generateSalt(self, size=SALT_SIZE):
+		return "".join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(size)).encode("utf-8")
+
+	def _setup(self, saltFile=None, saltPassword=None, settings=None):
+
+		if settings:
+			saltFile = settings.getSetting("crypto_salt")
+			saltPassword = settings.getSetting("crypto_password")
 
 		try:
-			return decryptor.decrypt(base64.b64decode(stringEncrypted.replace("---", "/").encode("utf-8"))).rstrip()
+
+			try:
+
+				with open(saltFile, "rb") as salt:
+					self.salt = salt.read()
+
+			except Exception:
+
+				with open(saltFile, "wb") as salt:
+					self.salt = self._generateSalt()
+					salt.write(self.salt)
+
 		except Exception:
 			return
+
+		if saltPassword:
+			self.key = self._generateKey(saltPassword)

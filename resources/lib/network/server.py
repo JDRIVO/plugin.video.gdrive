@@ -51,6 +51,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 		super().__init__(*args, **kwargs)
 		self.settings = SETTINGS
 		self.monitor = xbmc.Monitor()
+		self.http = urllib3.PoolManager()
 		self.accountManager = AccountManager()
 		self.cloudService = GoogleDrive()
 		self.cache = SyncCacheManager()
@@ -58,7 +59,6 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 		self.taskManager.run()
 		self.fileOperations = FileOperations()
 		self.dialog = Dialog()
-		self.http = urllib3.PoolManager()
 		self.shutdownRequest = False
 		self.failed = False
 
@@ -69,7 +69,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		decrypt = Encryptor(self.server.settings.getSetting("crypto_salt"), self.server.settings.getSetting("crypto_password"))
 
 		try:
-			decrypt.decryptStreamChunkOld(response, self.wfile, startOffset=startOffset)
+			decrypt.decryptStreamChunk(response, self.wfile, startOffset=startOffset)
 		except Exception as e:
 			xbmc.log(str(e))
 
@@ -439,11 +439,11 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.end_headers()
 
 	def streamResponse(self, response):
-		CHUNK_SIZE = 16 * 1024
+		chunkSize = 16 * 1024
 
 		try:
 
-			for chunk in response.stream(CHUNK_SIZE):
+			for chunk in response.stream(chunkSize):
 				self.wfile.write(chunk)
 
 		except Exception as e:
