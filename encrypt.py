@@ -14,5 +14,5 @@ filename = os.path.basename(filePath)
 encryptedFilename = encrypt.encryptString(filename)
 print(encryptedFilename)
 
-destinationPath = os.path.join(destinationPath, encryptedFilename.decode("utf-8"))
+destinationPath = os.path.join(destinationPath, encryptedFilename)
 encrypt.encryptFile(filePath, destinationPath)

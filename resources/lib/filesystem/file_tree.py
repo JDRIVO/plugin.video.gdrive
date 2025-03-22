@@ -31,11 +31,12 @@ class FileTree:
 	def __iter__(self):
 		return iter(self.fileTree.values())
 
-	def buildTree(self, rootFolder):
-		self.cacheUpdater.addDirectory(rootFolder)
-		self.rootFolderID = rootFolder.id
-		self.folderIDs.append(self.rootFolderID)
-		self.fileTree[self.rootFolderID] = rootFolder
+	def buildTree(self, folder):
+		self.cacheUpdater.addDirectory(folder)
+		folderID = folder.id
+		self.folderIDs.append(folderID)
+		self.fileTree[folderID] = folder
+		self.rootFolderID = folder.rootFolderID
 		self._getContents()
 
 	def _getContents(self):
@@ -77,7 +78,12 @@ class FileTree:
 					continue
 
 			if isFolder:
-				folderName = removeProhibitedFSchars(item["name"])
+				folderName = item["name"]
+
+				if self.encryptor:
+					folderName = self.encryptor.decryptDirName(folderName)
+
+				folderName = removeProhibitedFSchars(folderName)
 				path = path_ = os.path.join(self.fileTree[parentFolderID].remotePath, folderName)
 				copy = 1
 

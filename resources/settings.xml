@@ -73,29 +73,6 @@
 					<visible>false</visible>
 				</setting>
 			</group>
-			<group id="2" label="30406">
-				<setting id="crypto_password" type="string" label="30407" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="edit" format="string">
-						<heading>30407</heading>
-					</control>
-				</setting>
-				<setting id="crypto_salt" type="path" label="30408" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<writable>false</writable>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="button" format="file">
-						<heading>30408</heading>
-					</control>
-				</setting>
-			</group>
 		</category>
 		<category id="library" label="30500" help="">
 			<group id="1">
@@ -271,39 +248,28 @@
 				</setting>
 			</group>
 		</category>
-		<category id="server" label="30700" help="">
+		<category id="dialog" label="30700" help="">
 			<group id="1">
-				<setting id="server_port" type="integer" label="30701" help="">
-					<level>0</level>
-					<default>8011</default>
-					<control type="edit" format="integer">
-						<heading>30701</heading>
-					</control>
-				</setting>
-			</group>
-		</category>
-		<category id="dialog" label="30800" help="">
-			<group id="1">
-				<setting id="sync_progress_dialog" type="boolean" label="30801" help="">
+				<setting id="sync_progress_dialog" type="boolean" label="30701" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="file_deletion_dialog" type="boolean" label="30802" help="">
+				<setting id="file_deletion_dialog" type="boolean" label="30702" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="display_last_sync" type="boolean" label="30803" help="">
+				<setting id="display_last_sync" type="boolean" label="30703" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
 			</group>
 		</category>
-		<category id="accounts" label="30900" help="">
+		<category id="accounts" label="30800" help="">
 			<group id="1">
-				<setting id="import_accounts" type="string" label="30901" help="">
+				<setting id="import_accounts" type="string" label="30801" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -313,7 +279,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=import_accounts)</data>
 					</control>
 				</setting>
-				<setting id="export_accounts" type="string" label="30902" help="">
+				<setting id="export_accounts" type="string" label="30802" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -323,7 +289,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=export_accounts)</data>
 					</control>
 				</setting>
-				<setting id="delete_accounts" type="string" label="30903" help="">
+				<setting id="delete_accounts" type="string" label="30803" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -331,6 +297,159 @@
 					</constraints>
 					<control type="button" format="action">
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=delete_accounts_file)</data>
+					</control>
+				</setting>
+			</group>
+		</category>
+		<category id="advanced" label="30900" help="">
+			<group id="1">
+				<setting id="server_port" type="integer" label="30901" help="">
+					<level>0</level>
+					<default>8011</default>
+					<control type="edit" format="integer">
+						<heading>30901</heading>
+					</control>
+				</setting>
+				<setting id="encryption_type" type="string" label="30902" help="">
+					<level>0</level>
+					<default>gDrive</default>
+					<constraints>
+						<options>
+							<option>gDrive</option>
+							<option>RCLONE</option>
+						</options>
+					</constraints>
+					<control type="list" format="string">
+						<heading>30902</heading>
+					</control>
+				</setting>
+				<setting id="crypto_password" type="string" label="30903" parent="encryption_type" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="edit" format="string">
+						<heading>30903</heading>
+					</control>
+				</setting>
+				<setting id="crypto_salt" type="path" label="30904" parent="encryption_type" help="">
+					<level>0</level>
+					<default/>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="encryption_type">gDrive</condition>
+						</dependency>
+					</dependencies>
+					<constraints>
+						<writable>false</writable>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="file">
+						<heading>30904</heading>
+					</control>
+				</setting>
+				<setting id="salt_password" type="string" label="30905" parent="encryption_type" help="">
+					<level>0</level>
+					<default/>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="encryption_type">RCLONE</condition>
+						</dependency>
+					</dependencies>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="edit" format="string">
+						<heading>30905</heading>
+					</control>
+				</setting>
+				<setting id="encrypt_data" type="boolean" label="30906" parent="encryption_type" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="encryption_type">RCLONE</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="filename_encyption" type="string" label="30907" parent="encryption_type" help="">
+					<level>0</level>
+					<default>standard</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="encryption_type">RCLONE</condition>
+						</dependency>
+					</dependencies>
+					<constraints>
+						<options>
+							<option>standard</option>
+							<option>obfuscate</option>
+							<option>off</option>
+						</options>
+					</constraints>
+					<control type="list" format="string">
+						<heading>30906</heading>
+					</control>
+				</setting>
+				<setting id="encrypt_dir_names" type="boolean" label="30908" parent="encryption_type" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="encryption_type">RCLONE</condition>
+							</and>
+							<or>
+								<condition operator="is" setting="filename_encyption">standard</condition>
+								<condition operator="is" setting="filename_encyption">obfuscate</condition>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="filename_encoding" type="string" label="30909" parent="encryption_type" help="">
+					<level>0</level>
+					<default>base32</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="encryption_type">RCLONE</condition>
+							</and>
+							<or>
+								<condition operator="is" setting="filename_encyption">standard</condition>
+								<condition operator="is" setting="filename_encyption">obfuscate</condition>
+							</or>
+						</dependency>
+					</dependencies>
+					<constraints>
+						<options>
+							<option>base32</option>
+							<option>base64</option>
+							<option>base32768</option>
+						</options>
+					</constraints>
+					<control type="list" format="string">
+						<heading>30909</heading>
+					</control>
+				</setting>
+				<setting id="suffix" type="string" label="30910" parent="encryption_type" help="">
+					<level>0</level>
+					<default>bin</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="encryption_type">RCLONE</condition>
+								<condition operator="is" setting="filename_encyption">off</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="edit" format="string">
+						<heading>30910</heading>
 					</control>
 				</setting>
 			</group>

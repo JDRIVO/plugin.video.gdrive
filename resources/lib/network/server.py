@@ -19,10 +19,10 @@ from ..accounts.account import Account
 from ..accounts.account_manager import AccountManager
 from ..sync.task_manager import TaskManager
 from ..sync.sync_cache_manager import SyncCacheManager
-from ..encryption.encryptor import Encryptor
 from ..playback.video_player import VideoPlayer
 from ..google_api.google_drive import GoogleDrive
 from ..filesystem.file_operations import FileOperations
+from ..encryption.encryption import EncryptionHandler, Encryptors
 
 
 class ServerRunner(Thread):
@@ -57,6 +57,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 		self.cache = SyncCacheManager()
 		self.taskManager = TaskManager(self.settings, self.accountManager)
 		self.taskManager.run()
+		self.encryptor = EncryptionHandler(self.settings)
 		self.fileOperations = FileOperations()
 		self.dialog = Dialog()
 		self.shutdownRequest = False
@@ -64,14 +65,6 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 
 class ServerHandler(BaseHTTPRequestHandler):
-
-	def decryptStream(self, response, startOffset):
-		decrypt = Encryptor(self.server.settings.getSetting("crypto_salt"), self.server.settings.getSetting("crypto_password"))
-
-		try:
-			decrypt.decryptStreamChunk(response, self.wfile, startOffset=startOffset)
-		except Exception as e:
-			xbmc.log(str(e))
 
 	def getPostData(self):
 		contentLength = int(self.headers["Content-Length"])
@@ -188,11 +181,12 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.server.url = postData["url"]
 		self.server.driveID = postData["drive_id"]
 		self.server.fileID = postData["file_id"]
-		self.server.encrypted = postData["encrypted"]
+		self.server.encyptedVideo = postData["encrypted"]
 		self.server.transcoded = postData["transcoded"]
 		self.server.accountManager.setAccounts()
 		account = self.server.accountManager.getAccount(self.server.driveID)
 		self.server.cloudService.setAccount(account)
+		self.server.encryptor.setEncryptor()
 
 	def handlePlayRequest(self):
 
@@ -207,15 +201,36 @@ class ServerHandler(BaseHTTPRequestHandler):
 			start = ""
 			end = ""
 
-		startOffset = 0
 		headers = self.server.cloudService.getHeaders()
+		blockIndex = 0
+		blockOffset = 0
+		chunkOffset = 0
 
 		if start:
+			range = 0
 
-			if self.server.encrypted and start > 16 and not end:
-				startOffset = 16 - ((self.server.length - start) % 16) + 8
+			if self.server.encyptedVideo:
 
-			headers["Range"] = f"bytes={start - startOffset}-{end}"
+				if self.server.encryptor.type == Encryptors.GDRIVE:
+
+					if start > 16 and not end:
+						chunkOffset = 16 - ((self.server.length - start) % 16) + 8
+						range = start - chunkOffset
+
+				else:
+					MAGIC_SIZE = 8
+					NONCE_SIZE = 24
+					BLOCK_HEADER_SIZE = 16
+					BLOCK_DATA_SIZE = 64 * 1024
+					BLOCK_TOTAL_SIZE = BLOCK_HEADER_SIZE + BLOCK_DATA_SIZE
+					remainder = start % BLOCK_TOTAL_SIZE
+
+					if remainder:
+						blockIndex = start // BLOCK_DATA_SIZE
+						blockOffset = start % BLOCK_DATA_SIZE
+						range = MAGIC_SIZE + NONCE_SIZE + (blockIndex * BLOCK_TOTAL_SIZE)
+
+			headers["Range"] = f"bytes={range}-{end}"
 
 		try:
 			response = self.server.http.request("GET", self.server.url, headers=headers, preload_content=False)
@@ -223,7 +238,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			log(f"gdrive error: {e}", xbmc.LOGERROR)
 			return
 
-		self.sendPlayResponse(start, end, response, startOffset)
+		self.sendPlayResponse(start, end, response, blockIndex, blockOffset, chunkOffset)
 
 	def handleRegisterRequest(self):
 		self.handleResponse(200, data=registration.form)
@@ -410,7 +425,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 				self.server.settings.getLocalizedString(30044),
 			)
 
-	def sendPlayResponse(self, start, end, response, startOffset):
+	def sendPlayResponse(self, start, end, response, blockIndex, blockOffset, chunkOffset):
 		headers = {
 			"Content-Type": response.headers.get("Content-Type"),
 			"Cache-Control": response.headers.get("Cache-Control"),
@@ -419,17 +434,17 @@ class ServerHandler(BaseHTTPRequestHandler):
 		}
 
 		if start:
-			headers["Content-Length"] = str(int(response.headers.get("Content-Length")) - startOffset)
+			headers["Content-Length"] = str(int(response.headers.get("Content-Length")) - chunkOffset)
 			headers["Content-Range"] = f"bytes {start}-{end}/{self.server.length}" if end else f"bytes {start}-{self.server.length - 1}/{self.server.length}",
 			self.handleResponse(206, headers)
 		else:
 			headers["Content-Length"] = response.headers.get("Content-Length")
 			self.handleResponse(200, headers)
 
-		if self.server.encrypted:
-			self.decryptStream(response, startOffset)
-		else:
-			self.streamResponse(response)
+		try:
+			self.streamResponse(response, blockIndex, blockOffset, chunkOffset)
+		except Exception:
+			pass
 
 		response.release_conn()
 
@@ -438,16 +453,20 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.send_header("Location", location)
 		self.end_headers()
 
-	def streamResponse(self, response):
-		chunkSize = 16 * 1024
+	def streamResponse(self, response, blockIndex, blockOffset, chunkOffset):
 
-		try:
+		if self.server.encyptedVideo:
 
-			for chunk in response.stream(chunkSize):
+			if self.server.encryptor.type == Encryptors.GDRIVE:
+				self.server.encryptor.decryptStream(response, self.wfile, chunkOffset)
+			else:
+				self.server.encryptor.decryptStream(response, self.wfile, blockIndex, blockOffset)
+
+		else:
+			chunkSize = 16 * 1024
+
+			while chunk := response.read(chunkSize):
 				self.wfile.write(chunk)
-
-		except Exception as e:
-			xbmc.log(str(e))
 
 	def do_GET(self):
 		pathHandlers = {

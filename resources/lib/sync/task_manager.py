@@ -9,9 +9,9 @@ import xbmc
 from .syncer import Syncer
 from .sync_cache_manager import SyncCacheManager
 from ..filesystem.folder import Folder
-from ..encryption.encryptor import Encryptor
 from ..threadpool.threadpool import ThreadPool
 from ..google_api.google_drive import GoogleDrive
+from ..encryption.encryption import EncryptionHandler
 from ..ui.dialogs import Dialog, SyncProgressionDialog
 from ..filesystem.file_operations import FileOperations
 from helpers import getCurrentTime, strToDatetime
@@ -24,9 +24,9 @@ class TaskManager:
 		self.accountManager = accountManager
 		self.accounts = self.accountManager.accounts
 		self.cloudService = GoogleDrive()
-		self.encryptor = Encryptor(settings=self.settings)
+		self.encryptor = EncryptionHandler(self.settings)
 		self.cache = SyncCacheManager()
-		self.fileOperations = FileOperations(cloud_service=self.cloudService, encryption=self.encryptor)
+		self.fileOperations = FileOperations(cloud_service=self.cloudService, encryptor=self.encryptor)
 		self.syncer = Syncer(self.accountManager, self.cloudService, self.encryptor, self.fileOperations, self.settings, self.cache)
 		self.monitor = xbmc.Monitor()
 		self.dialog = Dialog()
@@ -38,7 +38,7 @@ class TaskManager:
 
 	def addTask(self, driveID, folders):
 		self.activeTasks.append(driveID)
-		self.encryptor.setup(settings=self.settings)
+		self.encryptor.setEncryptor()
 		self.accountManager.setAccounts()
 		self.accounts = self.accountManager.accounts
 		account = self.accountManager.getAccount(driveID)

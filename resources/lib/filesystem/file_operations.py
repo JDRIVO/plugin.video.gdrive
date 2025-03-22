@@ -13,7 +13,7 @@ class FileOperations:
 
 	def __init__(self, **kwargs):
 		self.cloudService = kwargs.get("cloud_service")
-		self.encryption = kwargs.get("encryption")
+		self.encryptor = kwargs.get("encryptor")
 		self.lock = threading.Lock()
 
 	def createDirs(self, dirPath):
@@ -73,20 +73,24 @@ class FileOperations:
 
 	def downloadFile(self, dirPath, filename, fileID, modifiedTime=None, encrypted=False):
 		self.createDirs(dirPath)
-		fileContent = self.cloudService.downloadFile(fileID)
+		response = self.cloudService.downloadFile(fileID)
 
-		if fileContent:
+		if not response:
+			return
 
-			if encrypted:
+		if encrypted:
 
-				with self.lock:
-					filePath = generateFilePath(dirPath, filename)
-					self.encryption.decryptStream(fileContent, filePath, modifiedTime=modifiedTime)
+			with self.lock:
+				filePath = generateFilePath(dirPath, filename)
+				self.encryptor.downloadFile(response, filePath)
 
-			else:
-				filePath = self.createFile(dirPath, filename, fileContent, modifiedTime=modifiedTime)
+				if modifiedTime:
+					os.utime(filePath, (modifiedTime, modifiedTime))
 
-			return filePath
+		else:
+			filePath = self.createFile(dirPath, filename, response.data, modifiedTime=modifiedTime)
+
+		return filePath
 
 	@staticmethod
 	def loadPickleFile(filePath):

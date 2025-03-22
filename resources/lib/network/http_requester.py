@@ -18,10 +18,11 @@ def request(url, data=None, headers=HEADERS, cookie=False, raw=False, method="GE
 	for attempt in range(attempts):
 
 		try:
-			response = HTTP.request(method, url, headers=headers, json=data)
 
 			if raw:
-				return response.data
+				return HTTP.request(method, url, headers=headers, json=data, preload_content=False)
+			else:
+				response = HTTP.request(method, url, headers=headers, json=data)
 
 			data = response.data.decode("utf-8")
 			break

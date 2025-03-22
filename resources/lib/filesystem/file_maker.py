@@ -12,22 +12,23 @@ def makeFile(fileData, excludedTypes, prefix, suffix, encryptor):
 	filename = fileData["name"]
 	mimeType = fileData["mimeType"]
 	fileExtension = fileData.get("fileExtension")
+	encrypted = False
 
-	if encryptor and mimeType == "application/octet-stream" and not fileExtension:
-		filename = encryptor.decryptFilename(filename)
+	if encryptor:
+		decryptedFilename = encryptor.decryptFilename(filename, fileExtension, mimeType)
 
-		if not filename:
+		if not decryptedFilename:
 			return
 
-		fileExtension = filename.rsplit(".", 1)[-1]
-		encrypted = True
+		if decryptedFilename != filename:
+			filename = decryptedFilename
+			fileExtension = filename.rsplit(".", 1)[-1]
 
-	else:
+			if encryptor.encryptData and mimeType == "application/octet-stream":
+				encrypted = True
 
-		if not fileExtension:
-			return
-
-		encrypted = False
+	elif not fileExtension:
+		return
 
 	fileType = _identifyFileType(filename, fileExtension, mimeType)
 

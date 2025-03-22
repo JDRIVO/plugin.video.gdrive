@@ -9,6 +9,7 @@ from constants import SETTINGS
 from .dialogs import Dialog
 from .strm_affixer import StrmAffixer
 from ..network import http_requester
+from ..encryption.encryption import EncryptionHandler
 from ..sync.sync_cache_manager import SyncCacheManager
 from ..filesystem.fs_helpers import removeProhibitedFSchars
 from ..filesystem.fs_constants import TMDB_LANGUAGES, TMDB_REGIONS
@@ -496,11 +497,12 @@ class SyncSettings(xbmcgui.WindowDialog):
 			except KeyError:
 				continue
 
-		if folderSettings.get("contains_encrypted"):
-			cryptoSalt = self.settings.getSetting("crypto_salt")
-			cryptoPassword = self.settings.getSetting("crypto_password")
+		hasEncryptedFiles = folderSettings.get("contains_encrypted")
 
-			if not cryptoSalt or not cryptoPassword:
+		if hasEncryptedFiles:
+			encryptor = EncryptionHandler(self.settings)
+
+			if not encryptor.isEnabled():
 				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30078))
 				return
 
@@ -562,7 +564,12 @@ class SyncSettings(xbmcgui.WindowDialog):
 					continue
 
 				syncTaskData.append(folder)
-				folderName = removeProhibitedFSchars(folder["name"])
+				folderName = folder["name"]
+
+				if hasEncryptedFiles:
+					folderName = encryptor.decryptDirName(folderName)
+
+				folderName = removeProhibitedFSchars(folderName)
 				dirPath = self.cache.getUniqueFolderPath(self.driveID, folderName)
 				folder["name"] = folderName
 				folder["path"] = dirPath

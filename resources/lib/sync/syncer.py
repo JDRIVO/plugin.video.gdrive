@@ -204,7 +204,7 @@ class Syncer:
 			cachedParentFolderID = cachedDirectory["parent_folder_id"]
 			rootFolderID = cachedDirectory["root_folder_id"]
 		else:
-			dirPath, rootFolderID = self.cloudService.getDirectory(self.cache, parentFolderID)
+			dirPath, rootFolderID = self.cloudService.getDirectory(self.cache, parentFolderID, self.encryptor)
 
 			if not rootFolderID and cachedFile:
 				# file has moved outside of root folder hierarchy/tree > delete file
@@ -315,15 +315,18 @@ class Syncer:
 
 		if not cachedDirectory:
 			# new folder added
-			dirPath, rootFolderID = self.cloudService.getDirectory(self.cache, folderID)
+			dirPath, rootFolderID = self.cloudService.getDirectory(self.cache, folderID, self.encryptor)
 
 			if not rootFolderID:
 				return
 
 			folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
-			modifiedTime = folder["modifiedTime"]
+
+			if folderSettings["contains_encrypted"]:
+				folderName = removeProhibitedFSchars(self.encryptor.decryptDirName(folderName))
+
 			dirPath = self.cache.getUniqueDirectoryPath(driveID, dirPath)
-			folder = Folder(folderID, parentFolderID, rootFolderID, driveID, folderName, dirPath, os.path.join(drivePath, dirPath), syncRootPath, folderSettings["folder_renaming"], modifiedTime=modifiedTime)
+			folder = Folder(folderID, parentFolderID, rootFolderID, driveID, folderName, dirPath, os.path.join(drivePath, dirPath), syncRootPath, folderSettings["folder_renaming"], modifiedTime=folder["modifiedTime"])
 			self.syncFolderAdditions(syncRootPath, drivePath, folder, folderSettings, syncedIDs=syncedIDs)
 			return
 
@@ -332,10 +335,14 @@ class Syncer:
 		cachedParentFolderID = cachedDirectory["parent_folder_id"]
 		cachedRootFolderID = cachedDirectory["root_folder_id"]
 		cachedRemoteName = cachedDirectory["remote_name"]
+		folderSettings = self.cache.getFolder({"folder_id": cachedRootFolderID})
+
+		if folderSettings["contains_encrypted"]:
+			folderName = removeProhibitedFSchars(self.encryptor.decryptDirName(folderName))
 
 		if parentFolderID != cachedParentFolderID and folderID != cachedRootFolderID:
 			# folder has been moved into another directory
-			dirPath, rootFolderID = self.cloudService.getDirectory(self.cache, folderID)
+			dirPath, rootFolderID = self.cloudService.getDirectory(self.cache, folderID, self.encryptor)
 
 			if not dirPath:
 				# folder has moved outside of root folder hierarchy/tree > delete folder
@@ -392,8 +399,6 @@ class Syncer:
 			if item["trashed"]:
 				trashed.append(item)
 				continue
-
-			item["name"] = removeProhibitedFSchars(item["name"])
 
 			if item["mimeType"] == "application/vnd.google-apps.folder":
 				cachedDirectory = self.cache.getDirectory({"folder_id": item["id"]})

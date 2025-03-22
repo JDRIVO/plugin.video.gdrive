@@ -66,17 +66,21 @@ class GoogleDrive:
 
 		return changes, response.get("newStartPageToken")
 
-	def getDirectory(self, cache, folderID):
-		dirPath = ""
-		cachedDirectory = None
-		cachedFolder = cache.getFolder({"folder_id": folderID})
+	def getDirectory(self, cache, folderID, encryptor):
+		dirs = []
 		params = {
 			"fields": "parents,name",
 			"supportsAllDrives": "true",
 			"includeItemsFromAllDrives": "true",
 		}
 
-		while not cachedDirectory and not cachedFolder:
+		while True:
+			cachedDirectory = cache.getDirectory({"folder_id": folderID})
+			cachedFolder = cache.getFolder({"folder_id": folderID})
+
+			if cachedDirectory or cachedFolder:
+				break
+
 			url = addQueryString(mergePaths(API["files"], folderID), params)
 			response = http_requester.request(url, headers=self.getHeaders())
 
@@ -85,19 +89,20 @@ class GoogleDrive:
 			except KeyError:
 				return None, None
 
-			dirName = removeProhibitedFSchars(dirName)
-			dirPath = os.path.join(dirName, dirPath)
-			cachedDirectory = cache.getDirectory({"folder_id": folderID})
-			cachedFolder = cache.getFolder({"folder_id": folderID})
+			dirs.insert(0, dirName)
 
 		if cachedDirectory:
 			rootFolderID = cachedDirectory["root_folder_id"]
-			dirPath = os.path.join(cachedDirectory["local_path"], dirPath).rstrip(os.sep)
-			return dirPath, rootFolderID
+			basePath = cachedDirectory["local_path"]
+			encrypted = cache.getFolder({"folder_id": rootFolderID})["contains_encrypted"]
 		elif cachedFolder:
 			rootFolderID = folderID
-			dirPath = os.path.join(cachedFolder["local_path"], dirPath).rstrip(os.sep)
-			return dirPath, rootFolderID
+			basePath = cachedFolder["local_path"]
+			encrypted = cachedFolder["contains_encrypted"]
+
+		dirs = [removeProhibitedFSchars(encryptor.decryptDirName(dir)) if encrypted else removeProhibitedFSchars(dir) for dir in dirs]
+		dirPath = os.path.join(basePath, *dirs).rstrip(os.sep)
+		return dirPath, rootFolderID
 
 	@staticmethod
 	def getDownloadURL(fileID):

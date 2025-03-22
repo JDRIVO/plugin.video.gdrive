@@ -21,6 +21,7 @@ from .accounts.account import Account
 from .accounts.account_manager import AccountManager
 from .threadpool.threadpool import ThreadPool
 from .google_api.google_drive import GoogleDrive
+from .encryption.encryption import EncryptionHandler
 from .sync.sync_cache_manager import SyncCacheManager
 from .filesystem.fs_helpers import removeProhibitedFSchars
 from .filesystem.fs_constants import TMDB_LANGUAGES, TMDB_REGIONS
@@ -603,8 +604,9 @@ class Core:
 		transcoded = False
 
 		if encrypted:
+			encryptor = EncryptionHandler(self.settings)
 
-			if not self.settings.getSetting("crypto_password") or not self.settings.getSetting("crypto_salt"):
+			if not encryptor.isEnabled():
 				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30208))
 				return
 

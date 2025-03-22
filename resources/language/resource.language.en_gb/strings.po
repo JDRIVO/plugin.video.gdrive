@@ -454,8 +454,8 @@ msgid "Add account"
 msgstr "Add account"
 
 msgctxt "#30208"
-msgid "No encryption settings found. Please update your encryption information in the gDrive settings."
-msgstr "No encryption settings found. Please update your encryption information in the gDrive settings."
+msgid "No encryption settings found. Please update your encryption information in the gDrive addon settings."
+msgstr "No encryption settings found. Please update your encryption information in the gDrive addon settings."
 
 msgctxt "#30209"
 msgid "The file wasn't found in your Google Drive account."
@@ -521,18 +521,6 @@ msgctxt "#30405"
 msgid "Account"
 msgstr "Account"
 
-msgctxt "#30406"
-msgid "Encryption"
-msgstr "Encryption"
-
-msgctxt "#30407"
-msgid "Password"
-msgstr "Password"
-
-msgctxt "#30408"
-msgid "Salt file"
-msgstr "Salt file"
-
 msgctxt "#30500"
 msgid "Library"
 msgstr "Library"
@@ -578,8 +566,8 @@ msgid "Sync defaults"
 msgstr "Sync defaults"
 
 msgctxt "#30607"
-msgid "Folder contains gDrive encrypted files"
-msgstr "Folder contains gDrive encrypted files"
+msgid "Folder contains encrypted files"
+msgstr "Folder contains encrypted files"
 
 msgctxt "#30608"
 msgid "Rename videos to a Kodi friendly format"
@@ -626,41 +614,77 @@ msgid "TMDB adult content"
 msgstr "TMDB adult content"
 
 msgctxt "#30700"
-msgid "Server"
-msgstr "Server"
-
-msgctxt "#30701"
-msgid "Server port (requires restart)"
-msgstr "Server port (requires restart)"
-
-msgctxt "#30800"
 msgid "GUI"
 msgstr "GUI"
 
-msgctxt "#30801"
+msgctxt "#30701"
 msgid "Display initial sync progress dialog"
 msgstr "Display initial sync progress dialog"
 
-msgctxt "#30802"
+msgctxt "#30702"
 msgid "Display file deletion dialog"
 msgstr "Display file deletion dialog"
 
-msgctxt "#30803"
+msgctxt "#30703"
 msgid "Display time since last sync in drive selection menu"
 msgstr "Display time since last sync in drive selection menu"
 
-msgctxt "#30900"
+msgctxt "#30800"
 msgid "Accounts"
 msgstr "Accounts"
 
-msgctxt "#30901"
+msgctxt "#30801"
 msgid "Import accounts"
 msgstr "Import accounts"
 
-msgctxt "#30902"
+msgctxt "#30802"
 msgid "Export accounts"
 msgstr "Export accounts"
 
-msgctxt "#30903"
+msgctxt "#30803"
 msgid "Delete all accounts"
 msgstr "Delete all accounts"
+
+msgctxt "#30900"
+msgid "Advanced"
+msgstr "Advanced"
+
+msgctxt "#30901"
+msgid "Server port (requires restart)"
+msgstr "Server port (requires restart)"
+
+msgctxt "#30902"
+msgid "Encryption"
+msgstr "Encryption"
+
+msgctxt "#30903"
+msgid "Password"
+msgstr "Password"
+
+msgctxt "#30904"
+msgid "Salt file"
+msgstr "Salt file"
+
+msgctxt "#30905"
+msgid "Salt password"
+msgstr "Salt password"
+
+msgctxt "#30906"
+msgid "Encrypt file data"
+msgstr "Encrypt file data"
+
+msgctxt "#30907"
+msgid "Filename encryption"
+msgstr "Filename encryption"
+
+msgctxt "#30908"
+msgid "Encrypt directory names"
+msgstr "Encrypt directory names"
+
+msgctxt "#30909"
+msgid "Filename encoding"
+msgstr "Filename encoding"
+
+msgctxt "#30910"
+msgid "Suffix"
+msgstr "Suffix"
