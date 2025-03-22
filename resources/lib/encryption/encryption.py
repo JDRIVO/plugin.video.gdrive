@@ -102,7 +102,7 @@ class RcloneAdaptor(EncryptionStrategy):
 		if fileExtension:
 
 			if not self.filenameEncryption:
-				return re.sub(f"{self.suffix}$", "", filename)
+				return re.sub(f"{self.suffix}$", "", name)
 			else:
 				return name
 
