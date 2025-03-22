@@ -108,9 +108,6 @@ class RcloneAdaptor(EncryptionStrategy):
 
 		else:
 
-			if mimeType != "application/octet-stream":
-				return None
-
 			try:
 				return self.decryptName(name)
 			except Exception:
