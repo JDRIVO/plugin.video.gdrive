@@ -121,7 +121,7 @@ class RcloneAdaptor(EncryptionStrategy):
 
 	def isEnabled(self, settings):
 
-		if self.settings.getSetting("crypto_password") and self.settings.getSetting("salt_password"):
+		if self.settings.getSetting("crypto_password"):
 			return True
 
 
