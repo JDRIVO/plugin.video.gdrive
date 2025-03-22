@@ -82,7 +82,11 @@ class RcloneAdaptor(EncryptionStrategy):
 		self.filenameEncryption = filenameEncryption != "off"
 		self.encryptDirNames = self.settings.getSetting("encrypt_dir_names")
 		self.suffix = settings.getSetting("suffix")
-		self.encryptor = Crypt(password, saltPassword, nameEncoding=filenameEncoding)
+
+		if saltPassword:
+			self.encryptor = Crypt(password, saltPassword, nameEncoding=filenameEncoding)
+		else:
+			self.encryptor = Crypt(password, nameEncoding=filenameEncoding)
 
 		if self.filenameEncryption:
 			self.decryptName = self.encryptor.Name.standard_decrypt if filenameEncryption == "standard" else self.encryptor.Name.obfuscate_decrypt
