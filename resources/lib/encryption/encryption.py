@@ -78,10 +78,11 @@ class RcloneAdaptor(EncryptionStrategy):
 		saltPassword = self.settings.getSetting("salt_password")
 		filenameEncoding = self.settings.getSetting("filename_encoding")
 		filenameEncryption = self.settings.getSetting("filename_encyption")
+		suffix = settings.getSetting("suffix")
 		self.encryptData = self.settings.getSetting("encrypt_data")
 		self.filenameEncryption = filenameEncryption != "off"
 		self.encryptDirNames = self.settings.getSetting("encrypt_dir_names")
-		self.suffix = settings.getSetting("suffix")
+		self.suffix = suffix if suffix.startswith(".") else f".{suffix}"
 
 		if saltPassword:
 			self.encryptor = Crypt(password, saltPassword, nameEncoding=filenameEncoding)
