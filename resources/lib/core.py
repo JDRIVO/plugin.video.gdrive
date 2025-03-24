@@ -288,9 +288,11 @@ class Core:
 		http_requester.request(url)
 
 	def deleteDrive(self):
+		driveID = self.settings.getParameter("drive_id")
+		driveName = self.settings.getParameter("drive_name")
 		confirmation = self.dialog.yesno(
 			self.settings.getLocalizedString(30000),
-			self.settings.getLocalizedString(30016),
+			f"{self.settings.getLocalizedString(30016)} {driveName}?",
 		)
 
 		if not confirmation:
@@ -300,8 +302,6 @@ class Core:
 			self.settings.getLocalizedString(30000),
 			self.settings.getLocalizedString(30027),
 		)
-		driveID = self.settings.getParameter("drive_id")
-		driveName = self.settings.getParameter("drive_name")
 		self.dialog.notification(self.settings.getLocalizedString(30000), f"{self.settings.getLocalizedString(30105)} {driveName}")
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/delete_drive"
