@@ -1,14 +1,14 @@
 <?xml version="1.0" ?>
 <settings version="1">
 	<section id="plugin.video.gdrive">
-		<category id="playback" label="30400" help="">
+		<category id="playback" label="30300" help="">
 			<group id="1">
-				<setting id="resolution_prompt" type="boolean" label="30401" help="">
+				<setting id="resolution_prompt" type="boolean" label="30301" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="resolution_priority" type="string" label="30402" parent="resolution_prompt" help="">
+				<setting id="resolution_priority" type="string" label="30302" parent="resolution_prompt" help="">
 					<level>0</level>
 					<default>Original, 1080P, 720P, 480P, 360P</default>
 					<dependencies>
@@ -20,7 +20,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=resolution_priority)</data>
 					</control>
 				</setting>
-				<setting id="subtitles_format" type="string" label="30403" help="">
+				<setting id="subtitles_format" type="string" label="30303" help="">
 					<level>0</level>
 					<default>Subtitles are named the same as STRM</default>
 					<constraints>
@@ -30,10 +30,10 @@
 						</options>
 					</constraints>
 					<control type="list" format="string">
-						<heading>30403</heading>
+						<heading>30303</heading>
 					</control>
 				</setting>
-				<setting id="account_selection" type="string" label="30404" help="">
+				<setting id="account_selection" type="string" label="30304" help="">
 					<level>0</level>
 					<default>Automatically selected</default>
 					<constraints>
@@ -43,10 +43,10 @@
 						</options>
 					</constraints>
 					<control type="list" format="string">
-						<heading>30404</heading>
+						<heading>30304</heading>
 					</control>
 				</setting>
-				<setting id="account_override" type="string" label="30405" parent="account_selection" help="">
+				<setting id="account_override" type="string" label="30305" parent="account_selection" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -74,9 +74,9 @@
 				</setting>
 			</group>
 		</category>
-		<category id="library" label="30500" help="">
+		<category id="library" label="30400" help="">
 			<group id="1">
-				<setting id="movie_watch_time" type="integer" label="30501" help="">
+				<setting id="movie_watch_time" type="integer" label="30401" help="">
 					<level>0</level>
 					<default>93</default>
 					<constraints>
@@ -88,7 +88,7 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="tv_watch_time" type="integer" label="30502" help="">
+				<setting id="tv_watch_time" type="integer" label="30402" help="">
 					<level>0</level>
 					<default>88</default>
 					<constraints>
@@ -100,16 +100,16 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="library_monitor" type="boolean" label="30503" help="">
+				<setting id="library_monitor" type="boolean" label="30403" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
 			</group>
 		</category>
-		<category id="sync" label="30600" help="">
+		<category id="sync" label="30500" help="">
 			<group id="1">
-				<setting id="thread_count" type="integer" label="30601" help="">
+				<setting id="thread_count" type="integer" label="30501" help="">
 					<level>0</level>
 					<default>8</default>
 					<constraints>
@@ -121,12 +121,12 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="update_library" type="boolean" label="30602" help="">
+				<setting id="update_library" type="boolean" label="30502" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_root" type="string" label="30603" help="">
+				<setting id="sync_root" type="string" label="30503" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -136,7 +136,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_sync_root)</data>
 					</control>
 				</setting>
-				<setting id="delete_sync_cache" type="string" label="30604" help="">
+				<setting id="delete_sync_cache" type="string" label="30504" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -146,7 +146,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=delete_sync_cache)</data>
 					</control>
 				</setting>
-				<setting id="delete_sync_folder" type="string" label="30605" help="">
+				<setting id="delete_sync_folder" type="string" label="30505" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -157,43 +157,43 @@
 					</control>
 				</setting>
 			</group>
-			<group id="2" label="30606">
-				<setting id="contains_encrypted" type="boolean" label="30607" help="">
+			<group id="2" label="30506">
+				<setting id="contains_encrypted" type="boolean" label="30507" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="file_renaming" type="boolean" label="30608" help="">
+				<setting id="file_renaming" type="boolean" label="30508" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="folder_renaming" type="boolean" label="30609" help="">
+				<setting id="folder_renaming" type="boolean" label="30509" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_nfo" type="boolean" label="30610" help="">
+				<setting id="sync_nfo" type="boolean" label="30510" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_subtitles" type="boolean" label="30611" help="">
+				<setting id="sync_subtitles" type="boolean" label="30511" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_artwork" type="boolean" label="30612" help="">
+				<setting id="sync_artwork" type="boolean" label="30512" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_strm" type="boolean" label="30613" help="">
+				<setting id="sync_strm" type="boolean" label="30513" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="strm_prefix" type="string" label="30614" help="">
+				<setting id="strm_prefix" type="string" label="30514" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -203,7 +203,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_strm_prefix)</data>
 					</control>
 				</setting>
-				<setting id="strm_suffix" type="string" label="30615" help="">
+				<setting id="strm_suffix" type="string" label="30515" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -213,7 +213,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_strm_suffix)</data>
 					</control>
 				</setting>
-				<setting id="tmdb_language" type="string" label="30616" help="">
+				<setting id="tmdb_language" type="string" label="30516" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -223,7 +223,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_language)</data>
 					</control>
 				</setting>
-				<setting id="tmdb_region" type="string" label="30617" help="">
+				<setting id="tmdb_region" type="string" label="30517" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -233,7 +233,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_region)</data>
 					</control>
 				</setting>
-				<setting id="tmdb_adult" type="string" label="30618" help="">
+				<setting id="tmdb_adult" type="string" label="30518" help="">
 					<level>0</level>
 					<default>false</default>
 					<constraints>
@@ -243,33 +243,33 @@
 						</options>
 					</constraints>
 					<control type="list" format="string">
-						<heading>30616</heading>
+						<heading>30518</heading>
 					</control>
 				</setting>
 			</group>
 		</category>
-		<category id="dialog" label="30700" help="">
+		<category id="dialog" label="30600" help="">
 			<group id="1">
-				<setting id="sync_progress_dialog" type="boolean" label="30701" help="">
+				<setting id="sync_progress_dialog" type="boolean" label="30601" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="file_deletion_dialog" type="boolean" label="30702" help="">
+				<setting id="file_deletion_dialog" type="boolean" label="30602" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="display_last_sync" type="boolean" label="30703" help="">
+				<setting id="display_last_sync" type="boolean" label="30603" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
 			</group>
 		</category>
-		<category id="accounts" label="30800" help="">
+		<category id="accounts" label="30700" help="">
 			<group id="1">
-				<setting id="import_accounts" type="string" label="30801" help="">
+				<setting id="import_accounts" type="string" label="30701" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -279,7 +279,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=import_accounts)</data>
 					</control>
 				</setting>
-				<setting id="export_accounts" type="string" label="30802" help="">
+				<setting id="export_accounts" type="string" label="30702" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -289,7 +289,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=export_accounts)</data>
 					</control>
 				</setting>
-				<setting id="delete_accounts" type="string" label="30803" help="">
+				<setting id="delete_accounts" type="string" label="30703" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -301,16 +301,9 @@
 				</setting>
 			</group>
 		</category>
-		<category id="advanced" label="30900" help="">
+		<category id="encryption" label="30800" help="">
 			<group id="1">
-				<setting id="server_port" type="integer" label="30901" help="">
-					<level>0</level>
-					<default>8011</default>
-					<control type="edit" format="integer">
-						<heading>30901</heading>
-					</control>
-				</setting>
-				<setting id="encryption_type" type="string" label="30902" help="">
+				<setting id="encryption_type" type="string" label="30801" help="">
 					<level>0</level>
 					<default>gDrive</default>
 					<constraints>
@@ -320,20 +313,20 @@
 						</options>
 					</constraints>
 					<control type="list" format="string">
-						<heading>30902</heading>
+						<heading>30801</heading>
 					</control>
 				</setting>
-				<setting id="crypto_password" type="string" label="30903" parent="encryption_type" help="">
+				<setting id="crypto_password" type="string" label="30802" parent="encryption_type" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
 					<control type="edit" format="string">
-						<heading>30903</heading>
+						<heading>30802</heading>
 					</control>
 				</setting>
-				<setting id="crypto_salt" type="path" label="30904" parent="encryption_type" help="">
+				<setting id="crypto_salt" type="path" label="30803" parent="encryption_type" help="">
 					<level>0</level>
 					<default/>
 					<dependencies>
@@ -346,10 +339,10 @@
 						<allowempty>true</allowempty>
 					</constraints>
 					<control type="button" format="file">
-						<heading>30904</heading>
+						<heading>30803</heading>
 					</control>
 				</setting>
-				<setting id="salt_password" type="string" label="30905" parent="encryption_type" help="">
+				<setting id="salt_password" type="string" label="30804" parent="encryption_type" help="">
 					<level>0</level>
 					<default/>
 					<dependencies>
@@ -361,10 +354,10 @@
 						<allowempty>true</allowempty>
 					</constraints>
 					<control type="edit" format="string">
-						<heading>30905</heading>
+						<heading>30804</heading>
 					</control>
 				</setting>
-				<setting id="encrypt_data" type="boolean" label="30906" parent="encryption_type" help="">
+				<setting id="encrypt_data" type="boolean" label="30805" parent="encryption_type" help="">
 					<level>0</level>
 					<default>true</default>
 					<dependencies>
@@ -374,7 +367,7 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-				<setting id="filename_encyption" type="string" label="30907" parent="encryption_type" help="">
+				<setting id="filename_encyption" type="string" label="30806" parent="encryption_type" help="">
 					<level>0</level>
 					<default>standard</default>
 					<dependencies>
@@ -390,10 +383,10 @@
 						</options>
 					</constraints>
 					<control type="list" format="string">
-						<heading>30906</heading>
+						<heading>30806</heading>
 					</control>
 				</setting>
-				<setting id="encrypt_dir_names" type="boolean" label="30908" parent="encryption_type" help="">
+				<setting id="encrypt_dir_names" type="boolean" label="30807" parent="encryption_type" help="">
 					<level>0</level>
 					<default>true</default>
 					<dependencies>
@@ -409,7 +402,7 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-				<setting id="filename_encoding" type="string" label="30909" parent="encryption_type" help="">
+				<setting id="filename_encoding" type="string" label="30808" parent="encryption_type" help="">
 					<level>0</level>
 					<default>base32</default>
 					<dependencies>
@@ -431,10 +424,10 @@
 						</options>
 					</constraints>
 					<control type="list" format="string">
-						<heading>30909</heading>
+						<heading>30808</heading>
 					</control>
 				</setting>
-				<setting id="suffix" type="string" label="30910" parent="encryption_type" help="">
+				<setting id="suffix" type="string" label="30809" parent="encryption_type" help="">
 					<level>0</level>
 					<default>bin</default>
 					<dependencies>
@@ -449,7 +442,18 @@
 						<allowempty>true</allowempty>
 					</constraints>
 					<control type="edit" format="string">
-						<heading>30910</heading>
+						<heading>30809</heading>
+					</control>
+				</setting>
+			</group>
+		</category>
+		<category id="server" label="30900" help="">
+			<group id="1">
+				<setting id="server_port" type="integer" label="30901" help="">
+					<level>0</level>
+					<default>8011</default>
+					<control type="edit" format="integer">
+						<heading>30901</heading>
 					</control>
 				</setting>
 			</group>

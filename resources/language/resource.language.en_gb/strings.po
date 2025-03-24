@@ -493,198 +493,202 @@ msgctxt "#30221"
 msgid "Redirect URI"
 msgstr "Redirect URI"
 
-msgctxt "#30306"
+msgctxt "#30222"
 msgid "Validating"
 msgstr "Validating"
 
-msgctxt "#30400"
+msgctxt "#30300"
 msgid "Playback"
 msgstr "Playback"
 
-msgctxt "#30401"
+msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
 msgstr "Prompt resolution selection (if available)"
 
-msgctxt "#30402"
+msgctxt "#30302"
 msgid "Video resolution priority"
 msgstr "Video resolution priority"
 
-msgctxt "#30403"
+msgctxt "#30303"
 msgid "Subtitle format"
 msgstr "Subtitle format"
 
-msgctxt "#30404"
+msgctxt "#30304"
 msgid "Playback account"
 msgstr "Playback account"
 
-msgctxt "#30405"
+msgctxt "#30305"
 msgid "Account"
 msgstr "Account"
 
-msgctxt "#30500"
+msgctxt "#30400"
 msgid "Library"
 msgstr "Library"
 
-msgctxt "#30501"
+msgctxt "#30401"
 msgid "Mark movies as watched at"
 msgstr "Mark movies as watched at"
 
-msgctxt "#30502"
+msgctxt "#30402"
 msgid "Mark episodes as watched at"
 msgstr "Mark episodes as watched at"
 
-msgctxt "#30503"
+msgctxt "#30403"
 msgid "Import media flag information from STRM"
 msgstr "Import media flag information from STRM"
 
-msgctxt "#30600"
+msgctxt "#30500"
 msgid "Sync"
 msgstr "Sync"
 
-msgctxt "#30601"
+msgctxt "#30501"
 msgid "Threads"
 msgstr "Threads"
 
-msgctxt "#30602"
+msgctxt "#30502"
 msgid "Automatically update library"
 msgstr "Automatically update library"
 
-msgctxt "#30603"
+msgctxt "#30503"
 msgid "Move sync folder"
 msgstr "Move sync folder"
 
-msgctxt "#30604"
+msgctxt "#30504"
 msgid "Delete sync cache"
 msgstr "Delete sync cache"
 
-msgctxt "#30605"
+msgctxt "#30505"
 msgid "Delete sync folder"
 msgstr "Delete sync folder"
 
-msgctxt "#30606"
+msgctxt "#30506"
 msgid "Sync defaults"
 msgstr "Sync defaults"
 
-msgctxt "#30607"
+msgctxt "#30507"
 msgid "Folder contains encrypted files"
 msgstr "Folder contains encrypted files"
 
-msgctxt "#30608"
+msgctxt "#30508"
 msgid "Rename videos to a Kodi friendly format"
 msgstr "Rename videos to a Kodi friendly format"
 
-msgctxt "#30609"
+msgctxt "#30509"
 msgid "Create a Kodi friendly directory structure"
 msgstr "Create a Kodi friendly directory structure"
 
-msgctxt "#30610"
+msgctxt "#30510"
 msgid "Sync nfo"
 msgstr "Sync nfo"
 
-msgctxt "#30611"
+msgctxt "#30511"
 msgid "Sync subtitles"
 msgstr "Sync subtitles"
 
-msgctxt "#30612"
+msgctxt "#30512"
 msgid "Sync artwork"
 msgstr "Sync artwork"
 
-msgctxt "#30613"
+msgctxt "#30513"
 msgid "Sync strm"
 msgstr "Sync strm"
 
-msgctxt "#30614"
+msgctxt "#30514"
 msgid "STRM prefix"
 msgstr "STRM prefix"
 
-msgctxt "#30615"
+msgctxt "#30515"
 msgid "STRM suffix"
 msgstr "STRM suffix"
 
-msgctxt "#30616"
+msgctxt "#30516"
 msgid "TMDB search language"
 msgstr "TMDB search language"
 
-msgctxt "#30617"
+msgctxt "#30517"
 msgid "TMDB region"
 msgstr "TMDB region"
 
-msgctxt "#30618"
+msgctxt "#30518"
 msgid "TMDB adult content"
 msgstr "TMDB adult content"
 
-msgctxt "#30700"
+msgctxt "#30600"
 msgid "GUI"
 msgstr "GUI"
 
-msgctxt "#30701"
+msgctxt "#30601"
 msgid "Display initial sync progress dialog"
 msgstr "Display initial sync progress dialog"
 
-msgctxt "#30702"
+msgctxt "#30602"
 msgid "Display file deletion dialog"
 msgstr "Display file deletion dialog"
 
-msgctxt "#30703"
+msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
 msgstr "Display time since last sync in drive selection menu"
 
-msgctxt "#30800"
+msgctxt "#30700"
 msgid "Accounts"
 msgstr "Accounts"
 
-msgctxt "#30801"
+msgctxt "#30701"
 msgid "Import accounts"
 msgstr "Import accounts"
 
-msgctxt "#30802"
+msgctxt "#30702"
 msgid "Export accounts"
 msgstr "Export accounts"
 
-msgctxt "#30803"
+msgctxt "#30703"
 msgid "Delete all accounts"
 msgstr "Delete all accounts"
 
+msgctxt "#30800"
+msgid "Encryption"
+msgstr "Encryption"
+
+msgctxt "#30801"
+msgid "Encryption type"
+msgstr "Encryption type"
+
+msgctxt "#30802"
+msgid "Password"
+msgstr "Password"
+
+msgctxt "#30803"
+msgid "Salt file"
+msgstr "Salt file"
+
+msgctxt "#30804"
+msgid "Salt password"
+msgstr "Salt password"
+
+msgctxt "#30805"
+msgid "Encrypt file data"
+msgstr "Encrypt file data"
+
+msgctxt "#30806"
+msgid "Filename encryption"
+msgstr "Filename encryption"
+
+msgctxt "#30807"
+msgid "Encrypt directory names"
+msgstr "Encrypt directory names"
+
+msgctxt "#30808"
+msgid "Filename encoding"
+msgstr "Filename encoding"
+
+msgctxt "#30809"
+msgid "Suffix"
+msgstr "Suffix"
+
 msgctxt "#30900"
-msgid "Advanced"
-msgstr "Advanced"
+msgid "Server"
+msgstr "Server"
 
 msgctxt "#30901"
 msgid "Server port (requires restart)"
 msgstr "Server port (requires restart)"
-
-msgctxt "#30902"
-msgid "Encryption"
-msgstr "Encryption"
-
-msgctxt "#30903"
-msgid "Password"
-msgstr "Password"
-
-msgctxt "#30904"
-msgid "Salt file"
-msgstr "Salt file"
-
-msgctxt "#30905"
-msgid "Salt password"
-msgstr "Salt password"
-
-msgctxt "#30906"
-msgid "Encrypt file data"
-msgstr "Encrypt file data"
-
-msgctxt "#30907"
-msgid "Filename encryption"
-msgstr "Filename encryption"
-
-msgctxt "#30908"
-msgid "Encrypt directory names"
-msgstr "Encrypt directory names"
-
-msgctxt "#30909"
-msgid "Filename encoding"
-msgstr "Filename encoding"
-
-msgctxt "#30910"
-msgid "Suffix"
-msgstr "Suffix"
