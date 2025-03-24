@@ -14,11 +14,11 @@ class Encryptors(Enum):
 class EncryptionStrategy(ABC):
 
 	@abstractmethod
-	def decryptFilename(self, name, fileExtension, mimeType):
+	def decryptDirName(self, name):
 		pass
 
 	@abstractmethod
-	def decryptDirName(self, name):
+	def decryptFilename(self, name, fileExtension, mimeType):
 		pass
 
 	@abstractmethod
@@ -121,7 +121,7 @@ class RcloneAdaptor(EncryptionStrategy):
 		self.encryptor.File.decryptStreamChunk(response, wfile, blockIndex, blockOffset)
 
 	def downloadFile(self, response, filePath):
-		return self.encryptor.File.decryptStream(response, filePath)
+		self.encryptor.File.decryptStream(response, filePath)
 
 	def isEnabled(self, settings):
 
@@ -138,11 +138,11 @@ class EncryptionHandler:
 	def __getattr__(self, name):
 		return getattr(self._strategy, name, False)
 
-	def decryptFilename(self, name, fileExtension, mimeType):
-		return self._strategy.decryptFilename(name, fileExtension, mimeType)
-
 	def decryptDirName(self, name):
 		return self._strategy.decryptDirName(name)
+
+	def decryptFilename(self, name, fileExtension, mimeType):
+		return self._strategy.decryptFilename(name, fileExtension, mimeType)
 
 	def decryptStream(self, *args, **kwargs):
 		return self._strategy.decryptStream(*args, **kwargs)
