@@ -66,15 +66,22 @@ class GoogleDrive:
 
 		return changes, response.get("newStartPageToken")
 
-	def getDirectory(self, cache, folderID, encryptor):
-		dirs = []
+	def getDirectory(self, cache, folderID, encryptor, excludedIDs):
 		params = {
 			"fields": "parents,name",
 			"supportsAllDrives": "true",
 			"includeItemsFromAllDrives": "true",
 		}
+		dirs = []
+		folderIDs = []
 
 		while True:
+
+			if folderID in excludedIDs:
+				excludedIDs += folderIDs
+				return None, None
+
+			folderIDs.append(folderID)
 			cachedDirectory = cache.getDirectory({"folder_id": folderID})
 			cachedFolder = cache.getFolder({"folder_id": folderID})
 
@@ -87,6 +94,7 @@ class GoogleDrive:
 			try:
 				dirName, folderID = response["name"], response["parents"][0]
 			except KeyError:
+				excludedIDs += folderIDs
 				return None, None
 
 			dirs.insert(0, dirName)
@@ -95,7 +103,7 @@ class GoogleDrive:
 			rootFolderID = cachedDirectory["root_folder_id"]
 			basePath = cachedDirectory["local_path"]
 			encrypted = cache.getFolder({"folder_id": rootFolderID})["contains_encrypted"]
-		elif cachedFolder:
+		else:
 			rootFolderID = folderID
 			basePath = cachedFolder["local_path"]
 			encrypted = cachedFolder["contains_encrypted"]
