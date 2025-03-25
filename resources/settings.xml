@@ -22,11 +22,11 @@
 				</setting>
 				<setting id="subtitles_format" type="string" label="30303" help="">
 					<level>0</level>
-					<default>Subtitles are named the same as STRM</default>
+					<default>Subtitles aren't named the same as STRM and are in an isolated folder with STRM</default>
 					<constraints>
 						<options>
-							<option>Subtitles are named the same as STRM</option>
 							<option>Subtitles aren't named the same as STRM and are in an isolated folder with STRM</option>
+							<option>Subtitles are named the same as STRM</option>
 						</options>
 					</constraints>
 					<control type="list" format="string">
@@ -88,7 +88,7 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="tv_watch_time" type="integer" label="30402" help="">
+				<setting id="episode_watch_time" type="integer" label="30402" help="">
 					<level>0</level>
 					<default>88</default>
 					<constraints>

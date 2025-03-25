@@ -19,7 +19,7 @@ class VideoPlayer(xbmc.Player):
 		if self.dbType == "movie":
 			self.markedWatchedPoint = float(SETTINGS.getSetting("movie_watch_time"))
 		elif self.dbType == "episode":
-			self.markedWatchedPoint = float(SETTINGS.getSetting("tv_watch_time"))
+			self.markedWatchedPoint = float(SETTINGS.getSetting("episode_watch_time"))
 
 		while not self.monitor.abortRequested() and not self.videoDuration and not self.close:
 
