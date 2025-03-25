@@ -1,9 +1,10 @@
-from .xsalsa20 import secretbox_xsalsa20_open
+from .xsalsa20 import xsalsa20open
 
 MAGIC_HEADER_SIZE = 8
 NONCE_SIZE = 24
 BLOCK_HEADER_SIZE = 16
 BLOCK_SIZE = 64 * 1024
+
 
 def byte_increment(byte: int) -> int:
 
@@ -11,6 +12,7 @@ def byte_increment(byte: int) -> int:
 		raise ValueError("Byte must be in range(0, 256)")
 
 	return (byte + 1) if (byte < 255) else 0
+
 
 def nonce_increment(nonce: bytes, start: int = 0) -> bytes:
 	nonce_array = bytearray(nonce)
@@ -24,6 +26,7 @@ def nonce_increment(nonce: bytes, start: int = 0) -> bytes:
 			break
 
 	return bytes(nonce_array)
+
 
 def nonce_add(nonce: bytes, x: int) -> bytes:
 
@@ -51,11 +54,26 @@ def nonce_add(nonce: bytes, x: int) -> bytes:
 
 	return newNonce
 
+
 class File:
 
 	def __init__(self, key):
 		self.key = key
 		self.nonce = None
+
+	def decryptStream(self, response, filePath):
+
+		if response.read(MAGIC_HEADER_SIZE) != b"RCLONE\x00\x00":
+			return
+
+		chunkSize = BLOCK_SIZE + BLOCK_HEADER_SIZE
+		nonce = response.read(NONCE_SIZE)
+
+		with open(filePath, "wb") as outFile:
+
+			while chunk := response.read(chunkSize):
+				outFile.write(self._decryptBytes(chunk, nonce, chunkSize))
+				nonce = nonce_increment(nonce)
 
 	def decryptStreamChunk(self, response, wfile, blockIndex, blockOffset):
 		chunkSize = BLOCK_SIZE + BLOCK_HEADER_SIZE
@@ -80,20 +98,6 @@ class File:
 			wfile.write(decryptedChunk)
 			nonce = nonce_increment(nonce)
 
-	def decryptStream(self, response, filePath):
-
-		if response.read(MAGIC_HEADER_SIZE) != b"RCLONE\x00\x00":
-			return
-
-		chunkSize = BLOCK_SIZE + BLOCK_HEADER_SIZE
-		nonce = response.read(NONCE_SIZE)
-
-		with open(filePath, "wb") as outFile:
-
-			while chunk := response.read(chunkSize):
-				outFile.write(self._decryptBytes(chunk, nonce, chunkSize))
-				nonce = nonce_increment(nonce)
-
 	def _decryptBytes(self, inputBytes, nonce, chunkSize):
 
 		if inputBytes == b"":
@@ -105,10 +109,10 @@ class File:
 
 		for i in range(blockNum):
 			pos = i * chunkSize
-			outputBytes += secretbox_xsalsa20_open(inputBytes[pos:pos + chunkSize], nonce, self.key)
+			outputBytes += xsalsa20open(inputBytes[pos:pos + chunkSize], nonce, self.key)
 			nonce = nonce_increment(nonce)
 
 		if bytesRemain != 0:
-			outputBytes += secretbox_xsalsa20_open(inputBytes[blockNum * chunkSize:], nonce, self.key)
+			outputBytes += xsalsa20open(inputBytes[blockNum * chunkSize:], nonce, self.key)
 
 		return outputBytes
