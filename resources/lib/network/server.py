@@ -207,9 +207,10 @@ class ServerHandler(BaseHTTPRequestHandler):
 		chunkOffset = 0
 
 		if start:
-			range = 0
 
-			if self.server.encyptedVideo:
+			if not self.server.encyptedVideo:
+				range = start
+			else:
 
 				if self.server.encryptor.type == Encryptors.GDRIVE:
 
