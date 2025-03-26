@@ -1,11 +1,11 @@
 import math
 
+from helpers import rfcToTimestamp
 from .file import File
 from .video import Episode, Movie, Video
 from .fs_helpers import removeProhibitedFSchars
 from .fs_constants import IMAGE_EXTENSIONS, MEDIA_ASSETS, SUBTITLE_EXTENSIONS, VIDEO_EXTENSIONS
 from .. import ptn
-from helpers import rfcToTimestamp
 
 
 def makeFile(fileData, excludedTypes, prefix, suffix, encryptor):
@@ -62,6 +62,7 @@ def makeFile(fileData, excludedTypes, prefix, suffix, encryptor):
 	file.modifiedTime = rfcToTimestamp(fileData["modifiedTime"])
 	return file
 
+
 def _extractMetadata(metadata, ptnData):
 	duration = metadata.get("durationMillis")
 	videoWidth = metadata.get("width")
@@ -87,6 +88,7 @@ def _extractMetadata(metadata, ptnData):
 		"hdr": ptnData.get("hdr"),
 	}
 
+
 def _identifyFileType(filename, fileExtension, mimeType):
 	fileExtension = fileExtension.lower()
 
@@ -101,6 +103,7 @@ def _identifyFileType(filename, fileExtension, mimeType):
 		return next((type for type in MEDIA_ASSETS if type in filename), None)
 	elif fileExtension == "strm":
 		return "strm"
+
 
 def _identifyVideo(ptnData):
 	title = ptnData.get("title")
