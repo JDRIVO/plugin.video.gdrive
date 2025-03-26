@@ -20,8 +20,10 @@ def duplicateFileCheck(dirPath, filename, existingFilePath=None):
 
 	return filePath
 
+
 def generateFilePath(dirPath, filename):
 	return duplicateFileCheck(dirPath, filename)
+
 
 def getExcludedTypes(folderSettings):
 	excluded = []
@@ -39,6 +41,7 @@ def getExcludedTypes(folderSettings):
 		excluded.append("strm")
 
 	return excluded
+
 
 def removeProhibitedFSchars(name):
 	return re.sub(r'[<>\*\?\\/:|"]*', '', name.rstrip())
