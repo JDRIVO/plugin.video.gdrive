@@ -247,8 +247,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		self.y = (self.viewportHeight - self.windowHeight) // 2
 
 	def _createButtons(self):
-		self.excludedButtons = []
-		self.includedButtons = []
+		self.excludedButtons, self.includedButtons = [], []
 		self._addAffixButtons(self.excluded, self.excludedButtons, self.x + 11)
 		self._addAffixButtons(self.included, self.includedButtons, self.x + self.buttonWidth + 20)
 
