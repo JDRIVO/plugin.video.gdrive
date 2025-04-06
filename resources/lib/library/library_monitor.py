@@ -4,8 +4,8 @@ import json
 import xbmc
 
 from constants import SETTINGS
-from .library_editor import DatabaseEditor
 from helpers import sendJSONRPCCommand
+from .library_editor import DatabaseEditor
 
 
 class LibraryMonitor(xbmc.Monitor):
