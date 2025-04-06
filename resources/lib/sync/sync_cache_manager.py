@@ -67,15 +67,15 @@ class SyncCacheManager(DatabaseManager):
 			"folder_id",
 			"local_path",
 			"remote_name",
+			"encryption_id",
+			"strm_prefix",
+			"strm_suffix",
 			"file_renaming",
 			"folder_renaming",
-			"contains_encrypted",
 			"sync_nfo",
 			"sync_subtitles",
 			"sync_artwork",
 			"sync_strm",
-			"strm_prefix",
-			"strm_suffix",
 			"tmdb_language",
 			"tmdb_region",
 			"tmdb_adult",
@@ -147,7 +147,7 @@ class SyncCacheManager(DatabaseManager):
 		return self.selectAll("folders", condition)
 
 	def getLastSync(self, driveID):
-		return self.select("drives", "last_update", {"drive_id": driveID})
+		return self.select("drives", "last_sync", {"drive_id": driveID})
 
 	def getSyncRootPath(self):
 		return self.select("global", "local_path")
@@ -343,7 +343,7 @@ class SyncCacheManager(DatabaseManager):
 			"drive_id TEXT",
 			"local_path TEXT",
 			"page_token INTEGER",
-			"last_update REAL",
+			"last_sync REAL",
 			"task_mode TEXT",
 			"task_frequency TEXT",
 			"startup_sync INTEGER",
@@ -372,24 +372,23 @@ class SyncCacheManager(DatabaseManager):
 			"folder_id TEXT",
 			"local_path TEXT",
 			"remote_name TEXT",
+			"encryption_id TEXT",
+			"strm_prefix TEXT",
+			"strm_suffix TEXT",
 			"file_renaming INTEGER",
 			"folder_renaming INTEGER",
-			"contains_encrypted INTEGER",
 			"sync_nfo INTEGER",
 			"sync_subtitles INTEGER",
 			"sync_artwork INTEGER",
 			"sync_strm INTEGER",
-			"strm_prefix TEXT",
-			"strm_suffix TEXT",
 			"tmdb_language TEXT",
 			"tmdb_region TEXT",
-			"tmdb_adult TEXT",
+			"tmdb_adult INTEGER",
 		)
 		self.createTable("folders", columns)
 
 	def _createGlobalTable(self):
 		columns = (
 			"local_path TEXT",
-			"operating_system TEXT",
 		)
 		self.createTable("global", columns)

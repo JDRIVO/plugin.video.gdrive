@@ -12,7 +12,7 @@ def makeFile(fileData, excludedTypes, prefix, suffix, encryptor):
 	filename = fileData["name"]
 	mimeType = fileData["mimeType"]
 	fileExtension = fileData.get("fileExtension")
-	encrypted = False
+	encryptionID = None
 
 	if encryptor:
 		decryptedFilename = encryptor.decryptFilename(filename, fileExtension, mimeType)
@@ -25,7 +25,7 @@ def makeFile(fileData, excludedTypes, prefix, suffix, encryptor):
 			fileExtension = filename.rsplit(".", 1)[-1]
 
 			if encryptor.encryptData and mimeType == "application/octet-stream":
-				encrypted = True
+				encryptionID = encryptor.profile.id
 
 	elif not fileExtension:
 		return
@@ -57,7 +57,7 @@ def makeFile(fileData, excludedTypes, prefix, suffix, encryptor):
 	file.remoteName = filename
 	file.id = fileData["id"]
 	file.type = fileType
-	file.encrypted = encrypted
+	file.encryptionID = encryptionID
 	file.extension = fileExtension
 	file.modifiedTime = rfcToTimestamp(fileData["modifiedTime"])
 	return file

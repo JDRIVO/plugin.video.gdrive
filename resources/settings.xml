@@ -158,10 +158,26 @@
 				</setting>
 			</group>
 			<group id="2" label="30506">
-				<setting id="contains_encrypted" type="boolean" label="30507" help="">
+				<setting id="encryption_name" type="string" label="30507" help="">
 					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_encryption_profile)</data>
+					</control>
+				</setting>
+				<setting id="encryption_id" type="string" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+					<visible>false</visible>
 				</setting>
 				<setting id="file_renaming" type="boolean" label="30508" help="">
 					<level>0</level>
@@ -233,18 +249,10 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_region)</data>
 					</control>
 				</setting>
-				<setting id="tmdb_adult" type="string" label="30518" help="">
+				<setting id="tmdb_adult" type="boolean" label="30518" help="">
 					<level>0</level>
 					<default>false</default>
-					<constraints>
-						<options>
-							<option>true</option>
-							<option>false</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>30518</heading>
-					</control>
+					<control type="toggle"/>
 				</setting>
 			</group>
 		</category>
@@ -303,146 +311,75 @@
 		</category>
 		<category id="encryption" label="30800" help="">
 			<group id="1">
-				<setting id="encryption_type" type="string" label="30801" help="">
+				<setting id="default_encryption_name" type="string" label="30801" help="">
 					<level>0</level>
-					<default>gDrive</default>
+					<default/>
 					<constraints>
-						<options>
-							<option>gDrive</option>
-							<option>RCLONE</option>
-						</options>
+						<allowempty>true</allowempty>
 					</constraints>
-					<control type="list" format="string">
-						<heading>30801</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_default_encryption_profile)</data>
 					</control>
 				</setting>
-				<setting id="crypto_password" type="string" label="30802" parent="encryption_type" help="">
+				<setting id="default_encryption_id" type="string" label="" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
 					<control type="edit" format="string">
-						<heading>30802</heading>
+						<heading/>
 					</control>
+					<visible>false</visible>
 				</setting>
-				<setting id="crypto_salt" type="path" label="30803" parent="encryption_type" help="">
+				<setting id="create_encryption_profile" type="string" label="30802" help="">
 					<level>0</level>
 					<default/>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="encryption_type">gDrive</condition>
-						</dependency>
-					</dependencies>
 					<constraints>
-						<writable>false</writable>
 						<allowempty>true</allowempty>
 					</constraints>
-					<control type="button" format="file">
-						<heading>30803</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=create_encryption_profile)</data>
 					</control>
 				</setting>
-				<setting id="salt_password" type="string" label="30804" parent="encryption_type" help="">
+				<setting id="modify_encryption_profile" type="string" label="30803" help="">
 					<level>0</level>
 					<default/>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="encryption_type">RCLONE</condition>
-						</dependency>
-					</dependencies>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
-					<control type="edit" format="string">
-						<heading>30804</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=modify_encryption_profile)</data>
 					</control>
 				</setting>
-				<setting id="encrypt_data" type="boolean" label="30805" parent="encryption_type" help="">
+				<setting id="delete_encryption_profiles" type="string" label="30804" help="">
 					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="encryption_type">RCLONE</condition>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="filename_encyption" type="string" label="30806" parent="encryption_type" help="">
-					<level>0</level>
-					<default>standard</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="encryption_type">RCLONE</condition>
-						</dependency>
-					</dependencies>
-					<constraints>
-						<options>
-							<option>standard</option>
-							<option>obfuscate</option>
-							<option>off</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>30806</heading>
-					</control>
-				</setting>
-				<setting id="encrypt_dir_names" type="boolean" label="30807" parent="encryption_type" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="encryption_type">RCLONE</condition>
-							</and>
-							<or>
-								<condition operator="is" setting="filename_encyption">standard</condition>
-								<condition operator="is" setting="filename_encyption">obfuscate</condition>
-							</or>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="filename_encoding" type="string" label="30808" parent="encryption_type" help="">
-					<level>0</level>
-					<default>base32</default>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="encryption_type">RCLONE</condition>
-							</and>
-							<or>
-								<condition operator="is" setting="filename_encyption">standard</condition>
-								<condition operator="is" setting="filename_encyption">obfuscate</condition>
-							</or>
-						</dependency>
-					</dependencies>
-					<constraints>
-						<options>
-							<option>base32</option>
-							<option>base64</option>
-							<option>base32768</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>30808</heading>
-					</control>
-				</setting>
-				<setting id="suffix" type="string" label="30809" parent="encryption_type" help="">
-					<level>0</level>
-					<default>bin</default>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="encryption_type">RCLONE</condition>
-								<condition operator="is" setting="filename_encyption">off</condition>
-							</and>
-						</dependency>
-					</dependencies>
+					<default/>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
-					<control type="edit" format="string">
-						<heading>30809</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=delete_encryption_profiles)</data>
+					</control>
+				</setting>
+				<setting id="import_encryption_profiles" type="string" label="30805" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=import_encryption_profiles)</data>
+					</control>
+				</setting>
+				<setting id="export_encryption_profiles" type="string" label="30806" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=export_encryption_profiles)</data>
 					</control>
 				</setting>
 			</group>

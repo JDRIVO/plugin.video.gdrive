@@ -21,8 +21,9 @@ from ..sync.task_manager import TaskManager
 from ..sync.sync_cache_manager import SyncCacheManager
 from ..playback.video_player import VideoPlayer
 from ..google_api.google_drive import GoogleDrive
+from ..encryption.encryption import EncryptionHandler
+from ..encryption.encryption_types import EncryptionType
 from ..filesystem.file_operations import FileOperations
-from ..encryption.encryption import EncryptionHandler, Encryptors
 
 
 class ServerRunner(Thread):
@@ -57,7 +58,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 		self.cache = SyncCacheManager()
 		self.taskManager = TaskManager(self.settings, self.accountManager)
 		self.taskManager.run()
-		self.encryptor = EncryptionHandler(self.settings)
+		self.encryptor = EncryptionHandler()
 		self.fileOperations = FileOperations()
 		self.dialog = Dialog()
 		self.shutdownRequest = False
@@ -181,12 +182,18 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.server.url = postData["url"]
 		self.server.driveID = postData["drive_id"]
 		self.server.fileID = postData["file_id"]
-		self.server.encyptedVideo = postData["encrypted"]
 		self.server.transcoded = postData["transcoded"]
+		encryptionID = postData["encryption_id"]
+
+		if encryptionID:
+			self.server.encryptedStream = True
+			self.server.encryptor.setEncryptor(encryptionID)
+		else:
+			self.server.encryptedStream = False
+
 		self.server.accountManager.setAccounts()
 		account = self.server.accountManager.getAccount(self.server.driveID)
 		self.server.cloudService.setAccount(account)
-		self.server.encryptor.setEncryptor()
 
 	def handlePlayRequest(self):
 
@@ -208,11 +215,11 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 		if start:
 
-			if not self.server.encyptedVideo:
+			if not self.server.encryptedStream:
 				range = start
 			else:
 
-				if self.server.encryptor.type == Encryptors.GDRIVE:
+				if self.server.encryptor.type == EncryptionType.GDRIVE:
 
 					if start > 16 and not end:
 						chunkOffset = 16 - ((self.server.length - start) % 16) + 8
@@ -456,9 +463,9 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 	def streamResponse(self, response, blockIndex, blockOffset, chunkOffset):
 
-		if self.server.encyptedVideo:
+		if self.server.encryptedStream:
 
-			if self.server.encryptor.type == Encryptors.GDRIVE:
+			if self.server.encryptor.type == EncryptionType.GDRIVE:
 				self.server.encryptor.decryptStream(response, self.wfile, chunkOffset)
 			else:
 				self.server.encryptor.decryptStream(response, self.wfile, blockIndex, blockOffset)

@@ -4,11 +4,10 @@ from abc import ABC, abstractmethod
 
 from .rclone.crypt import Crypt
 from .gdrive.encryptor import Encryptor
+from .encryption_types import EncryptionType
+from .encryption_profiles import ProfileManager
 
-
-class Encryptors(Enum):
-	GDRIVE = "gDrive"
-	RCLONE = "RCLONE"
+profileManager = ProfileManager()
 
 
 class EncryptionStrategy(ABC):
@@ -29,16 +28,11 @@ class EncryptionStrategy(ABC):
 	def downloadFile(self, response, filePath):
 		pass
 
-	@abstractmethod
-	def isEnabled(self, settings):
-		pass
 
+class GDriveAdaptor(EncryptionStrategy):
 
-class GdriveAdaptor(EncryptionStrategy):
-
-	def __init__(self, settings):
-		self.settings = settings
-		self.encryptor = Encryptor(settings=self.settings)
+	def __init__(self, profile):
+		self.encryptor = Encryptor(salt=profile.salt, saltPassword=profile.password)
 		self.filenameEncryption = True
 		self.encryptData = True
 
@@ -64,30 +58,20 @@ class GdriveAdaptor(EncryptionStrategy):
 	def downloadFile(self, response, filePath):
 		self.encryptor.decryptStream(response, filePath)
 
-	def isEnabled(self, settings):
-
-		if self.settings.getSetting("crypto_password") and self.settings.getSetting("crypto_salt"):
-			return True
-
 
 class RcloneAdaptor(EncryptionStrategy):
 
-	def __init__(self, settings):
-		self.settings = settings
-		password = self.settings.getSetting("crypto_password")
-		saltPassword = self.settings.getSetting("salt_password")
-		filenameEncoding = self.settings.getSetting("filename_encoding")
-		filenameEncryption = self.settings.getSetting("filename_encyption")
-		suffix = settings.getSetting("suffix")
-		self.encryptData = self.settings.getSetting("encrypt_data")
+	def __init__(self, profile):
+		password = profile.password
+		salt = profile.salt
+		filenameEncoding = profile.filenameEncoding
+		filenameEncryption = profile.filenameEncryption
+		suffix = profile.suffix
+		self.encryptData = profile.encryptData
 		self.filenameEncryption = filenameEncryption != "off"
-		self.encryptDirNames = self.settings.getSetting("encrypt_dir_names")
+		self.encryptDirNames = profile.encryptDirNames
 		self.suffix = suffix if suffix.startswith(".") else f".{suffix}"
-
-		if saltPassword:
-			self.encryptor = Crypt(password, saltPassword, nameEncoding=filenameEncoding)
-		else:
-			self.encryptor = Crypt(password, nameEncoding=filenameEncoding)
+		self.encryptor = Crypt(password, salt, nameEncoding=filenameEncoding) if salt else Crypt(password, nameEncoding=filenameEncoding)
 
 		if self.filenameEncryption:
 			self.decryptName = self.encryptor.Name.standard_decrypt if filenameEncryption == "standard" else self.encryptor.Name.obfuscate_decrypt
@@ -105,12 +89,7 @@ class RcloneAdaptor(EncryptionStrategy):
 	def decryptFilename(self, name, fileExtension, mimeType):
 
 		if fileExtension:
-
-			if not self.filenameEncryption:
-				return re.sub(f"{self.suffix}$", "", name)
-			else:
-				return name
-
+			return name if self.filenameEncryption else re.sub(f"{self.suffix}$", "", name)
 		else:
 
 			try:
@@ -124,17 +103,8 @@ class RcloneAdaptor(EncryptionStrategy):
 	def downloadFile(self, response, filePath):
 		self.encryptor.File.decryptStream(response, filePath)
 
-	def isEnabled(self, settings):
-
-		if self.settings.getSetting("crypto_password"):
-			return True
-
 
 class EncryptionHandler:
-
-	def __init__(self, settings):
-		self.settings = settings
-		self.setEncryptor()
 
 	def __getattr__(self, name):
 		return getattr(self._strategy, name, False)
@@ -152,14 +122,18 @@ class EncryptionHandler:
 		self._strategy.downloadFile(response, filePath)
 		response.release_conn()
 
-	def isEnabled(self):
-		return self._strategy.isEnabled(self.settings)
+	def setEncryptor(self, id):
+		profileManager.setProfiles()
+		self.profile = profileManager.getProfile(id)
 
-	def setEncryptor(self):
+		if not self.profile:
+			return
 
-		if self.settings.getSetting("encryption_type") == Encryptors.GDRIVE.value:
-			self.type = Encryptors.GDRIVE
-			self._strategy = GdriveAdaptor(self.settings)
+		if self.profile.type == EncryptionType.GDRIVE:
+			self.type = EncryptionType.GDRIVE
+			self._strategy = GDriveAdaptor(self.profile)
 		else:
-			self.type = Encryptors.RCLONE
-			self._strategy = RcloneAdaptor(self.settings)
+			self.type = EncryptionType.RCLONE
+			self._strategy = RcloneAdaptor(self.profile)
+
+		return True

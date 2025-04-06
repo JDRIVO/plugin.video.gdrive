@@ -3,6 +3,7 @@ import time
 
 import xbmc
 
+from helpers import sendJSONRPCCommand
 from .sync_cache_updater import SyncCacheUpdater
 from ..filesystem.folder import Folder
 from ..filesystem.file_tree import FileTree
@@ -11,18 +12,18 @@ from ..filesystem.fs_constants import MEDIA_ASSETS
 from ..filesystem.fs_helpers import getExcludedTypes, removeProhibitedFSchars
 from ..filesystem.file_processor import LocalFileProcessor, RemoteFileProcessor
 from ..threadpool.threadpool import ThreadPool
-from helpers import sendJSONRPCCommand
+from ..encryption.encryption import EncryptionHandler
 
 
 class Syncer:
 
-	def __init__(self, accountManager, cloudService, encryptor, fileOperations, settings, cache):
+	def __init__(self, accountManager, cloudService, fileOperations, settings, cache):
 		self.accountManager = accountManager
 		self.cloudService = cloudService
-		self.encryptor = encryptor
 		self.fileOperations = fileOperations
 		self.settings = settings
 		self.cache = cache
+		self.encryptor = EncryptionHandler()
 
 	def syncChanges(self, driveID):
 		self.accountManager.setAccounts()
@@ -42,13 +43,12 @@ class Syncer:
 			return
 
 		if not changes:
-			self.cache.updateDrive({"last_update": time.time()}, driveID)
+			self.cache.updateDrive({"last_sync": time.time()}, driveID)
 			return True
 
 		changes = self._sortChanges(changes)
 		self.deleted = False
-		syncedIDs = []
-		excludedIDs = []
+		syncedIDs, excludedIDs = [], []
 		newFiles = {}
 
 		for item in changes:
@@ -93,7 +93,7 @@ class Syncer:
 			}
 			sendJSONRPCCommand(query)
 
-		self.cache.updateDrive({"page_token": pageToken, "last_update": time.time()}, driveID)
+		self.cache.updateDrive({"page_token": pageToken, "last_sync": time.time()}, driveID)
 		return True
 
 	def syncFolderAdditions(self, syncRootPath, drivePath, folder, folderSettings, progressDialog=None, syncedIDs=None):
@@ -105,7 +105,13 @@ class Syncer:
 		prefix = [p for p in folderSettings["strm_prefix"].split(", ") if p]
 		suffix = [s for s in folderSettings["strm_suffix"].split(", ") if s]
 		threadCount = self.settings.getSettingInt("thread_count", 1)
-		encryptor = self.encryptor if folderSettings["contains_encrypted"] else None
+		encryptionID = folderSettings["encryption_id"]
+
+		if encryptionID:
+			encryptor = self.encryptor if self.encryptor.setEncryptor(encryptionID) else None
+		else:
+			encryptor = None
+
 		cacheUpdater = SyncCacheUpdater(self.cache)
 
 		with RemoteFileProcessor(self.fileOperations, cacheUpdater, threadCount, progressDialog) as fileProcessor:
@@ -143,13 +149,20 @@ class Syncer:
 				folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
 				folderRenaming = folderSettings["folder_renaming"]
 				fileRenaming = folderSettings["file_renaming"]
+				encryptionID = folderSettings["encryption_id"]
+
+				if encryptionID:
+					encryptor = EncryptionHandler()
+					encryptor = encryptor if encryptor.setEncryptor(encryptionID) else None
+				else:
+					encryptor = None
 
 				for folderID, folder in directories.items():
 
 					for files in folder.files.values():
 
 						for file in files:
-							fileProcessor.addFile((file, folder))
+							fileProcessor.addFile((file, folder, encryptor))
 
 					if folderRenaming or fileRenaming:
 						folders.append((folder, folderSettings))
@@ -243,7 +256,13 @@ class Syncer:
 		folderRenaming = folderSettings["folder_renaming"]
 		prefix = [p for p in folderSettings["strm_prefix"].split(", ") if p]
 		suffix = [s for s in folderSettings["strm_suffix"].split(", ") if s]
-		encryptor = self.encryptor if folderSettings["contains_encrypted"] else None
+		encryptionID = folderSettings["encryption_id"]
+
+		if encryptionID:
+			encryptor = self.encryptor if self.encryptor.setEncryptor(encryptionID) else None
+		else:
+			encryptor = None
+
 		file = makeFile(file, excludedTypes, prefix, suffix, encryptor)
 
 		if not file:
@@ -322,9 +341,13 @@ class Syncer:
 				return
 
 			folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
+			encryptionID = folderSettings["encryption_id"]
 
-			if folderSettings["contains_encrypted"]:
-				folderName = removeProhibitedFSchars(self.encryptor.decryptDirName(folderName))
+			if encryptionID:
+				encryptorSet = self.encryptor.setEncryptor(encryptionID)
+
+				if encryptorSet:
+					folderName = removeProhibitedFSchars(self.encryptor.decryptDirName(folderName))
 
 			dirPath = self.cache.getUniqueDirectoryPath(driveID, dirPath)
 			folder = Folder(folderID, parentFolderID, rootFolderID, driveID, folderName, dirPath, os.path.join(drivePath, dirPath), syncRootPath, folderSettings["folder_renaming"], modifiedTime=folder["modifiedTime"])
@@ -337,9 +360,13 @@ class Syncer:
 		cachedRootFolderID = cachedDirectory["root_folder_id"]
 		cachedRemoteName = cachedDirectory["remote_name"]
 		folderSettings = self.cache.getFolder({"folder_id": cachedRootFolderID})
+		encryptionID = folderSettings["encryption_id"]
 
-		if folderSettings["contains_encrypted"]:
-			folderName = removeProhibitedFSchars(self.encryptor.decryptDirName(folderName))
+		if encryptionID:
+			encryptorSet = self.encryptor.setEncryptor(encryptionID)
+
+			if encryptorSet:
+				folderName = removeProhibitedFSchars(self.encryptor.decryptDirName(folderName))
 
 		if parentFolderID != cachedParentFolderID and folderID != cachedRootFolderID:
 			# folder has been moved into another directory

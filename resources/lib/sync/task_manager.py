@@ -6,15 +6,14 @@ import traceback
 
 import xbmc
 
+from helpers import getCurrentTime, strToDatetime
 from .syncer import Syncer
 from .sync_cache_manager import SyncCacheManager
 from ..filesystem.folder import Folder
 from ..threadpool.threadpool import ThreadPool
 from ..google_api.google_drive import GoogleDrive
-from ..encryption.encryption import EncryptionHandler
 from ..ui.dialogs import Dialog, SyncProgressionDialog
 from ..filesystem.file_operations import FileOperations
-from helpers import getCurrentTime, strToDatetime
 
 
 class TaskManager:
@@ -24,10 +23,9 @@ class TaskManager:
 		self.accountManager = accountManager
 		self.accounts = self.accountManager.accounts
 		self.cloudService = GoogleDrive()
-		self.encryptor = EncryptionHandler(self.settings)
 		self.cache = SyncCacheManager()
-		self.fileOperations = FileOperations(cloud_service=self.cloudService, encryptor=self.encryptor)
-		self.syncer = Syncer(self.accountManager, self.cloudService, self.encryptor, self.fileOperations, self.settings, self.cache)
+		self.fileOperations = FileOperations(cloud_service=self.cloudService)
+		self.syncer = Syncer(self.accountManager, self.cloudService, self.fileOperations, self.settings, self.cache)
 		self.monitor = xbmc.Monitor()
 		self.dialog = Dialog()
 		self.taskLock = threading.Lock()
@@ -38,7 +36,6 @@ class TaskManager:
 
 	def addTask(self, driveID, folders):
 		self.activeTasks.append(driveID)
-		self.encryptor.setEncryptor()
 		self.accountManager.setAccounts()
 		self.accounts = self.accountManager.accounts
 		account = self.accountManager.getAccount(driveID)

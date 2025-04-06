@@ -15,14 +15,15 @@ from .ui.dialogs import Dialog
 from .ui.strm_affixer import StrmAffixer
 from .ui.sync_settings import SyncSettings
 from .ui.resolution_order import ResolutionOrder
+from .ui.encryption_settings import EncryptionSettings
 from .ui.resolution_selector import ResolutionSelector
 from .network import http_requester
 from .accounts.account import Account
 from .accounts.account_manager import AccountManager
 from .threadpool.threadpool import ThreadPool
 from .google_api.google_drive import GoogleDrive
-from .encryption.encryption import EncryptionHandler
 from .sync.sync_cache_manager import SyncCacheManager
+from .encryption.encryption_profiles import ProfileManager
 from .filesystem.fs_helpers import removeProhibitedFSchars
 from .filesystem.fs_constants import TMDB_LANGUAGES, TMDB_REGIONS
 
@@ -51,13 +52,17 @@ class Core:
 		modes = {
 			"accounts_cm": self.showAccountsContextMenu,
 			"add_service_account": self.addServiceAccount,
-			"delete_accounts": self.accountDeletion,
+			"create_encryption_profile": self.createEncryptionProfile,
+			"delete_accounts": self.deleteAccounts,
 			"delete_accounts_file": self.deleteAccountsFile,
 			"delete_drive": self.deleteDrive,
+			"delete_encryption_profiles": self.deleteEncryptionProfiles,
 			"delete_sync_cache": self.deleteSyncCache,
 			"delete_sync_folder": self.deleteSyncFolder,
 			"export_accounts": self.exportAccounts,
+			"export_encryption_profiles": self.exportEncryptionProfiles,
 			"import_accounts": self.importAccounts,
+			"import_encryption_profiles": self.importEncryptionProfiles,
 			"force_sync_drive": self.forceSyncDrive,
 			"force_sync_drives": self.forceSyncDrives,
 			"get_sync_settings": self.getSyncSettings,
@@ -68,11 +73,14 @@ class Core:
 			"list_shared_drives": self.listSharedDrives,
 			"list_synced_folders": self.listSyncedFolders,
 			"main": self.createMainMenu,
+			"modify_encryption_profile": self.modifyEncryptionProfile,
 			"register_account": self.registerAccount,
 			"resolution_priority": self.resolutionPriority,
 			"search_drive": self.searchDrive,
 			"search_folder": self.searchFolder,
 			"set_alias": self.setAlias,
+			"set_default_encryption_profile": self.setDefaultEncryptionProfile,
+			"set_encryption_profile": self.setEncryptionProfile,
 			"set_playback_account": self.setPlaybackAccount,
 			"set_strm_prefix": self.setStrmPrefix,
 			"set_strm_suffix": self.setStrmSuffix,
@@ -87,19 +95,6 @@ class Core:
 		}
 		modes[self.mode]()
 		xbmcplugin.endOfDirectory(self.pluginHandle, succeeded=self.succeeded, cacheToDisc=self.cacheToDisk)
-
-	def accountDeletion(self):
-		driveID = self.settings.getParameter("drive_id")
-		accounts = self.accountManager.getAccounts(driveID)
-		accountNames = self.accountManager.getAccountNames(accounts)
-		selection = self.dialog.multiselect(self.settings.getLocalizedString(30158), accountNames)
-
-		if not selection:
-			return
-
-		self.accountManager.deleteAccounts(selection, accounts, driveID)
-		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30161))
-		xbmc.executebuiltin("Container.Refresh")
 
 	def addFolders(self):
 		driveID = self.settings.getParameter("drive_id")
@@ -250,6 +245,11 @@ class Core:
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL_IGNORE_FOLDERS)
 
+	def createEncryptionProfile(self):
+		encryptionSettings = EncryptionSettings(mode="add")
+		encryptionSettings.doModal()
+		del encryptionSettings
+
 	def createMainMenu(self):
 		syncRootPath = self.cache.getSyncRootPath()
 
@@ -274,11 +274,21 @@ class Core:
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_FILE)
 		self.cacheToDisk = False
 
+	def deleteAccounts(self):
+		driveID = self.settings.getParameter("drive_id")
+		accounts = self.accountManager.getAccounts(driveID)
+		accountNames = self.accountManager.getAccountNames(accounts)
+		selection = self.dialog.multiselect(self.settings.getLocalizedString(30158), accountNames)
+
+		if not selection:
+			return
+
+		self.accountManager.deleteAccounts(selection, accounts, driveID)
+		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30161))
+		xbmc.executebuiltin("Container.Refresh")
+
 	def deleteAccountsFile(self):
-		confirmation = self.dialog.yesno(
-			self.settings.getLocalizedString(30000),
-			self.settings.getLocalizedString(30024),
-		)
+		confirmation = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30024))
 
 		if not confirmation:
 			return
@@ -290,30 +300,51 @@ class Core:
 	def deleteDrive(self):
 		driveID = self.settings.getParameter("drive_id")
 		driveName = self.settings.getParameter("drive_name")
-		confirmation = self.dialog.yesno(
-			self.settings.getLocalizedString(30000),
-			f"{self.settings.getLocalizedString(30016)} {driveName}?",
-		)
+		confirmation = self.dialog.yesno(self.settings.getLocalizedString(30000), f"{self.settings.getLocalizedString(30016)} {driveName}?")
 
 		if not confirmation:
 			return
 
-		deleteFiles = self.dialog.yesno(
-			self.settings.getLocalizedString(30000),
-			self.settings.getLocalizedString(30027),
-		)
+		deleteFiles = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30027))
 		self.dialog.notification(self.settings.getLocalizedString(30000), f"{self.settings.getLocalizedString(30105)} {driveName}")
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/delete_drive"
 		data = {"drive_id": driveID, "drive_name": driveName, "delete_files": deleteFiles}
 		http_requester.request(url, data)
 
+	def deleteEncryptionProfiles(self):
+		profileManager = ProfileManager()
+		ids, names = profileManager.getProfileEntries()
+		selection = self.dialog.multiselect(self.settings.getLocalizedString(30129), names)
+
+		if not selection:
+			return
+
+		deletedIDs = []
+
+		for idx in selection:
+			id = ids[idx]
+			profileManager.deleteProfile(id)
+			deletedIDs.append(id)
+
+		if self.settings.getSetting("default_encryption_id") in deletedIDs:
+			cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()
+			xbmc.executebuiltin("Dialog.Close(all,true)")
+
+			while self.settings.getSetting("default_encryption_id") and self.settings.getSetting("default_encryption_name"):
+				self.settings.setSetting("default_encryption_id", "")
+				self.settings.setSetting("default_encryption_name", "")
+				time.sleep(0.1)
+
+			xbmc.executebuiltin("Addon.OpenSettings(plugin.video.gdrive)")
+			xbmc.executebuiltin(f"SetFocus({cid - 19})")
+			xbmc.executebuiltin(f"SetFocus({cid})")
+
+		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30117))
+
 	def deleteSyncCache(self):
 		cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()
-		confirmation = self.dialog.yesno(
-			self.settings.getLocalizedString(30000),
-			self.settings.getLocalizedString(30054),
-		)
+		confirmation = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30054))
 
 		if not confirmation:
 			return
@@ -341,10 +372,7 @@ class Core:
 			return
 
 		cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()
-		confirmation = self.dialog.yesno(
-			self.settings.getLocalizedString(30000),
-			self.settings.getLocalizedString(30094),
-		)
+		confirmation = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30094))
 
 		if not confirmation:
 			return
@@ -360,7 +388,7 @@ class Core:
 		if not dirPath:
 			return
 
-		filename = xbmcgui.Dialog().input(self.settings.getLocalizedString(30099), "gdrive_accounts")
+		filename = self.dialog.input(self.settings.getLocalizedString(30099), "gdrive_accounts")
 
 		if not filename:
 			return
@@ -368,10 +396,24 @@ class Core:
 		filename = f"{filename}.pkl"
 		filePath = os.path.join(dirPath, filename)
 		self.accountManager.exportAccounts(filePath)
-		self.dialog.ok(
-			self.settings.getLocalizedString(30000),
-			f"{self.settings.getLocalizedString(30035)} {filename}",
-		)
+		self.dialog.ok(self.settings.getLocalizedString(30000), f"{self.settings.getLocalizedString(30035)} {filename}")
+
+	def exportEncryptionProfiles(self):
+		dirPath = self.dialog.browse(3, self.settings.getLocalizedString(30034), "")
+
+		if not dirPath:
+			return
+
+		filename = self.dialog.input(self.settings.getLocalizedString(30099), "gdrive_profiles")
+
+		if not filename:
+			return
+
+		filename = f"{filename}.pkl"
+		filePath = os.path.join(dirPath, filename)
+		profileManager = ProfileManager()
+		profileManager.exportProfiles(filePath)
+		self.dialog.ok(self.settings.getLocalizedString(30000), f"{self.settings.getLocalizedString(30035)} {filename}")
 
 	def importAccounts(self):
 		filePath = self.dialog.browse(1, self.settings.getLocalizedString(30033), "", mask=".pkl")
@@ -382,10 +424,24 @@ class Core:
 		imported = self.accountManager.mergeAccounts(filePath)
 
 		if not imported:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30118))
+		else:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30119))
+			xbmc.executebuiltin("Container.Refresh")
+
+	def importEncryptionProfiles(self):
+		filePath = self.dialog.browse(1, self.settings.getLocalizedString(30033), "", mask=".pkl")
+
+		if not filePath:
+			return
+
+		profileManager = ProfileManager()
+		imported = profileManager.importProfiles(filePath)
+
+		if not imported:
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30037))
 		else:
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30036))
-			xbmc.executebuiltin("Container.Refresh")
 
 	def forceSyncDrive(self):
 		driveID = self.settings.getParameter("drive_id")
@@ -577,6 +633,37 @@ class Core:
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_FILE)
 
+	def modifyEncryptionProfile(self):
+		profileManager = ProfileManager()
+		ids, names = profileManager.getProfileEntries()
+		selection = self.dialog.select(self.settings.getLocalizedString(30116), names)
+
+		if selection == -1:
+			return
+
+		id = ids[selection]
+		profile = profileManager.getProfile(id)
+		profileName = profile.name
+		encryptionSettings = EncryptionSettings(profile=profile, mode="modify")
+		encryptionSettings.doModal()
+		modified = encryptionSettings.modified
+		del encryptionSettings
+
+		if not modified:
+			return
+
+		if profileName != profile.name and self.settings.getSetting("default_encryption_id") == id:
+			cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()
+			xbmc.executebuiltin("Dialog.Close(all,true)")
+
+			while self.settings.getSetting("default_encryption_name") == profileName:
+				self.settings.setSetting("default_encryption_name", profile.name)
+				time.sleep(0.1)
+
+			xbmc.executebuiltin("Addon.OpenSettings(plugin.video.gdrive)")
+			xbmc.executebuiltin(f"SetFocus({cid - 18})")
+			xbmc.executebuiltin(f"SetFocus({cid})")
+
 	def playVideo(self, dbID, dbType, filePath):
 
 		if (not dbID or not dbType) and not filePath:
@@ -588,7 +675,6 @@ class Core:
 				dbType = xbmc.getInfoLabel("ListItem.DBTYPE")
 				filePath = xbmc.getInfoLabel("ListItem.FileNameAndPath")
 
-		encrypted = self.settings.getParameter("encrypted")
 		fileID = self.settings.getParameter("file_id")
 		driveURL = self.cloudService.getDownloadURL(fileID)
 
@@ -603,11 +689,21 @@ class Core:
 		self.refreshToken(account.expiry)
 		transcoded = False
 
-		if encrypted:
-			encryptor = EncryptionHandler(self.settings)
+		if self.settings.getParameter("encrypted"):
+			encryptionID = self.settings.getSetting("default_encryption_id")
+			profileManager = ProfileManager()
+			profile = profileManager.getProfile(encryptionID)
 
-			if not encryptor.isEnabled():
-				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30208))
+			if not profile:
+				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30120))
+				return
+
+		elif encryptionID := self.settings.getParameter("encryption_id"):
+			profileManager = ProfileManager()
+			profile = profileManager.getProfile(encryptionID)
+
+			if not profile:
+				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30121))
 				return
 
 		else:
@@ -642,7 +738,7 @@ class Core:
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/initialize_stream"
 		data = {
-			"encrypted": encrypted,
+			"encryption_id": encryptionID,
 			"url": driveURL,
 			"drive_id": driveID,
 			"file_id": fileID,
@@ -775,6 +871,43 @@ class Core:
 		data = {"drive_id": driveID, "alias": alias}
 		http_requester.request(url, data)
 
+	def setDefaultEncryptionProfile(self):
+		profileManager = ProfileManager()
+		ids, names = profileManager.getProfileEntries()
+		ids = ("",) + ids
+		names = ("",) + names
+		selection = self.dialog.select(self.settings.getLocalizedString(30116), names)
+
+		if selection == -1:
+			return
+
+		id = ids[selection]
+		name = names[selection]
+		cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()
+		xbmc.executebuiltin("Dialog.Close(all,true)")
+
+		while self.settings.getSetting("default_encryption_id") != id and self.settings.getSetting("default_encryption_name") != name:
+			self.settings.setSetting("default_encryption_id", id)
+			self.settings.setSetting("default_encryption_name", name)
+			time.sleep(0.1)
+
+		xbmc.executebuiltin("Addon.OpenSettings(plugin.video.gdrive)")
+		xbmc.executebuiltin(f"SetFocus({cid - 15})")
+		xbmc.executebuiltin(f"SetFocus({cid})")
+
+	def setEncryptionProfile(self):
+		profileManager = ProfileManager()
+		ids, names = profileManager.getProfileEntries()
+		ids = ("",) + ids
+		names = ("",) + names
+		selection = self.dialog.select(self.settings.getLocalizedString(30116), names)
+
+		if selection == -1:
+			return
+
+		self.settings.setSetting("encryption_id", ids[selection])
+		self.settings.setSetting("encryption_name", names[selection])
+
 	def setPlaybackAccount(self):
 		accounts = self.accountManager.getDrives()
 		displayNames = [account[1] for account in accounts]
@@ -879,7 +1012,7 @@ class Core:
 		elif selection == 2:
 			selection = self.dialog.yesno(
 				self.settings.getLocalizedString(30000),
-				f"{self.settings.getLocalizedString(30121)} {accountName}?",
+				f"{self.settings.getLocalizedString(30157)} {accountName}?",
 			)
 
 			if not selection:

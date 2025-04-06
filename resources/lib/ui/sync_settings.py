@@ -10,6 +10,7 @@ from .dialogs import Dialog
 from .strm_affixer import StrmAffixer
 from ..network import http_requester
 from ..encryption.encryption import EncryptionHandler
+from ..encryption.encryption_profiles import ProfileManager
 from ..sync.sync_cache_manager import SyncCacheManager
 from ..filesystem.fs_helpers import removeProhibitedFSchars
 from ..filesystem.fs_constants import TMDB_LANGUAGES, TMDB_REGIONS
@@ -28,7 +29,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		SETTINGS.getLocalizedString(30049): {"type": "drive", "name": "task_mode"},
 		SETTINGS.getLocalizedString(30050): {"type": "drive", "name": "task_frequency"},
 		SETTINGS.getLocalizedString(30051): {"type": "drive", "name": "startup_sync"},
-		SETTINGS.getLocalizedString(30507): {"type": "folder", "name": "contains_encrypted"},
+		SETTINGS.getLocalizedString(30507): {"type": "folder", "name": "encryption_id"},
 		SETTINGS.getLocalizedString(30508): {"type": "folder", "name": "file_renaming"},
 		SETTINGS.getLocalizedString(30509): {"type": "folder", "name": "folder_renaming"},
 		SETTINGS.getLocalizedString(30510): {"type": "folder", "name": "sync_nfo"},
@@ -150,7 +151,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			self.x,
 			self.y,
 			self.windowWidth,
-			40,
+			self.buttonHeight,
 			f"[B]{self.settings.getLocalizedString(30012)}{': ' + self.folderName if self.folderName else ''}[/B]",
 			focusTexture=self.blueTexture,
 			noFocusTexture=self.blueTexture,
@@ -180,10 +181,22 @@ class SyncSettings(xbmcgui.WindowDialog):
 			button.setLabel(label2=self.syncMode)
 		elif label == self.settings.getLocalizedString(30050):
 			button.setLabel(label2=self.syncFrequency)
+		elif label == self.settings.getLocalizedString(30507):
+
+			if folderSettings:
+				encryptionID = folderSettings["encryption_id"]
+			else:
+				encryptionID = self.settings.getSetting("encryption_id")
+
+			profileManager = ProfileManager()
+			profile = profileManager.getProfile(encryptionID)
+			label2 = profile.name if profile else " "
+			self.encryptionID = profile.id if profile else None
+			button.setLabel(label2=label2)
 
 		self.addControl(button)
 		self.pushButtons[button] = label
-		self.buttonSpacing += 40
+		self.buttonSpacing += self.buttonHeight
 
 	def _addRadioButton(self, label, isEnabled, x):
 		button = xbmcgui.ControlRadioButton(
@@ -203,7 +216,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.addControl(button)
 		self.radioButtons[button] = label
 		button.setSelected(isEnabled)
-		self.buttonSpacing += 40
+		self.buttonSpacing += self.buttonHeight
 
 	def _calculateViewport(self):
 		self.viewportWidth = self.getWidth()
@@ -310,7 +323,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		radioButtons.update(
 			{
-				self.settings.getLocalizedString(30507): folderSettings["contains_encrypted"] if folderSettings else self.settings.getSetting("contains_encrypted"),
 				self.settings.getLocalizedString(30508): folderSettings["file_renaming"] if folderSettings else self.settings.getSetting("file_renaming"),
 				self.settings.getLocalizedString(30509): folderSettings["folder_renaming"] if folderSettings else self.settings.getSetting("folder_renaming"),
 				self.settings.getLocalizedString(30510): folderSettings["sync_nfo"] if folderSettings else self.settings.getSetting("sync_nfo"),
@@ -323,6 +335,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			{
 				self.settings.getLocalizedString(30514): self._setPrefix,
 				self.settings.getLocalizedString(30515): self._setSuffix,
+				self.settings.getLocalizedString(30507): self._setEncryptionProfile,
 			}
 		)
 		self.buttonAmount = len(self.functions) + len(radioButtons)
@@ -340,10 +353,10 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.menuButtonIDs = self.generalSettingsButtonIDs
 
 	def _createFolderSettingsTMDBButtons(self):
+		folderSettings = self.cache.getFolder({"folder_id": self.folderID})
 		functions = {
 			self.settings.getLocalizedString(30058): self._setSearchLanguage,
 			self.settings.getLocalizedString(30059): self._setCountry,
-			self.settings.getLocalizedString(30060): self._setAdultContent,
 		}
 		self.functions.update(functions)
 		buttonGeneral = xbmcgui.ControlButton(
@@ -378,19 +391,16 @@ class SyncSettings(xbmcgui.WindowDialog):
 		buttonTMDB.controlDown(buttonGeneral)
 		buttonSpacing = 60
 		self.TMDBButtons, self.TMDBButtonIDs = [], []
-		folderSettings = self.cache.getFolder({"folder_id": self.folderID})
 
 		if folderSettings:
 			values = [
 				folderSettings["tmdb_language"],
 				folderSettings["tmdb_region"],
-				folderSettings["tmdb_adult"],
 			]
 		else:
 			values = [
 				self.settings.getSetting("tmdb_language") or "",
 				self.settings.getSetting("tmdb_region") or "",
-				"true" if self.settings.getSetting("tmdb_adult") else "false",
 			]
 
 		for func, value in zip(functions, values):
@@ -408,9 +418,31 @@ class SyncSettings(xbmcgui.WindowDialog):
 			button.setLabel(label2=value)
 			self.pushButtons[button] = func
 			self.addControl(button)
-			buttonSpacing += 40
+			buttonSpacing += self.buttonHeight
 			self.TMDBButtonIDs.append(button.getId())
 			self.TMDBButtons.append(button)
+
+		label = self.settings.getLocalizedString(30060)
+		button = xbmcgui.ControlRadioButton(
+			x=self.center + 80,
+			y=self.y + buttonSpacing,
+			width=self.buttonWidth,
+			height=self.buttonHeight,
+			label=label,
+			font=self.font,
+			noFocusOffTexture=self.focusOffTexture,
+			focusOffTexture=self.focusOffTexture,
+			focusOnTexture=self.focusOnTexture,
+			noFocusOnTexture=self.focusOnTexture,
+			focusTexture=self.focusTexture,
+			noFocusTexture=self.dGrayTexture,
+		)
+		button.setVisible(False)
+		self.addControl(button)
+		self.radioButtons[button] = label
+		button.setSelected(folderSettings["tmdb_adult"] if folderSettings else self.settings.getSetting("tmdb_adult"))
+		self.TMDBButtonIDs.append(button.getId())
+		self.TMDBButtons.append(button)
 
 	def _getButton(self, buttonID):
 		return self.getControl(buttonID)
@@ -423,15 +455,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.focusTexture = os.path.join(mediaPath, "focus.png")
 		self.focusOnTexture = os.path.join(mediaPath, "radiobutton-focus.png")
 		self.focusOffTexture = os.path.join(mediaPath, "radiobutton-nofocus.png")
-
-	def _setAdultContent(self, button):
-		options = ["true", "false"]
-		selection = self.dialog.select(self.settings.getLocalizedString(30518), options)
-
-		if selection == -1:
-			return
-
-		button.setLabel(label2=options[selection])
 
 	def _setAffix(self, button, affix):
 		folderSettings = self.cache.getFolder({"folder_id": self.folderID})
@@ -459,6 +482,22 @@ class SyncSettings(xbmcgui.WindowDialog):
 			button.setLabel(label2=newLabel)
 		else:
 			button.setLabel(label2=" ")
+
+	def _setEncryptionProfile(self, button):
+		ids, names = ProfileManager().getProfileEntries()
+
+		if not names:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30122))
+			return
+
+		names = (" ",) + names
+		selection = self.dialog.select(self.settings.getLocalizedString(30116), names)
+
+		if selection == -1:
+			return
+
+		button.setLabel(label2=names[selection])
+		self.encryptionID = ids[selection - 1]
 
 	def _setCountry(self, button):
 		selection = self.dialog.select(self.settings.getLocalizedString(30517), TMDB_REGIONS)
@@ -497,14 +536,14 @@ class SyncSettings(xbmcgui.WindowDialog):
 			except KeyError:
 				continue
 
-		hasEncryptedFiles = folderSettings.get("contains_encrypted")
+		encryptionID = folderSettings.get("encryption_id")
 
-		if hasEncryptedFiles:
-			encryptor = EncryptionHandler(self.settings)
-
-			if not encryptor.isEnabled():
-				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30078))
-				return
+		if encryptionID:
+			encryptor = EncryptionHandler()
+			encryptor.setEncryptor(self.encryptionID)
+			folderSettings["encryption_id"] = self.encryptionID
+		else:
+			encryptor = False
 
 		if globalSettings and not globalSettings["local_path"]:
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30079))
@@ -537,7 +576,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 			self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30082))
 
 			if globalSettings:
-				globalSettings.update({"operating_system": os.name})
 				self.cache.addGlobalData(globalSettings)
 				self.settings.setSetting("sync_root", globalSettings["local_path"])
 
@@ -548,7 +586,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 					{
 						"drive_id": self.driveID,
 						"local_path": drivePath,
-						"last_update": time.time(),
+						"last_sync": time.time(),
 
 					}
 				)
@@ -566,7 +604,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				syncTaskData.append(folder)
 				folderName = folder["name"]
 
-				if hasEncryptedFiles:
+				if encryptor:
 					folderName = encryptor.decryptDirName(folderName)
 
 				folderName = removeProhibitedFSchars(folderName)

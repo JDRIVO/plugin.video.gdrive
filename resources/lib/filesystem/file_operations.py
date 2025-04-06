@@ -13,7 +13,6 @@ class FileOperations:
 
 	def __init__(self, **kwargs):
 		self.cloudService = kwargs.get("cloud_service")
-		self.encryptor = kwargs.get("encryptor")
 		self.lock = threading.Lock()
 
 	def createDirs(self, dirPath):
@@ -71,7 +70,7 @@ class FileOperations:
 
 		return True
 
-	def downloadFile(self, dirPath, filename, fileID, modifiedTime=None, encrypted=False):
+	def downloadFile(self, dirPath, filename, fileID, modifiedTime=None, encrypted=False, encryptor=None):
 		self.createDirs(dirPath)
 		response = self.cloudService.downloadFile(fileID)
 
@@ -82,7 +81,7 @@ class FileOperations:
 
 			with self.lock:
 				filePath = generateFilePath(dirPath, filename)
-				self.encryptor.downloadFile(response, filePath)
+				encryptor.downloadFile(response, filePath)
 
 				if modifiedTime:
 					os.utime(filePath, (modifiedTime, modifiedTime))

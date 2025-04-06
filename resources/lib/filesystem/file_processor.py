@@ -44,15 +44,15 @@ class RemoteFileProcessor(queue.Queue):
 		if self.progressDialog:
 			self.progressDialog.incrementFile()
 
-	def _processMediaAsset(self, file, folder):
+	def _processMediaAsset(self, file, folder, encryptor):
 		dirPath = folder.processingPath or folder.localPath
-		filePath = self.fileOperations.downloadFile(dirPath, file.remoteName, file.id, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
+		filePath = self.fileOperations.downloadFile(dirPath, file.remoteName, file.id, modifiedTime=file.modifiedTime, encrypted=file.encryptionID, encryptor=encryptor)
 		localName = os.path.basename(filePath)
 		file.localPath = filePath
 		file.localName = localName
 
-	def _processSTRM(self, file, folder):
-		filePath = self.fileOperations.downloadFile(folder.localPath, file.remoteName, file.id, modifiedTime=file.modifiedTime, encrypted=file.encrypted)
+	def _processSTRM(self, file, folder, encryptor):
+		filePath = self.fileOperations.downloadFile(folder.localPath, file.remoteName, file.id, modifiedTime=file.modifiedTime, encrypted=file.encryptionID, encryptor=encryptor)
 		localName = os.path.basename(filePath)
 		file.localPath = filePath
 		file.localName = localName
@@ -86,14 +86,14 @@ class RemoteFileProcessor(queue.Queue):
 				return
 
 			try:
-				file, folder = self.get_nowait()
+				file, folder, encryptor = self.get_nowait()
 
 				if file.type == "video":
 					self._processVideo(file, folder)
 				elif file.type == "media_asset":
-					self._processMediaAsset(file, folder)
+					self._processMediaAsset(file, folder, encryptor)
 				else:
-					self._processSTRM(file, folder)
+					self._processSTRM(file, folder, encryptor)
 
 				self.cacheUpdater.addFile(folder, file)
 

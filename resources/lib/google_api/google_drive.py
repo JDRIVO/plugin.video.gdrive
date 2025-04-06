@@ -72,8 +72,7 @@ class GoogleDrive:
 			"supportsAllDrives": "true",
 			"includeItemsFromAllDrives": "true",
 		}
-		dirs = []
-		folderIDs = []
+		dirs, folderIDs = [], []
 
 		while True:
 
@@ -102,13 +101,22 @@ class GoogleDrive:
 		if cachedDirectory:
 			rootFolderID = cachedDirectory["root_folder_id"]
 			basePath = cachedDirectory["local_path"]
-			encrypted = cache.getFolder({"folder_id": rootFolderID})["contains_encrypted"]
+			encryptionID = cache.getFolder({"folder_id": rootFolderID})["encryption_id"]
 		else:
 			rootFolderID = folderID
 			basePath = cachedFolder["local_path"]
-			encrypted = cachedFolder["contains_encrypted"]
+			encryptionID = cachedFolder["encryption_id"]
 
-		dirs = [removeProhibitedFSchars(encryptor.decryptDirName(dir)) if encrypted else removeProhibitedFSchars(dir) for dir in dirs]
+		if encryptionID:
+			encryptorSet = encryptor.setEncryptor(encryptionID)
+
+			if not encryptorSet:
+				encryptor = None
+
+		else:
+			encryptor = None
+
+		dirs = [removeProhibitedFSchars(encryptor.decryptDirName(dir)) if encryptor else removeProhibitedFSchars(dir) for dir in dirs]
 		dirPath = os.path.join(basePath, *dirs).rstrip(os.sep)
 		return dirPath, rootFolderID
 

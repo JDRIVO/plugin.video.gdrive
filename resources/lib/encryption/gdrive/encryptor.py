@@ -21,8 +21,8 @@ class Encryptor:
 	# The size multiple required for AES
 	AES_MULTIPLE = 16
 
-	def __init__(self, saltFile=None, saltPassword=None, settings=None):
-		self._setup(saltFile, saltPassword, settings)
+	def __init__(self, saltFile=None, saltPassword=None, salt=None):
+		self._setup(saltFile, saltPassword, salt)
 
 	def decryptFile(self, inFilename, outFilename=None, chunkSize=24 * 1024):
 		""" Decrypts a file using AES (CBC mode) with the
@@ -151,7 +151,7 @@ class Encryptor:
 		if not iterations > 0:
 			return
 
-		key = password.encode("utf-8") + self.salt
+		key = password + self.salt
 
 		for i in range(iterations):
 			key = hashlib.sha256(key).digest()
@@ -161,27 +161,27 @@ class Encryptor:
 	def _generateSalt(self, size=SALT_SIZE):
 		return "".join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(size)).encode("utf-8")
 
-	def _setup(self, saltFile=None, saltPassword=None, settings=None):
+	def _setup(self, saltFile=None, saltPassword=None, salt=None):
 
-		if settings:
-			saltFile = settings.getSetting("crypto_salt")
-			saltPassword = settings.getSetting("crypto_password")
-
-		try:
+		if salt:
+			self.salt = salt.encode("utf-8")
+		else:
 
 			try:
 
-				with open(saltFile, "rb") as salt:
-					self.salt = salt.read()
+				try:
+
+					with open(saltFile, "rb") as salt:
+						self.salt = salt.read()
+
+				except Exception:
+
+					with open(saltFile, "wb") as salt:
+						self.salt = self._generateSalt()
+						salt.write(self.salt)
 
 			except Exception:
-
-				with open(saltFile, "wb") as salt:
-					self.salt = self._generateSalt()
-					salt.write(self.salt)
-
-		except Exception:
-			return
+				return
 
 		if saltPassword:
-			self.key = self._generateKey(saltPassword)
+			self.key = self._generateKey(saltPassword.encode("utf-8"))

@@ -1,7 +1,7 @@
 import os
 
-from .file import File
 from helpers import secondsToHMS
+from .file import File
 
 
 class Video(File):
@@ -41,7 +41,11 @@ class Video(File):
 		return f"{prefix}{os.path.splitext(self.remoteName)[0]}{suffix}"
 
 	def getSTRMContents(self, driveID):
-		self.metadata.update({"encrypted": str(self.encrypted), "drive_id": driveID, "file_id": self.id})
+
+		if self.encryptionID:
+			self.metadata.update({"encryption_id": self.encryptionID})
+
+		self.metadata.update({"drive_id": driveID, "file_id": self.id})
 		return "plugin://plugin.video.gdrive/?mode=video" + "".join([f"&{k}={v}"for k, v in self.metadata.items() if v])
 
 	def setData(self, video, metadata, prefix, suffix):

@@ -105,7 +105,7 @@ class FileTree:
 				if not file:
 					continue
 
-				self.fileProcessor.addFile((file, self.fileTree[parentFolderID]))
+				self.fileProcessor.addFile((file, self.fileTree[parentFolderID], self.encryptor))
 
 				if self.rename:
 					files = self.fileTree[parentFolderID].files

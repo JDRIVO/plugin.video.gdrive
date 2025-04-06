@@ -433,7 +433,99 @@ msgctxt "#30106"
 msgid "Deleted Drive:"
 msgstr "Deleted Drive:"
 
+msgctxt "#30107"
+msgid "Profile name"
+msgstr "Profile name"
+
+msgctxt "#30108"
+msgid "Encryption type"
+msgstr "Encryption type"
+
+msgctxt "#30109"
+msgid "Password"
+msgstr "Password"
+
+msgctxt "#30110"
+msgid "Salt"
+msgstr "Salt"
+
+msgctxt "#30111"
+msgid "Filename encryption"
+msgstr "Filename encryption"
+
+msgctxt "#30112"
+msgid "Filename encoding"
+msgstr "Filename encoding"
+
+msgctxt "#30113"
+msgid "Suffix"
+msgstr "Suffix"
+
+msgctxt "#30114"
+msgid "Encrypt file data"
+msgstr "Encrypt file data"
+
+msgctxt "#30115"
+msgid "Encrypt directory names"
+msgstr "Encrypt directory names"
+
+msgctxt "#30116"
+msgid "Select a profile"
+msgstr "Select a profile"
+
+msgctxt "#30117"
+msgid "Profiles deleted."
+msgstr "Profiles deleted."
+
+msgctxt "#30118"
+msgid "Profile import failed."
+msgstr "Profile import failed."
+
+msgctxt "#30119"
+msgid "Profiles imported."
+msgstr "Profiles imported."
+
+msgctxt "#30120"
+msgid "Assign a default encryption profile before playing an encrypted video."
+msgstr "Assign a default encryption profile before playing an encrypted video."
+
 msgctxt "#30121"
+msgid "The encryption profile associated with this file doesn't exist."
+msgstr "The encryption profile associated with this file doesn't exist."
+
+msgctxt "#30122"
+msgid "No encryption profiles found."
+msgstr "No encryption profiles found."
+
+msgctxt "#30123"
+msgid "Profile Manager"
+msgstr "Profile Manager"
+
+msgctxt "#30124"
+msgid "Profile created."
+msgstr "Profile created."
+
+msgctxt "#30125"
+msgid "Profile updated."
+msgstr "Profile updated."
+
+msgctxt "#30126"
+msgid "You must assign a profile name."
+msgstr "You must assign a profile name."
+
+msgctxt "#30127"
+msgid "Youmust assign a password."
+msgstr "You must assign a password."
+
+msgctxt "#30128"
+msgid "You must assign a salt."
+msgstr "You must assign a salt."
+
+msgctxt "#30129"
+msgid "Profile deletion"
+msgstr "Profile deletion"
+
+msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
 msgstr "Are you sure you want to delete account:"
 
@@ -452,10 +544,6 @@ msgstr "Accounts deleted."
 msgctxt "#30207"
 msgid "Add account"
 msgstr "Add account"
-
-msgctxt "#30208"
-msgid "No encryption settings found. Please update your encryption information in the gDrive addon settings."
-msgstr "No encryption settings found. Please update your encryption information in the gDrive addon settings."
 
 msgctxt "#30209"
 msgid "The file wasn't found in your Google Drive account."
@@ -566,8 +654,8 @@ msgid "Sync defaults"
 msgstr "Sync defaults"
 
 msgctxt "#30507"
-msgid "Folder contains encrypted files"
-msgstr "Folder contains encrypted files"
+msgid "Has files encrypted with"
+msgstr "Has files encrypted with"
 
 msgctxt "#30508"
 msgid "Rename videos to a Kodi friendly format"
@@ -650,40 +738,28 @@ msgid "Encryption"
 msgstr "Encryption"
 
 msgctxt "#30801"
-msgid "Encryption type"
-msgstr "Encryption type"
+msgid "Default profile"
+msgstr "Default profile"
 
 msgctxt "#30802"
-msgid "Password"
-msgstr "Password"
+msgid "Create profile"
+msgstr "Create profile"
 
 msgctxt "#30803"
-msgid "Salt file"
-msgstr "Salt file"
+msgid "Modify profile"
+msgstr "Modify profile"
 
 msgctxt "#30804"
-msgid "Salt password"
-msgstr "Salt password"
+msgid "Delete profiles"
+msgstr "Delete profiles"
 
 msgctxt "#30805"
-msgid "Encrypt file data"
-msgstr "Encrypt file data"
+msgid "Import profiles"
+msgstr "Import profiles"
 
 msgctxt "#30806"
-msgid "Filename encryption"
-msgstr "Filename encryption"
-
-msgctxt "#30807"
-msgid "Encrypt directory names"
-msgstr "Encrypt directory names"
-
-msgctxt "#30808"
-msgid "Filename encoding"
-msgstr "Filename encoding"
-
-msgctxt "#30809"
-msgid "Suffix"
-msgstr "Suffix"
+msgid "Export profiles"
+msgstr "Export profiles"
 
 msgctxt "#30900"
 msgid "Server"

@@ -10,7 +10,7 @@ class File:
 		self.localPath = None
 		self.type = None
 		self.extension = None
-		self.encrypted = False
+		self.encryptionID = None
 		self.modifiedTime = None
 		self.updateDB = False
 		self.original = True
