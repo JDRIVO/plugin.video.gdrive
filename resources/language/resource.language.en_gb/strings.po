@@ -111,7 +111,7 @@ msgstr "Validate"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
-msgstr "Are you sure you want to delete the accounts file?""
+msgstr "Are you sure you want to delete the accounts file?"
 
 msgctxt "#30025"
 msgid "Account Name"
@@ -239,7 +239,11 @@ msgstr "Cache deleted."
 
 msgctxt "#30056"
 msgid "Failed to delete the cache. See log for details."
-msgstr "Failed to delete the cache. See log for details.""
+msgstr "Failed to delete the cache. See log for details."
+
+msgctxt "#30057"
+msgid "Playback account not found."
+msgstr "Playback account not found."
 
 msgctxt "#30058"
 msgid "Search language"
@@ -602,12 +606,8 @@ msgid "Subtitle format"
 msgstr "Subtitle format"
 
 msgctxt "#30304"
-msgid "Playback account"
-msgstr "Playback account"
-
-msgctxt "#30305"
-msgid "Account"
-msgstr "Account"
+msgid "Default playback account"
+msgstr "Default playback account"
 
 msgctxt "#30400"
 msgid "Library"
@@ -622,8 +622,8 @@ msgid "Mark episodes as watched at"
 msgstr "Mark episodes as watched at"
 
 msgctxt "#30403"
-msgid "Import media flag information from STRM"
-msgstr "Import media flag information from STRM"
+msgid "Import media flag data from STRM"
+msgstr "Import media flag data from STRM"
 
 msgctxt "#30500"
 msgid "Sync"

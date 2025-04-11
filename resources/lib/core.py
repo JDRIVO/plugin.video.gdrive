@@ -677,12 +677,11 @@ class Core:
 
 		fileID = self.settings.getParameter("file_id")
 		driveURL = self.cloudService.getDownloadURL(fileID)
+		driveID = self.settings.getParameter("drive_id") or self.settings.getSetting("default_playback_account_id")
 
-		if self.settings.getSetting("account_selection") == "Manually selected":
-			driveID = self.settings.getSetting("playback_account")
-		else:
-			driveID = self.settings.getParameter("drive_id")
-			account = self.accountManager.getAccount(driveID)
+		if not driveID:
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30057))
+			return
 
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
@@ -910,14 +909,15 @@ class Core:
 
 	def setPlaybackAccount(self):
 		accounts = self.accountManager.getDrives()
-		displayNames = [account[1] for account in accounts]
-		selection = self.dialog.select(self.settings.getLocalizedString(30014), displayNames)
+		accountNames = [""] + [account[1] for account in accounts]
+		selection = self.dialog.select(self.settings.getLocalizedString(30014), accountNames)
 
 		if selection == -1:
 			return
 
-		self.settings.setSetting("playback_account", accounts[selection][0])
-		self.settings.setSetting("account_override", accounts[selection][1])
+		accountID, accountName = accounts[selection - 1] if selection else ("", "")
+		self.settings.setSetting("default_playback_account_id", accountID)
+		self.settings.setSetting("default_playback_account_name", accountName)
 
 	def setStrmPrefix(self):
 		self.setAffix("Prefix")

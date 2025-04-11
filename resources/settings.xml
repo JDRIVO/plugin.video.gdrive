@@ -33,35 +33,17 @@
 						<heading>30303</heading>
 					</control>
 				</setting>
-				<setting id="account_selection" type="string" label="30304" help="">
-					<level>0</level>
-					<default>Automatically selected</default>
-					<constraints>
-						<options>
-							<option>Automatically selected</option>
-							<option>Manually selected</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>30304</heading>
-					</control>
-				</setting>
-				<setting id="account_override" type="string" label="30305" parent="account_selection" help="">
+				<setting id="default_playback_account_name" type="string" label="30304" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="account_selection">Manually selected</condition>
-						</dependency>
-					</dependencies>
 					<control type="button" format="action">
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_playback_account)</data>
 					</control>
 				</setting>
-				<setting id="playback_account" type="string" label="" help="">
+				<setting id="default_playback_account_id" type="string" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -387,7 +369,7 @@
 		<category id="server" label="30900" help="">
 			<group id="1">
 				<setting id="server_port" type="integer" label="30901" help="">
-					<level>0</level>
+					<level>3</level>
 					<default>8011</default>
 					<control type="edit" format="integer">
 						<heading>30901</heading>
