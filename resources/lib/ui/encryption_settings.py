@@ -7,6 +7,7 @@ import xbmcaddon
 from constants import SETTINGS
 from .dialogs import Dialog
 from ..encryption import encryption_profiles
+from ..encryption.profile_manager import ProfileManager
 from ..encryption.encryption_types import EncryptionType
 
 
@@ -36,7 +37,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 		self.mode = mode
 		self.profile = profile or encryption_profiles.GDriveEncryptionProfile()
 		self.profileID = profile.id if profile else None
-		self.profileManager = encryption_profiles.ProfileManager()
+		self.profileManager = ProfileManager()
 		self.settings = SETTINGS
 		self.dialog = Dialog()
 		self.modified = False

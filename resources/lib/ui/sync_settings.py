@@ -10,7 +10,7 @@ from .dialogs import Dialog
 from .strm_affixer import StrmAffixer
 from ..network import http_requester
 from ..encryption.encryption import EncryptionHandler
-from ..encryption.encryption_profiles import ProfileManager
+from ..encryption.profile_manager import ProfileManager
 from ..sync.sync_cache_manager import SyncCacheManager
 from ..filesystem.fs_helpers import removeProhibitedFSchars
 from ..filesystem.fs_constants import TMDB_LANGUAGES, TMDB_REGIONS

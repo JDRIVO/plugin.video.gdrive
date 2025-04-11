@@ -23,7 +23,7 @@ from .accounts.account_manager import AccountManager
 from .threadpool.threadpool import ThreadPool
 from .google_api.google_drive import GoogleDrive
 from .sync.sync_cache_manager import SyncCacheManager
-from .encryption.encryption_profiles import ProfileManager
+from .encryption.profile_manager import ProfileManager
 from .filesystem.fs_helpers import removeProhibitedFSchars
 from .filesystem.fs_constants import TMDB_LANGUAGES, TMDB_REGIONS
 

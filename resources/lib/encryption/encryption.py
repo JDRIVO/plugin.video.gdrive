@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 
 from .rclone.crypt import Crypt
 from .gdrive.encryptor import Encryptor
+from .profile_manager import ProfileManager
 from .encryption_types import EncryptionType
-from .encryption_profiles import ProfileManager
 
 profileManager = ProfileManager()
 
