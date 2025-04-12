@@ -155,7 +155,7 @@ msgstr "Select a folder to export to"
 
 msgctxt "#30035"
 msgid "File exported as"
-msgstr "File exported as
+msgstr "File exported as"
 
 msgctxt "#30036"
 msgid "Accounts imported."
@@ -518,7 +518,7 @@ msgid "You must assign a profile name."
 msgstr "You must assign a profile name."
 
 msgctxt "#30127"
-msgid "Youmust assign a password."
+msgid "You must assign a password."
 msgstr "You must assign a password."
 
 msgctxt "#30128"
