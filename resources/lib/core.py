@@ -702,8 +702,12 @@ class Core:
 			profile = profileManager.getProfile(encryptionID)
 
 			if not profile:
-				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30121))
-				return
+				encryptionID = self.settings.getSetting("default_encryption_id")
+				profile = profileManager.getProfile(encryptionID)
+
+				if not profile:
+					self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30121))
+					return
 
 		else:
 			resolutionPrompt = self.settings.getSetting("resolution_prompt")
