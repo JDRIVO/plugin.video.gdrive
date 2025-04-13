@@ -506,7 +506,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 		except urllib3.exceptions.HTTPError as e:
 			args = args[0] if (args := e.args) else {}
-			statusCode = args.get("status")
+			statusCode = int(statusCode) if (statusCode := args.get("status")) else None
 			self.server.failed = True
 
 			if statusCode == 404:
