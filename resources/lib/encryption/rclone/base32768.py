@@ -67,7 +67,7 @@ class Base32768Trans:
 		"""
 		Decodes a Base32768 string into a bytes object.
 		:param s: a Base32768 string
-		:return:  the decoded bytes object
+		:return: the decoded bytes object
 		"""
 		if type(s) is not str:
 			raise TypeError("Argument must be str")

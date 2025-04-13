@@ -1,5 +1,4 @@
 import re
-from enum import Enum
 from abc import ABC, abstractmethod
 
 from .rclone.crypt import Crypt

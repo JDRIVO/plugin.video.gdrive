@@ -106,7 +106,7 @@ def get_channel_audio_options(patterns_with_names):
 
 		options.append(
 			("({})".format(audio_pattern), name)
-		)  # After for loop, would match first
+		) # After for loop, would match first
 
 	return options
 

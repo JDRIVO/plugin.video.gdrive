@@ -1,5 +1,3 @@
-import sys
-
 from .parse import PTN
 
 __author__ = "Giorgio Momigliano"
