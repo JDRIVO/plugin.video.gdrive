@@ -1,5 +1,3 @@
-import base64
-
 try:
 	from Cryptodome.Cipher import AES
 	from Cryptodome.Protocol.KDF import scrypt

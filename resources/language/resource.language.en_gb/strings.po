@@ -325,10 +325,6 @@ msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
 msgstr "Select the folder that your files will be stored in"
 
-msgctxt "#30078"
-msgid "Your encryption settings are incomplete."
-msgstr "Your encryption settings are incomplete."
-
 msgctxt "#30079"
 msgid "You must assign a sync path."
 msgstr "You must assign a sync path."
@@ -364,10 +360,6 @@ msgstr "Folder Selection"
 msgctxt "#30087"
 msgid "manual"
 msgstr "manual"
-
-msgctxt "#30089"
-msgid "Select an operation"
-msgstr "Select an operation"
 
 msgctxt "#30090"
 msgid "Sync multiple"
