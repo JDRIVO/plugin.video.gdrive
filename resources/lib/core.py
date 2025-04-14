@@ -18,7 +18,7 @@ from .ui.resolution_order import ResolutionOrder
 from .ui.encryption_settings import EncryptionSettings
 from .ui.resolution_selector import ResolutionSelector
 from .network import http_requester
-from .accounts.account import Account
+from .accounts.account import ServiceAccount
 from .accounts.account_manager import AccountManager
 from .threadpool.threadpool import ThreadPool
 from .google_api.google_drive import GoogleDrive
@@ -155,7 +155,7 @@ class Core:
 
 			return
 
-		account = Account()
+		account = ServiceAccount()
 		account.name = accountName
 		account.email = email
 		account.key = key
@@ -424,9 +424,9 @@ class Core:
 		imported = self.accountManager.mergeAccounts(filePath)
 
 		if not imported:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30118))
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30037))
 		else:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30119))
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30036))
 			xbmc.executebuiltin("Container.Refresh")
 
 	def importEncryptionProfiles(self):
@@ -439,9 +439,9 @@ class Core:
 		imported = profileManager.importProfiles(filePath)
 
 		if not imported:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30037))
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30118))
 		else:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30036))
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30119))
 
 	def forceSyncDrive(self):
 		driveID = self.settings.getParameter("drive_id")
@@ -458,7 +458,7 @@ class Core:
 	def getFolders(self, driveID, folderID, search=False):
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
-		self.refreshToken(account.expiry)
+		self.refreshToken(account.tokenExpiry)
 		sharedWithMe = self.settings.getParameter("shared_with_me")
 		starred = self.settings.getParameter("starred")
 		return self.cloudService.listDirectory(folderID=folderID, sharedWithMe=sharedWithMe, foldersOnly=True, starred=starred, search=search)
@@ -598,7 +598,7 @@ class Core:
 		driveID = self.settings.getParameter("drive_id")
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
-		self.refreshToken(account.expiry)
+		self.refreshToken(account.tokenExpiry)
 		sharedDrives = self.cloudService.getDrives()
 
 		if not sharedDrives:
@@ -683,9 +683,9 @@ class Core:
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30057))
 			return
 
-		account = self.accountManager.getAccount(driveID)
+		account = self.accountManager.getAccount(driveID, filtered=False)
 		self.cloudService.setAccount(account)
-		self.refreshToken(account.expiry)
+		self.refreshToken(account.tokenExpiry)
 		transcoded = False
 
 		if self.settings.getParameter("encrypted"):
@@ -826,7 +826,7 @@ class Core:
 		folderID = self.settings.getParameter("folder_id")
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
-		self.refreshToken(account.expiry)
+		self.refreshToken(account.tokenExpiry)
 
 		if not folderID:
 			folderID = sharedDriveID or driveID

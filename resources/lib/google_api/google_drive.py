@@ -264,20 +264,19 @@ class GoogleDrive:
 		return items
 
 	def refreshToken(self):
-		key = self.account.key
 
-		if key:
-			jwt = JsonWebToken(self.account.email, key, SCOPE_URL, GOOGLE_TOKEN_URL).create()
-			data = {
-				"assertion": jwt,
-				"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
-			}
-		else:
+		if self.account.type == "oauth":
 			data = {
 				"client_id": self.account.clientID,
 				"client_secret": self.account.clientSecret,
 				"refresh_token": self.account.refreshToken,
 				"grant_type": "refresh_token",
+			}
+		else:
+			jwt = JsonWebToken(self.account.email, self.account.key, SCOPE_URL, GOOGLE_TOKEN_URL).create()
+			data = {
+				"assertion": jwt,
+				"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
 			}
 
 		response = http_requester.request(GOOGLE_TOKEN_URL, data)
@@ -287,7 +286,7 @@ class GoogleDrive:
 
 		self.account.accessToken = response["access_token"].rstrip(".")
 		expiry = datetime.datetime.now() + datetime.timedelta(seconds=response["expires_in"] - 600)
-		self.account.expiry = expiry
+		self.account.tokenExpiry = expiry
 		return True
 
 	def setAccount(self, account):

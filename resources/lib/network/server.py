@@ -15,7 +15,7 @@ from constants import *
 from . import registration
 from .network_helpers import parseQuery, parseURL
 from ..ui.dialogs import Dialog
-from ..accounts.account import Account
+from ..accounts.account import OAuthAccount
 from ..accounts.account_manager import AccountManager
 from ..sync.task_manager import TaskManager
 from ..sync.sync_cache_manager import SyncCacheManager
@@ -78,7 +78,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		queries = parseQuery(self.getPostData())
 		clientID = queries["client_id"]
 		authURL = self.server.cloudService.getAuthURL(clientID, self.server.server_port)
-		self.server.account = Account()
+		self.server.account = OAuthAccount()
 		self.server.account.name = unquote_plus(queries["account"])
 		self.server.account.clientID = clientID
 		self.server.account.clientSecret = queries["client_secret"]
@@ -192,7 +192,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.server.encryptedStream = False
 
 		self.server.accountManager.setAccounts()
-		account = self.server.accountManager.getAccount(self.server.driveID)
+		account = self.server.accountManager.getAccount(self.server.driveID, filtered=False)
 		self.server.cloudService.setAccount(account)
 
 	def handlePlayRequest(self):
@@ -337,7 +337,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 		while not self.server.monitor.abortRequested() and not player.close:
 
-			if datetime.datetime.now() >= self.server.cloudService.account.expiry:
+			if datetime.datetime.now() >= self.server.cloudService.account.tokenExpiry:
 
 				self.server.cloudService.refreshToken()
 

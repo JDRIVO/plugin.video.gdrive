@@ -60,7 +60,7 @@ class AccountManager:
 	def exportAccounts(self, filePath):
 		self.saveAccounts(filePath)
 
-	def getAccount(self, driveID):
+	def getAccount(self, driveID, filtered=True):
 		accounts = self.accounts.get(driveID)
 
 		if not accounts:
@@ -71,11 +71,10 @@ class AccountManager:
 		if not accounts:
 			return
 
-		# avoid returning a service account
-		accounts = [account for account in accounts if not account.key]
-
-		if accounts:
-			return accounts[0]
+		if filtered:
+			return next((account for account in accounts if account.type == "oauth"), None)
+		else:
+			return next((account for account in accounts), None)
 
 	@staticmethod
 	def getAccountNames(accounts):
@@ -95,6 +94,9 @@ class AccountManager:
 
 		if not accounts:
 			return
+		elif accounts.get("version") != 2:
+			from .account_converter import convert
+			accounts = convert(accounts)
 
 		if not self.accounts:
 			self.accountData = accounts
@@ -126,7 +128,10 @@ class AccountManager:
 		self.accountData = self._loadAccounts()
 
 		if not self.accountData:
-			self.accountData = {"aliases": {}, "drives": {}}
+			self.accountData = {"version": 2, "aliases": {}, "drives": {}}
+		elif self.accountData.get("version") != 2:
+			from .account_converter import convert
+			self.accountData = convert(self.accountData)
 
 		self.accounts = self.accountData["drives"]
 		self.aliases = self.accountData["aliases"]
