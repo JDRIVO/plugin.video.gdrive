@@ -378,8 +378,8 @@ msgid "Select a folder to move to"
 msgstr "Select a folder to move to"
 
 msgctxt "#30094"
-msgid "Are you sure want to delete the sync folder?"
-msgstr "Are you sure want to delete the sync folder?"
+msgid "Are you sure you want to delete the sync folder?"
+msgstr "Are you sure you want to delete the sync folder?"
 
 msgctxt "#30095"
 msgid "Folder deleted."
