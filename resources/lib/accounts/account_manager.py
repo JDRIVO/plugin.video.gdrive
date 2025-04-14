@@ -95,8 +95,7 @@ class AccountManager:
 		if not accounts:
 			return
 		elif accounts.get("version") != 2:
-			from .account_converter import convert
-			accounts = convert(accounts)
+			accounts = self._convertAccounts(accounts)
 
 		if not self.accounts:
 			self.accountData = accounts
@@ -130,8 +129,8 @@ class AccountManager:
 		if not self.accountData:
 			self.accountData = {"version": 2, "aliases": {}, "drives": {}}
 		elif self.accountData.get("version") != 2:
-			from .account_converter import convert
-			self.accountData = convert(self.accountData)
+			self.accountData = self._convertAccounts(self.accountData)
+			self.saveAccounts()
 
 		self.accounts = self.accountData["drives"]
 		self.aliases = self.accountData["aliases"]
@@ -145,6 +144,35 @@ class AccountManager:
 		self.aliases[alias] = driveID
 		self.accounts[driveID]["alias"] = alias
 		self.saveAccounts()
+
+	@staticmethod
+	def _convertAccounts(accountData):
+		from .account import OAuthAccount, ServiceAccount
+
+		for driveID, data in accountData["drives"].items():
+			newAccounts = []
+
+			for account in data["accounts"]:
+
+				if account.key:
+					newAccount = ServiceAccount()
+					newAccount.key = account.key
+					newAccount.email = account.email
+				else:
+					newAccount = OAuthAccount()
+					newAccount.clientID = account.clientID
+					newAccount.clientSecret = account.clientSecret
+					newAccount.refreshToken = account.refreshToken
+
+				newAccount.name = account.name
+				newAccount.accessToken = account.accessToken
+				newAccount.tokenExpiry = account.expiry
+				newAccounts.append(newAccount)
+
+			data["accounts"] = newAccounts
+
+		accountData["version"] = 2
+		return accountData
 
 	def _loadAccounts(self, filePath=ACCOUNTS_FILE):
 		return self.fileOperations.loadPickleFile(filePath)
