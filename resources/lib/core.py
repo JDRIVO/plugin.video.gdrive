@@ -683,7 +683,7 @@ class Core:
 			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30057))
 			return
 
-		account = self.accountManager.getAccount(driveID, filtered=False)
+		account = self.accountManager.getAccount(driveID, preferOauth=False)
 		self.cloudService.setAccount(account)
 		self.refreshToken(account.tokenExpiry)
 		transcoded = False

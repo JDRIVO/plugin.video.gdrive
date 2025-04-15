@@ -18,7 +18,7 @@ class ProfileManager:
 		self.setProfiles()
 
 	def addProfile(self, profile):
-		self._obscureData(profile)
+		profile = self._obscureData(profile)
 
 		while profile.id in self.profiles:
 			profile.id = secrets.token_hex(6)
@@ -36,8 +36,7 @@ class ProfileManager:
 	def getProfile(self, id):
 
 		if profile := self.profiles.get(id):
-			self._unobscureData(profile)
-			return profile
+			return self._unobscureData(profile)
 
 	def getProfileEntries(self):
 		entries = sorted([(id, profile.name) for id, profile in self.profiles.items()], key=lambda x: x[1].lower())
@@ -64,7 +63,7 @@ class ProfileManager:
 		self.profiles = self._loadProfiles() or {}
 
 	def updateProfile(self, id, profile):
-		self._obscureData(profile)
+		profile = self._obscureData(profile)
 		self.profiles[id] = profile
 		self._saveProfiles()
 
@@ -78,6 +77,8 @@ class ProfileManager:
 		if profile.salt:
 			profile.salt = obscure(profile.salt)
 
+		return profile
+
 	def _saveProfiles(self, filePath=PROFILES_FILE):
 		self.fileOperations.savePickleFile(self.profiles, filePath)
 
@@ -87,3 +88,5 @@ class ProfileManager:
 
 		if profile.salt:
 			profile.salt = unobscure(profile.salt)
+
+		return profile

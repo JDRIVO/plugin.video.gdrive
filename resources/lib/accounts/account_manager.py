@@ -46,7 +46,7 @@ class AccountManager:
 	def deleteDrive(self, driveID):
 		self.setAccounts()
 
-		if not self.accounts.get(driveID):
+		if driveID not in self.accounts:
 			return
 
 		alias = self.getAlias(driveID)
@@ -60,21 +60,16 @@ class AccountManager:
 	def exportAccounts(self, filePath):
 		self.saveAccounts(filePath)
 
-	def getAccount(self, driveID, filtered=True):
-		accounts = self.accounts.get(driveID)
+	def getAccount(self, driveID, preferOauth=True):
+		accounts = self.accounts.get(driveID, {}).get("accounts")
 
 		if not accounts:
 			return
 
-		accounts = accounts.get("accounts")
-
-		if not accounts:
-			return
-
-		if filtered:
+		if preferOauth:
 			return next((account for account in accounts if account.type == "oauth"), None)
-		else:
-			return next((account for account in accounts), None)
+
+		return next((account for account in accounts if account.type == "oauth"), None) or next(iter(accounts), None)
 
 	@staticmethod
 	def getAccountNames(accounts):

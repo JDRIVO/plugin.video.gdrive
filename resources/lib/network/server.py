@@ -192,7 +192,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.server.encryptedStream = False
 
 		self.server.accountManager.setAccounts()
-		account = self.server.accountManager.getAccount(self.server.driveID, filtered=False)
+		account = self.server.accountManager.getAccount(self.server.driveID, preferOauth=False)
 		self.server.cloudService.setAccount(account)
 
 	def handlePlayRequest(self):
