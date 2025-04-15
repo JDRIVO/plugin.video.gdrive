@@ -6,7 +6,7 @@ def addQueryString(url, params):
 
 
 def mergePaths(baseURL, paths):
-	return f"{baseURL}/{paths}" if isinstance(paths, str) else f"{baseURL}/{'/'.join(paths)}"
+	return f"{baseURL}/{paths if isinstance(paths, str) else '/'.join(paths)}"
 
 
 def parseQuery(query):

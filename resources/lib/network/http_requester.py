@@ -13,24 +13,23 @@ def request(url, data=None, headers=HEADERS, cookie=False, raw=False, method="GE
 	if data:
 		method = "POST"
 
-	attempts = 3
-
-	for attempt in range(attempts):
+	for attempt in range(3):
 
 		try:
+			response = HTTP.request(method, url, headers=headers, json=data, preload_content=not raw)
+
+			if response.status >= 400:
+				raise urllib3.exceptions.HTTPError(response.reason)
 
 			if raw:
-				return HTTP.request(method, url, headers=headers, json=data, preload_content=False)
-			else:
-				response = HTTP.request(method, url, headers=headers, json=data)
+				return response
 
 			data = response.data.decode("utf-8")
 			break
 
 		except urllib3.exceptions.HTTPError as e:
-			attempts -= 1
 
-			if not attempts:
+			if attempt == 2:
 				xbmc.log(f"gdrive error: {e}", xbmc.LOGERROR)
 				return {}
 

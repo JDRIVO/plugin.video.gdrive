@@ -192,8 +192,8 @@ class ServerHandler(BaseHTTPRequestHandler):
 			self.server.encryptedStream = False
 
 		self.server.accountManager.setAccounts()
-		account = self.server.accountManager.getAccount(self.server.driveID, preferOauth=False)
-		self.server.cloudService.setAccount(account)
+		self.server.account = self.server.accountManager.getAccount(self.server.driveID, preferOauth=False)
+		self.server.cloudService.setAccount(self.server.account)
 
 	def handlePlayRequest(self):
 
@@ -443,7 +443,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 		if start:
 			headers["Content-Length"] = str(int(response.headers.get("Content-Length")) - chunkOffset)
-			headers["Content-Range"] = f"bytes {start}-{end}/{self.server.length}" if end else f"bytes {start}-{self.server.length - 1}/{self.server.length}",
+			headers["Content-Range"] = f"bytes {start}-{end or self.server.length - 1}/{self.server.length}",
 			self.handleResponse(206, headers)
 		else:
 			headers["Content-Length"] = response.headers.get("Content-Length")
@@ -506,58 +506,51 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 		except urllib3.exceptions.HTTPError as e:
 			args = args[0] if (args := e.args) else {}
-			statusCode = int(statusCode) if (statusCode := args.get("status")) else None
+			status = int(args.get("status", 0))
 			self.server.failed = True
+			accounts = self.server.accountManager.getAccounts(self.server.driveID)
 
-			if statusCode == 404:
-				self.server.dialog.ok(self.server.settings.getLocalizedString(30003), self.server.settings.getLocalizedString(30209))
-				return
-			elif statusCode == 401:
-				self.server.dialog.ok(self.server.settings.getLocalizedString(30003), self.server.settings.getLocalizedString(30018))
-				return
-			elif statusCode in (403, 429):
-				accountChange = False
-				accounts = self.server.accountManager.getAccounts(self.server.driveID)
+			for account in accounts[1:]:
+				self.server.cloudService.setAccount(account)
 
-				for account in accounts[1:]:
-					self.server.cloudService.setAccount(account)
-					tokenRefresh = self.server.cloudService.refreshToken()
+				if not self.server.cloudService.refreshToken():
+					continue
 
-					if not tokenRefresh:
+				if self.server.transcoded:
+					self.server.url = self.server.cloudService.getStreams(self.server.fileID, (self.server.transcoded,))[1]
+
+				try:
+					response = self.server.http.request("HEAD", self.server.url, headers=self.server.cloudService.getHeaders())
+
+					if response.status >= 400:
 						continue
 
-					if self.server.transcoded:
-						self.server.url = self.server.cloudService.getStreams(self.server.fileID, (self.server.transcoded,))[1]
+				except urllib3.exceptions.HTTPError as e:
+					continue
 
-					try:
-						response = self.server.http.request("HEAD", self.server.url, headers=self.server.cloudService.getHeaders())
-
-						if response.status >= 400:
-							raise urllib3.exceptions.HTTPError({"status": response.status})
-
-					except urllib3.exceptions.HTTPError as e:
-						continue
-
-					accountChange = True
-					self.server.dialog.notification(
-						f"{self.server.settings.getLocalizedString(30003)}: {self.server.settings.getLocalizedString(30006)}",
-						self.server.settings.getLocalizedString(30007),
-					)
-					break
-
-				if not accountChange:
-					self.server.dialog.ok(
-						f"{self.server.settings.getLocalizedString(30003)}: {self.server.settings.getLocalizedString(30006)}",
-						self.server.settings.getLocalizedString(30009),
-					)
-					return
-				else:
-					accounts.remove(account)
-					accounts.insert(0, account)
-					self.server.accountManager.saveAccounts()
+				self.server.dialog.notification(
+					self.server.settings.getLocalizedString(30000),
+					self.server.settings.getLocalizedString(30007),
+				)
+				accounts.remove(account)
+				accounts.insert(0, account)
+				self.server.accountManager.saveAccounts()
+				break
 
 			else:
-				xbmc.log(f"gdrive error: {e}", xbmc.LOGERROR)
+				self.handleResponse(400)
+				xbmc.executebuiltin("Dialog.Close(all,true)")
+				time.sleep(1)
+				xbmc.executebuiltin("Dialog.Close(all,true)")
+
+				if status == 401:
+					message = f"{self.server.settings.getLocalizedString(30018)} {self.server.account.name}"
+				elif status == 404:
+					message = f"{self.server.settings.getLocalizedString(30209)} {self.server.account.name}"
+				else:
+					message = f"{self.server.settings.getLocalizedString(30006)} {self.server.settings.getLocalizedString(30009)}"
+
+				self.server.dialog.ok(self.server.settings.getLocalizedString(30000), message)
 				return
 
 		self.server.failed = False
