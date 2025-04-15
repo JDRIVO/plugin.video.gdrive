@@ -9,7 +9,7 @@ from .file_cipher import File
 from .name_cipher import Name
 
 DEFAULT_SALT = "\xA8\x0D\xF4\x3A\x8F\xBD\x03\x08\xA7\xCA\xB8\x3E\x58\x1F\x86\xB1"
-KEY_SIZE = 32 + 32 + 16
+KEY_SIZE = 80
 
 
 class Crypt:

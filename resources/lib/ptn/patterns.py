@@ -230,7 +230,7 @@ patterns["codec"] = [
 	(
 		"[hx]{d}?265".format(d=delimiters),
 		"hevc",
-	),	# Separate from HEVC so if both are present, it won't pollute excess.
+	), # Separate from HEVC so if both are present, it won't pollute excess.
 	("HEVC", "hevc"),
 	("[h]{d}?263".format(d=delimiters), "h263"),
 	("VC-1", "vc1"),

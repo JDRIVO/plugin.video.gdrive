@@ -21,7 +21,7 @@ class Base32768Trans:
 		for i, s in enumerate(PAIR_STR):
 			match = list(re.findall("..", s))
 			encode_repertoire = [chr(cp) for pair in match for cp in range(ord(pair[0]), ord(pair[1]) + 1)]
-			num_z_bits = BITS_PER_CHAR - BITS_PER_BYTE * i	# 0 -> 15, 1 -> 7
+			num_z_bits = BITS_PER_CHAR - BITS_PER_BYTE * i # 0 -> 15, 1 -> 7
 			_LOOKUP_ENC[num_z_bits] = encode_repertoire
 
 			for z, c in enumerate(encode_repertoire):

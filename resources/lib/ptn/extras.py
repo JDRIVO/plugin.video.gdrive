@@ -31,7 +31,7 @@ langs = [
 	("portuguese", "Portuguese"),
 	("albanian?", "Albanian"),
 	("egypt(?:ian)?", "Egyptian"),
-	("en?(?:g(?:lish)?)?", "English"),	# Must be at end, matches just an 'e'
+	("en?(?:g(?:lish)?)?", "English"), # Must be at end, matches just an 'e'
 ]
 
 genres = [

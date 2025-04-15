@@ -9,8 +9,10 @@ def floorDT(dt, interval):
 	replace = (dt.minute // interval) * interval
 	return dt.replace(minute=replace, second=0, microsecond=0)
 
+
 def getCurrentTime():
 	return floorDT(datetime.datetime.now().time(), 1)
+
 
 def getElapsedTime(timestamp):
 	secondsElapsed = time.time() - float(timestamp)
@@ -26,9 +28,11 @@ def getElapsedTime(timestamp):
 	else:
 		return f"{seconds} seconds" if seconds > 1 else f"{seconds} second"
 
+
 def rfcToTimestamp(dateString):
 	# RFC 3339 str to timestamp
 	return strptime(dateString, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=datetime.timezone.utc).timestamp()
+
 
 def secondsToHMS(seconds):
 	hours, remainder = divmod(round(seconds), 3600)
@@ -51,9 +55,11 @@ def secondsToHMS(seconds):
 
 	return time
 
+
 def sendJSONRPCCommand(query):
 	query = json.dumps(query)
 	return json.loads(xbmc.executeJSONRPC(query))
+
 
 def strptime(dateString, format):
 
@@ -61,6 +67,7 @@ def strptime(dateString, format):
 		return datetime.datetime.strptime(dateString, format)
 	except TypeError:
 		return datetime.datetime(*time.strptime(dateString, format)[:6])
+
 
 def strToDatetime(dateString, format="%H:%M"):
 	return strptime(dateString, format).time()

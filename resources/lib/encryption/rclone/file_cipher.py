@@ -1,9 +1,9 @@
 from .xsalsa20 import xsalsa20open
 
-MAGIC_HEADER_SIZE = 8
 NONCE_SIZE = 24
-BLOCK_HEADER_SIZE = 16
 BLOCK_SIZE = 64 * 1024
+MAGIC_HEADER_SIZE = 8
+BLOCK_HEADER_SIZE = 16
 
 
 def byte_increment(byte: int) -> int:
@@ -31,7 +31,7 @@ def nonce_increment(nonce: bytes, start: int = 0) -> bytes:
 def nonce_add(nonce: bytes, x: int) -> bytes:
 
 	if len(nonce) < 8:
-		raise ValueError("The length of nonce should greater than 8")
+		raise ValueError("Nonce length must be greater than 8")
 
 	if x <= 0:
 		return nonce
