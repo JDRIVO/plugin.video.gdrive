@@ -293,9 +293,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 
 		buttons = buttonsOutgoing[:]
 		movedAffix = buttons.pop(currentIndex).getLabel()
-
-		for button, button_ in zip(buttons, buttonsOutgoing):
-			button_.setLabel(button.getLabel())
+		[button_.setLabel(button.getLabel()) for button, button_ in zip(buttons, buttonsOutgoing)]
 
 		for button in buttonsOutgoing[::-1]:
 

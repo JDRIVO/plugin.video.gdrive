@@ -46,8 +46,4 @@ class Settings(xbmcaddon.Addon):
 			return default
 
 		valueLowerCase = value.lower()
-
-		if valueLowerCase in ("true", "false", "none"):
-			return valueLowerCase == "true"
-		else:
-			return value
+		return valueLowerCase == "true" if valueLowerCase in ("true", "false", "none") else value

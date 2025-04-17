@@ -57,9 +57,6 @@ class AccountManager:
 		del self.accounts[driveID]
 		self.saveAccounts()
 
-	def exportAccounts(self, filePath):
-		self.saveAccounts(filePath)
-
 	def getAccount(self, driveID, preferOauth=True):
 		accounts = self.accounts.get(driveID, {}).get("accounts")
 
@@ -102,11 +99,7 @@ class AccountManager:
 					self.accounts.update({driveID: {"accounts": data["accounts"], "alias": ""}})
 				else:
 					currentAccounts = self.accounts[driveID]["accounts"]
-
-					for account in data["accounts"]:
-
-						if account not in currentAccounts:
-							currentAccounts.append(account)
+					[currentAccounts.append(account) for account in data["accounts"] if account not in currentAccounts]
 
 		self.saveAccounts()
 		return True

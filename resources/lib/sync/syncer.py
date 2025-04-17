@@ -125,9 +125,7 @@ class Syncer:
 			localFileProcessor = LocalFileProcessor(self.fileOperations, self.cache, syncRootPath, progressDialog)
 
 			with ThreadPool(threadCount) as pool:
-
-				for folder in fileTree:
-					pool.submit(localFileProcessor.processFiles, folder, folderSettings, threadCount)
+				[pool.submit(localFileProcessor.processFiles, folder, folderSettings, threadCount) for folder in fileTree]
 
 		for folder in fileTree:
 			modifiedTime = folder.modifiedTime
@@ -160,18 +158,14 @@ class Syncer:
 				for folderID, folder in directories.items():
 
 					for files in folder.files.values():
-
-						for file in files:
-							fileProcessor.addFile((file, folder, encryptor))
+						[fileProcessor.addFile((file, folder, encryptor)) for file in files]
 
 					if folderRenaming or fileRenaming:
 						folders.append((folder, folderSettings))
 
 		with ThreadPool(threadCount) as pool:
 			localFileProcessor = LocalFileProcessor(self.fileOperations, self.cache, syncRootPath)
-
-			for folder, folderSettings in folders:
-				pool.submit(localFileProcessor.processFiles, folder, folderSettings, threadCount)
+			[pool.submit(localFileProcessor.processFiles, folder, folderSettings, threadCount) for folder, folderSettings in folders]
 
 	def _syncDeletions(self, item, syncRootPath, drivePath):
 		id = item["id"]

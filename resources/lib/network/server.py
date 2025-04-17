@@ -67,6 +67,120 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 class ServerHandler(BaseHTTPRequestHandler):
 
+	def changeAccount(self, accounts):
+
+		for account in accounts[1:]:
+			self.server.cloudService.setAccount(account)
+
+			if not self.server.cloudService.refreshToken():
+				continue
+
+			if self.server.transcoded:
+				self.server.url = self.server.cloudService.getStreams(self.server.fileID, (self.server.transcoded,))[1]
+
+			try:
+				response = self.server.http.request("HEAD", self.server.url, headers=self.server.cloudService.getHeaders())
+
+				if response.status >= 400:
+					continue
+
+			except urllib3.exceptions.HTTPError as e:
+				continue
+
+			self.server.dialog.notification(
+				self.server.settings.getLocalizedString(30000),
+				self.server.settings.getLocalizedString(30007),
+			)
+			accounts.remove(account)
+			accounts.insert(0, account)
+			self.server.accountManager.saveAccounts()
+			return True
+
+	def do_GET(self):
+		pathHandlers = {
+			"/play": self.handlePlayRequest,
+			"/delete_accounts_file": self.handleDeleteAccountsFile,
+			"/register": self.handleRegisterRequest,
+			"/registration_failed": self.handleRegistrationFailed,
+			"/registration_succeeded": self.handleRegistrationSucceeded,
+			"/sync_all": self.handleSyncAll,
+			"/status": lambda: self.handleStatusRequest(query),
+		}
+		parsedURL = parseURL(self.path)
+		path = parsedURL["path"]
+		query = parsedURL["query"]
+		handler = pathHandlers.get(path)
+
+		if handler:
+			handler()
+		else:
+			self.send_error(404)
+
+	def do_HEAD(self):
+
+		try:
+			response = self.server.http.request("HEAD", self.server.url, headers=self.server.cloudService.getHeaders())
+
+			if response.status >= 400:
+				raise urllib3.exceptions.HTTPError({"status": response.status})
+
+		except urllib3.exceptions.HTTPError as e:
+			args = args[0] if (args := e.args) else {}
+			status = int(args.get("status", 0))
+			self.server.failed = True
+			accounts = self.server.accountManager.getAccounts(self.server.driveID)
+
+			if not self.changeAccount(accounts):
+				self.send_error(400)
+				xbmc.executebuiltin("Dialog.Close(all,true)")
+				time.sleep(1)
+				xbmc.executebuiltin("Dialog.Close(all,true)")
+
+				if status == 401:
+					message = f"{self.server.settings.getLocalizedString(30018)} {self.server.account.name}"
+				elif status == 404:
+					message = f"{self.server.settings.getLocalizedString(30209)} {self.server.account.name}"
+				elif status in (403, 429):
+					message = f"{self.server.settings.getLocalizedString(30006)} {self.server.settings.getLocalizedString(30009)}"
+				else:
+					return
+
+				self.server.dialog.ok(self.server.settings.getLocalizedString(30000), message)
+				return
+
+		self.server.failed = False
+		self.server.length = int(response.headers.get("Content-Length"))
+		self.handleResponse(200, {
+			"Content-Length": self.server.length,
+			"Content-Type": response.headers.get("Content-Type"),
+			"Cache-Control": response.headers.get("Cache-Control"),
+			"Date": response.headers.get("Date"),
+			"Accept-Ranges": "bytes",
+		})
+
+	def do_POST(self):
+		pathHandlers = {
+			"/add_sync_task": self.handleAddSyncTask,
+			"/delete_drive": self.handleDeleteDrive,
+			"/delete_sync_cache": self.handleDeleteSyncCache,
+			"/delete_sync_folder": self.handleDeleteSyncFolder,
+			"/initialize_stream": self.handleInitializeStream,
+			"/register": self.handleAccountRegistration,
+			"/reset_task": self.handleResetTask,
+			"/set_alias": self.handleSetAlias,
+			"/set_sync_root": self.handleSetSyncRoot,
+			"/start_player": self.handleStartPlayer,
+			"/stop_syncing_folder": self.handleStopSyncingFolder,
+			"/stop_syncing_folders": self.handleStopSyncingFolders,
+			"/sync": self.handleSync,
+		}
+		handler = pathHandlers.get(self.path)
+
+		if handler:
+			handler()
+		else:
+			self.send_error(404)
+
 	def getPostData(self):
 		contentLength = int(self.headers["Content-Length"])
 		return self.rfile.read(contentLength).decode("utf-8")
@@ -111,7 +225,10 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.server.taskManager.removeTask(driveID)
 		self.server.cache.deleteDrive(driveID, deleteFiles)
 		self.server.accountManager.deleteDrive(driveID)
-		self.server.dialog.notification(self.server.settings.getLocalizedString(30000), f"{self.server.settings.getLocalizedString(30106)} {driveName}")
+		self.server.dialog.notification(
+			self.server.settings.getLocalizedString(30000),
+			f"{self.server.settings.getLocalizedString(30106)} {driveName}",
+		)
 		xbmc.executebuiltin("Container.Refresh")
 
 	def handleDeleteSyncCache(self):
@@ -268,9 +385,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.send_response(code)
 
 		if headers:
-
-			for header, value in headers.items():
-				self.send_header(header, value)
+			[self.send_header(header, value) for header, value in headers.items()]
 
 		self.end_headers()
 
@@ -475,113 +590,3 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 			while chunk := response.read(chunkSize):
 				self.wfile.write(chunk)
-
-	def do_GET(self):
-		pathHandlers = {
-			"/play": self.handlePlayRequest,
-			"/delete_accounts_file": self.handleDeleteAccountsFile,
-			"/register": self.handleRegisterRequest,
-			"/registration_failed": self.handleRegistrationFailed,
-			"/registration_succeeded": self.handleRegistrationSucceeded,
-			"/sync_all": self.handleSyncAll,
-			"/status": lambda: self.handleStatusRequest(query),
-		}
-		parsedURL = parseURL(self.path)
-		path = parsedURL["path"]
-		query = parsedURL["query"]
-		handler = pathHandlers.get(path)
-
-		if handler:
-			handler()
-		else:
-			self.send_error(404)
-
-	def do_HEAD(self):
-
-		try:
-			response = self.server.http.request("HEAD", self.server.url, headers=self.server.cloudService.getHeaders())
-
-			if response.status >= 400:
-				raise urllib3.exceptions.HTTPError({"status": response.status})
-
-		except urllib3.exceptions.HTTPError as e:
-			args = args[0] if (args := e.args) else {}
-			status = int(args.get("status", 0))
-			self.server.failed = True
-			accounts = self.server.accountManager.getAccounts(self.server.driveID)
-
-			for account in accounts[1:]:
-				self.server.cloudService.setAccount(account)
-
-				if not self.server.cloudService.refreshToken():
-					continue
-
-				if self.server.transcoded:
-					self.server.url = self.server.cloudService.getStreams(self.server.fileID, (self.server.transcoded,))[1]
-
-				try:
-					response = self.server.http.request("HEAD", self.server.url, headers=self.server.cloudService.getHeaders())
-
-					if response.status >= 400:
-						continue
-
-				except urllib3.exceptions.HTTPError as e:
-					continue
-
-				self.server.dialog.notification(
-					self.server.settings.getLocalizedString(30000),
-					self.server.settings.getLocalizedString(30007),
-				)
-				accounts.remove(account)
-				accounts.insert(0, account)
-				self.server.accountManager.saveAccounts()
-				break
-
-			else:
-				self.handleResponse(400)
-				xbmc.executebuiltin("Dialog.Close(all,true)")
-				time.sleep(1)
-				xbmc.executebuiltin("Dialog.Close(all,true)")
-
-				if status == 401:
-					message = f"{self.server.settings.getLocalizedString(30018)} {self.server.account.name}"
-				elif status == 404:
-					message = f"{self.server.settings.getLocalizedString(30209)} {self.server.account.name}"
-				else:
-					message = f"{self.server.settings.getLocalizedString(30006)} {self.server.settings.getLocalizedString(30009)}"
-
-				self.server.dialog.ok(self.server.settings.getLocalizedString(30000), message)
-				return
-
-		self.server.failed = False
-		self.server.length = int(response.headers.get("Content-Length"))
-		self.handleResponse(200, {
-			"Content-Length": self.server.length,
-			"Content-Type": response.headers.get("Content-Type"),
-			"Cache-Control": response.headers.get("Cache-Control"),
-			"Date": response.headers.get("Date"),
-			"Accept-Ranges": "bytes",
-		})
-
-	def do_POST(self):
-		pathHandlers = {
-			"/add_sync_task": self.handleAddSyncTask,
-			"/delete_drive": self.handleDeleteDrive,
-			"/delete_sync_cache": self.handleDeleteSyncCache,
-			"/delete_sync_folder": self.handleDeleteSyncFolder,
-			"/initialize_stream": self.handleInitializeStream,
-			"/register": self.handleAccountRegistration,
-			"/reset_task": self.handleResetTask,
-			"/set_alias": self.handleSetAlias,
-			"/set_sync_root": self.handleSetSyncRoot,
-			"/start_player": self.handleStartPlayer,
-			"/stop_syncing_folder": self.handleStopSyncingFolder,
-			"/stop_syncing_folders": self.handleStopSyncingFolders,
-			"/sync": self.handleSync,
-		}
-		handler = pathHandlers.get(self.path)
-
-		if handler:
-			handler()
-		else:
-			self.send_error(404)

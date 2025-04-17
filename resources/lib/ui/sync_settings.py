@@ -285,13 +285,8 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.buttonAmount = len(self.functions) + len(radioButtons)
 		self._calculateViewport()
 		self._addBackground()
-
-		for setting, isEnabled in radioButtons.items():
-			self._addRadioButton(setting, isEnabled, self.center)
-
-		for setting in self.functions:
-			self._addControlButton(setting, self.center)
-
+		[self._addRadioButton(setting, isEnabled, self.center) for setting, isEnabled in radioButtons.items()]
+		[self._addControlButton(setting, self.center) for setting in self.functions]
 		self.generalSettingsButtons = list(self.radioButtons.keys()) + list(self.pushButtons.keys())
 		self.generalSettingsButtonIDs = [button.getId() for button in self.generalSettingsButtons]
 		self.menuButtonIDs = self.generalSettingsButtonIDs
@@ -341,13 +336,8 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.buttonAmount = len(self.functions) + len(radioButtons)
 		self._calculateViewport()
 		self._addBackground()
-
-		for setting in self.functions:
-			self._addControlButton(setting, self.center + 80, folderSettings)
-
-		for setting, isEnabled in radioButtons.items():
-			self._addRadioButton(setting, isEnabled, self.center + 80)
-
+		[self._addControlButton(setting, self.center + 80, folderSettings) for setting in self.functions]
+		[self._addRadioButton(setting, isEnabled, self.center + 80) for setting, isEnabled in radioButtons.items()]
 		self.generalSettingsButtons = list(self.pushButtons.keys()) + list(self.radioButtons.keys())
 		self.generalSettingsButtonIDs = [button.getId() for button in self.generalSettingsButtons]
 		self.menuButtonIDs = self.generalSettingsButtonIDs
@@ -465,9 +455,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		else:
 			included = [a for a in folderSettings[f"strm_{affix.lower()}"].split(", ") if a] if folderSettings else [a for a in self.settings.getSetting(f"strm_{affix.lower()}").split(", ") if a]
 
-		for prefix in included:
-			excluded.remove(prefix)
-
+		[excluded.remove(prefix) for prefix in included]
 		strmAffixer = StrmAffixer(included=included, excluded=excluded, title=f"STRM {affix}")
 		strmAffixer.doModal()
 		closed = strmAffixer.closed

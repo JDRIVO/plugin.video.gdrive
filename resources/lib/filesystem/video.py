@@ -89,12 +89,7 @@ class Episode(Video):
 
 	def formatName(self, cacheManager, titleIdentifier):
 		season = f"{int(self.season):02d}"
-
-		if isinstance(self.episode, int):
-			episode = f"{self.episode:02d}"
-		else:
-			episode = "-".join(f"{e:02d}" for e in self.episode)
-
+		episode = f"{self.episode:02d}" if isinstance(self.episode, int) else "-".join(f"{e:02d}" for e in self.episode)
 		titleInfo = cacheManager.getSeries({"original_title": self.title, "original_year": self.year})
 
 		if titleInfo:

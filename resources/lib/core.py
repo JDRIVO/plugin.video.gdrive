@@ -124,25 +124,17 @@ class Core:
 		if not accountName:
 			return
 
-		keyFilePath = self.dialog.browse(1, self.settings.getLocalizedString(30026), "files", mask=".json")
+		filePath = self.dialog.browse(1, self.settings.getLocalizedString(30026), "files", mask=".json")
 
-		if not keyFilePath:
+		if not filePath:
 			return
 
-		with open(keyFilePath, "r") as key:
-			keyFile = json.loads(key.read())
+		with open(filePath, "r") as file:
+			data = json.loads(file.read())
 
 		error = []
-
-		try:
-			email = keyFile["client_email"]
-		except KeyError:
-			error.append("email")
-
-		try:
-			key = keyFile["private_key"]
-		except KeyError:
-			error.append("key")
+		email = data.get("client_email") or error.append("email")
+		key = data.get("private_key") or error.append("key")
 
 		if error:
 
@@ -150,7 +142,7 @@ class Core:
 				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30028))
 			elif "email" in error:
 				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30029))
-			elif "key" in error:
+			else:
 				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30030))
 
 			return
@@ -395,7 +387,7 @@ class Core:
 
 		filename = f"{filename}.pkl"
 		filePath = os.path.join(dirPath, filename)
-		self.accountManager.exportAccounts(filePath)
+		self.accountManager.saveAccounts(filePath)
 		self.dialog.ok(self.settings.getLocalizedString(30000), f"{self.settings.getLocalizedString(30035)} {filename}")
 
 	def exportEncryptionProfiles(self):
@@ -840,10 +832,7 @@ class Core:
 	def setAffix(self, affix):
 		excluded = ["duration", "extension", "resolution"]
 		included = [a for a in self.settings.getSetting(f"strm_{affix.lower()}").split(", ") if a]
-
-		for include in included:
-			excluded.remove(include)
-
+		[excluded.remove(include) for include in included]
 		strmAffixer = StrmAffixer(included=included, excluded=excluded, title=f"STRM {affix}")
 		strmAffixer.doModal()
 		closed = strmAffixer.closed

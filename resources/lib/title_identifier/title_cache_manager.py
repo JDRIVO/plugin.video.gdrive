@@ -40,6 +40,4 @@ class TitleCacheManager(DatabaseManager):
 			"new_year TEXT",
 			"UNIQUE (original_title, original_year)"
 		)
-
-		for table in ("movies", "series"):
-			self.createTable(table, columns)
+		[self.createTable(table, columns) for table in ("movies", "series")]

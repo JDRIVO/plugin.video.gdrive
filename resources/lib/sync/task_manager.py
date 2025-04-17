@@ -82,9 +82,7 @@ class TaskManager:
 
 	def removeAllTasks(self):
 		drives = self.cache.getDrives()
-
-		for drive in drives:
-			self.removeTask(drive["drive_id"])
+		[self.removeTask(drive["drive_id"]) for drive in drives]
 
 	def removeTask(self, driveID):
 
@@ -100,9 +98,7 @@ class TaskManager:
 
 	def run(self):
 		drives = self.cache.getDrives()
-
-		for driveSettings in drives:
-			self.spawnTask(driveSettings)
+		[self.spawnTask(driveSettings) for driveSettings in drives]
 
 	def spawnTask(self, driveSettings, startUpRun=True):
 		taskMode = driveSettings["task_mode"]

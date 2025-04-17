@@ -287,8 +287,7 @@ class SyncCacheManager(DatabaseManager):
 			progressDialog = FileDeletionDialog(fileTotal)
 			progressDialog.create()
 
-		for folder in folders:
-			self.removeDirectories(syncRootPath, drivePath, folder["folder_id"], deleteFiles, progressDialog)
+		[self.removeDirectories(syncRootPath, drivePath, folder["folder_id"], deleteFiles, progressDialog) for folder in folders]
 
 		if progressDialog:
 			progressDialog.close()

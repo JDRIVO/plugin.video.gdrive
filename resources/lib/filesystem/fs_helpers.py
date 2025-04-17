@@ -44,4 +44,4 @@ def getExcludedTypes(folderSettings):
 
 
 def removeProhibitedFSchars(name):
-	return re.sub(r'[<>\*\?\\/:|"]*', '', name.rstrip())
+	return re.sub(r'[<>\*\?\\/:|"]*', "", name.rstrip())

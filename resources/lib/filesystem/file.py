@@ -5,10 +5,10 @@ class File:
 
 	def __init__(self):
 		self.id = None
+		self.type = None
 		self.remoteName = None
 		self.localName = None
 		self.localPath = None
-		self.type = None
 		self.extension = None
 		self.encryptionID = None
 		self.modifiedTime = None
