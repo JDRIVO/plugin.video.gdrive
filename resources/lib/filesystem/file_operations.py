@@ -77,7 +77,9 @@ class FileOperations:
 		if not response:
 			return
 
-		if encrypted:
+		if not encrypted:
+			filePath = self.createFile(dirPath, filename, response.data, modifiedTime=modifiedTime)
+		else:
 
 			with self.lock:
 				filePath = generateFilePath(dirPath, filename)
@@ -85,9 +87,6 @@ class FileOperations:
 
 				if modifiedTime:
 					os.utime(filePath, (modifiedTime, modifiedTime))
-
-		else:
-			filePath = self.createFile(dirPath, filename, response.data, modifiedTime=modifiedTime)
 
 		return filePath
 

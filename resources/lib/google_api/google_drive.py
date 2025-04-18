@@ -190,7 +190,7 @@ class GoogleDrive:
 		streams, resolutionMap = {}, {}
 		resolutions = [1080, 720, 480, 360]
 
-		for r in re.finditer("([\d]+)/([\d]+)x([\d]+)", urls, re.DOTALL):
+		for r in re.finditer("(\d+)/(\d+)x(\d+)", urls, re.DOTALL):
 			itag, r1, r2 = r.groups()
 			resolution = min(int(r1), int(r2))
 
@@ -203,7 +203,7 @@ class GoogleDrive:
 
 		for r in re.finditer("\@([^\@;]+)", urls):
 			videoURL = r.group(1)
-			itag = re.search("itag=([\d]+)", videoURL).group(1)
+			itag = re.search("itag=(\d+)", videoURL).group(1)
 			streams[itag]["url"] = f"https://{videoURL}|{self.getHeadersEncoded()}"
 
 		if streams and resolutionPriority:

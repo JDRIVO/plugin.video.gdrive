@@ -1046,7 +1046,8 @@ class Core:
 		mode = self.settings.getParameter("sync_mode")
 		self.succeeded = False
 		folders = self.getFolders(driveID, parentFolderID)
-		folderNames = sorted([(folder["name"], index) for index, folder in enumerate(folders)], key=lambda x: x[0].lower())
+		syncedFolders = [folder["folder_id"] for folder in self.cache.getFolders({"drive_id": driveID})]
+		folderNames = sorted([(folder["name"], index) for index, folder in enumerate(folders) if folder["id"] not in syncedFolders], key=lambda x: x[0].lower())
 		chosenFolders = self.dialog.multiselect(self.settings.getLocalizedString(30086), [name for name, _ in folderNames])
 
 		if not chosenFolders:

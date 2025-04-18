@@ -43,7 +43,7 @@ class Video(File):
 	def getSTRMContents(self, driveID):
 
 		if self.encryptionID:
-			self.metadata.update({"encryption_id": self.encryptionID})
+			self.metadata["encryption_id"] = self.encryptionID
 
 		self.metadata.update({"drive_id": driveID, "file_id": self.id})
 		return "plugin://plugin.video.gdrive/?mode=video" + "".join([f"&{k}={v}"for k, v in self.metadata.items() if v])

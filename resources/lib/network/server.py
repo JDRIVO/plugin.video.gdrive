@@ -122,7 +122,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			response = self.server.http.request("HEAD", self.server.url, headers=self.server.cloudService.getHeaders())
 
 			if response.status >= 400:
-				raise urllib3.exceptions.HTTPError({"status": response.status})
+				raise urllib3.exceptions.HTTPError({"status": response.status, "reason": response.reason})
 
 		except urllib3.exceptions.HTTPError as e:
 			args = args[0] if (args := e.args) else {}
@@ -132,9 +132,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 			if not self.changeAccount(accounts):
 				self.send_error(400)
-				xbmc.executebuiltin("Dialog.Close(all,true)")
-				time.sleep(1)
-				xbmc.executebuiltin("Dialog.Close(all,true)")
 
 				if status == 401:
 					message = f"{self.server.settings.getLocalizedString(30018)} {self.server.account.name}"
@@ -143,9 +140,15 @@ class ServerHandler(BaseHTTPRequestHandler):
 				elif status in (403, 429):
 					message = f"{self.server.settings.getLocalizedString(30006)} {self.server.settings.getLocalizedString(30009)}"
 				else:
-					return
+					message = None
+					xbmc.log(f"gdrive error: {e}", xbmc.LOGERROR)
 
-				self.server.dialog.ok(self.server.settings.getLocalizedString(30000), message)
+				if message:
+					xbmc.executebuiltin("Dialog.Close(all,true)")
+					time.sleep(1)
+					xbmc.executebuiltin("Dialog.Close(all,true)")
+					self.server.dialog.ok(self.server.settings.getLocalizedString(30000), message)
+
 				return
 
 		self.server.failed = False
@@ -317,43 +320,37 @@ class ServerHandler(BaseHTTPRequestHandler):
 		if self.server.failed:
 			return
 
-		try:
-			start, end = re.search("([\d]+)-([\d]*)", self.headers["range"]).group(1, 2)
-			start = int(start) if start else ""
-			end = int(end) if end else ""
-		except AttributeError:
-			start = ""
-			end = ""
-
+		match = re.search("bytes=(\d+)-(\d*)", self.headers["range"])
+		start = int(match.group(1)) if match else ""
+		end = int(match.group(2)) if match and match.group(2) else ""
 		headers = self.server.cloudService.getHeaders()
 		blockIndex = 0
 		blockOffset = 0
 		chunkOffset = 0
 
-		if start:
+		if start != "":
+			range = start
 
-			if not self.server.encryptedStream:
-				range = start
-			else:
+			if self.server.encryptedStream:
 
 				if self.server.encryptor.type == EncryptionType.GDRIVE:
 
-					if start > 16 and not end:
+					if start > 16 and end == "":
 						chunkOffset = 16 - ((self.server.length - start) % 16) + 8
 						range = start - chunkOffset
 
 				else:
-					MAGIC_SIZE = 8
-					NONCE_SIZE = 24
-					BLOCK_HEADER_SIZE = 16
-					BLOCK_DATA_SIZE = 64 * 1024
-					BLOCK_TOTAL_SIZE = BLOCK_HEADER_SIZE + BLOCK_DATA_SIZE
-					remainder = start % BLOCK_TOTAL_SIZE
+					magicSize = 8
+					nonceSize = 24
+					blockHeaderSize = 16
+					blockDataSize = 64 * 1024
+					blockTotalSize = blockHeaderSize + blockDataSize
+					remainder = start % blockTotalSize
 
 					if remainder:
-						blockIndex = start // BLOCK_DATA_SIZE
-						blockOffset = start % BLOCK_DATA_SIZE
-						range = MAGIC_SIZE + NONCE_SIZE + (blockIndex * BLOCK_TOTAL_SIZE)
+						blockIndex = start // blockDataSize
+						blockOffset = start % blockDataSize
+						range = magicSize + nonceSize + (blockIndex * blockTotalSize)
 
 			headers["Range"] = f"bytes={range}-{end}"
 
@@ -556,13 +553,13 @@ class ServerHandler(BaseHTTPRequestHandler):
 			"Accept-Ranges": "bytes",
 		}
 
-		if start:
-			headers["Content-Length"] = str(int(response.headers.get("Content-Length")) - chunkOffset)
-			headers["Content-Range"] = f"bytes {start}-{end or self.server.length - 1}/{self.server.length}",
-			self.handleResponse(206, headers)
-		else:
+		if start == "":
 			headers["Content-Length"] = response.headers.get("Content-Length")
 			self.handleResponse(200, headers)
+		else:
+			headers["Content-Length"] = str(int(response.headers.get("Content-Length")) - chunkOffset)
+			headers["Content-Range"] = f"bytes {start}-{end}/{self.server.length}" if end else f"bytes {start}-{self.server.length - 1}/{self.server.length}",
+			self.handleResponse(206, headers)
 
 		try:
 			self.streamResponse(response, blockIndex, blockOffset, chunkOffset)

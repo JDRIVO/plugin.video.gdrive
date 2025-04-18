@@ -190,7 +190,7 @@ class LocalFileProcessor:
 						if file.language:
 							language += f".{file.language}"
 
-						if re.search("forced\.[\w]*$", remoteName, re.IGNORECASE):
+						if re.search("forced\.\w*$", remoteName, re.IGNORECASE):
 							language += ".Forced"
 
 						fileExtension = f"{language}{fileExtension}"
