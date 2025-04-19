@@ -564,7 +564,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			else:
 				contentRange = f"bytes {start}-{end}/{self.server.length}"
 
-			headers["Content-Range"] =	contentRange
+			headers["Content-Range"] = contentRange
 			self.handleResponse(206, headers)
 
 		try:
