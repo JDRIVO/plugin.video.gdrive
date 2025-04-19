@@ -395,7 +395,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		driveID = postData["drive_id"]
 		alias = postData["alias"]
 		self.server.accountManager.setAccounts()
-		self.server.accountManager.setAlias(driveID, alias)
+		self.server.accountManager.setAlias(alias, driveID)
 		driveSettings = self.server.cache.getDrive(driveID)
 
 		if not driveSettings:

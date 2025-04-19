@@ -22,19 +22,12 @@ class AccountManager:
 			self.accounts.update({driveID: {"accounts": [account], "alias": ""}})
 		else:
 			accounts = accounts["accounts"]
-			accountNames = self.getAccountNames(accounts)
-			accountName = account.name
-			copy = 1
-
-			while account.name in accountNames:
-				account.name = f"{accountName} {copy}"
-				copy += 1
-
+			account.name = self._getUniqueAccountName(account.name, self.getAccountNames(accounts))
 			accounts.insert(0, account)
 
 		self.saveAccounts()
 
-	def deleteAccount(self, driveID, account):
+	def deleteAccount(self, account, driveID):
 		self.accounts[driveID]["accounts"].remove(account)
 
 		if not self.accounts[driveID]:
@@ -106,13 +99,21 @@ class AccountManager:
 					self.accounts.update({driveID: {"accounts": data["accounts"], "alias": ""}})
 				else:
 					currentAccounts = self.accounts[driveID]["accounts"]
-					[currentAccounts.append(account) for account in data["accounts"] if account not in currentAccounts]
+					accountNames = self.getAccountNames(currentAccounts)
+
+					for account in data["accounts"]:
+
+						if account not in currentAccounts:
+							account.name = self._getUniqueAccountName(account.name, accountNames)
+							currentAccounts.append(account)
 
 		self.saveAccounts()
 		return True
 
-	def renameAccount(self, driveID, accountIndex, accountName):
-		self.accounts[driveID]["accounts"][accountIndex].name = accountName
+	def renameAccount(self, accountName, index, driveID):
+		accounts = self.accounts[driveID]["accounts"]
+		account = accounts[index]
+		account.name = self._getUniqueAccountName(accountName, self.getAccountNames(accounts))
 		self.saveAccounts()
 
 	def saveAccounts(self, filePath=ACCOUNTS_FILE):
@@ -130,7 +131,7 @@ class AccountManager:
 		self.accounts = self.accountData["drives"]
 		self.aliases = self.accountData["aliases"]
 
-	def setAlias(self, driveID, alias):
+	def setAlias(self, alias, driveID):
 		currentAlias = self.getAlias(driveID)
 
 		if currentAlias:
@@ -168,6 +169,18 @@ class AccountManager:
 
 		accountData["version"] = 2
 		return accountData
+
+	@staticmethod
+	def _getUniqueAccountName(accountName, accountNames):
+		accountName_ = accountName
+		copy = 1
+
+		while accountName in accountNames:
+			accountName = f"{accountName_} {copy}"
+			copy += 1
+
+		accountNames.append(accountName)
+		return accountName
 
 	def _loadAccounts(self, filePath=ACCOUNTS_FILE):
 		return self.fileOperations.loadPickleFile(filePath)

@@ -981,10 +981,10 @@ class Core:
 		if selection == 0:
 			newAccountName = self.dialog.input(self.settings.getLocalizedString(30025))
 
-			if not newAccountName:
+			if not newAccountName or newAccountName == accountName:
 				return
 
-			self.accountManager.renameAccount(driveID, accountIndex, newAccountName)
+			self.accountManager.renameAccount(newAccountName, accountIndex, driveID)
 
 		elif selection == 1:
 			self.cloudService.setAccount(account)
@@ -999,7 +999,7 @@ class Core:
 				if not selection:
 					return
 
-				self.accountManager.deleteAccount(driveID, account)
+				self.accountManager.deleteAccount(account, driveID)
 
 			else:
 				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30020))
@@ -1014,7 +1014,7 @@ class Core:
 			if not selection:
 				return
 
-			self.accountManager.deleteAccount(driveID, account)
+			self.accountManager.deleteAccount(account, driveID)
 
 		else:
 			return
@@ -1090,7 +1090,7 @@ class Core:
 				if not selection:
 					continue
 
-				self.accountManager.deleteAccount(driveID, account)
+				self.accountManager.deleteAccount(account, driveID)
 				deletion = True
 
 		progressDialog.close()
