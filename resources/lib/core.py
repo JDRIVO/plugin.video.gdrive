@@ -166,6 +166,8 @@ class Core:
 		account = self.accountManager.getAccount(driveID)
 
 		if not account:
+			self.succeeded = False
+			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30078))
 			return
 
 		driveSettings = self.cache.getDrive(driveID)
@@ -275,8 +277,9 @@ class Core:
 		if not selection:
 			return
 
-		self.accountManager.deleteAccounts(selection, accounts, driveID)
-		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30161))
+		deletedAccounts = [accountNames[s] for s in selection]
+		self.accountManager.deleteAccounts(deletedAccounts, accounts, driveID)
+		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30161 if len(selection) > 1 else 30162))
 		xbmc.executebuiltin("Container.Refresh")
 
 	def deleteAccountsFile(self):
@@ -332,7 +335,7 @@ class Core:
 			xbmc.executebuiltin(f"SetFocus({cid - 19})")
 			xbmc.executebuiltin(f"SetFocus({cid})")
 
-		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30117))
+		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30117 if len(selection) > 1 else 30130))
 
 	def deleteSyncCache(self):
 		cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()

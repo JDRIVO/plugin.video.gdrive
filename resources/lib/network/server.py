@@ -560,11 +560,10 @@ class ServerHandler(BaseHTTPRequestHandler):
 			headers["Content-Length"] = str(int(response.headers.get("Content-Length")) - chunkOffset)
 
 			if end == "":
-				contentRange = f"bytes {start}-{self.server.length - 1}/{self.server.length}"
+				headers["Content-Range"] = f"bytes {start}-{self.server.length - 1}/{self.server.length}"
 			else:
-				contentRange = f"bytes {start}-{end}/{self.server.length}"
+				headers["Content-Range"] = f"bytes {start}-{end}/{self.server.length}"
 
-			headers["Content-Range"] = contentRange
 			self.handleResponse(206, headers)
 
 		try:

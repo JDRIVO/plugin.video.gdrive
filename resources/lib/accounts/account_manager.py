@@ -18,10 +18,19 @@ class AccountManager:
 	def addAccount(self, account, driveID):
 		accounts = self.accounts.get(driveID)
 
-		if accounts:
-			accounts["accounts"].insert(0, account)
-		else:
+		if not accounts:
 			self.accounts.update({driveID: {"accounts": [account], "alias": ""}})
+		else:
+			accounts = accounts["accounts"]
+			accountNames = self.getAccountNames(accounts)
+			accountName = account.name
+			copy = 1
+
+			while account.name in accountNames:
+				account.name = f"{accountName} {copy}"
+				copy += 1
+
+			accounts.insert(0, account)
 
 		self.saveAccounts()
 
@@ -33,10 +42,8 @@ class AccountManager:
 		else:
 			self.saveAccounts()
 
-	def deleteAccounts(self, indexes, accounts, driveID):
-
-		for index in sorted(indexes, reverse=True):
-			del accounts[index]
+	def deleteAccounts(self, deletedAccounts, accounts, driveID):
+		self.accounts[driveID]["accounts"] = [account for account in accounts if account.name not in deletedAccounts]
 
 		if not self.accounts[driveID]["accounts"]:
 			self.deleteDrive(driveID)
