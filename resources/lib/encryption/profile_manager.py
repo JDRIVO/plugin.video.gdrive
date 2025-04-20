@@ -40,7 +40,7 @@ class ProfileManager:
 
 	def getProfileEntries(self):
 		entries = sorted([(id, profile.name) for id, profile in self.profiles.items()], key=lambda x: x[1].lower())
-		ids, names = zip(*entries) if entries else ([], [])
+		ids, names = zip(*entries) if entries else ((), ())
 		return ids, names
 
 	def importProfiles(self, filePath):
