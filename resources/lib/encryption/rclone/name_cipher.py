@@ -7,7 +7,7 @@ except:
 	from Crypto.Util.Padding import pad, unpad
 	from Crypto.Cipher._mode_ecb import EcbMode
 
-from .eme import Decrypt, Encrypt
+from .eme import decrypt, encrypt
 from .base32768 import Base32768Trans
 
 
@@ -107,7 +107,7 @@ class Name:
 		if len(filename) >= 2048:
 			raise ValueError("Too long to decrypt")
 
-		return unpad(Decrypt(self.__cipher, self.__nameTweak, filename), 16, style = "pkcs7").decode("utf-8") # EME解密 & pkcs7 unpad
+		return unpad(decrypt(self.__cipher, self.__nameTweak, filename), 16, style = "pkcs7").decode("utf-8") # EME解密 & pkcs7 unpad
 
 	def __name_standard_encrypt(self, filename: str) -> str:
 
@@ -115,7 +115,7 @@ class Name:
 			return ""
 
 		filename = pad(filename.encode("utf-8"), 16, style = "pkcs7")
-		filename = Encrypt(self.__cipher, self.__nameTweak, filename)
+		filename = encrypt(self.__cipher, self.__nameTweak, filename)
 		return self.__str_trans.encode(filename)
 
 	def __name_obfuscate_encrypt(self, filename: str) -> str:

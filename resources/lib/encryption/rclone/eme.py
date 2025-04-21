@@ -67,7 +67,7 @@ def aesTransform(src: bytes, directon: int, bc) -> bytes:
 		return bc.decrypt(src)
 
 
-def Transform(bc, tweak: bytes, inputData: bytes, direction: int) -> bytes:
+def transform(bc, tweak: bytes, inputData: bytes, direction: int) -> bytes:
 	# In the paper, the tweak is just called "T". Call it the same here to
 	# make following the paper easy.
 	T = tweak
@@ -141,7 +141,7 @@ def Transform(bc, tweak: bytes, inputData: bytes, direction: int) -> bytes:
 	return bytes(c)
 
 
-def Encrypt(bc, tweak: bytes, data: bytes) -> bytes:
+def encrypt(bc, tweak: bytes, data: bytes) -> bytes:
 	"""
 	:param bc:
 	\n
@@ -149,10 +149,10 @@ def Encrypt(bc, tweak: bytes, data: bytes) -> bytes:
 	\n
 	``bc = AES.new(nameKey, mode = AES.MODE_ECB)``
 	"""
-	return Transform(bc, tweak, data, DIRECTION_ENCRYPT)
+	return transform(bc, tweak, data, DIRECTION_ENCRYPT)
 
 
-def Decrypt(bc, tweak: bytes, data: bytes) -> bytes:
+def decrypt(bc, tweak: bytes, data: bytes) -> bytes:
 	"""
 	:param bc:
 	\n
@@ -160,4 +160,4 @@ def Decrypt(bc, tweak: bytes, data: bytes) -> bytes:
 	\n
 	``bc = AES.new(nameKey, mode = AES.MODE_ECB)``
 	"""
-	return Transform(bc, tweak, data, DIRECTION_DECRYPT)
+	return transform(bc, tweak, data, DIRECTION_DECRYPT)
