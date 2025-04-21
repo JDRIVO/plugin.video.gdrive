@@ -11,12 +11,12 @@ videoPath = sys.argv[1]
 remoteVideoPath = sys.argv[2]
 strmPath = sys.argv[3]
 driveID = sys.argv[4] # Optional - if not specified you will need to set a default playback account in the addon settings
-encrypted = sys.argv[5]
+encrypted = sys.argv[5] == "True"
 
 # videoPath = "/home/jack/movies/best movie 2000.mkv"
 # remoteVideoPath = "remote:/folder/RrtgFuvcxsWfKuFgGJ34VvcgfGFGWEWet"
 # strmPath = "/home/jack/strm/movies/best movie 2000.strm"
-# driveID = "0AGHbAfUtSfVATg4F5B"
+# driveID = "0AGHbAfUtSfVATg4F5B" or ""
 # encrypted = False
 
 cmd = "ffprobe -v quiet -print_format json -show_format -show_streams"
