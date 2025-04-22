@@ -34,9 +34,17 @@ class GDriveAdaptor(EncryptionStrategy):
 		self.encryptor = Encryptor(salt=profile.salt, saltPassword=profile.password)
 		self.filenameEncryption = True
 		self.encryptData = True
+		self.encryptDirNames = profile.encryptDirNames
 
 	def decryptDirName(self, name):
-		return name
+
+		if not self.encryptDirNames:
+			return name
+
+		try:
+			return self.encryptor.decryptString(name)
+		except Exception:
+			return name
 
 	def decryptFilename(self, name, fileExtension, mimeType):
 

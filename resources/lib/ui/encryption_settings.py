@@ -229,7 +229,8 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 		settingsVisible = ["profile_name", "encryption_type", "password", "salt"]
 
 		if self.profile.type == EncryptionType.GDRIVE:
-			settingsInvisible = ["filename_encryption", "filename_encoding", "suffix", "encrypt_data", "encrypt_dir_names"]
+			settingsVisible += ["encrypt_dir_names"]
+			settingsInvisible = ["filename_encryption", "filename_encoding", "suffix", "encrypt_data"]
 		else:
 			settingsVisible += ["filename_encryption", "encrypt_data"]
 
@@ -322,6 +323,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			"encryption_type": self.profile.type.value,
 			"password": self.profile.password or " ",
 			"salt": self.profile.salt or " ",
+			"encrypt_dir_names": self.profile.encryptDirNames,
 		}
 
 		if self.profile.type == EncryptionType.RCLONE:
@@ -331,7 +333,6 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 					"filename_encoding": self.profile.filenameEncoding,
 					"suffix": self.profile.suffix or " ",
 					"encrypt_data": self.profile.encryptData,
-					"encrypt_dir_names": self.profile.encryptDirNames,
 				}
 			)
 
