@@ -654,40 +654,40 @@ msgid "Sync defaults"
 msgstr "Sync defaults"
 
 msgctxt "#30507"
-msgid "Has files encrypted with"
-msgstr "Has files encrypted with"
-
-msgctxt "#30508"
-msgid "Rename videos to a Kodi friendly format"
-msgstr "Rename videos to a Kodi friendly format"
-
-msgctxt "#30509"
-msgid "Create a Kodi friendly directory structure"
-msgstr "Create a Kodi friendly directory structure"
-
-msgctxt "#30510"
-msgid "Sync nfo"
-msgstr "Sync nfo"
-
-msgctxt "#30511"
-msgid "Sync subtitles"
-msgstr "Sync subtitles"
-
-msgctxt "#30512"
-msgid "Sync artwork"
-msgstr "Sync artwork"
-
-msgctxt "#30513"
-msgid "Sync strm"
-msgstr "Sync strm"
-
-msgctxt "#30514"
 msgid "STRM prefix"
 msgstr "STRM prefix"
 
-msgctxt "#30515"
+msgctxt "#30508"
 msgid "STRM suffix"
 msgstr "STRM suffix"
+
+msgctxt "#30509"
+msgid "Has files encrypted with"
+msgstr "Has files encrypted with"
+
+msgctxt "#30510"
+msgid "Rename videos to a Kodi friendly format"
+msgstr "Rename videos to a Kodi friendly format"
+
+msgctxt "#30511"
+msgid "Create a Kodi friendly directory structure"
+msgstr "Create a Kodi friendly directory structure"
+
+msgctxt "#30512"
+msgid "Sync nfo"
+msgstr "Sync nfo"
+
+msgctxt "#30513"
+msgid "Sync subtitles"
+msgstr "Sync subtitles"
+
+msgctxt "#30514"
+msgid "Sync artwork"
+msgstr "Sync artwork"
+
+msgctxt "#30515"
+msgid "Sync strm"
+msgstr "Sync strm"
 
 msgctxt "#30516"
 msgid "TMDB search language"

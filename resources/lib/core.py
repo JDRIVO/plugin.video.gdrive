@@ -950,7 +950,7 @@ class Core:
 		http_requester.request(url, data)
 
 	def setTMDBlanguage(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30514), TMDB_LANGUAGES)
+		selection = self.dialog.select(self.settings.getLocalizedString(30516), TMDB_LANGUAGES)
 
 		if selection == -1:
 			return
@@ -958,7 +958,7 @@ class Core:
 		self.settings.setSetting("tmdb_language", TMDB_LANGUAGES[selection])
 
 	def setTMDBregion(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30515), TMDB_REGIONS)
+		selection = self.dialog.select(self.settings.getLocalizedString(30517), TMDB_REGIONS)
 
 		if selection == -1:
 			return

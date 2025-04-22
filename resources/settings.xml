@@ -140,7 +140,27 @@
 				</setting>
 			</group>
 			<group id="2" label="30506">
-				<setting id="encryption_name" type="string" label="30507" help="">
+				<setting id="strm_prefix" type="string" label="30507" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_strm_prefix)</data>
+					</control>
+				</setting>
+				<setting id="strm_suffix" type="string" label="30508" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_strm_suffix)</data>
+					</control>
+				</setting>
+				<setting id="encryption_name" type="string" label="30509" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -161,55 +181,35 @@
 					</control>
 					<visible>false</visible>
 				</setting>
-				<setting id="file_renaming" type="boolean" label="30508" help="">
+				<setting id="file_renaming" type="boolean" label="30510" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="folder_renaming" type="boolean" label="30509" help="">
+				<setting id="folder_renaming" type="boolean" label="30511" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_nfo" type="boolean" label="30510" help="">
+				<setting id="sync_nfo" type="boolean" label="30512" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_subtitles" type="boolean" label="30511" help="">
+				<setting id="sync_subtitles" type="boolean" label="30513" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_artwork" type="boolean" label="30512" help="">
+				<setting id="sync_artwork" type="boolean" label="30514" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_strm" type="boolean" label="30513" help="">
+				<setting id="sync_strm" type="boolean" label="30515" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
-				</setting>
-				<setting id="strm_prefix" type="string" label="30514" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="button" format="action">
-						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_strm_prefix)</data>
-					</control>
-				</setting>
-				<setting id="strm_suffix" type="string" label="30515" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="button" format="action">
-						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_strm_suffix)</data>
-					</control>
 				</setting>
 				<setting id="tmdb_language" type="string" label="30516" help="">
 					<level>0</level>
