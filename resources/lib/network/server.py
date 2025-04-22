@@ -530,20 +530,30 @@ class ServerHandler(BaseHTTPRequestHandler):
 		synced = self.server.taskManager.sync(driveID)
 
 		if synced:
-			self.server.dialog.notification(
-				self.server.settings.getLocalizedString(30000),
-				self.server.settings.getLocalizedString(30044),
-			)
+			id = 30044
+		else:
+			id = 30133
+
+		self.server.dialog.notification(
+			self.server.settings.getLocalizedString(30000),
+			self.server.settings.getLocalizedString(id),
+		)
 
 	def handleSyncAll(self):
 		self.handleResponse(200)
 		synced = self.server.taskManager.syncAll()
 
-		if synced:
-			self.server.dialog.notification(
-				self.server.settings.getLocalizedString(30000),
-				self.server.settings.getLocalizedString(30044),
-			)
+		if all(synced):
+			id = 30131
+		elif any(synced):
+			id = 30132
+		else:
+			id = 30133
+
+		self.server.dialog.notification(
+			self.server.settings.getLocalizedString(30000),
+			self.server.settings.getLocalizedString(id),
+		)
 
 	def sendPlayResponse(self, start, end, response, blockIndex, blockOffset, chunkOffset):
 		headers = {

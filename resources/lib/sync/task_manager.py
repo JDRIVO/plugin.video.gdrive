@@ -126,7 +126,7 @@ class TaskManager:
 	def sync(self, driveID):
 
 		if not self.cache.getFolder({"drive_id": driveID}):
-			return
+			return True
 
 		self.activeTasks.append(driveID)
 		synced = False
@@ -144,7 +144,7 @@ class TaskManager:
 
 	def syncAll(self):
 		drives = self.cache.getDrives()
-		return any([self.sync(drive["drive_id"]) for drive in drives])
+		return [self.sync(drive["drive_id"]) for drive in drives]
 
 	def _createTaskID(self):
 

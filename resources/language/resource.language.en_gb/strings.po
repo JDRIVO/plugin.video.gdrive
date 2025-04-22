@@ -525,6 +525,18 @@ msgctxt "#30130"
 msgid "Profile deleted."
 msgstr "Profile deleted."
 
+msgctxt "#30131"
+msgid "Synced all drives"
+msgstr "Synced all drives"
+
+msgctxt "#30132"
+msgid "Failed to sync all drives"
+msgstr "Failed to sync all drives"
+
+msgctxt "#30133"
+msgid "Sync failed"
+msgstr "Sync failed"
+
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
 msgstr "Are you sure you want to delete account:"
