@@ -175,32 +175,32 @@ class Core:
 		if driveSettings:
 			self.addMenuItem(
 				f"{self.pluginURL}?mode=list_synced_folders&drive_id={driveID}",
-				f"[COLOR yellow][B]{self.settings.getLocalizedString(30011)}[/B][/COLOR]",
+				f"[B][COLOR yellow]{self.settings.getLocalizedString(30011)}[/COLOR][/B]",
 			)
 
 		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_accounts&drive_id={driveID}",
-			f"[COLOR yellow][B]{self.settings.getLocalizedString(30032)}[/B][/COLOR]",
+			f"[B][COLOR yellow]{self.settings.getLocalizedString(30032)}[/COLOR][/B]",
 		)
 		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_folders&drive_id={driveID}",
-			self.settings.getLocalizedString(30038),
+			f"[B]{self.settings.getLocalizedString(30038)}[/B]",
 		)
 		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_folders&drive_id={driveID}&shared_with_me=true",
-			self.settings.getLocalizedString(30039),
+			f"[B]{self.settings.getLocalizedString(30039)}[/B]",
 		)
 		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_shared_drives&drive_id={driveID}",
-			self.settings.getLocalizedString(30040),
+			f"[B]{self.settings.getLocalizedString(30040)}[/B]",
 		)
 		self.addMenuItem(
 			f"{self.pluginURL}?mode=search_drive&drive_id={driveID}",
-			self.settings.getLocalizedString(30041),
+			f"[B]{self.settings.getLocalizedString(30041)}[/B]",
 		)
 		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_folders&drive_id={driveID}&starred=true",
-			self.settings.getLocalizedString(30042),
+			f"[B]{self.settings.getLocalizedString(30042)}[/B]",
 		)
 		xbmcplugin.setContent(self.pluginHandle, "files")
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
@@ -232,7 +232,7 @@ class Core:
 			]
 			self.addMenuItem(
 				f"{self.pluginURL}?mode=list_drive&drive_id={driveID}",
-				f"{displayName} | {getElapsedTime(lastSync)}" if displayLastSync and (lastSync := self.cache.getLastSync(driveID)) else displayName,
+				f"[B]{displayName}[/B]{f' | {getElapsedTime(lastSync)}' if displayLastSync and (lastSync := self.cache.getLastSync(driveID)) else ''}",
 				contextMenu,
 			)
 
@@ -250,7 +250,7 @@ class Core:
 		if syncRootPath:
 			self.addMenuItem(
 				syncRootPath,
-				f"[COLOR yellow][B]{self.settings.getLocalizedString(30008)}[/B][/COLOR]",
+				f"[B][COLOR yellow]{self.settings.getLocalizedString(30008)}[/COLOR][/B]",
 			)
 
 		contextMenu = [
@@ -261,7 +261,7 @@ class Core:
 		]
 		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_drives",
-			f"[COLOR yellow][B]{self.settings.getLocalizedString(30085)}[/B][/COLOR]",
+			f"[B][COLOR yellow]{self.settings.getLocalizedString(30085)}[/COLOR][/B]",
 			contextMenu,
 		)
 		xbmcplugin.setContent(self.pluginHandle, "files")
@@ -548,13 +548,13 @@ class Core:
 						f"RunPlugin({self.pluginURL}?mode=get_sync_settings&sync_mode=folder&drive_id={driveID}&folder_id={folderID}&folder_name={folderName})",
 					),
 				]
-				folderName = f"[COLOR lime][B]{folderName}[/B][/COLOR]"
+				folderName = f"[B][COLOR lime]{folderName}[/COLOR][/B]"
 			else:
 				directory = self.cache.getDirectory({"folder_id": folderID})
 
 				if directory:
-					folderName = f"[COLOR springgreen][B]{folderName}[/B][/COLOR]"
 					contextMenu = None
+					folderName = f"[B][COLOR springgreen]{folderName}[/COLOR][/B]"
 				else:
 					contextMenu = [
 						(
@@ -574,6 +574,7 @@ class Core:
 							f"RunPlugin({self.pluginURL}?mode=search_folder&drive_id={driveID}&folder_id={folderID})",
 						),
 					]
+					folderName = f"[B]{folderName}[/B]"
 
 					if self.mode in ("search_folder", "search_drive"):
 						contextMenu = contextMenu[:1]
