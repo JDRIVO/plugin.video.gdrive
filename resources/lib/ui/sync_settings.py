@@ -475,11 +475,11 @@ class SyncSettings(xbmcgui.WindowDialog):
 		ids, names = ProfileManager().getProfileEntries()
 
 		if not names:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30122))
+			self.dialog.ok(30122)
 			return
 
 		names = (" ",) + names
-		selection = self.dialog.select(self.settings.getLocalizedString(30116), names)
+		selection = self.dialog.select(30116, names)
 
 		if selection == -1:
 			return
@@ -488,7 +488,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.encryptionID = ids[selection - 1]
 
 	def _setCountry(self, button):
-		selection = self.dialog.select(self.settings.getLocalizedString(30517), TMDB_REGIONS)
+		selection = self.dialog.select(30517, TMDB_REGIONS)
 
 		if selection == -1:
 			return
@@ -499,7 +499,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self._setAffix(button, "Prefix")
 
 	def _setSearchLanguage(self, button):
-		selection = self.dialog.select(self.settings.getLocalizedString(30516), TMDB_LANGUAGES)
+		selection = self.dialog.select(30516, TMDB_LANGUAGES)
 
 		if selection == -1:
 			return
@@ -534,17 +534,17 @@ class SyncSettings(xbmcgui.WindowDialog):
 			encryptor = False
 
 		if globalSettings and not globalSettings["local_path"]:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30079))
+			self.dialog.ok(30079)
 			return
 
 		if self.displayMode == "drive" or not self.cache.getDrive(self.driveID):
 
 			if not driveSettings["task_mode"]:
-				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30080))
+				self.dialog.ok(30080)
 				return
 
 			if not driveSettings["task_frequency"] and driveSettings["task_mode"] != "manual":
-				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30081))
+				self.dialog.ok(30081)
 				return
 
 		self.close()
@@ -561,7 +561,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				self.cache.updateFolder(folderSettings, self.folderID)
 
 		else:
-			self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30082))
+			self.dialog.notification(30082)
 
 			if globalSettings:
 				self.cache.addGlobalData(globalSettings)
@@ -622,16 +622,16 @@ class SyncSettings(xbmcgui.WindowDialog):
 			return
 
 		if self.syncMode == self.settings.getLocalizedString(30068):
-			syncFrequency = self.dialog.numeric(0, self.settings.getLocalizedString(30070))
+			syncFrequency = self.dialog.numeric(0, 30070)
 		else:
-			syncFrequency = self.dialog.numeric(2, self.settings.getLocalizedString(30071))
+			syncFrequency = self.dialog.numeric(2, 30071)
 
 		if syncFrequency:
 			button.setLabel(label2=syncFrequency)
 
 	def _setSyncMode(self, button):
 		modes = [self.settings.getLocalizedString(30068), self.settings.getLocalizedString(30069), self.settings.getLocalizedString(30087)]
-		selection = self.dialog.select(self.settings.getLocalizedString(30049), modes)
+		selection = self.dialog.select(30049, modes)
 
 		if selection == -1:
 			return
@@ -644,7 +644,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			button.setLabel(label2=self.syncMode)
 
 	def _setSyncPath(self, button):
-		syncRootPath = self.dialog.browse(3, self.settings.getLocalizedString(30077), "local")
+		syncRootPath = self.dialog.browse(3, 30077, "local")
 
 		if not syncRootPath:
 			return
@@ -653,7 +653,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		button.setLabel(label2=syncRootPath)
 
 	def _stopSyncingFolder(self, *args):
-		selection = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30072))
+		selection = self.dialog.yesno(30072)
 
 		if not selection:
 			return
@@ -664,19 +664,19 @@ class SyncSettings(xbmcgui.WindowDialog):
 		http_requester.request(url, data)
 
 	def _stopSyncingFolderAndDelete(self, *args):
-		selection = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30074))
+		selection = self.dialog.yesno(30074)
 
 		if not selection:
 			return
 
 		self.close()
-		self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30075))
+		self.dialog.notification(30075)
 		data = {"drive_id": self.driveID, "folder_id": self.folderID, "delete": True}
 		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folder"
 		http_requester.request(url, data)
 
 	def _stopSyncingFolders(self, *args):
-		selection = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30073))
+		selection = self.dialog.yesno(30073)
 
 		if not selection:
 			return
@@ -687,13 +687,13 @@ class SyncSettings(xbmcgui.WindowDialog):
 		http_requester.request(url, data)
 
 	def _stopSyncingFoldersAndDelete(self, *args):
-		selection = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30076))
+		selection = self.dialog.yesno(30076)
 
 		if not selection:
 			return
 
 		self.close()
-		self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30075))
+		self.dialog.notification(30075)
 		data = {"drive_id": self.driveID, "delete": True}
 		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
 		http_requester.request(url, data)

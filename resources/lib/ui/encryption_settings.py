@@ -211,9 +211,9 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 	def _displayNotification(self):
 
 		if self.mode == "add":
-			self.dialog.ok(SETTINGS.getLocalizedString(30000), SETTINGS.getLocalizedString(30124))
+			self.dialog.ok(30124)
 		else:
-			self.dialog.ok(SETTINGS.getLocalizedString(30000), SETTINGS.getLocalizedString(30125))
+			self.dialog.ok(30125)
 
 	def _initializePaths(self):
 		mediaPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
@@ -248,13 +248,13 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 	def _saveProfile(self):
 
 		if not self.profile.name:
-			self.dialog.ok(SETTINGS.getLocalizedString(30000), SETTINGS.getLocalizedString(30126))
+			self.dialog.ok(30126)
 			return
 		elif not self.profile.password:
-			self.dialog.ok(SETTINGS.getLocalizedString(30000), SETTINGS.getLocalizedString(30127))
+			self.dialog.ok(30127)
 			return
 		elif self.profile.type == EncryptionType.GDRIVE and not self.profile.salt:
-			self.dialog.ok(SETTINGS.getLocalizedString(30000), SETTINGS.getLocalizedString(30128))
+			self.dialog.ok(30128)
 			return
 
 		if self.mode == "add":
@@ -270,7 +270,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 
 	def _setEncryptionType(self, button):
 		encryptionTypes = [EncryptionType.GDRIVE.value, EncryptionType.RCLONE.value]
-		selection = self.dialog.select(SETTINGS.getLocalizedString(30108), encryptionTypes)
+		selection = self.dialog.select(30108, encryptionTypes)
 
 		if selection == -1:
 			return
@@ -284,7 +284,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 
 	def _setFilenameEncoding(self, button):
 		encodingTypes = ["base32", "base64", "base32768"]
-		selection = self.dialog.select(SETTINGS.getLocalizedString(30112), encodingTypes)
+		selection = self.dialog.select(30112, encodingTypes)
 
 		if selection == -1:
 			return
@@ -295,7 +295,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 
 	def _setFilenameEncryption(self, button):
 		encryptionTypes = ["standard", "obfuscate", "off"]
-		selection = self.dialog.select(SETTINGS.getLocalizedString(30111), encryptionTypes)
+		selection = self.dialog.select(30111, encryptionTypes)
 
 		if selection == -1:
 			return
@@ -341,7 +341,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 
 	def _setPassword(self, button):
 
-		if password := self.dialog.input(SETTINGS.getLocalizedString(30109)):
+		if password := self.dialog.input(30109):
 			button.setLabel(label2=password)
 			self.profile.password = password
 
@@ -363,7 +363,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			self.profile = encryption_profiles.GDriveEncryptionProfile()
 
 	def _setProfileName(self, button):
-		name = self.dialog.input(SETTINGS.getLocalizedString(30107))
+		name = self.dialog.input(30107)
 
 		if not name:
 			return
@@ -382,7 +382,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 	def _setSalt(self, button):
 
 		if self.profile.type == EncryptionType.GDRIVE:
-			saltPath = self.dialog.browse(1, self.settings.getLocalizedString(30110), "")
+			saltPath = self.dialog.browse(1, 30110, "")
 
 			if not saltPath:
 				return
@@ -391,13 +391,13 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 				salt = file.read()
 
 		else:
-			salt = self.dialog.input(self.settings.getLocalizedString(30110))
+			salt = self.dialog.input(30110)
 
 		button.setLabel(label2=salt or " ")
 		self.profile.salt = salt
 
 	def _setSuffix(self, button):
-		suffix = self.dialog.input(self.settings.getLocalizedString(30113))
+		suffix = self.dialog.input(30113)
 		button.setLabel(label2=suffix or " ")
 		self.profile.suffix = suffix
 

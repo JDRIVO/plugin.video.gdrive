@@ -87,10 +87,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			except urllib3.exceptions.HTTPError as e:
 				continue
 
-			self.server.dialog.notification(
-				self.server.settings.getLocalizedString(30000),
-				self.server.settings.getLocalizedString(30007),
-			)
+			self.server.dialog.notification(30007)
 			accounts.remove(account)
 			accounts.insert(0, account)
 			self.server.accountManager.saveAccounts()
@@ -147,7 +144,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 					xbmc.executebuiltin("Dialog.Close(all,true)")
 					time.sleep(1)
 					xbmc.executebuiltin("Dialog.Close(all,true)")
-					self.server.dialog.ok(self.server.settings.getLocalizedString(30000), message)
+					self.server.dialog.ok(message)
 
 				return
 
@@ -214,10 +211,10 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 		if deleted:
 			self.server.accountManager.setAccounts()
-			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30097))
+			self.server.dialog.ok(30097)
 			xbmc.executebuiltin("Container.Refresh")
 		else:
-			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30098))
+			self.server.dialog.ok(30098)
 
 	def handleDeleteDrive(self):
 		postData = self.getPostDataJSON()
@@ -228,10 +225,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.server.taskManager.removeTask(driveID)
 		self.server.cache.deleteDrive(driveID, deleteFiles)
 		self.server.accountManager.deleteDrive(driveID)
-		self.server.dialog.notification(
-			self.server.settings.getLocalizedString(30000),
-			f"{self.server.settings.getLocalizedString(30106)} {driveName}",
-		)
+		self.server.dialog.notification(f"{self.server.settings.getLocalizedString(30106)} {driveName}")
 		xbmc.executebuiltin("Container.Refresh")
 
 	def handleDeleteSyncCache(self):
@@ -250,7 +244,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			time.sleep(0.1)
 
 		if not deleted:
-			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30056))
+			self.server.dialog.ok(30056)
 			return
 
 		self.server.cache.createTables()
@@ -266,7 +260,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			xbmc.executebuiltin(f"SetFocus({cid - 21})")
 			xbmc.executebuiltin(f"SetFocus({cid})")
 
-		self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30055))
+		self.server.dialog.ok(30055)
 
 	def handleDeleteSyncFolder(self):
 		postData = self.getPostDataJSON()
@@ -277,7 +271,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		deleted = self.server.fileOperations.deleteFolder(syncRoot)
 
 		if not deleted:
-			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30096))
+			self.server.dialog.ok(30096)
 		else:
 
 			if not self.server.cache.getSyncRootPath():
@@ -291,7 +285,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 				xbmc.executebuiltin(f"SetFocus({cid - 22})")
 				xbmc.executebuiltin(f"SetFocus({cid})")
 
-			self.server.dialog.ok(self.server.settings.getLocalizedString(30000), self.server.settings.getLocalizedString(30095))
+			self.server.dialog.ok(30095)
 
 		self.server.taskManager.run()
 
@@ -433,10 +427,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 		if os.path.exists(oldSyncPath):
 			self.server.fileOperations.renameFolder(newSyncPath, oldSyncPath, newSyncPath, deleteEmptyDirs=False)
-			self.server.dialog.ok(
-				self.server.settings.getLocalizedString(30000),
-				self.server.settings.getLocalizedString(30031),
-			)
+			self.server.dialog.ok(30031)
 
 		self.server.taskManager.run()
 
@@ -498,10 +489,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.server.taskManager.spawnTask(self.server.cache.getDrive(driveID), startUpRun=False)
 
 		if delete:
-			self.server.dialog.notification(
-				self.server.settings.getLocalizedString(30000),
-				self.server.settings.getLocalizedString(30045),
-			)
+			self.server.dialog.notification(30045)
 
 	def handleStopSyncingFolders(self):
 		postData = self.getPostDataJSON()
@@ -513,10 +501,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.server.cache.removeFolders(driveID, deleteFiles=delete)
 
 		if delete:
-			self.server.dialog.notification(
-				self.server.settings.getLocalizedString(30000),
-				self.server.settings.getLocalizedString(30045),
-			)
+			self.server.dialog.notification(30045)
 
 	def handleSync(self):
 		postData = self.getPostDataJSON()
@@ -534,10 +519,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		else:
 			id = 30133
 
-		self.server.dialog.notification(
-			self.server.settings.getLocalizedString(30000),
-			self.server.settings.getLocalizedString(id),
-		)
+		self.server.dialog.notification(id)
 
 	def handleSyncAll(self):
 		self.handleResponse(200)
@@ -550,10 +532,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		else:
 			id = 30133
 
-		self.server.dialog.notification(
-			self.server.settings.getLocalizedString(30000),
-			self.server.settings.getLocalizedString(id),
-		)
+		self.server.dialog.notification(id)
 
 	def sendPlayResponse(self, start, end, response, blockIndex, blockOffset, chunkOffset):
 		headers = {

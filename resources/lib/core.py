@@ -119,12 +119,12 @@ class Core:
 		xbmcplugin.addDirectoryItem(self.pluginHandle, url, listItem, isFolder=isFolder)
 
 	def addServiceAccount(self):
-		accountName = self.dialog.input(self.settings.getLocalizedString(30025))
+		accountName = self.dialog.input(30025)
 
 		if not accountName:
 			return
 
-		filePath = self.dialog.browse(1, self.settings.getLocalizedString(30026), "files", mask=".json")
+		filePath = self.dialog.browse(1, 30026, "files", mask=".json")
 
 		if not filePath:
 			return
@@ -139,11 +139,11 @@ class Core:
 		if error:
 
 			if len(error) == 2:
-				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30028))
+				self.dialog.ok(30028)
 			elif "email" in error:
-				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30029))
+				self.dialog.ok(30029)
 			else:
-				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30030))
+				self.dialog.ok(30030)
 
 			return
 
@@ -167,7 +167,7 @@ class Core:
 
 		if not account:
 			self.succeeded = False
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30078))
+			self.dialog.ok(30078)
 			return
 
 		driveSettings = self.cache.getDrive(driveID)
@@ -272,18 +272,18 @@ class Core:
 		driveID = self.settings.getParameter("drive_id")
 		accounts = self.accountManager.getAccounts(driveID)
 		accountNames = self.accountManager.getAccountNames(accounts)
-		selection = self.dialog.multiselect(self.settings.getLocalizedString(30158), accountNames)
+		selection = self.dialog.multiselect(30158, accountNames)
 
 		if not selection:
 			return
 
 		deletedAccounts = [accountNames[s] for s in selection]
 		self.accountManager.deleteAccounts(deletedAccounts, accounts, driveID)
-		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30161 if len(selection) > 1 else 30162))
+		self.dialog.ok(30161 if len(selection) > 1 else 30162)
 		xbmc.executebuiltin("Container.Refresh")
 
 	def deleteAccountsFile(self):
-		confirmation = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30024))
+		confirmation = self.dialog.yesno(30024)
 
 		if not confirmation:
 			return
@@ -295,13 +295,13 @@ class Core:
 	def deleteDrive(self):
 		driveID = self.settings.getParameter("drive_id")
 		driveName = self.settings.getParameter("drive_name")
-		confirmation = self.dialog.yesno(self.settings.getLocalizedString(30000), f"{self.settings.getLocalizedString(30016)} {driveName}?")
+		confirmation = self.dialog.yesno(f"{self.settings.getLocalizedString(30016)} {driveName}?")
 
 		if not confirmation:
 			return
 
-		deleteFiles = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30027))
-		self.dialog.notification(self.settings.getLocalizedString(30000), f"{self.settings.getLocalizedString(30105)} {driveName}")
+		deleteFiles = self.dialog.yesno(30027)
+		self.dialog.notification(f"{self.settings.getLocalizedString(30105)} {driveName}")
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/delete_drive"
 		data = {"drive_id": driveID, "drive_name": driveName, "delete_files": deleteFiles}
@@ -310,7 +310,7 @@ class Core:
 	def deleteEncryptionProfiles(self):
 		profileManager = ProfileManager()
 		ids, names = profileManager.getProfileEntries()
-		selection = self.dialog.multiselect(self.settings.getLocalizedString(30129), names)
+		selection = self.dialog.multiselect(30129, names)
 
 		if not selection:
 			return
@@ -335,11 +335,11 @@ class Core:
 			xbmc.executebuiltin(f"SetFocus({cid - 19})")
 			xbmc.executebuiltin(f"SetFocus({cid})")
 
-		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30117 if len(selection) > 1 else 30130))
+		self.dialog.ok(30117 if len(selection) > 1 else 30130)
 
 	def deleteSyncCache(self):
 		cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()
-		confirmation = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30054))
+		confirmation = self.dialog.yesno(30054)
 
 		if not confirmation:
 			return
@@ -354,12 +354,12 @@ class Core:
 		syncRoot = syncRootCache or self.settings.getSetting("sync_root")
 
 		if not syncRoot:
-			syncRoot = self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30092))
+			syncRoot = self.dialog.ok(30092)
 			self.settings.setSetting("sync_root", "")
 			return
 
 		if not os.path.exists(syncRoot):
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30100))
+			self.dialog.ok(30100)
 
 			if not syncRootCache:
 				self.settings.setSetting("sync_root", "")
@@ -367,7 +367,7 @@ class Core:
 			return
 
 		cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()
-		confirmation = self.dialog.yesno(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30094))
+		confirmation = self.dialog.yesno(30094)
 
 		if not confirmation:
 			return
@@ -378,12 +378,12 @@ class Core:
 		http_requester.request(url, data)
 
 	def exportAccounts(self):
-		dirPath = self.dialog.browse(3, self.settings.getLocalizedString(30034), "")
+		dirPath = self.dialog.browse(3, 30034, "")
 
 		if not dirPath:
 			return
 
-		filename = self.dialog.input(self.settings.getLocalizedString(30099), "gdrive_accounts")
+		filename = self.dialog.input(30099, defaultt="gdrive_accounts")
 
 		if not filename:
 			return
@@ -391,15 +391,15 @@ class Core:
 		filename = f"{filename}.pkl"
 		filePath = os.path.join(dirPath, filename)
 		self.accountManager.saveAccounts(filePath)
-		self.dialog.ok(self.settings.getLocalizedString(30000), f"{self.settings.getLocalizedString(30035)} {filename}")
+		self.dialog.ok(f"{self.settings.getLocalizedString(30035)} {filename}")
 
 	def exportEncryptionProfiles(self):
-		dirPath = self.dialog.browse(3, self.settings.getLocalizedString(30034), "")
+		dirPath = self.dialog.browse(3, 30034, "")
 
 		if not dirPath:
 			return
 
-		filename = self.dialog.input(self.settings.getLocalizedString(30099), "gdrive_profiles")
+		filename = self.dialog.input(30099, defaultt="gdrive_profiles")
 
 		if not filename:
 			return
@@ -408,10 +408,10 @@ class Core:
 		filePath = os.path.join(dirPath, filename)
 		profileManager = ProfileManager()
 		profileManager.exportProfiles(filePath)
-		self.dialog.ok(self.settings.getLocalizedString(30000), f"{self.settings.getLocalizedString(30035)} {filename}")
+		self.dialog.ok(f"{self.settings.getLocalizedString(30035)} {filename}")
 
 	def importAccounts(self):
-		filePath = self.dialog.browse(1, self.settings.getLocalizedString(30033), "", mask=".pkl")
+		filePath = self.dialog.browse(1, 30033, "", mask=".pkl")
 
 		if not filePath:
 			return
@@ -419,13 +419,13 @@ class Core:
 		imported = self.accountManager.mergeAccounts(filePath)
 
 		if not imported:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30037))
+			self.dialog.ok(30037)
 		else:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30036))
+			self.dialog.ok(30036)
 			xbmc.executebuiltin("Container.Refresh")
 
 	def importEncryptionProfiles(self):
-		filePath = self.dialog.browse(1, self.settings.getLocalizedString(30033), "", mask=".pkl")
+		filePath = self.dialog.browse(1, 30033, "", mask=".pkl")
 
 		if not filePath:
 			return
@@ -434,9 +434,9 @@ class Core:
 		imported = profileManager.importProfiles(filePath)
 
 		if not imported:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30118))
+			self.dialog.ok(30118)
 		else:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30119))
+			self.dialog.ok(30119)
 
 	def forceSyncDrive(self):
 		driveID = self.settings.getParameter("drive_id")
@@ -676,7 +676,7 @@ class Core:
 		driveID = self.settings.getParameter("drive_id") or self.settings.getSetting("default_playback_account_id")
 
 		if not driveID:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30057))
+			self.dialog.ok(30057)
 			return
 
 		account = self.accountManager.getAccount(driveID, preferOauth=False)
@@ -690,7 +690,7 @@ class Core:
 			profile = profileManager.getProfile(encryptionID)
 
 			if not profile:
-				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30120))
+				self.dialog.ok(30120)
 				return
 
 		elif encryptionID := self.settings.getParameter("encryption_id"):
@@ -702,7 +702,7 @@ class Core:
 				profile = profileManager.getProfile(encryptionID)
 
 				if not profile:
-					self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30121))
+					self.dialog.ok(30121)
 					return
 
 		else:
@@ -767,7 +767,6 @@ class Core:
 
 	def registerAccount(self):
 		help = self.dialog.yesno(
-			self.settings.getLocalizedString(30000),
 			"{} [B][COLOR blue]http://localhost:{}/register[/COLOR][/B] {}\n\n{} [COLOR chartreuse]{}[/COLOR] - [COLOR chartreuse]{}[/COLOR] {} [COLOR chartreuse]{}[/COLOR] [B][COLOR blue]http://localhost:{}/status[/COLOR][/B]".format(
 				self.settings.getLocalizedString(30215),
 				self.settings.getSetting("server_port"),
@@ -779,8 +778,8 @@ class Core:
 				self.settings.getLocalizedString(30221),
 				self.settings.getSetting("server_port"),
 			),
-			self.settings.getLocalizedString(30066),
-			self.settings.getLocalizedString(30001),
+			nolabel = self.settings.getLocalizedString(30066),
+			yeslabel = self.settings.getLocalizedString(30001),
 		)
 
 		if help:
@@ -799,7 +798,7 @@ class Core:
 		del resolutionOrder
 
 	def searchDrive(self):
-		searchQuery = self.dialog.input(self.settings.getLocalizedString(30043))
+		searchQuery = self.dialog.input(30043)
 
 		if not searchQuery:
 			self.succeeded = False
@@ -810,7 +809,7 @@ class Core:
 		self.listFolders(driveID, folders)
 
 	def searchFolder(self):
-		searchQuery = self.dialog.input(self.settings.getLocalizedString(30043))
+		searchQuery = self.dialog.input(30043)
 
 		if not searchQuery:
 			self.succeeded = False
@@ -849,7 +848,7 @@ class Core:
 
 	def setAlias(self):
 		driveID = self.settings.getParameter("drive_id")
-		alias = self.dialog.input(self.settings.getLocalizedString(30004))
+		alias = self.dialog.input(30004)
 
 		if not alias:
 			return
@@ -859,7 +858,7 @@ class Core:
 
 		if alias in self.accountManager.aliases:
 			xbmc.executebuiltin("Dialog.Close(busydialognocancel)")
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30015))
+			self.dialog.ok(30015)
 			return
 
 		serverPort = self.settings.getSettingInt("server_port", 8011)
@@ -872,7 +871,7 @@ class Core:
 		ids, names = profileManager.getProfileEntries()
 		ids = ("",) + ids
 		names = ("",) + names
-		selection = self.dialog.select(self.settings.getLocalizedString(30116), names)
+		selection = self.dialog.select(30116, names)
 
 		if selection == -1:
 			return
@@ -896,7 +895,7 @@ class Core:
 		ids, names = profileManager.getProfileEntries()
 		ids = ("",) + ids
 		names = ("",) + names
-		selection = self.dialog.select(self.settings.getLocalizedString(30116), names)
+		selection = self.dialog.select(30116, names)
 
 		if selection == -1:
 			return
@@ -907,7 +906,7 @@ class Core:
 	def setPlaybackAccount(self):
 		accounts = self.accountManager.getDrives()
 		accountNames = [""] + [account[1] for account in accounts]
-		selection = self.dialog.select(self.settings.getLocalizedString(30014), accountNames)
+		selection = self.dialog.select(30014, accountNames)
 
 		if selection == -1:
 			return
@@ -926,12 +925,12 @@ class Core:
 		syncRoot = self.cache.getSyncRootPath() or self.settings.getSetting("sync_root")
 
 		if not syncRoot:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30092))
+			self.dialog.ok(30092)
 			self.settings.setSetting("sync_root", "")
 			return
 
 		cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()
-		syncRootNew = self.dialog.browse(3, self.settings.getLocalizedString(30093), "local")
+		syncRootNew = self.dialog.browse(3, 30093, "local")
 
 		if not syncRootNew:
 			return
@@ -939,10 +938,10 @@ class Core:
 		syncRootNew = os.path.join(syncRootNew, self.settings.getLocalizedString(30000))
 
 		if syncRoot in syncRootNew:
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30101))
+			self.dialog.ok(30101)
 			return
 		elif os.path.exists(syncRootNew):
-			self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30102))
+			self.dialog.ok(30102)
 			return
 
 		serverPort = self.settings.getSettingInt("server_port", 8011)
@@ -951,7 +950,7 @@ class Core:
 		http_requester.request(url, data)
 
 	def setTMDBlanguage(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30516), TMDB_LANGUAGES)
+		selection = self.dialog.select(30516, TMDB_LANGUAGES)
 
 		if selection == -1:
 			return
@@ -959,7 +958,7 @@ class Core:
 		self.settings.setSetting("tmdb_language", TMDB_LANGUAGES[selection])
 
 	def setTMDBregion(self):
-		selection = self.dialog.select(self.settings.getLocalizedString(30517), TMDB_REGIONS)
+		selection = self.dialog.select(30517, TMDB_REGIONS)
 
 		if selection == -1:
 			return
@@ -980,7 +979,7 @@ class Core:
 		account = accounts[accountIndex]
 
 		if selection == 0:
-			newAccountName = self.dialog.input(self.settings.getLocalizedString(30025))
+			newAccountName = self.dialog.input(30025)
 
 			if not newAccountName or newAccountName == accountName:
 				return
@@ -992,10 +991,7 @@ class Core:
 			tokenRefresh = self.cloudService.refreshToken()
 
 			if not tokenRefresh:
-				selection = self.dialog.yesno(
-					self.settings.getLocalizedString(30000),
-					f"{accountName} {self.settings.getLocalizedString(30019)}",
-				)
+				selection = self.dialog.yesno(f"{accountName} {self.settings.getLocalizedString(30019)}")
 
 				if not selection:
 					return
@@ -1003,14 +999,11 @@ class Core:
 				self.accountManager.deleteAccount(account, driveID)
 
 			else:
-				self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30020))
+				self.dialog.ok(30020)
 				return
 
 		elif selection == 2:
-			selection = self.dialog.yesno(
-				self.settings.getLocalizedString(30000),
-				f"{self.settings.getLocalizedString(30157)} {accountName}?",
-			)
+			selection = self.dialog.yesno(f"{self.settings.getLocalizedString(30157)} {accountName}?")
 
 			if not selection:
 				return
@@ -1052,7 +1045,7 @@ class Core:
 		folders = self.getFolders(driveID, parentFolderID)
 		syncedFolders = [folder["folder_id"] for folder in self.cache.getFolders({"drive_id": driveID})]
 		folderNames = sorted([(folder["name"], index) for index, folder in enumerate(folders) if folder["id"] not in syncedFolders], key=lambda x: x[0].lower())
-		chosenFolders = self.dialog.multiselect(self.settings.getLocalizedString(30086), [name for name, _ in folderNames])
+		chosenFolders = self.dialog.multiselect(30086, [name for name, _ in folderNames])
 
 		if not chosenFolders:
 			return
@@ -1083,10 +1076,7 @@ class Core:
 			count += 1
 
 			if not tokenRefresh:
-				selection = self.dialog.yesno(
-					self.settings.getLocalizedString(30000),
-					f"{accountName} {self.settings.getLocalizedString(30019)}",
-				)
+				selection = self.dialog.yesno(f"{accountName} {self.settings.getLocalizedString(30019)}")
 
 				if not selection:
 					continue
@@ -1095,7 +1085,7 @@ class Core:
 				deletion = True
 
 		progressDialog.close()
-		self.dialog.ok(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30020))
+		self.dialog.ok(30020)
 
 		if deletion:
 			xbmc.executebuiltin("Container.Refresh")

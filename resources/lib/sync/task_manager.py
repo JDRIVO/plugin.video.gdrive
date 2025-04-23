@@ -76,7 +76,7 @@ class TaskManager:
 		if not driveSettings["page_token"]:
 			self.cache.updateDrive({"page_token": self.cloudService.getPageToken()}, driveID)
 
-		self.dialog.notification(self.settings.getLocalizedString(30000), self.settings.getLocalizedString(30044))
+		self.dialog.notification(30044)
 		self.spawnTask(driveSettings, startUpRun=False)
 		self.activeTasks.remove(driveID)
 
