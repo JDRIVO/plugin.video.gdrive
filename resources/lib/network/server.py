@@ -495,10 +495,11 @@ class ServerHandler(BaseHTTPRequestHandler):
 		postData = self.getPostDataJSON()
 		self.handleResponse(200)
 		driveID = postData["drive_id"]
+		folders = postData.get("folders")
 		delete = postData["delete"]
 		xbmc.executebuiltin("Container.Refresh")
 		self.server.taskManager.removeTask(driveID)
-		self.server.cache.removeFolders(driveID, deleteFiles=delete)
+		self.server.cache.removeFolders(driveID, folders=folders, deleteFiles=delete)
 
 		if delete:
 			self.server.dialog.notification(30045)

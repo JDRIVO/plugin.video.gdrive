@@ -279,7 +279,9 @@ class SyncSettings(xbmcgui.WindowDialog):
 			self.settings.getLocalizedString(30049): self._setSyncMode,
 			self.settings.getLocalizedString(30050): self._setSyncFrequency,
 			self.settings.getLocalizedString(30061): self._stopSyncingFolders,
+			self.settings.getLocalizedString(30163): self._stopSyncingSelectFolders,
 			self.settings.getLocalizedString(30062): self._stopSyncingFoldersAndDelete,
+			self.settings.getLocalizedString(30164): self._stopSyncingSelectFoldersAndDelete,
 		}
 		radioButtons = {self.settings.getLocalizedString(30051): self.driveSettings["startup_sync"]}
 		self.buttonAmount = len(self.functions) + len(radioButtons)
@@ -695,6 +697,33 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.close()
 		self.dialog.notification(30075)
 		data = {"drive_id": self.driveID, "delete": True}
+		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
+		http_requester.request(url, data)
+
+	def _stopSyncingSelectFolders(self, *args):
+		folders = self.cache.getFolders({"drive_id": self.driveID})
+		folders = sorted(folders, key=lambda f: f["local_path"].lower())
+		selection = self.dialog.multiselect("Choose folders to delete", [folder["local_path"] for folder in folders])
+
+		if not selection:
+			return
+
+		self.close()
+		data = {"drive_id": self.driveID, "folders": [folders[idx] for idx in selection], "delete": False}
+		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
+		http_requester.request(url, data)
+
+	def _stopSyncingSelectFoldersAndDelete(self, *args):
+		folders = self.cache.getFolders({"drive_id": self.driveID})
+		folders = sorted(folders, key=lambda f: f["local_path"].lower())
+		selection = self.dialog.multiselect("Choose folders to delete", [folder["local_path"] for folder in folders])
+
+		if not selection:
+			return
+
+		self.close()
+		self.dialog.notification(30075)
+		data = {"drive_id": self.driveID, "folders": [folders[idx] for idx in selection], "delete": True}
 		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
 		http_requester.request(url, data)
 

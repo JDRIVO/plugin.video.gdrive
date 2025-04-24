@@ -269,21 +269,32 @@ class SyncCacheManager(DatabaseManager):
 		if progressDialog:
 			progressDialog.close()
 
-	def removeFolders(self, driveID, deleteFiles=False):
+	def removeFolders(self, driveID, folders=None, deleteFiles=False):
 
 		if not deleteFiles:
 			self.cleanCache(driveID)
 			return
 
-		folders = self.getFolders({"drive_id": driveID})
-		self.deleteFolder(driveID, column="drive_id")
+		if folders:
+			selectFolders = True
+			[self.deleteFolder(folder["folder_id"]) for folder in folders]
+		else:
+			selectFolders = False
+			folders = self.getFolders({"drive_id": driveID})
+			self.deleteFolder(driveID, column="drive_id")
+
 		drive = self.getDrive(driveID)
 		syncRootPath = self.getSyncRootPath()
 		drivePath = os.path.join(syncRootPath, drive["local_path"])
 		progressDialog = self.settings.getSetting("file_deletion_dialog")
 
 		if progressDialog:
-			fileTotal = self.getFileCount({"drive_id": driveID})
+
+			if selectFolders:
+				fileTotal = sum([self.getFileCount({"root_folder_id": folder["folder_id"]}) for folder in folders])
+			else:
+				fileTotal = self.getFileCount({"drive_id": driveID})
+
 			progressDialog = FileDeletionDialog(fileTotal)
 			progressDialog.create()
 
