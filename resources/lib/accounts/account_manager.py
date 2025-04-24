@@ -27,6 +27,20 @@ class AccountManager:
 
 		self.saveAccounts()
 
+	def addAccounts(self, newAccounts, driveID):
+		accounts = self.accounts.get(driveID)
+
+		if not accounts:
+			self.accounts.update({driveID: {"accounts": [account], "alias": ""}})
+		else:
+			accounts = accounts["accounts"]
+
+		for account in newAccounts:
+			account.name = self._getUniqueAccountName(account.name, self.getAccountNames(accounts))
+			accounts.insert(0, account)
+
+		self.saveAccounts()
+
 	def deleteAccount(self, account, driveID):
 		self.accounts[driveID]["accounts"].remove(account)
 

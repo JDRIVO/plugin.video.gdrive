@@ -7,6 +7,7 @@ import datetime
 
 import xbmc
 import xbmcgui
+import xbmcvfs
 import xbmcplugin
 
 from constants import *
@@ -119,46 +120,52 @@ class Core:
 		xbmcplugin.addDirectoryItem(self.pluginHandle, url, listItem, isFolder=isFolder)
 
 	def addServiceAccount(self):
-		accountName = self.dialog.input(30025)
+		filePaths = self.dialog.browse(1, 30026, "", mask=".json", enableMultiple=True)
 
-		if not accountName:
+		if not filePaths:
 			return
 
-		filePath = self.dialog.browse(1, 30026, "files", mask=".json")
+		name = self.dialog.input(30134) if len(filePaths) > 1 else self.dialog.input(30025)
 
-		if not filePath:
+		if not name:
 			return
 
-		with open(filePath, "r") as file:
-			data = json.loads(file.read())
-
-		error = []
-		email = data.get("client_email") or error.append("email")
-		key = data.get("private_key") or error.append("key")
-
-		if error:
-
-			if len(error) == 2:
-				self.dialog.ok(30028)
-			elif "email" in error:
-				self.dialog.ok(30029)
-			else:
-				self.dialog.ok(30030)
-
-			return
-
-		account = ServiceAccount()
-		account.name = accountName
-		account.email = email
-		account.key = key
-		self.cloudService.setAccount(account)
-		tokenRefresh = self.cloudService.refreshToken()
-
-		if not tokenRefresh:
-			return
-
+		accounts = []
 		driveID = self.settings.getParameter("drive_id")
-		self.accountManager.addAccount(account, driveID)
+
+		for filePath in filePaths:
+
+			with xbmcvfs.File(filePath) as file:
+				data = json.loads(file.read())
+
+			email = data.get("client_email")
+			key = data.get("private_key")
+			error = False
+
+			if not email and not key:
+				error = 30028
+			elif not email:
+				error = 30029
+			elif not key:
+				error = 30030
+
+			if error:
+				self.dialog.ok(f"{self.settings.getLocalizedString(error)} {filePath}")
+				continue
+
+			account = ServiceAccount()
+			account.name = name
+			account.email = email
+			account.key = key
+			self.cloudService.setAccount(account)
+			tokenRefresh = self.cloudService.refreshToken()
+
+			if not tokenRefresh:
+				continue
+
+			accounts.append(account)
+
+		self.accountManager.addAccounts(accounts, driveID)
 		xbmc.executebuiltin("Container.Refresh")
 
 	def createDriveMenu(self):
