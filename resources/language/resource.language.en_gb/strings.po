@@ -569,6 +569,10 @@ msgctxt "#30164"
 msgid "Stop syncing select folders and delete local files"
 msgstr "Stop syncing select folders and delete local files"
 
+msgctxt "#30165"
+msgid "Select folders to delete"
+msgstr "Select folders to delete"
+
 msgctxt "#30207"
 msgid "Add account"
 msgstr "Add account"

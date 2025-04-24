@@ -703,7 +703,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 	def _stopSyncingSelectFolders(self, *args):
 		folders = self.cache.getFolders({"drive_id": self.driveID})
 		folders = sorted(folders, key=lambda f: f["local_path"].lower())
-		selection = self.dialog.multiselect("Choose folders to delete", [folder["local_path"] for folder in folders])
+		selection = self.dialog.multiselect(30165, [folder["local_path"] for folder in folders])
 
 		if not selection:
 			return
@@ -716,7 +716,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 	def _stopSyncingSelectFoldersAndDelete(self, *args):
 		folders = self.cache.getFolders({"drive_id": self.driveID})
 		folders = sorted(folders, key=lambda f: f["local_path"].lower())
-		selection = self.dialog.multiselect("Choose folders to delete", [folder["local_path"] for folder in folders])
+		selection = self.dialog.multiselect(30165, [folder["local_path"] for folder in folders])
 
 		if not selection:
 			return

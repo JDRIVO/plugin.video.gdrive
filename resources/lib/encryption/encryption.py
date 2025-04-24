@@ -81,7 +81,7 @@ class RcloneAdaptor(EncryptionStrategy):
 		self.encryptor = Crypt(password, salt, nameEncoding=filenameEncoding) if salt else Crypt(password, nameEncoding=filenameEncoding)
 
 		if self.filenameEncryption:
-			self.decryptName = self.encryptor.Name.standard_decrypt if filenameEncryption == "standard" else self.encryptor.Name.obfuscate_decrypt
+			self.decryptName = self.encryptor.name.standard_decrypt if filenameEncryption == "standard" else self.encryptor.name.obfuscate_decrypt
 
 	def decryptDirName(self, name):
 
@@ -105,10 +105,10 @@ class RcloneAdaptor(EncryptionStrategy):
 				return None
 
 	def decryptStream(self, response, wfile, blockIndex, blockOffset):
-		self.encryptor.File.decryptStreamChunk(response, wfile, blockIndex, blockOffset)
+		self.encryptor.file.decryptStreamChunk(response, wfile, blockIndex, blockOffset)
 
 	def downloadFile(self, response, filePath):
-		self.encryptor.File.decryptStream(response, filePath)
+		self.encryptor.file.decryptStream(response, filePath)
 
 
 class EncryptionHandler:

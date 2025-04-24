@@ -19,5 +19,5 @@ class Crypt:
 		nameKey = key[32:64]
 		nameTweak = key[64:]
 		cipher = AES.new(nameKey, AES.MODE_ECB)
-		self.File = File(key[:32])
-		self.Name = Name(nameKey, nameTweak, cipher, nameEncoding)
+		self.file = File(key[:32])
+		self.name = Name(nameKey, nameTweak, cipher, nameEncoding)
