@@ -1,4 +1,3 @@
-import re
 from abc import ABC, abstractmethod
 
 from .rclone.crypt import Crypt
@@ -96,7 +95,7 @@ class RcloneAdaptor(EncryptionStrategy):
 	def decryptFilename(self, name, fileExtension, mimeType):
 
 		if fileExtension:
-			return name if self.filenameEncryption else re.sub(f"{self.suffix}$", "", name)
+			return name if self.filenameEncryption else name[:-len(self.suffix)] if name.endswith(self.suffix) else name
 		else:
 
 			try:

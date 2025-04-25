@@ -280,8 +280,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 			self.settings.getLocalizedString(30050): self._setSyncFrequency,
 			self.settings.getLocalizedString(30061): self._stopSyncingFolders,
 			self.settings.getLocalizedString(30163): self._stopSyncingSelectFolders,
-			self.settings.getLocalizedString(30062): self._stopSyncingFoldersAndDelete,
-			self.settings.getLocalizedString(30164): self._stopSyncingSelectFoldersAndDelete,
 		}
 		radioButtons = {self.settings.getLocalizedString(30051): self.driveSettings["startup_sync"]}
 		self.buttonAmount = len(self.functions) + len(radioButtons)
@@ -298,12 +296,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.functions, radioButtons = {}, {}
 
 		if not self.displayMode == "new" and folderSettings:
-			self.functions.update(
-				{
-					self.settings.getLocalizedString(30063): self._stopSyncingFolder,
-					self.settings.getLocalizedString(30064): self._stopSyncingFolderAndDelete,
-				}
-			)
+			self.functions.update({self.settings.getLocalizedString(30062): self._stopSyncingFolder})
 		else:
 
 			if not self.cache.getSyncRootPath():
@@ -660,20 +653,9 @@ class SyncSettings(xbmcgui.WindowDialog):
 		if not selection:
 			return
 
+		delete = self.dialog.yesno(30063, defaultbutton=xbmcgui.DLG_YESNO_YES_BTN)
 		self.close()
-		data = {"drive_id": self.driveID, "folder_id": self.folderID, "delete": False}
-		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folder"
-		http_requester.request(url, data)
-
-	def _stopSyncingFolderAndDelete(self, *args):
-		selection = self.dialog.yesno(30074)
-
-		if not selection:
-			return
-
-		self.close()
-		self.dialog.notification(30075)
-		data = {"drive_id": self.driveID, "folder_id": self.folderID, "delete": True}
+		data = {"drive_id": self.driveID, "folder_id": self.folderID, "delete": delete}
 		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folder"
 		http_requester.request(url, data)
 
@@ -683,20 +665,9 @@ class SyncSettings(xbmcgui.WindowDialog):
 		if not selection:
 			return
 
+		delete = self.dialog.yesno(30064, defaultbutton=xbmcgui.DLG_YESNO_YES_BTN)
 		self.close()
-		data = {"drive_id": self.driveID, "delete": False}
-		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
-		http_requester.request(url, data)
-
-	def _stopSyncingFoldersAndDelete(self, *args):
-		selection = self.dialog.yesno(30076)
-
-		if not selection:
-			return
-
-		self.close()
-		self.dialog.notification(30075)
-		data = {"drive_id": self.driveID, "delete": True}
+		data = {"drive_id": self.driveID, "delete": delete}
 		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
 		http_requester.request(url, data)
 
@@ -708,22 +679,9 @@ class SyncSettings(xbmcgui.WindowDialog):
 		if not selection:
 			return
 
+		delete = self.dialog.yesno(30064, defaultbutton=xbmcgui.DLG_YESNO_YES_BTN)
 		self.close()
-		data = {"drive_id": self.driveID, "folders": [folders[idx] for idx in selection], "delete": False}
-		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
-		http_requester.request(url, data)
-
-	def _stopSyncingSelectFoldersAndDelete(self, *args):
-		folders = self.cache.getFolders({"drive_id": self.driveID})
-		folders = sorted(folders, key=lambda f: f["local_path"].lower())
-		selection = self.dialog.multiselect(30165, [folder["local_path"] for folder in folders])
-
-		if not selection:
-			return
-
-		self.close()
-		self.dialog.notification(30075)
-		data = {"drive_id": self.driveID, "folders": [folders[idx] for idx in selection], "delete": True}
+		data = {"drive_id": self.driveID, "folders": [folders[idx] for idx in selection], "delete": delete}
 		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
 		http_requester.request(url, data)
 

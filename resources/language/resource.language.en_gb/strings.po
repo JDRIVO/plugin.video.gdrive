@@ -258,16 +258,16 @@ msgid "Stop syncing all folders"
 msgstr "Stop syncing all folders"
 
 msgctxt "#30062"
-msgid "Stop syncing all folders and delete local files"
-msgstr "Stop syncing all folders and delete local files"
-
-msgctxt "#30063"
 msgid "Stop syncing folder"
 msgstr "Stop syncing folder"
 
+msgctxt "#30063"
+msgid "Do you want to delete the local files associated with this folder?"
+msgstr "Do you want to delete the local files associated with this folder?"
+
 msgctxt "#30064"
-msgid "Stop syncing folder and delete local files"
-msgstr "Stop syncing folder and delete local files"
+msgid "Do you want to delete the local files associated with these folders?"
+msgstr "Do you want to delete the local files associated with these folders?"
 
 msgctxt "#30065"
 msgid "General"
@@ -305,17 +305,9 @@ msgctxt "#30073"
 msgid "Are you sure you want to stop syncing all folders?"
 msgstr "Are you sure you want to stop syncing all folders?"
 
-msgctxt "#30074"
-msgid "Are you sure you want to stop syncing this folder and delete its files?"
-msgstr "Are you sure you want to stop syncing this folder and delete its files?"
-
 msgctxt "#30075"
 msgid "Deleting files"
 msgstr "Deleting files"
-
-msgctxt "#30076"
-msgid "Are you sure you want to stop syncing all folders and delete their files?"
-msgstr "Are you sure you want to stop syncing all folders and delete their files?"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
@@ -564,10 +556,6 @@ msgstr "Account deleted."
 msgctxt "#30163"
 msgid "Stop syncing select folders"
 msgstr "Stop syncing select folders"
-
-msgctxt "#30164"
-msgid "Stop syncing select folders and delete local files"
-msgstr "Stop syncing select folders and delete local files"
 
 msgctxt "#30165"
 msgid "Select folders to delete"

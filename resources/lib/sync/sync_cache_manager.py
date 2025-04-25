@@ -1,7 +1,7 @@
 import os
 
 from constants import *
-from ..ui.dialogs import FileDeletionDialog
+from ..ui.dialogs import Dialog, FileDeletionDialog
 from ..database.db_manager import DatabaseManager
 from ..filesystem.file_operations import FileOperations
 
@@ -255,19 +255,25 @@ class SyncCacheManager(DatabaseManager):
 		drive = self.getDrive(driveID)
 		syncRootPath = self.getSyncRootPath()
 		drivePath = os.path.join(syncRootPath, drive["local_path"])
-		progressDialog = self.settings.getSetting("file_deletion_dialog")
+		progressDialog = None
+		dialog = None
 
-		if deleteFiles and progressDialog:
-			fileTotal = self.getFileCount({"root_folder_id": folderID})
-			progressDialog = FileDeletionDialog(fileTotal)
-			progressDialog.create()
-		else:
-			progressDialog = None
+		if deleteFiles:
+
+			if self.settings.getSetting("file_deletion_dialog"):
+				fileTotal = self.getFileCount({"root_folder_id": folderID})
+				progressDialog = FileDeletionDialog(fileTotal)
+				progressDialog.create()
+			else:
+				dialog = Dialog()
+				dialog.notification(30075)
 
 		self.removeDirectories(syncRootPath, drivePath, folderID, deleteFiles, progressDialog)
 
 		if progressDialog:
 			progressDialog.close()
+		elif dialog:
+			dialog.notification(30045)
 
 	def removeFolders(self, driveID, folders=None, deleteFiles=False):
 
@@ -281,17 +287,25 @@ class SyncCacheManager(DatabaseManager):
 		else:
 			selectFolders = False
 			folders = self.getFolders({"drive_id": driveID})
+
+			if not folders:
+				return
+
 			self.deleteFolder(driveID, column="drive_id")
 
 		drive = self.getDrive(driveID)
 		syncRootPath = self.getSyncRootPath()
 		drivePath = os.path.join(syncRootPath, drive["local_path"])
-		progressDialog = self.settings.getSetting("file_deletion_dialog")
+		progressDialog = None
+		dialog = None
 
-		if progressDialog:
+		if not self.settings.getSetting("file_deletion_dialog"):
+			dialog = Dialog()
+			dialog.notification(30075)
+		else:
 
 			if selectFolders:
-				fileTotal = sum([self.getFileCount({"root_folder_id": folder["folder_id"]}) for folder in folders])
+				fileTotal = sum(self.getFileCount({"root_folder_id": folder["folder_id"]}) for folder in folders)
 			else:
 				fileTotal = self.getFileCount({"drive_id": driveID})
 
@@ -302,6 +316,8 @@ class SyncCacheManager(DatabaseManager):
 
 		if progressDialog:
 			progressDialog.close()
+		elif dialog:
+			dialog.notification(30045)
 
 	def setSyncRootPath(self, path):
 		self.insert("global", {"local_path": path})

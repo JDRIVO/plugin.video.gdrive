@@ -678,6 +678,7 @@ class Core:
 				dbType = xbmc.getInfoLabel("ListItem.DBTYPE")
 				filePath = xbmc.getInfoLabel("ListItem.FileNameAndPath")
 
+		filePath = filePath[:-5]
 		fileID = self.settings.getParameter("file_id")
 		driveURL = self.cloudService.getDownloadURL(fileID)
 		driveID = self.settings.getParameter("drive_id") or self.settings.getSetting("default_playback_account_id")
@@ -751,10 +752,10 @@ class Core:
 			"transcoded": transcoded,
 		}
 		http_requester.request(url, data)
-		item = xbmcgui.ListItem(path=f"http://localhost:{serverPort}/play")
+		item = xbmcgui.ListItem(os.path.basename(filePath), path=f"http://localhost:{serverPort}/play")
 
 		if self.settings.getSetting("subtitles_format") == "Subtitles are named the same as STRM":
-			subtitles = glob.glob(glob.escape(filePath.rstrip(".strm")) + "*[!gom]")
+			subtitles = glob.glob(glob.escape(filePath) + "*[!gom]")
 			item.setSubtitles(subtitles)
 		else:
 			subtitles = glob.glob(glob.escape(os.path.dirname(filePath) + os.sep) + "*[!gom]")
@@ -1083,13 +1084,10 @@ class Core:
 			count += 1
 
 			if not tokenRefresh:
-				selection = self.dialog.yesno(f"{accountName} {self.settings.getLocalizedString(30019)}")
 
-				if not selection:
-					continue
-
-				self.accountManager.deleteAccount(account, driveID)
-				deletion = True
+				if selection := self.dialog.yesno(f"{accountName} {self.settings.getLocalizedString(30019)}"):
+					self.accountManager.deleteAccount(account, driveID)
+					deletion = True
 
 		progressDialog.close()
 		self.dialog.ok(30020)

@@ -488,9 +488,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.server.cache.removeFolder(postData["folder_id"], deleteFiles=delete)
 		self.server.taskManager.spawnTask(self.server.cache.getDrive(driveID), startUpRun=False)
 
-		if delete:
-			self.server.dialog.notification(30045)
-
 	def handleStopSyncingFolders(self):
 		postData = self.getPostDataJSON()
 		self.handleResponse(200)
@@ -500,9 +497,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 		xbmc.executebuiltin("Container.Refresh")
 		self.server.taskManager.removeTask(driveID)
 		self.server.cache.removeFolders(driveID, folders=folders, deleteFiles=delete)
-
-		if delete:
-			self.server.dialog.notification(30045)
 
 	def handleSync(self):
 		postData = self.getPostDataJSON()
