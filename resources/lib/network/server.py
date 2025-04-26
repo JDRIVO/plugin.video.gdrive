@@ -170,7 +170,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 			"/set_alias": self.handleSetAlias,
 			"/set_sync_root": self.handleSetSyncRoot,
 			"/start_player": self.handleStartPlayer,
-			"/stop_syncing_folder": self.handleStopSyncingFolder,
 			"/stop_syncing_folders": self.handleStopSyncingFolders,
 			"/sync": self.handleSync,
 		}
@@ -223,7 +222,13 @@ class ServerHandler(BaseHTTPRequestHandler):
 		driveName = postData["drive_name"]
 		deleteFiles = postData["delete_files"]
 		self.server.taskManager.removeTask(driveID)
-		self.server.cache.deleteDrive(driveID, deleteFiles)
+
+		if deleteFiles:
+			self.server.cache.removeFoldersAndFiles(driveID=driveID)
+		else:
+			self.server.cache.removeFolders(driveID=driveID)
+
+		self.server.cache.deleteDrive(driveID)
 		self.server.accountManager.deleteDrive(driveID)
 		self.server.dialog.notification(f"{self.server.settings.getLocalizedString(30106)} {driveName}")
 		xbmc.executebuiltin("Container.Refresh")
@@ -478,25 +483,21 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 		self.sendRedirect(f"http://localhost:{self.server.server_port}{redirect}")
 
-	def handleStopSyncingFolder(self):
-		postData = self.getPostDataJSON()
-		self.handleResponse(200)
-		driveID = postData["drive_id"]
-		delete = postData["delete"]
-		xbmc.executebuiltin("Container.Refresh")
-		self.server.taskManager.removeTask(driveID)
-		self.server.cache.removeFolder(postData["folder_id"], deleteFiles=delete)
-		self.server.taskManager.spawnTask(self.server.cache.getDrive(driveID), startUpRun=False)
-
 	def handleStopSyncingFolders(self):
 		postData = self.getPostDataJSON()
 		self.handleResponse(200)
 		driveID = postData["drive_id"]
 		folders = postData.get("folders")
-		delete = postData["delete"]
+		deleteFiles = postData["delete_files"]
 		xbmc.executebuiltin("Container.Refresh")
 		self.server.taskManager.removeTask(driveID)
-		self.server.cache.removeFolders(driveID, folders=folders, deleteFiles=delete)
+
+		if deleteFiles:
+			self.server.cache.removeFoldersAndFiles(folders, driveID)
+		else:
+			self.server.cache.removeFolders(folders, driveID)
+
+		self.server.taskManager.spawnTask(self.server.cache.getDrive(driveID), startUpRun=False)
 
 	def handleSync(self):
 		postData = self.getPostDataJSON()

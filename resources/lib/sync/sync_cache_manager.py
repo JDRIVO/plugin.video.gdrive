@@ -85,11 +85,6 @@ class SyncCacheManager(DatabaseManager):
 	def addGlobalData(self, data):
 		self.insert("global", data)
 
-	def cleanCache(self, driveID):
-		self.deleteFile(driveID, column="drive_id")
-		self.deleteDirectory(driveID, column="drive_id")
-		self.deleteFolder(driveID, column="drive_id")
-
 	def createTables(self):
 		self._createGlobalTable()
 		self._createDriveTable()
@@ -100,13 +95,7 @@ class SyncCacheManager(DatabaseManager):
 	def deleteDirectory(self, value, column="folder_id"):
 		self.delete("directories", {column: value})
 
-	def deleteDrive(self, driveID, deleteFiles):
-		drive = self.getDrive(driveID)
-
-		if not drive:
-			return
-
-		self.removeFolders(driveID, deleteFiles=deleteFiles)
+	def deleteDrive(self, driveID):
 		self.delete("drives", {"drive_id": driveID})
 
 	def deleteFile(self, value, column="file_id"):
@@ -183,33 +172,6 @@ class SyncCacheManager(DatabaseManager):
 
 		return path
 
-	def removeDirectories(self, syncRootPath, drivePath, rootFolderID, deleteFiles, progressDialog):
-
-		if deleteFiles:
-			directories = self.getDirectories({"root_folder_id": rootFolderID})
-
-			for directory in directories:
-				folderID = directory["folder_id"]
-				files = self.getFiles({"parent_folder_id": folderID})
-
-				for file in files:
-
-					if file["original_folder"]:
-						filename = file["local_name"]
-						filePath = os.path.join(drivePath, directory["local_path"], filename)
-					else:
-						filePath = os.path.join(syncRootPath, file["local_path"])
-						filename = os.path.basename(filePath)
-
-					self.fileOperations.deleteFile(syncRootPath, filePath=filePath)
-
-					if progressDialog:
-						progressDialog.processed += 1
-						progressDialog.update(filename)
-
-		self.deleteFile(rootFolderID, column="root_folder_id")
-		self.deleteDirectory(rootFolderID, column="root_folder_id")
-
 	def removeDirectory(self, syncRootPath, drivePath, folderID):
 		directories = self.getDirectories({"folder_id": folderID})
 
@@ -248,44 +210,20 @@ class SyncCacheManager(DatabaseManager):
 				if not files:
 					self.deleteDirectory(folderID)
 
-	def removeFolder(self, folderID, deleteFiles=False):
-		folder = self.getFolder({"folder_id": folderID})
-		self.deleteFolder(folderID)
-		driveID = folder["drive_id"]
-		drive = self.getDrive(driveID)
-		syncRootPath = self.getSyncRootPath()
-		drivePath = os.path.join(syncRootPath, drive["local_path"])
-		progressDialog = None
-		dialog = None
-
-		if deleteFiles:
-
-			if self.settings.getSetting("file_deletion_dialog"):
-				fileTotal = self.getFileCount({"root_folder_id": folderID})
-				progressDialog = FileDeletionDialog(fileTotal)
-				progressDialog.create()
-			else:
-				dialog = Dialog()
-				dialog.notification(30075)
-
-		self.removeDirectories(syncRootPath, drivePath, folderID, deleteFiles, progressDialog)
-
-		if progressDialog:
-			progressDialog.close()
-		elif dialog:
-			dialog.notification(30045)
-
-	def removeFolders(self, driveID, folders=None, deleteFiles=False):
-
-		if not deleteFiles:
-			self.cleanCache(driveID)
-			return
+	def removeFolders(self, folders=None, driveID=None):
 
 		if folders:
-			selectFolders = True
+			[self._clearCache(folderID=folder["folder_id"]) for folder in folders]
+		else:
+			self._clearCache(driveID=driveID)
+
+	def removeFoldersAndFiles(self, folders=None, driveID=None):
+
+		if folders:
+			deleteAllfolders = False
 			[self.deleteFolder(folder["folder_id"]) for folder in folders]
 		else:
-			selectFolders = False
+			deleteAllfolders = True
 			folders = self.getFolders({"drive_id": driveID})
 
 			if not folders:
@@ -296,27 +234,26 @@ class SyncCacheManager(DatabaseManager):
 		drive = self.getDrive(driveID)
 		syncRootPath = self.getSyncRootPath()
 		drivePath = os.path.join(syncRootPath, drive["local_path"])
-		progressDialog = None
-		dialog = None
 
 		if not self.settings.getSetting("file_deletion_dialog"):
 			dialog = Dialog()
 			dialog.notification(30075)
+			progressDialog = None
 		else:
 
-			if selectFolders:
-				fileTotal = sum(self.getFileCount({"root_folder_id": folder["folder_id"]}) for folder in folders)
-			else:
+			if deleteAllfolders:
 				fileTotal = self.getFileCount({"drive_id": driveID})
+			else:
+				fileTotal = sum(self.getFileCount({"root_folder_id": folder["folder_id"]}) for folder in folders)
 
 			progressDialog = FileDeletionDialog(fileTotal)
 			progressDialog.create()
 
-		[self.removeDirectories(syncRootPath, drivePath, folder["folder_id"], deleteFiles, progressDialog) for folder in folders]
+		[self._removeDirectories(syncRootPath, drivePath, folder["folder_id"], progressDialog) for folder in folders]
 
 		if progressDialog:
 			progressDialog.close()
-		elif dialog:
+		else:
 			dialog.notification(30045)
 
 	def setSyncRootPath(self, path):
@@ -352,6 +289,17 @@ class SyncCacheManager(DatabaseManager):
 
 	def updateSyncRootPath(self, path):
 		self.update("global", {"local_path": path})
+
+	def _clearCache(self, driveID=None, folderID=None):
+
+		if driveID:
+			self.deleteFile(driveID, column="drive_id")
+			self.deleteDirectory(driveID, column="drive_id")
+			self.deleteFolder(driveID, column="drive_id")
+		else:
+			self.deleteFile(folderID, column="root_folder_id")
+			self.deleteDirectory(folderID, column="root_folder_id")
+			self.deleteFolder(folderID, column="folder_id")
 
 	def _createDirectoriesTable(self):
 		columns = (
@@ -418,3 +366,28 @@ class SyncCacheManager(DatabaseManager):
 			"local_path TEXT",
 		)
 		self.createTable("global", columns)
+
+	def _removeDirectories(self, syncRootPath, drivePath, rootFolderID, progressDialog):
+		directories = self.getDirectories({"root_folder_id": rootFolderID})
+
+		for directory in directories:
+			folderID = directory["folder_id"]
+			files = self.getFiles({"parent_folder_id": folderID})
+
+			for file in files:
+
+				if file["original_folder"]:
+					filename = file["local_name"]
+					filePath = os.path.join(drivePath, directory["local_path"], filename)
+				else:
+					filePath = os.path.join(syncRootPath, file["local_path"])
+					filename = os.path.basename(filePath)
+
+				self.fileOperations.deleteFile(syncRootPath, filePath=filePath)
+
+				if progressDialog:
+					progressDialog.processed += 1
+					progressDialog.update(filename)
+
+		self.deleteFile(rootFolderID, column="root_folder_id")
+		self.deleteDirectory(rootFolderID, column="root_folder_id")

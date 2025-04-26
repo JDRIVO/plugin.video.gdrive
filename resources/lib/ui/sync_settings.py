@@ -526,7 +526,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			encryptor.setEncryptor(self.encryptionID)
 			folderSettings["encryption_id"] = self.encryptionID
 		else:
-			encryptor = False
+			encryptor = None
 
 		if globalSettings and not globalSettings["local_path"]:
 			self.dialog.ok(30079)
@@ -648,15 +648,16 @@ class SyncSettings(xbmcgui.WindowDialog):
 		button.setLabel(label2=syncRootPath)
 
 	def _stopSyncingFolder(self, *args):
+		folders = [self.cache.getFolder({"folder_id": self.folderID})]
 		selection = self.dialog.yesno(30072)
 
 		if not selection:
 			return
 
-		delete = self.dialog.yesno(30063, defaultbutton=xbmcgui.DLG_YESNO_YES_BTN)
+		deleteFiles = self.dialog.yesno(30063, defaultbutton=xbmcgui.DLG_YESNO_YES_BTN)
 		self.close()
-		data = {"drive_id": self.driveID, "folder_id": self.folderID, "delete": delete}
-		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folder"
+		data = {"drive_id": self.driveID, "folders": folders, "delete_files": deleteFiles}
+		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
 		http_requester.request(url, data)
 
 	def _stopSyncingFolders(self, *args):
@@ -665,9 +666,9 @@ class SyncSettings(xbmcgui.WindowDialog):
 		if not selection:
 			return
 
-		delete = self.dialog.yesno(30064, defaultbutton=xbmcgui.DLG_YESNO_YES_BTN)
+		deleteFiles = self.dialog.yesno(30064, defaultbutton=xbmcgui.DLG_YESNO_YES_BTN)
 		self.close()
-		data = {"drive_id": self.driveID, "delete": delete}
+		data = {"drive_id": self.driveID, "delete_files": deleteFiles}
 		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
 		http_requester.request(url, data)
 
@@ -679,9 +680,9 @@ class SyncSettings(xbmcgui.WindowDialog):
 		if not selection:
 			return
 
-		delete = self.dialog.yesno(30064, defaultbutton=xbmcgui.DLG_YESNO_YES_BTN)
+		deleteFiles = self.dialog.yesno(30064, defaultbutton=xbmcgui.DLG_YESNO_YES_BTN)
 		self.close()
-		data = {"drive_id": self.driveID, "folders": [folders[idx] for idx in selection], "delete": delete}
+		data = {"drive_id": self.driveID, "folders": [folders[idx] for idx in selection], "delete_files": deleteFiles}
 		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
 		http_requester.request(url, data)
 
