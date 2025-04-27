@@ -21,7 +21,3 @@ https://github.com/user-attachments/assets/d9ee3658-76b0-435a-bddd-3f4631fdf19a
 | ✔️ | ❌ | Breaking Bad S01E01.strm                                                           |
 | ❌ | ✔️ | Breaking Bad (2008)/Season 1/Breaking.Bad.S01E01.1080p.DTS-HD.MA.5.1.AVC.strm      |
 | ✔️ | ✔️ | Breaking Bad (2008)/Season 1/Breaking Bad S01E01.strm                              |
-
-
-
-

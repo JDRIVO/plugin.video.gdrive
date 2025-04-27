@@ -791,7 +791,7 @@ class Core:
 		)
 
 		if help:
-			url = "https://github.com/user-attachments/assets/4365514d-95df-427e-a717-a4f7270531cc"
+			url = "https://github.com/user-attachments/assets/d9ee3658-76b0-435a-bddd-3f4631fdf19a"
 			listItem = xbmcgui.ListItem("Client ID and Client Secret creation")
 			xbmc.Player().play(url, listItem)
 
