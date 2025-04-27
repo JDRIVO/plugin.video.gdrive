@@ -4,7 +4,7 @@ A Kodi Add-On for playing videos stored on Google Drive.
 ## Obtaining Client ID & Client Secret
 https://console.cloud.google.com/apis/library/drive.googleapis.com
 
-https://github.com/user-attachments/assets/4365514d-95df-427e-a717-a4f7270531cc
+https://github.com/user-attachments/assets/d9ee3658-76b0-435a-bddd-3f4631fdf19a
 
 ## File & Folder Renaming
 ### <table><tr><td>Movie</td></tr></table>
@@ -21,3 +21,7 @@ https://github.com/user-attachments/assets/4365514d-95df-427e-a717-a4f7270531cc
 | ✔️ | ❌ | Breaking Bad S01E01.strm                                                           |
 | ❌ | ✔️ | Breaking Bad (2008)/Season 1/Breaking.Bad.S01E01.1080p.DTS-HD.MA.5.1.AVC.strm      |
 | ✔️ | ✔️ | Breaking Bad (2008)/Season 1/Breaking Bad S01E01.strm                              |
+
+
+
+
