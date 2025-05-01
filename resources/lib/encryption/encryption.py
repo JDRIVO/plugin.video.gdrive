@@ -96,12 +96,11 @@ class RcloneAdaptor(EncryptionStrategy):
 
 		if fileExtension:
 			return name if self.filenameEncryption else name[:-len(self.suffix)] if name.endswith(self.suffix) else name
-		else:
 
-			try:
-				return self.decryptName(name)
-			except Exception:
-				return None
+		try:
+			return self.decryptName(name)
+		except Exception:
+			return None
 
 	def decryptStream(self, response, wfile, blockIndex, blockOffset):
 		self.encryptor.file.decryptStreamChunk(response, wfile, blockIndex, blockOffset)

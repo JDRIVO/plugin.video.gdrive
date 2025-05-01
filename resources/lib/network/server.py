@@ -446,7 +446,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 		while not self.server.monitor.abortRequested() and not player.close:
 
 			if datetime.datetime.now() >= self.server.cloudService.account.tokenExpiry:
-
 				self.server.cloudService.refreshToken()
 
 				if self.server.transcoded:
