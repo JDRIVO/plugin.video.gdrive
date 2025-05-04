@@ -65,8 +65,9 @@ class ResolutionSelector(xbmcgui.WindowDialog):
 		self.close()
 
 	def _addBackground(self):
+		backgroundFade = xbmcgui.ControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="CCFFFFFF")
 		background = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
-		self.addControl(background)
+		self.addControls([backgroundFade, background])
 
 	def _calculateViewport(self):
 		self.viewportWidth = self.getWidth()
@@ -105,6 +106,7 @@ class ResolutionSelector(xbmcgui.WindowDialog):
 
 	def _initializePaths(self):
 		mediaPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
+		self.blackTexture = os.path.join(mediaPath, "black.png")
 		self.grayTexture = os.path.join(mediaPath, "gray.png")
 		self.focusTexture = os.path.join(mediaPath, "focus.png")
 

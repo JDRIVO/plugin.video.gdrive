@@ -106,12 +106,11 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 			self.close()
 
 	def _addBackground(self):
+		backgroundFade = xbmcgui.ControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="CCFFFFFF")
 		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
 		background = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, self.windowHeight, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
-		# ControlImage needed to overcome bug that prevents window from closing
-		_ = xbmcgui.ControlImage(self.x, self.y, self.windowWidth, 40, self.blueTexture)
 		bar = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, 40, f"[B]{self.settings.getLocalizedString(30083)}[/B]", focusTexture=self.blueTexture, noFocusTexture=self.blueTexture, shadowColor="0xFF000000", textOffsetX=20)
-		self.addControls([backgroundInvis, background, _, bar])
+		self.addControls([backgroundFade, backgroundInvis, background, bar])
 		self.backgroundID = backgroundInvis.getId()
 
 	def _addControlButton(self, x, y, buttonWidth, buttonHeight, label=""):
@@ -152,6 +151,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 
 	def _initializePaths(self):
 		mediaPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
+		self.blackTexture = os.path.join(mediaPath, "black.png")
 		self.blueTexture = os.path.join(mediaPath, "blue.png")
 		self.grayTexture = os.path.join(mediaPath, "gray.png")
 		self.dGrayTexture = os.path.join(mediaPath, "dgray.png")

@@ -62,9 +62,9 @@ class ProfileManager:
 	def setProfiles(self):
 		self.profiles = self._loadProfiles() or {}
 
-	def updateProfile(self, id, profile):
+	def updateProfile(self, profile):
 		profile = self._obscureData(profile)
-		self.profiles[id] = profile
+		self.profiles[profile.id] = profile
 		self._saveProfiles()
 
 	def _loadProfiles(self, filePath=PROFILES_FILE):

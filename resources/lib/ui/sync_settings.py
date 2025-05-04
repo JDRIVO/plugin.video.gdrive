@@ -76,6 +76,8 @@ class SyncSettings(xbmcgui.WindowDialog):
 				self.setFocusId(self.menuButtonIDs[-1])
 			elif self.buttonID in self.menuButtonIDs:
 				self._updateList("up")
+			elif self.buttonID not in self.buttonSwitchesIDs:
+				self.setFocusId(self.menuButtonIDs[0])
 
 		elif action == self.ACTION_MOVE_DOWN:
 
@@ -85,6 +87,8 @@ class SyncSettings(xbmcgui.WindowDialog):
 				self.setFocusId(self.menuButtonIDs[0])
 			elif self.buttonID in self.menuButtonIDs:
 				self._updateList("down")
+			elif self.buttonID not in self.buttonSwitchesIDs:
+				self.setFocusId(self.menuButtonIDs[0])
 
 		elif action == self.ACTION_MOVE_RIGHT:
 
@@ -96,12 +100,16 @@ class SyncSettings(xbmcgui.WindowDialog):
 					self.setFocusId(self.menuButtonIDs[0])
 				elif self.buttonID == self.buttonCloseID:
 					self.setFocusId(self.menuButtonIDs[0])
+				else:
+					self.setFocusId(self.menuButtonIDs[0])
 
 			else:
 
 				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonOKid:
 					self.setFocus(self.buttonClose)
 				elif self.buttonID == self.buttonCloseID:
+					self.setFocusId(self.menuButtonIDs[0])
+				else:
 					self.setFocusId(self.menuButtonIDs[0])
 
 		elif action == self.ACTION_MOVE_LEFT:
@@ -116,12 +124,16 @@ class SyncSettings(xbmcgui.WindowDialog):
 					self.setFocus(self.buttonOK)
 				elif self.buttonID == self.buttonOKid:
 					self.setFocusId(self.menuButtonIDs[0])
+				else:
+					self.setFocusId(self.menuButtonIDs[0])
 
 			else:
 
 				if self.buttonID in self.menuButtonIDs or self.buttonID == self.buttonCloseID:
 					self.setFocus(self.buttonOK)
 				elif self.buttonID == self.buttonOKid:
+					self.setFocusId(self.menuButtonIDs[0])
+				else:
 					self.setFocusId(self.menuButtonIDs[0])
 
 	def onControl(self, control):
@@ -145,6 +157,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				self.menuButtonIDs = self.TMDBButtonIDs
 
 	def _addBackground(self):
+		backgroundFade = xbmcgui.ControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="CCFFFFFF")
 		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
 		background = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, self.windowHeight, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
 		bar = xbmcgui.ControlButton(
@@ -158,7 +171,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			shadowColor="0xFF000000",
 			textOffsetX=20
 		)
-		self.addControls([backgroundInvis, background, bar])
+		self.addControls([backgroundFade, backgroundInvis, background, bar])
 		self.backgroundID = backgroundInvis.getId()
 
 	def _addControlButton(self, label, x, folderSettings=None):
@@ -434,6 +447,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 	def _initializePaths(self):
 		mediaPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
+		self.blackTexture = os.path.join(mediaPath, "black.png")
 		self.blueTexture = os.path.join(mediaPath, "blue.png")
 		self.grayTexture = os.path.join(mediaPath, "gray.png")
 		self.dGrayTexture = os.path.join(mediaPath, "dgray.png")

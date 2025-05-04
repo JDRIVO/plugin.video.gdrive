@@ -211,12 +211,13 @@ class StrmAffixer(xbmcgui.WindowDialog):
 			y += 30
 
 	def _addBackground(self):
+		backgroundFade = xbmcgui.ControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="CCFFFFFF")
 		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
 		background = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, self.windowHeight, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
 		bar = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, 40, f"[B]{self.title}[/B]", focusTexture=self.blueTexture, noFocusTexture=self.blueTexture, shadowColor="0xFF000000", textOffsetX=20)
 		excludeBG = xbmcgui.ControlImage(self.x + 11, self.y + 85, self.buttonWidth, self.buttonHeight * self.buttonAmount, self.dGrayTexture)
 		includeBG = xbmcgui.ControlImage(self.x + self.buttonWidth + 20, self.y + 85, self.buttonWidth, self.buttonHeight * self.buttonAmount, self.dGrayTexture)
-		self.addControls([backgroundInvis, background, bar, includeBG, excludeBG])
+		self.addControls([backgroundFade, backgroundInvis, background, bar, includeBG, excludeBG])
 		self.backgroundID = backgroundInvis.getId()
 
 	def _addControlButton(self, x, y, buttonWidth, buttonHeight, label=""):
@@ -273,6 +274,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 
 	def _initializePaths(self):
 		mediaPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")
+		self.blackTexture = os.path.join(mediaPath, "black.png")
 		self.blueTexture = os.path.join(mediaPath, "blue.png")
 		self.grayTexture = os.path.join(mediaPath, "gray.png")
 		self.dGrayTexture = os.path.join(mediaPath, "dgray.png")

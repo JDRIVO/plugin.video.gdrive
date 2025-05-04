@@ -18,19 +18,6 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 	ACTION_SELECT_ITEM = 7
 	ACTION_PREVIOUS_MENU = 10
 	ACTION_BACKSPACE = 92
-	PUSH_LABELS = {
-		"profile_name": SETTINGS.getLocalizedString(30107),
-		"encryption_type": SETTINGS.getLocalizedString(30108),
-		"password": SETTINGS.getLocalizedString(30109),
-		"salt": SETTINGS.getLocalizedString(30110),
-		"filename_encryption": SETTINGS.getLocalizedString(30111),
-		"filename_encoding": SETTINGS.getLocalizedString(30112),
-		"suffix": SETTINGS.getLocalizedString(30113),
-	}
-	RADIO_LABELS = {
-		"encrypt_data": SETTINGS.getLocalizedString(30114),
-		"encrypt_dir_names":SETTINGS.getLocalizedString(30115),
-	}
 
 	def __init__(self, mode=None, profile=None):
 		self.mode = mode
@@ -39,6 +26,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 		self.profileManager = ProfileManager()
 		self.settings = SETTINGS
 		self.dialog = Dialog()
+		self.init = True
 		self.modified = False
 		self.font = "font13"
 		self._initializePaths()
@@ -58,6 +46,8 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 				self.setFocusId(self.visibleButtonIDs[-1])
 			elif self.buttonID in self.visibleButtonIDs:
 				self._updateList("up")
+			else:
+				self.setFocus(self.buttons[0]["button"])
 
 		elif action == self.ACTION_MOVE_DOWN:
 
@@ -67,6 +57,8 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 				self.setFocusId(self.visibleButtonIDs[0])
 			elif self.buttonID in self.visibleButtonIDs:
 				self._updateList("down")
+			else:
+				self.setFocus(self.buttons[0]["button"])
 
 		elif action == self.ACTION_MOVE_RIGHT:
 
@@ -74,6 +66,8 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 				self.setFocus(self.buttonClose)
 			elif self.buttonID == self.buttonCloseID:
 				self.setFocusId(self.visibleButtonIDs[0])
+			else:
+				self.setFocus(self.buttons[0]["button"])
 
 		elif action == self.ACTION_MOVE_LEFT:
 
@@ -81,6 +75,8 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 				self.setFocus(self.buttonOK)
 			elif self.buttonID == self.buttonOKid:
 				self.setFocusId(self.visibleButtonIDs[0])
+			else:
+				self.setFocus(self.buttons[0]["button"])
 
 	def onControl(self, control):
 		self.buttonID = control.getId()
@@ -96,14 +92,16 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 
 		elif self.buttonID in self.buttonHandlers:
 			self.buttonHandlers[self.buttonID](control)
-		elif self.buttonID in self.radioButtons:
-			self._setRadioSetting(control, self.radioButtons[self.buttonID])
 
 	def _addBackground(self):
-		backgroundFade = xbmcgui.ControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture,	 colorDiffuse="CCFFFFFF")
+		backgroundFade = xbmcgui.ControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="CCFFFFFF")
 		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
-		background = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, self.windowHeight, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
-		bar = xbmcgui.ControlButton(
+		self.backgroundGrayGdrive = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, int(self.buttonHeight * len(self.gdriveButtons) + self.buttonSpacing + 100), "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
+		self.backgroundGrayRclone = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, int(self.buttonHeight * (len(self.rcloneButtons) - 1) + self.buttonSpacing + 100), "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
+		self.backgroundDarkGrayGdrive = xbmcgui.ControlImage(self.center - 5, 185 + self.buttonSpacing, self.buttonWidth + 10, self.buttonHeight * len(self.gdriveButtons) + 10, self.dGrayTexture)
+		self.backgroundDarkGrayRcloneState1 = xbmcgui.ControlImage(self.center - 5, 185, self.buttonWidth + 10, self.buttonHeight * (len(self.rcloneButtons) - 1) + 10, self.dGrayTexture)
+		self.backgroundDarkGrayRcloneState2 = xbmcgui.ControlImage(self.center - 5, 185, self.buttonWidth + 10, self.buttonHeight * (len(self.rcloneButtons) - 2) + 10, self.dGrayTexture)
+		self.bar = xbmcgui.ControlButton(
 			self.x,
 			self.y,
 			self.windowWidth,
@@ -114,30 +112,43 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			shadowColor="0xFF000000",
 			textOffsetX=20
 		)
-		self.addControls([backgroundFade, backgroundInvis, background, bar])
+		self.addControls([backgroundFade, backgroundInvis, self.backgroundGrayGdrive, self.backgroundGrayRclone, self.backgroundDarkGrayGdrive, self.backgroundDarkGrayRcloneState1, self.backgroundDarkGrayRcloneState2, self.bar])
 		self.backgroundID = backgroundInvis.getId()
 
-	def _addControlButton(self, setting):
-		button = xbmcgui.ControlButton(
+	def _addControlButton(self, label):
+		return xbmcgui.ControlButton(
 			x=0,
 			y=0,
 			width=self.buttonWidth,
 			height=self.buttonHeight,
-			label=self.PUSH_LABELS[setting],
+			label=label,
 			font=self.font,
 			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
+			alignment=4,
+			textOffsetX=0,
 		)
-		self.buttons[setting] = button
-		return button
 
-	def _addRadioButton(self, setting):
-		button = xbmcgui.ControlRadioButton(
+	def _addEditButton(self, label):
+		return xbmcgui.ControlEdit(
 			x=0,
 			y=0,
 			width=self.buttonWidth,
 			height=self.buttonHeight,
-			label=self.RADIO_LABELS[setting],
+			label=f"{label}",
+			font=self.font,
+			focusTexture=self.focusTexture,
+			noFocusTexture=self.dGrayTexture,
+			_alignment=4,
+		)
+
+	def _addRadioButton(self, label):
+		return xbmcgui.ControlRadioButton(
+			x=0,
+			y=0,
+			width=self.buttonWidth,
+			height=self.buttonHeight,
+			label=label,
 			font=self.font,
 			noFocusOffTexture=self.focusOffTexture,
 			focusOffTexture=self.focusOffTexture,
@@ -145,30 +156,61 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			noFocusOnTexture=self.focusOnTexture,
 			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
+			_alignment=4,
+			textOffsetX=0,
 		)
-		self.buttons[setting] = button
-		return button
 
-	def _calculateDimensions(self):
+	def _calculateDimensions(self, buttonAmount):
 		self.viewportWidth = self.getWidth()
 		self.viewportHeight = self.getHeight()
 		self.windowWidth = int(1000 * self.viewportWidth / 1920)
-		self.buttonWidth = self.windowWidth - 50
+		self.buttonWidth = self.windowWidth - 54
 		self.buttonHeight = 40
 		self.buttonSpacing = 60
-		self.windowHeight = int(self.buttonHeight * self.buttonAmount + self.buttonSpacing + 50)
+		self.windowHeight = int(self.buttonHeight * buttonAmount + self.buttonSpacing + 100)
 		self.windowBottom = int((self.viewportHeight + self.windowHeight) / 2)
 		self.x = int((self.viewportWidth - self.windowWidth) / 2)
 		self.y = int((self.viewportHeight - self.windowHeight) / 2)
 		self.center = int(self.x + (self.windowWidth - self.buttonWidth) / 2)
 
 	def _createButtons(self):
-		self.radioButtons, self.buttons = {}, {}
-		self.buttonAmount = len(self.PUSH_LABELS) + len(self.RADIO_LABELS)
-		self._calculateDimensions()
+		self.profileNameButton = {"type": "edit", "label": SETTINGS.getLocalizedString(30107), "setting": "profile_name", "function": self._setProfileName}
+		self.gdriveButtons = [
+			{"type": "push", "label": SETTINGS.getLocalizedString(30108), "setting": "encryption_type", "function": self._setEncryptionType},
+			{"type": "edit", "label": SETTINGS.getLocalizedString(30109), "setting": "password", "function": self._setPassword},
+			{"type": "push", "label": SETTINGS.getLocalizedString(30110), "setting": "salt", "function": self._setSalt},
+			{"type": "radio", "label": SETTINGS.getLocalizedString(30115), "setting": "encrypt_dir_names", "function": self._setEncryptDirNames},
+		]
+		self.rcloneButtons = [
+			{"type": "push", "label": SETTINGS.getLocalizedString(30108), "setting": "encryption_type", "function": self._setEncryptionType},
+			{"type": "edit", "label": SETTINGS.getLocalizedString(30109), "setting": "password", "function": self._setPassword},
+			{"type": "edit", "label": SETTINGS.getLocalizedString(30110), "setting": "salt", "function": self._setSalt},
+			{"type": "push", "label": SETTINGS.getLocalizedString(30111), "setting": "filename_encryption", "function": self._setFilenameEncryption},
+			{"type": "push", "label": SETTINGS.getLocalizedString(30112), "setting": "filename_encoding", "function": self._setFilenameEncoding},
+			{"type": "edit", "label": SETTINGS.getLocalizedString(30113), "setting": "suffix", "function": self._setSuffix},
+			{"type": "radio", "label": SETTINGS.getLocalizedString(30114), "setting": "encrypt_data", "function": self._setEncryptData},
+			{"type": "radio", "label": SETTINGS.getLocalizedString(30115), "setting": "encrypt_dir_names", "function": self._setEncryptDirNames},
+		]
+		self.buttons = [self.profileNameButton] + self.gdriveButtons + self.rcloneButtons
+		buttonAmount = len(self.gdriveButtons) if self.profile.type == EncryptionType.GDRIVE else len(self.rcloneButtons) - 1
+		self._calculateDimensions(buttonAmount)
+		buttons = []
+
+		for button in self.buttons:
+			buttonType = button["type"]
+
+			if buttonType == "push":
+				button["button"] = self._addControlButton(button["label"])
+			elif buttonType == "edit":
+				button["button"] = self._addEditButton(button["label"])
+			elif buttonType == "radio":
+				button["button"] = self._addRadioButton(button["label"])
+
+			buttons.append(button["button"])
+
+		self.gdriveButtons.insert(0, self.profileNameButton)
+		self.rcloneButtons.insert(0, self.profileNameButton)
 		self._addBackground()
-		pushButtons = [self._addControlButton(setting) for setting in self.PUSH_LABELS]
-		radioButtons = {self._addRadioButton(setting): setting for setting in self.RADIO_LABELS}
 		self.buttonOK = xbmcgui.ControlButton(
 			x=self.center,
 			y=self.windowBottom - 60,
@@ -191,20 +233,12 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			focusTexture=self.focusTexture,
 			alignment=2 + 4,
 		)
-		self.addControls(pushButtons + list(radioButtons.keys()) + [self.buttonOK, self.buttonClose])
+		self.addControls(buttons + [self.buttonOK, self.buttonClose])
 		self.buttonCloseID = self.buttonClose.getId()
 		self.buttonOKid = self.buttonOK.getId()
-		self.radioButtons = {button.getId(): setting for button, setting in radioButtons.items()}
-		self.buttonHandlers = {
-			self.buttons["profile_name"].getId(): self._setProfileName,
-			self.buttons["encryption_type"].getId(): self._setEncryptionType,
-			self.buttons["password"].getId(): self._setPassword,
-			self.buttons["salt"].getId(): self._setSalt,
-			self.buttons["filename_encryption"].getId(): self._setFilenameEncryption,
-			self.buttons["filename_encoding"].getId(): self._setFilenameEncoding,
-			self.buttons["suffix"].getId(): self._setSuffix,
-		}
+		self.buttonHandlers = {button["button"].getId(): button["function"] for button in self.buttons}
 		self._setLabels()
+		self.init = False
 		self._resetButtonsVisibility()
 		self.setFocusId(self.visibleButtonIDs[0])
 
@@ -231,21 +265,30 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 		if self.profile.type == EncryptionType.GDRIVE:
 			settingsVisible += ["encrypt_dir_names"]
 			settingsInvisible = ["filename_encryption", "filename_encoding", "suffix", "encrypt_data"]
+			self.backgroundDarkGrayRcloneState1.setVisible(False)
+			self.backgroundDarkGrayRcloneState2.setVisible(False)
+			[button["button"].setVisible(False) for button in self.rcloneButtons]
 		else:
 			settingsVisible += ["filename_encryption", "encrypt_data"]
 
 			if self.profile.filenameEncryption == "off":
 				settingsVisible += ["suffix"]
 				settingsInvisible = ["filename_encoding", "encrypt_dir_names"]
+				self.backgroundDarkGrayRcloneState1.setVisible(False)
+				self.backgroundDarkGrayRcloneState2.setVisible(True)
 			else:
 				settingsVisible += ["filename_encoding", "encrypt_dir_names"]
 				settingsInvisible = ["suffix"]
+				self.backgroundDarkGrayRcloneState1.setVisible(True)
+
+			[button["button"].setVisible(False) for button in self.gdriveButtons]
 
 		self._setButtonsVisibility(settingsVisible, True)
 		self._setButtonsVisibility(settingsInvisible, False)
 		self._updateButtonPositions()
 
 	def _saveProfile(self):
+		[button["function"](button["button"]) for button in self.buttons if button["type"] == "edit"]
 
 		if not self.profile.name:
 			self.dialog.ok(30126)
@@ -260,13 +303,21 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 		if self.mode == "add":
 			self.profileManager.addProfile(self.profile)
 		else:
-			self.profileManager.updateProfile(self.profileID, self.profile)
+			self.profile.id = self.profileID
+			self.profileManager.updateProfile(self.profile)
 			self.modified = True
 
 		return True
 
 	def _setButtonsVisibility(self, settings, visible):
-		[self.buttons[setting].setVisible(visible) for setting in settings]
+		buttons = self.gdriveButtons if self.profile.type == EncryptionType.GDRIVE else self.rcloneButtons
+		[button["button"].setVisible(visible) for button in buttons if button["setting"] in settings]
+
+	def _setEncryptData(self, button):
+		self.profile.encryptData = button.isSelected()
+
+	def _setEncryptDirNames(self, button):
+		self.profile.encryptDirNames = button.isSelected()
 
 	def _setEncryptionType(self, button):
 		encryptionTypes = [EncryptionType.GDRIVE.value, EncryptionType.RCLONE.value]
@@ -281,6 +332,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 		self._setProfile(type=type)
 		self._setLabels()
 		self._resetButtonsVisibility()
+		self.setFocus(self.gdriveButtons[1]["button"] if type == EncryptionType.GDRIVE else self.rcloneButtons[1]["button"])
 
 	def _setFilenameEncoding(self, button):
 		encodingTypes = ["base32", "base64", "base32768"]
@@ -308,42 +360,55 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 		if type == "off":
 			settingsVisible += ["suffix"]
 			settingsInvisible = ["filename_encoding", "encrypt_dir_names"]
+			self.backgroundDarkGrayRcloneState1.setVisible(False)
+			self.backgroundDarkGrayRcloneState2.setVisible(True)
 		else:
 			settingsVisible += ["filename_encoding", "encrypt_dir_names"]
 			settingsInvisible = ["suffix"]
-			self.buttons["filename_encoding"].setLabel(label2=self.profile.filenameEncoding)
+			self.backgroundDarkGrayRcloneState1.setVisible(True)
 
 		self._setButtonsVisibility(settingsInvisible, False)
 		self._setButtonsVisibility(settingsVisible, True)
 		self._updateButtonPositions()
 
 	def _setLabels(self):
+
+		if not self.init:
+			self.profile.name = self.profileNameButton["button"].getText()
+
 		settings = {
 			"profile_name": self.profile.name,
 			"encryption_type": self.profile.type.value,
-			"password": self.profile.password or " ",
-			"salt": self.profile.salt or " ",
+			"password": self.profile.password,
+			"salt": self.profile.salt,
 			"encrypt_dir_names": self.profile.encryptDirNames,
 		}
 
-		if self.profile.type == EncryptionType.RCLONE:
+		if self.profile.type == EncryptionType.GDRIVE:
+			self.buttons = self.gdriveButtons
+		else:
 			settings.update(
 				{
 					"filename_encryption": self.profile.filenameEncryption,
 					"filename_encoding": self.profile.filenameEncoding,
-					"suffix": self.profile.suffix or " ",
+					"suffix": self.profile.suffix,
 					"encrypt_data": self.profile.encryptData,
 				}
 			)
+			self.buttons = self.rcloneButtons
 
-		[self.buttons[label].setLabel(label2=settings.get(label)) for label in self.PUSH_LABELS]
-		[self.buttons[label].setSelected(settings.get(label) or 0) for label in self.RADIO_LABELS]
+		for button in self.buttons:
+			type = button["type"]
+
+			if type == "push":
+				button["button"].setLabel(label2=settings[button["setting"]])
+			elif type == "edit":
+				button["button"].setText(settings[button["setting"]])
+			elif type == "radio":
+				button["button"].setSelected(settings[button["setting"]])
 
 	def _setPassword(self, button):
-
-		if password := self.dialog.input(30109):
-			button.setLabel(label2=password)
-			self.profile.password = password
+		self.profile.password = button.getText()
 
 	def _setProfile(self, profile=None, type=None):
 
@@ -363,21 +428,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			self.profile = encryption_profiles.GDriveEncryptionProfile()
 
 	def _setProfileName(self, button):
-		name = self.dialog.input(30107)
-
-		if not name:
-			return
-
-		button.setLabel(label2=name)
-		self.profile.name = name
-
-	def _setRadioSetting(self, button, setting):
-		isSelected = button.isSelected()
-
-		if setting == "encrypt_data":
-			self.profile.encryptData = isSelected
-		else:
-			self.profile.encryptDirNames = isSelected
+		self.profile.name = button.getText()
 
 	def _setSalt(self, button):
 
@@ -390,24 +441,38 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			with open(saltPath, "r") as file:
 				salt = file.read()
 
+			button.setLabel(label2=salt or " ")
 		else:
-			salt = self.dialog.input(30110)
+			salt = button.getText()
 
-		button.setLabel(label2=salt or " ")
 		self.profile.salt = salt
 
 	def _setSuffix(self, button):
-		suffix = self.dialog.input(30113)
-		button.setLabel(label2=suffix or " ")
-		self.profile.suffix = suffix
+		self.profile.suffix = button.getText()
 
 	def _updateButtonPositions(self):
-		self.visibleButtonIDs = [button.getId() for setting, button in self.buttons.items() if button.isVisible()]
-		yPosition = 125 + self.buttonSpacing
+
+		if self.profile.type == EncryptionType.GDRIVE:
+			buttons = self.gdriveButtons
+			self._calculateDimensions(len(self.gdriveButtons))
+			self.backgroundGrayGdrive.setPosition(self.x, self.y)
+			self.backgroundGrayRclone.setVisible(False)
+		else:
+			buttons = self.rcloneButtons
+			self._calculateDimensions(len(self.rcloneButtons) - 1)
+			self.backgroundGrayRclone.setPosition(self.x, self.y)
+			self.backgroundGrayRclone.setVisible(True)
+
+		self.bar.setPosition(self.x, self.y)
+		self.visibleButtonIDs = [button["button"].getId() for button in buttons if button["button"].isVisible()]
+		yPosition = self.y + 70
 
 		for id in self.visibleButtonIDs:
 			self.getControl(id).setPosition(self.center, yPosition)
 			yPosition += self.buttonHeight
+
+		self.buttonOK.setPosition(self.center, self.windowBottom - 60)
+		self.buttonClose.setPosition(self.center + 120, self.windowBottom - 60)
 
 	def _updateList(self, direction):
 		currentIndex = self.visibleButtonIDs.index(self.buttonID)
