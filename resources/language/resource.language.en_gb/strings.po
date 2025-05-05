@@ -305,6 +305,10 @@ msgctxt "#30073"
 msgid "Are you sure you want to stop syncing all folders?"
 msgstr "Are you sure you want to stop syncing all folders?"
 
+msgctxt "#30074"
+msgid "Deleting sync folder"
+msgstr "Deleting sync folder"
+
 msgctxt "#30075"
 msgid "Deleting files"
 msgstr "Deleting files"
@@ -374,8 +378,8 @@ msgid "Are you sure you want to delete the sync folder?"
 msgstr "Are you sure you want to delete the sync folder?"
 
 msgctxt "#30095"
-msgid "Folder deleted."
-msgstr "Folder deleted."
+msgid "Folder deleted"
+msgstr "Folder deleted"
 
 msgctxt "#30096"
 msgid "Failed to delete the sync folder. See log for details."

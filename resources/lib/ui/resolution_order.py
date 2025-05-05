@@ -28,7 +28,6 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 		self.buttonWidth = 120
 		self.buttonHeight = 30
 		self.buttonAmount = len(self.resolutions)
-		self.font = "font14"
 		self._initializePaths()
 		self._calculateViewport()
 		self._addBackground()
@@ -107,25 +106,35 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 
 	def _addBackground(self):
 		backgroundFade = xbmcgui.ControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="CCFFFFFF")
-		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
-		background = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, self.windowHeight, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
-		bar = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, 40, f"[B]{self.settings.getLocalizedString(30083)}[/B]", focusTexture=self.blueTexture, noFocusTexture=self.blueTexture, shadowColor="0xFF000000", textOffsetX=20)
+		backgroundInvis = self._addControlButton(0, 0, self.viewportWidth, self.viewportHeight, focusTexture="", noFocusTexture="")
+		background = self._addControlButton(self.x, self.y, self.windowWidth, self.windowHeight, focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
+		bar = self._addControlButton(
+			self.x,
+			self.y,
+			self.windowWidth,
+			40,
+			f"[B]{self.settings.getLocalizedString(30083)}[/B]",
+			focusTexture=self.blueTexture,
+			noFocusTexture=self.blueTexture,
+			textOffsetX=20,
+			shadowColor="0xFF000000",
+		)
 		self.addControls([backgroundFade, backgroundInvis, background, bar])
 		self.backgroundID = backgroundInvis.getId()
 
-	def _addControlButton(self, x, y, buttonWidth, buttonHeight, label=""):
-		button = xbmcgui.ControlButton(
+	def _addControlButton(self, x, y, width, height, label="", focusTexture=None, noFocusTexture=None, **kwargs):
+		focusTexture = self.focusTexture if focusTexture is None else focusTexture
+		noFocusTexture = self.dGrayTexture if noFocusTexture is None else noFocusTexture
+		return xbmcgui.ControlButton(
 			x,
 			y,
-			buttonWidth,
-			buttonHeight,
+			width,
+			height,
 			label,
-			noFocusTexture=self.dGrayTexture,
-			focusTexture=self.focusTexture,
-			font=self.font,
-			alignment=2 + 4,
+			focusTexture=focusTexture,
+			noFocusTexture=noFocusTexture,
+			**kwargs,
 		)
-		return button
 
 	def _calculateViewport(self):
 		self.viewportWidth = self.getWidth()
@@ -137,9 +146,9 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 
 	def _createButtons(self):
 		y = 60
-		self.buttons = [self._addControlButton(self.x + 10, self.y + y + 30 * i, self.buttonWidth, self.buttonHeight, res) for i, res in enumerate(self.resolutions)]
-		self.buttonOK = self._addControlButton(self.x + self.buttonWidth + 20, self.y + y, 80, self.buttonHeight, self.settings.getLocalizedString(30066))
-		self.buttonClose = self._addControlButton(self.x + self.buttonWidth + 20, self.y + y + 35, 80, self.buttonHeight, label=self.settings.getLocalizedString(30084))
+		self.buttons = [self._addControlButton(self.x + 10, self.y + y + 30 * i, self.buttonWidth, self.buttonHeight, res, alignment=2 + 4) for i, res in enumerate(self.resolutions)]
+		self.buttonOK = self._addControlButton(self.x + self.buttonWidth + 20, self.y + y, 80, self.buttonHeight, self.settings.getLocalizedString(30066), alignment=2 + 4)
+		self.buttonClose = self._addControlButton(self.x + self.buttonWidth + 20, self.y + y + 35, 80, self.buttonHeight, label=self.settings.getLocalizedString(30084), alignment=2 + 4)
 		self.addControls(self.buttons + [self.buttonOK, self.buttonClose])
 		self.buttonIDs = [button.getId() for button in self.buttons]
 		self.buttonCloseID = self.buttonClose.getId()

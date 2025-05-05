@@ -57,7 +57,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.syncMode = self.driveSettings["task_mode"] if self.driveSettings else None
 		self.syncFrequency = self.driveSettings["task_frequency"] if self.driveSettings else None
 		self.folders = False
-		self.font = "font13"
 		self.buttonSpacing = 60
 		self._initializePaths()
 		self._createButtons()
@@ -168,8 +167,8 @@ class SyncSettings(xbmcgui.WindowDialog):
 			f"[B]{self.settings.getLocalizedString(30012)}{': ' + self.folderName if self.folderName else ''}[/B]",
 			focusTexture=self.blueTexture,
 			noFocusTexture=self.blueTexture,
+			textOffsetX=20,
 			shadowColor="0xFF000000",
-			textOffsetX=20
 		)
 		self.addControls([backgroundFade, backgroundInvis, background, bar])
 		self.backgroundID = backgroundInvis.getId()
@@ -181,7 +180,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 			width=self.buttonWidth,
 			height=self.buttonHeight,
 			label=label,
-			font=self.font,
 			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
 		)
@@ -218,7 +216,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 			width=self.buttonWidth,
 			height=self.buttonHeight,
 			label=label,
-			font=self.font,
 			noFocusOffTexture=self.focusOffTexture,
 			focusOffTexture=self.focusOffTexture,
 			focusOnTexture=self.focusOnTexture,
@@ -266,7 +263,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 			width=100,
 			height=self.buttonHeight,
 			label=self.settings.getLocalizedString(30066),
-			font=self.font,
 			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.focusTexture,
 			alignment=2 + 4,
@@ -277,7 +273,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 			width=100,
 			height=self.buttonHeight,
 			label=self.settings.getLocalizedString(30067),
-			font=self.font,
 			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.focusTexture,
 			alignment=2 + 4,
@@ -363,7 +358,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 			width=140,
 			height=self.buttonHeight,
 			label=self.settings.getLocalizedString(30065),
-			font=self.font,
 			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
 			alignment=2 + 4,
@@ -376,7 +370,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 			width=140,
 			height=self.buttonHeight,
 			label="TMDB",
-			font=self.font,
 			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
 			alignment=2 + 4,
@@ -408,7 +401,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 				width=self.buttonWidth,
 				height=self.buttonHeight,
 				label=func,
-				font=self.font,
 				focusTexture=self.focusTexture,
 				noFocusTexture=self.dGrayTexture,
 			)
@@ -427,7 +419,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 			width=self.buttonWidth,
 			height=self.buttonHeight,
 			label=label,
-			font=self.font,
 			noFocusOffTexture=self.focusOffTexture,
 			focusOffTexture=self.focusOffTexture,
 			focusOnTexture=self.focusOnTexture,

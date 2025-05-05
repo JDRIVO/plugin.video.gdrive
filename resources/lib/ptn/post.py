@@ -97,7 +97,7 @@ def remove_complete_series_string(self, unmatched):
 
 		if complete_match:
 			title = self.parts["title"]
-			title = title[: complete_match.start()] + title[complete_match.end() :]
+			title = title[:complete_match.start()] + title[complete_match.end():]
 			self._part("title", (complete_match.start(), complete_match.end()), self._clean_string(title), overwrite=True)
 
 	return unmatched
@@ -223,7 +223,7 @@ def try_vague_season_episode(self):
 	if m:
 
 		if "season" not in self.parts and "episode" not in self.parts:
-			new_title = title[: m.start()]
+			new_title = title[:m.start()]
 			offset = self.part_slices["title"][0]
 			# Setting the match slices here doesn't actually matter, but good practice.
 			self._part(

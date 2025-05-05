@@ -28,7 +28,6 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 		self.dialog = Dialog()
 		self.init = True
 		self.modified = False
-		self.font = "font13"
 		self._initializePaths()
 		self._createButtons()
 
@@ -94,14 +93,45 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			self.buttonHandlers[self.buttonID](control)
 
 	def _addBackground(self):
-		backgroundFade = xbmcgui.ControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="CCFFFFFF")
-		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
-		self.backgroundGrayGdrive = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, int(self.buttonHeight * len(self.gdriveButtons) + self.buttonSpacing + 100), "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
-		self.backgroundGrayRclone = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, int(self.buttonHeight * (len(self.rcloneButtons) - 1) + self.buttonSpacing + 100), "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
-		self.backgroundDarkGrayGdrive = xbmcgui.ControlImage(self.center - 5, 185 + self.buttonSpacing, self.buttonWidth + 10, self.buttonHeight * len(self.gdriveButtons) + 10, self.dGrayTexture)
-		self.backgroundDarkGrayRcloneState1 = xbmcgui.ControlImage(self.center - 5, 185, self.buttonWidth + 10, self.buttonHeight * (len(self.rcloneButtons) - 1) + 10, self.dGrayTexture)
-		self.backgroundDarkGrayRcloneState2 = xbmcgui.ControlImage(self.center - 5, 185, self.buttonWidth + 10, self.buttonHeight * (len(self.rcloneButtons) - 2) + 10, self.dGrayTexture)
-		self.bar = xbmcgui.ControlButton(
+		backgroundFade = self._addControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="CCFFFFFF")
+		backgroundInvis = self._addControlButton(0, 0, self.viewportWidth, self.viewportHeight, focusTexture="", noFocusTexture="")
+		self.backgroundGrayGdrive = self._addControlButton(
+			self.x,
+			self.y,
+			self.windowWidth,
+			int(self.buttonHeight * len(self.gdriveButtons) + self.buttonSpacing + 100),
+			focusTexture=self.grayTexture,
+			noFocusTexture=self.grayTexture,
+		)
+		self.backgroundGrayRclone = self._addControlButton(
+			self.x,
+			self.y,
+			self.windowWidth,
+			int(self.buttonHeight * (len(self.rcloneButtons) - 1) + self.buttonSpacing + 100),
+			focusTexture=self.grayTexture,
+			noFocusTexture=self.grayTexture,
+		)
+		self.backgroundDarkGrayGdrive = self._addControlImage(
+			self.center - 5, 185 + self.buttonSpacing,
+			self.buttonWidth + 10,
+			self.buttonHeight * len(self.gdriveButtons) + 10,
+			self.dGrayTexture,
+		)
+		self.backgroundDarkGrayRcloneState1 = self._addControlImage(
+			self.center - 5,
+			185,
+			self.buttonWidth + 10,
+			self.buttonHeight * (len(self.rcloneButtons) - 1) + 10,
+			self.dGrayTexture,
+		)
+		self.backgroundDarkGrayRcloneState2 = self._addControlImage(
+			self.center - 5,
+			185,
+			self.buttonWidth + 10,
+			self.buttonHeight * (len(self.rcloneButtons) - 2) + 10,
+			self.dGrayTexture,
+		)
+		self.bar = self._addControlButton(
 			self.x,
 			self.y,
 			self.windowWidth,
@@ -109,55 +139,74 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			f"[B]{self.settings.getLocalizedString(30123)}[/B]",
 			focusTexture=self.blueTexture,
 			noFocusTexture=self.blueTexture,
+			textOffsetX=20,
 			shadowColor="0xFF000000",
-			textOffsetX=20
 		)
-		self.addControls([backgroundFade, backgroundInvis, self.backgroundGrayGdrive, self.backgroundGrayRclone, self.backgroundDarkGrayGdrive, self.backgroundDarkGrayRcloneState1, self.backgroundDarkGrayRcloneState2, self.bar])
+		self.addControls(
+			[
+				backgroundFade,
+				backgroundInvis,
+				self.backgroundGrayGdrive,
+				self.backgroundGrayRclone,
+				self.backgroundDarkGrayGdrive,
+				self.backgroundDarkGrayRcloneState1,
+				self.backgroundDarkGrayRcloneState2,
+				self.bar,
+			]
+		)
 		self.backgroundID = backgroundInvis.getId()
 
-	def _addControlButton(self, label):
+	def _addControlButton(self, x, y, width, height, label="", focusTexture=None, noFocusTexture=None, **kwargs):
+		focusTexture = self.focusTexture if focusTexture is None else focusTexture
+		noFocusTexture = self.dGrayTexture if noFocusTexture is None else noFocusTexture
 		return xbmcgui.ControlButton(
-			x=0,
-			y=0,
-			width=self.buttonWidth,
-			height=self.buttonHeight,
-			label=label,
-			font=self.font,
-			focusTexture=self.focusTexture,
-			noFocusTexture=self.dGrayTexture,
-			alignment=4,
-			textOffsetX=0,
+			x,
+			y,
+			width,
+			height,
+			label,
+			focusTexture=focusTexture,
+			noFocusTexture=noFocusTexture,
+			**kwargs,
 		)
 
-	def _addEditButton(self, label):
+	def _addControlImage(self, x, y, width, height, filename, **kwargs):
+		return xbmcgui.ControlImage(
+			x,
+			y,
+			width,
+			height,
+			filename,
+			**kwargs,
+		)
+
+	def _addControlEdit(self, label):
 		return xbmcgui.ControlEdit(
 			x=0,
 			y=0,
 			width=self.buttonWidth,
 			height=self.buttonHeight,
 			label=f"{label}",
-			font=self.font,
 			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
 			_alignment=4,
 		)
 
-	def _addRadioButton(self, label):
+	def _addControlRadioButton(self, label):
 		return xbmcgui.ControlRadioButton(
 			x=0,
 			y=0,
 			width=self.buttonWidth,
 			height=self.buttonHeight,
 			label=label,
-			font=self.font,
 			noFocusOffTexture=self.focusOffTexture,
 			focusOffTexture=self.focusOffTexture,
 			focusOnTexture=self.focusOnTexture,
 			noFocusOnTexture=self.focusOnTexture,
 			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
-			_alignment=4,
 			textOffsetX=0,
+			_alignment=4,
 		)
 
 	def _calculateDimensions(self, buttonAmount):
@@ -197,40 +246,32 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 		buttons = []
 
 		for button in self.buttons:
-			buttonType = button["type"]
+			type = button["type"]
 
-			if buttonType == "push":
-				button["button"] = self._addControlButton(button["label"])
-			elif buttonType == "edit":
-				button["button"] = self._addEditButton(button["label"])
-			elif buttonType == "radio":
-				button["button"] = self._addRadioButton(button["label"])
+			if type == "push":
+				button["button"] = self._addControlButton(0, 0, self.buttonWidth, self.buttonHeight, button["label"], textOffsetX=0, alignment=4)
+			elif type == "edit":
+				button["button"] = self._addControlEdit(button["label"])
+			elif type == "radio":
+				button["button"] = self._addControlRadioButton(button["label"])
 
 			buttons.append(button["button"])
 
 		self.gdriveButtons.insert(0, self.profileNameButton)
 		self.rcloneButtons.insert(0, self.profileNameButton)
 		self._addBackground()
-		self.buttonOK = xbmcgui.ControlButton(
-			x=self.center,
-			y=self.windowBottom - 60,
-			width=100,
-			height=self.buttonHeight,
+		self.buttonOK = self._addControlButton(
+			self.center,
+			self.windowBottom - 60, 100,
+			self.buttonHeight,
 			label=self.settings.getLocalizedString(30066),
-			font=self.font,
-			noFocusTexture=self.dGrayTexture,
-			focusTexture=self.focusTexture,
 			alignment=2 + 4,
 		)
-		self.buttonClose = xbmcgui.ControlButton(
-			x=self.center + 120,
-			y=self.windowBottom - 60,
-			width=100,
-			height=self.buttonHeight,
+		self.buttonClose = self._addControlButton(
+			self.center + 120,
+			self.windowBottom - 60, 100,
+			self.buttonHeight,
 			label=self.settings.getLocalizedString(30067),
-			font=self.font,
-			noFocusTexture=self.dGrayTexture,
-			focusTexture=self.focusTexture,
 			alignment=2 + 4,
 		)
 		self.addControls(buttons + [self.buttonOK, self.buttonClose])

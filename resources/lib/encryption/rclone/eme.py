@@ -35,7 +35,7 @@ def multByTwo(out_bytes: bytes) -> bytes:
 
 def xorBlocks(out_bytes: bytes, in1: bytes, in2: bytes) -> bytes:
 
-	if (not len(in1) == len(in2)) and (not len(in2) == len(out_bytes)):
+	if not len(in1) == len(in2) and not len(in2) == len(out_bytes):
 		raise ValueError("Length mismatch")
 
 	out_byte_array = bytearray(out_bytes)
@@ -93,19 +93,19 @@ def transform(bc, tweak: bytes, inputData: bytes, direction: int) -> bytes:
 	PPj = bytearray([0] * 16)
 
 	for i in range(m):
-		Pj = P[i * 16 : (i + 1) * 16]
+		Pj = P[i * 16:(i + 1) * 16]
 		# PPj = 2**(j-1)*L xor Pj
 		PPj = xorBlocks(PPj, Pj, LTable[i])
 		# PPPj = AESenc(K; PPj)
 		tmp = aesTransform(PPj, direction, bc)
-		c[i * 16 : len(tmp) + i * 16] = tmp
+		c[i * 16:len(tmp) + i * 16] = tmp
 
 	# MP =(xorSum PPPj) xor T
 	mp = bytearray([0] * 16)
-	mp = xorBlocks(mp, c[0 : 16], T)
+	mp = xorBlocks(mp, c[0:16], T)
 
 	for i in range(1, m):
-		mp = xorBlocks(mp, mp, c[i * 16 : (i + 1) * 16])
+		mp = xorBlocks(mp, mp, c[i * 16:(i + 1) * 16])
 
 	# MC = AESenc(K; MP)
 	mc = aesTransform(mp, direction, bc)
@@ -117,26 +117,26 @@ def transform(bc, tweak: bytes, inputData: bytes, direction: int) -> bytes:
 	for i in range(1, m):
 		m_ = multByTwo(m_)
 		# CCCj = 2**(j-1)*M xor PPPj
-		cccj = xorBlocks(cccj, c[i * 16 : (i + 1) * 16], m_)
-		c[i * 16 : len(cccj) + i * 16] = cccj
+		cccj = xorBlocks(cccj, c[i * 16:(i + 1) * 16], m_)
+		c[i * 16:len(cccj) + i * 16] = cccj
 
 	# CCC1 = (xorSum CCCj) xor T xor MC
 	ccc1 = bytearray([0] * 16)
 	ccc1 = xorBlocks(ccc1, mc, T)
 
 	for i in range(1, m):
-		ccc1 = xorBlocks(ccc1, ccc1, c[i * 16 : (i + 1) * 16])
+		ccc1 = xorBlocks(ccc1, ccc1, c[i * 16:(i + 1) * 16])
 
-	c[0: len(ccc1)] = ccc1
+	c[0:len(ccc1)] = ccc1
 
 	for i in range(m):
 		# CCj = AES-enc(K; CCCj)
-		tmp = aesTransform(c[i * 16 : (i + 1) * 16], direction, bc)
-		c[i * 16 : len(tmp) + i * 16] = tmp
+		tmp = aesTransform(c[i * 16:(i + 1) * 16], direction, bc)
+		c[i * 16:len(tmp) + i * 16] = tmp
 		# Cj = 2**(j-1)*L xor CCj
-		tmp = c[i * 16 : (i + 1) * 16]
+		tmp = c[i * 16:(i + 1) * 16]
 		tmp = xorBlocks(tmp, tmp, LTable[i])
-		c[i * 16 : len(tmp) + i * 16] = tmp
+		c[i * 16:len(tmp) + i * 16] = tmp
 
 	return bytes(c)
 

@@ -50,6 +50,7 @@ class Syncer:
 		self.deleted = False
 		syncedIDs, excludedIDs = [], []
 		newFiles = {}
+		pathsToClean = set()
 
 		for item in changes:
 			id = item["id"]
@@ -66,7 +67,7 @@ class Syncer:
 				continue
 
 			if item["trashed"]:
-				self._syncDeletions(item, syncRootPath, drivePath)
+				self._syncDeletions(item, syncRootPath, drivePath, pathsToClean)
 				continue
 
 			if item["mimeType"] == "application/vnd.google-apps.folder":
@@ -80,18 +81,21 @@ class Syncer:
 			if self.settings.getSetting("update_library"):
 				xbmc.executebuiltin(f"UpdateLibrary(video,{syncRootPath})")
 
-		if self.deleted and self.settings.getSetting("update_library"):
+		if self.deleted:
+			[self.cache.removeEmptyDirectories(dir) for dir in pathsToClean]
 
-			if os.name == "nt":
-				syncRootPath = syncRootPath.replace("\\", "\\\\")
+			if self.settings.getSetting("update_library"):
 
-			query = {
-				"jsonrpc": "2.0",
-				"id": 1,
-				"method": "VideoLibrary.Clean",
-				"params": {"showdialogs": False, "content": "video", "directory": syncRootPath},
-			}
-			sendJSONRPCCommand(query)
+				if os.name == "nt":
+					syncRootPath = syncRootPath.replace("\\", "\\\\")
+
+				query = {
+					"jsonrpc": "2.0",
+					"id": 1,
+					"method": "VideoLibrary.Clean",
+					"params": {"showdialogs": False, "content": "video", "directory": syncRootPath},
+				}
+				sendJSONRPCCommand(query)
 
 		self.cache.updateDrive({"page_token": pageToken, "last_sync": time.time()}, driveID)
 		return True
@@ -167,7 +171,7 @@ class Syncer:
 			localFileProcessor = LocalFileProcessor(self.fileOperations, self.cache, syncRootPath)
 			[pool.submit(localFileProcessor.processFiles, folder, folderSettings, threadCount) for folder, folderSettings in folders]
 
-	def _syncDeletions(self, item, syncRootPath, drivePath):
+	def _syncDeletions(self, item, syncRootPath, drivePath, pathsToClean):
 		id = item["id"]
 		cachedFiles = True
 
@@ -198,7 +202,7 @@ class Syncer:
 			if not cachedDirectory:
 				return
 
-			self.cache.removeEmptyDirectories(cachedDirectory["root_folder_id"])
+			pathsToClean.add(cachedDirectory["root_folder_id"])
 
 		self.deleted = True
 

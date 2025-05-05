@@ -195,20 +195,19 @@ class SyncCacheManager(DatabaseManager):
 
 	def removeEmptyDirectories(self, folderID):
 		directories = self.getDirectories({"root_folder_id": folderID})
-		directories = sorted([(dir["local_path"], dir["folder_id"]) for dir in directories], key=lambda x: x[0])
+		directories = sorted([(d["local_path"], d["folder_id"]) for d in directories], key=lambda x: -x[0].count(os.sep))
+		paths = set(path for path, _ in directories)
 
-		for idx, (dirPath, folderID) in enumerate(directories):
+		for dirPath, folderID in directories:
 
-			for path, id in directories[idx:]:
+			if self.getFiles({"parent_folder_id": folderID}):
+				continue
 
-				if path.startswith(dirPath + os.sep):
-					break
+			head = dirPath + os.sep
 
-			else:
-				files = self.getFiles({"parent_folder_id": folderID})
-
-				if not files:
-					self.deleteDirectory(folderID)
+			if not any(path.startswith(head) for path in paths):
+				self.deleteDirectory(folderID)
+				paths.remove(dirPath)
 
 	def removeFolders(self, folders=None, driveID=None):
 

@@ -54,6 +54,7 @@ class Name:
 	:param `nameTweak`: 通过passwd生成的nameTweak
 	:param `aes_cipher`: ECB模式的AES Cipher，`AES.new(nameKey, AES.MODE_ECB)`
 	"""
+
 	def __init__(self, nameKey: bytes, nameTweak: bytes, aes_cipher: EcbMode, encoding: str = "base32") -> None:
 		self.__nameKey = nameKey
 		self.__nameTweak = nameTweak
@@ -107,14 +108,14 @@ class Name:
 		if len(filename) >= 2048:
 			raise ValueError("Too long to decrypt")
 
-		return unpad(decrypt(self.__cipher, self.__nameTweak, filename), 16, style = "pkcs7").decode("utf-8") # EME解密 & pkcs7 unpad
+		return unpad(decrypt(self.__cipher, self.__nameTweak, filename), 16, style="pkcs7").decode("utf-8") # EME解密 & pkcs7 unpad
 
 	def __name_standard_encrypt(self, filename: str) -> str:
 
 		if filename == "":
 			return ""
 
-		filename = pad(filename.encode("utf-8"), 16, style = "pkcs7")
+		filename = pad(filename.encode("utf-8"), 16, style="pkcs7")
 		filename = encrypt(self.__cipher, self.__nameTweak, filename)
 		return self.__str_trans.encode(filename)
 
@@ -147,7 +148,7 @@ class Name:
 
 		for code in filename_code:
 
-			if (code == ord("!")):
+			if code == ord("!"):
 				out_filename = out_filename + "!!"
 			elif code >= ord("0") and code <= ord("9"):
 				thisdir = (dir_ % 9) + 1
@@ -193,10 +194,10 @@ class Name:
 		if pos == -1:
 			raise ValueError("Not an obfuscated encrypted filename")
 
-		num = filename[: pos]
+		num = filename[:pos]
 
 		if num == "!":
-			return filename[pos + 1 :]
+			return filename[pos + 1:]
 
 		try:
 			dir_ = int(num)
@@ -209,7 +210,7 @@ class Name:
 		inQuote = False
 		out_filename = ""
 
-		for str_ in filename[pos + 1 :]:
+		for str_ in filename[pos + 1:]:
 			code = ord(str_)
 
 			if inQuote:
@@ -230,7 +231,7 @@ class Name:
 				pos = code - ord("A")
 
 				if pos >= 26:
-					pos = pos -6
+					pos = pos - 6
 
 				pos = pos - thisdir
 

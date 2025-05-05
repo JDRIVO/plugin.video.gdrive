@@ -379,6 +379,7 @@ class Core:
 		if not confirmation:
 			return
 
+		self.dialog.notification(30074)
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/delete_sync_folder"
 		data = {"sync_root": syncRoot, "cid": cid}
@@ -786,8 +787,8 @@ class Core:
 				self.settings.getLocalizedString(30221),
 				self.settings.getSetting("server_port"),
 			),
-			nolabel = self.settings.getLocalizedString(30066),
-			yeslabel = self.settings.getLocalizedString(30001),
+			nolabel=self.settings.getLocalizedString(30066),
+			yeslabel=self.settings.getLocalizedString(30001),
 		)
 
 		if help:

@@ -1,9 +1,9 @@
 def byte_increment(byte: int) -> int:
 
-	if (byte > 255):
+	if byte > 255:
 		raise ValueError("Byte must be in range(0, 256)")
 
-	return (byte + 1) if (byte < 255) else 0
+	return byte + 1 if byte < 255 else 0
 
 
 def nonce_add(nonce: bytes, x: int) -> bytes:

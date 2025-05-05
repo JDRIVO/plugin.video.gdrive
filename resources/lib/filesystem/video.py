@@ -46,7 +46,7 @@ class Video(File):
 			self.metadata["encryption_id"] = self.encryptionID
 
 		self.metadata.update({"drive_id": driveID, "file_id": self.id})
-		return "plugin://plugin.video.gdrive/?mode=video" + "".join([f"&{k}={v}"for k, v in self.metadata.items() if v])
+		return "plugin://plugin.video.gdrive/?mode=video" + "".join([f"&{k}={v}" for k, v in self.metadata.items() if v])
 
 	def setData(self, video, metadata, prefix, suffix):
 		self.title = video["title"]

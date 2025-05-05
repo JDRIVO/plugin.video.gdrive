@@ -276,7 +276,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		deleted = self.server.fileOperations.deleteFolder(syncRoot)
 
 		if not deleted:
-			self.server.dialog.ok(30096)
+			self.server.dialog.notification(30096)
 		else:
 
 			if not self.server.cache.getSyncRootPath():
@@ -290,7 +290,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 				xbmc.executebuiltin(f"SetFocus({cid - 22})")
 				xbmc.executebuiltin(f"SetFocus({cid})")
 
-			self.server.dialog.ok(30095)
+			self.server.dialog.notification(30095)
 
 		self.server.taskManager.run()
 

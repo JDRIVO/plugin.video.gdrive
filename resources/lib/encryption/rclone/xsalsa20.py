@@ -82,7 +82,7 @@ def streamSalsa20(l, n, k):
 
 	for i in range(blocks):
 		nList = (n[0], n[1], i, 0)
-		output[i*64:(i+1)*64] = block(nList, k)
+		output[i * 64:(i + 1) * 64] = block(nList, k)
 
 	return output[:l]
 

@@ -17,7 +17,6 @@ class ResolutionSelector(xbmcgui.WindowDialog):
 		self.closed = False
 		self.buttonHeight = 40
 		self.buttonAmount = len(self.resolutions)
-		self.font = "font13"
 		self._initializePaths()
 		self._calculateViewport()
 		self._addBackground()
@@ -89,7 +88,6 @@ class ResolutionSelector(xbmcgui.WindowDialog):
 					width=self.windowWidth,
 					height=self.buttonHeight,
 					label=resolution,
-					font=self.font,
 					noFocusTexture=self.grayTexture,
 					focusTexture=self.focusTexture,
 					alignment=2 + 4,
