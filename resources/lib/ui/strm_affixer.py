@@ -279,8 +279,8 @@ class StrmAffixer(xbmcgui.WindowDialog):
 			button.setLabel(label)
 			button.setVisible(True)
 
-		self.buttonOK = self._addControlButton(self.x + 40, self.y + 190, 80, self.buttonHeight, label=self.settings.getLocalizedString(30066), alignment=2 + 4)
-		self.buttonClose = self._addControlButton(self.x + self.buttonWidth + 30, self.y + 190, 80, self.buttonHeight, label=self.settings.getLocalizedString(30084), alignment=2 + 4)
+		self.buttonOK = self._addControlButton(self.x + 40, self.y + 190, 80, self.buttonHeight, self.settings.getLocalizedString(30066), alignment=2 + 4)
+		self.buttonClose = self._addControlButton(self.x + self.buttonWidth + 30, self.y + 190, 80, self.buttonHeight, self.settings.getLocalizedString(30084), alignment=2 + 4)
 		self.addControls(self.includedButtons + self.excludedButtons + [self.buttonOK, self.buttonClose])
 		self.buttonOKid = self.buttonOK.getId()
 		self.buttonCloseID = self.buttonClose.getId()

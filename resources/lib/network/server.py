@@ -210,7 +210,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 		if deleted:
 			self.server.accountManager.setAccounts()
-			self.server.dialog.ok(30097)
+			self.server.dialog.notification(30097)
 			xbmc.executebuiltin("Container.Refresh")
 		else:
 			self.server.dialog.ok(30098)
@@ -265,7 +265,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			xbmc.executebuiltin(f"SetFocus({cid - 21})")
 			xbmc.executebuiltin(f"SetFocus({cid})")
 
-		self.server.dialog.ok(30055)
+		self.server.dialog.notification(30055)
 
 	def handleDeleteSyncFolder(self):
 		postData = self.getPostDataJSON()
@@ -276,7 +276,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		deleted = self.server.fileOperations.deleteFolder(syncRoot)
 
 		if not deleted:
-			self.server.dialog.notification(30096)
+			self.server.dialog.ok(30096)
 		else:
 
 			if not self.server.cache.getSyncRootPath():
@@ -432,7 +432,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 		if os.path.exists(oldSyncPath):
 			self.server.fileOperations.renameFolder(newSyncPath, oldSyncPath, newSyncPath, deleteEmptyDirs=False)
-			self.server.dialog.ok(30031)
+			self.server.dialog.notification(30031)
 
 		self.server.taskManager.run()
 

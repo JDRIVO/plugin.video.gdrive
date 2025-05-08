@@ -83,11 +83,11 @@ class ResolutionSelector(xbmcgui.WindowDialog):
 		for resolution in self.resolutions:
 			buttons.append(
 				xbmcgui.ControlButton(
-					x=self.x,
-					y=self.y + spacing,
-					width=self.windowWidth,
-					height=self.buttonHeight,
-					label=resolution,
+					self.x,
+					self.y + spacing,
+					self.windowWidth,
+					self.buttonHeight,
+					resolution,
 					noFocusTexture=self.grayTexture,
 					focusTexture=self.focusTexture,
 					alignment=2 + 4,

@@ -112,7 +112,8 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			noFocusTexture=self.grayTexture,
 		)
 		self.backgroundDarkGrayGdrive = self._addControlImage(
-			self.center - 5, 185 + self.buttonSpacing,
+			self.center - 5,
+			185 + self.buttonSpacing,
 			self.buttonWidth + 10,
 			self.buttonHeight * len(self.gdriveButtons) + 10,
 			self.dGrayTexture,
@@ -182,11 +183,11 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 
 	def _addControlEdit(self, label):
 		return xbmcgui.ControlEdit(
-			x=0,
-			y=0,
-			width=self.buttonWidth,
-			height=self.buttonHeight,
-			label=f"{label}",
+			0,
+			0,
+			self.buttonWidth,
+			self.buttonHeight,
+			f"{label}",
 			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
 			_alignment=4,
@@ -194,11 +195,11 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 
 	def _addControlRadioButton(self, label):
 		return xbmcgui.ControlRadioButton(
-			x=0,
-			y=0,
-			width=self.buttonWidth,
-			height=self.buttonHeight,
-			label=label,
+			0,
+			0,
+			self.buttonWidth,
+			self.buttonHeight,
+			label,
 			noFocusOffTexture=self.focusOffTexture,
 			focusOffTexture=self.focusOffTexture,
 			focusOnTexture=self.focusOnTexture,
@@ -262,16 +263,18 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 		self._addBackground()
 		self.buttonOK = self._addControlButton(
 			self.center,
-			self.windowBottom - 60, 100,
+			self.windowBottom - 60,
+			100,
 			self.buttonHeight,
-			label=self.settings.getLocalizedString(30066),
+			self.settings.getLocalizedString(30066),
 			alignment=2 + 4,
 		)
 		self.buttonClose = self._addControlButton(
 			self.center + 120,
-			self.windowBottom - 60, 100,
+			self.windowBottom - 60,
+			100,
 			self.buttonHeight,
-			label=self.settings.getLocalizedString(30067),
+			self.settings.getLocalizedString(30067),
 			alignment=2 + 4,
 		)
 		self.addControls(buttons + [self.buttonOK, self.buttonClose])
@@ -286,9 +289,9 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 	def _displayNotification(self):
 
 		if self.mode == "add":
-			self.dialog.ok(30124)
+			self.dialog.notification(30124)
 		else:
-			self.dialog.ok(30125)
+			self.dialog.notification(30125)
 
 	def _initializePaths(self):
 		mediaPath = os.path.join(xbmcaddon.Addon().getAddonInfo("path"), "resources", "media")

@@ -175,11 +175,11 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 	def _addControlButton(self, label, x, folderSettings=None):
 		button = xbmcgui.ControlButton(
-			x=x,
-			y=self.y + self.buttonSpacing,
-			width=self.buttonWidth,
-			height=self.buttonHeight,
-			label=label,
+			x,
+			self.y + self.buttonSpacing,
+			self.buttonWidth,
+			self.buttonHeight,
+			label,
 			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
 		)
@@ -211,11 +211,11 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 	def _addRadioButton(self, label, isEnabled, x):
 		button = xbmcgui.ControlRadioButton(
-			x=x,
-			y=self.y + self.buttonSpacing,
-			width=self.buttonWidth,
-			height=self.buttonHeight,
-			label=label,
+			x,
+			self.y + self.buttonSpacing,
+			self.buttonWidth,
+			self.buttonHeight,
+			label,
 			noFocusOffTexture=self.focusOffTexture,
 			focusOffTexture=self.focusOffTexture,
 			focusOnTexture=self.focusOnTexture,
@@ -258,21 +258,21 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		self.pushButtonIDs = [button.getId() for button in self.pushButtons]
 		self.buttonOK = xbmcgui.ControlButton(
-			x=self.center + 80 if self.folders else self.center,
-			y=self.windowBottom - 60,
-			width=100,
-			height=self.buttonHeight,
-			label=self.settings.getLocalizedString(30066),
+			self.center + 80 if self.folders else self.center,
+			self.windowBottom - 60,
+			100,
+			self.buttonHeight,
+			self.settings.getLocalizedString(30066),
 			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.focusTexture,
 			alignment=2 + 4,
 		)
 		self.buttonClose = xbmcgui.ControlButton(
-			x=self.center + 200 if self.folders else self.center + 120,
-			y=self.windowBottom - 60,
-			width=100,
-			height=self.buttonHeight,
-			label=self.settings.getLocalizedString(30067),
+			self.center + 200 if self.folders else self.center + 120,
+			self.windowBottom - 60,
+			100,
+			self.buttonHeight,
+			self.settings.getLocalizedString(30067),
 			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.focusTexture,
 			alignment=2 + 4,
@@ -353,11 +353,11 @@ class SyncSettings(xbmcgui.WindowDialog):
 		}
 		self.functions.update(functions)
 		buttonGeneral = xbmcgui.ControlButton(
-			x=self.center - 80,
-			y=self.y + 60,
-			width=140,
-			height=self.buttonHeight,
-			label=self.settings.getLocalizedString(30065),
+			self.center - 80,
+			self.y + 60,
+			140,
+			self.buttonHeight,
+			self.settings.getLocalizedString(30065),
 			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
 			alignment=2 + 4,
@@ -365,11 +365,11 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.addControl(buttonGeneral)
 		self.buttonSwitchesIDs.append(buttonGeneral.getId())
 		buttonTMDB = xbmcgui.ControlButton(
-			x=self.center - 80,
-			y=self.y + 100,
-			width=140,
-			height=self.buttonHeight,
-			label="TMDB",
+			self.center - 80,
+			self.y + 100,
+			140,
+			self.buttonHeight,
+			"TMDB",
 			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
 			alignment=2 + 4,
@@ -396,11 +396,11 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		for func, value in zip(functions, values):
 			button = xbmcgui.ControlButton(
-				x=self.center + 80,
-				y=self.y + buttonSpacing,
-				width=self.buttonWidth,
-				height=self.buttonHeight,
-				label=func,
+				self.center + 80,
+				self.y + buttonSpacing,
+				self.buttonWidth,
+				self.buttonHeight,
+				func,
 				focusTexture=self.focusTexture,
 				noFocusTexture=self.dGrayTexture,
 			)
@@ -414,11 +414,11 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		label = self.settings.getLocalizedString(30060)
 		button = xbmcgui.ControlRadioButton(
-			x=self.center + 80,
-			y=self.y + buttonSpacing,
-			width=self.buttonWidth,
-			height=self.buttonHeight,
-			label=label,
+			self.center + 80,
+			self.y + buttonSpacing,
+			self.buttonWidth,
+			self.buttonHeight,
+			label,
 			noFocusOffTexture=self.focusOffTexture,
 			focusOffTexture=self.focusOffTexture,
 			focusOnTexture=self.focusOnTexture,

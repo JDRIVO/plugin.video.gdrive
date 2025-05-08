@@ -286,7 +286,6 @@ class Core:
 
 		deletedAccounts = [accountNames[s] for s in selection]
 		self.accountManager.deleteAccounts(deletedAccounts, accounts, driveID)
-		self.dialog.ok(30161 if len(selection) > 1 else 30162)
 		xbmc.executebuiltin("Container.Refresh")
 
 	def deleteAccountsFile(self):
@@ -342,7 +341,7 @@ class Core:
 			xbmc.executebuiltin(f"SetFocus({cid - 19})")
 			xbmc.executebuiltin(f"SetFocus({cid})")
 
-		self.dialog.ok(30117 if len(selection) > 1 else 30130)
+		self.dialog.notification(30117 if len(selection) > 1 else 30130)
 
 	def deleteSyncCache(self):
 		cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()
@@ -351,6 +350,7 @@ class Core:
 		if not confirmation:
 			return
 
+		self.dialog.notification(30088)
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/delete_sync_cache"
 		data = {"cid": cid}
@@ -429,7 +429,7 @@ class Core:
 		if not imported:
 			self.dialog.ok(30037)
 		else:
-			self.dialog.ok(30036)
+			self.dialog.notification(30036)
 			xbmc.executebuiltin("Container.Refresh")
 
 	def importEncryptionProfiles(self):
@@ -444,7 +444,7 @@ class Core:
 		if not imported:
 			self.dialog.ok(30118)
 		else:
-			self.dialog.ok(30119)
+			self.dialog.notification(30119)
 
 	def forceSyncDrive(self):
 		driveID = self.settings.getParameter("drive_id")
@@ -953,6 +953,7 @@ class Core:
 			self.dialog.ok(30102)
 			return
 
+		self.dialog.notification(30076)
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/set_sync_root"
 		data = {"sync_root_new": syncRootNew, "sync_root_old": syncRoot, "cid": cid}
@@ -1000,7 +1001,7 @@ class Core:
 			tokenRefresh = self.cloudService.refreshToken()
 
 			if not tokenRefresh:
-				selection = self.dialog.yesno(f"{accountName} {self.settings.getLocalizedString(30019)}")
+				selection = self.dialog.yesno(f"{accountName} {self.settings.getLocalizedString(30003)}")
 
 				if not selection:
 					return
@@ -1008,7 +1009,7 @@ class Core:
 				self.accountManager.deleteAccount(account, driveID)
 
 			else:
-				self.dialog.ok(30020)
+				self.dialog.notification(30019)
 				return
 
 		elif selection == 2:
@@ -1086,12 +1087,12 @@ class Core:
 
 			if not tokenRefresh:
 
-				if selection := self.dialog.yesno(f"{accountName} {self.settings.getLocalizedString(30019)}"):
+				if selection := self.dialog.yesno(f"{accountName} {self.settings.getLocalizedString(30003)}"):
 					self.accountManager.deleteAccount(account, driveID)
 					deletion = True
 
 		progressDialog.close()
-		self.dialog.ok(30020)
+		self.dialog.notification(30020)
 
 		if deletion:
 			xbmc.executebuiltin("Container.Refresh")
