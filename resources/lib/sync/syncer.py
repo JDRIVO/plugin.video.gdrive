@@ -139,37 +139,28 @@ class Syncer:
 			except os.error:
 				continue
 
-	def _syncFileAdditions(self, files, syncRootPath):
-		syncRootPath = syncRootPath + os.sep
-		threadCount = self.settings.getSettingInt("thread_count", 1)
-		cacheUpdater = SyncCacheUpdater(self.cache)
-		folders = []
+	def _sortChanges(self, changes):
+		trashed, existingFolders, newFolders, files = [], [], [], []
 
-		with RemoteFileProcessor(self.fileOperations, cacheUpdater, threadCount) as fileProcessor:
+		for change in changes:
+			item = change["file"]
 
-			for rootFolderID, directories in files.items():
-				folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
-				folderRenaming = folderSettings["folder_renaming"]
-				fileRenaming = folderSettings["file_renaming"]
-				encryptionID = folderSettings["encryption_id"]
+			if item["trashed"]:
+				trashed.append(item)
+				continue
 
-				if encryptionID:
-					encryptor = EncryptionHandler()
-					encryptor = encryptor if encryptor.setEncryptor(encryptionID) else None
+			if item["mimeType"] == "application/vnd.google-apps.folder":
+				cachedDirectory = self.cache.getDirectory({"folder_id": item["id"]})
+
+				if cachedDirectory:
+					existingFolders.append(item)
 				else:
-					encryptor = None
+					newFolders.append(item)
 
-				for folderID, folder in directories.items():
+			else:
+				files.append(item)
 
-					for files in folder.files.values():
-						[fileProcessor.addFile((file, folder, encryptor)) for file in files]
-
-					if folderRenaming or fileRenaming:
-						folders.append((folder, folderSettings))
-
-		with ThreadPool(threadCount) as pool:
-			localFileProcessor = LocalFileProcessor(self.fileOperations, self.cache, syncRootPath)
-			[pool.submit(localFileProcessor.processFiles, folder, folderSettings, threadCount) for folder, folderSettings in folders]
+		return trashed + existingFolders + newFolders + files
 
 	def _syncDeletions(self, item, syncRootPath, drivePath, pathsToClean):
 		id = item["id"]
@@ -205,6 +196,38 @@ class Syncer:
 			pathsToClean.add(cachedDirectory["root_folder_id"])
 
 		self.deleted = True
+
+	def _syncFileAdditions(self, files, syncRootPath):
+		syncRootPath = syncRootPath + os.sep
+		threadCount = self.settings.getSettingInt("thread_count", 1)
+		cacheUpdater = SyncCacheUpdater(self.cache)
+		folders = []
+
+		with RemoteFileProcessor(self.fileOperations, cacheUpdater, threadCount) as fileProcessor:
+
+			for rootFolderID, directories in files.items():
+				folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
+				folderRenaming = folderSettings["folder_renaming"]
+				fileRenaming = folderSettings["file_renaming"]
+				encryptionID = folderSettings["encryption_id"]
+
+				if encryptionID:
+					encryptor = EncryptionHandler()
+					encryptor = encryptor if encryptor.setEncryptor(encryptionID) else None
+				else:
+					encryptor = None
+
+				for folderID, folder in directories.items():
+
+					for files in folder.files.values():
+						[fileProcessor.addFile((file, folder, encryptor)) for file in files]
+
+					if folderRenaming or fileRenaming:
+						folders.append((folder, folderSettings))
+
+		with ThreadPool(threadCount) as pool:
+			localFileProcessor = LocalFileProcessor(self.fileOperations, self.cache, syncRootPath)
+			[pool.submit(localFileProcessor.processFiles, folder, folderSettings, threadCount) for folder, folderSettings in folders]
 
 	def _syncFileChanges(self, file, parentFolderID, driveID, syncRootPath, drivePath, newFiles, excludedIDs):
 		fileID = file["id"]
@@ -415,26 +438,3 @@ class Syncer:
 
 			if folderID == cachedRootFolderID:
 				self.cache.updateFolder({"local_path": newDirectoryPath, "remote_name": folderName}, folderID)
-
-	def _sortChanges(self, changes):
-		trashed, existingFolders, newFolders, files = [], [], [], []
-
-		for change in changes:
-			item = change["file"]
-
-			if item["trashed"]:
-				trashed.append(item)
-				continue
-
-			if item["mimeType"] == "application/vnd.google-apps.folder":
-				cachedDirectory = self.cache.getDirectory({"folder_id": item["id"]})
-
-				if cachedDirectory:
-					existingFolders.append(item)
-				else:
-					newFolders.append(item)
-
-			else:
-				files.append(item)
-
-		return trashed + existingFolders + newFolders + files

@@ -471,6 +471,14 @@ class SyncSettings(xbmcgui.WindowDialog):
 		else:
 			button.setLabel(label2=" ")
 
+	def _setCountry(self, button):
+		selection = self.dialog.select(30517, TMDB_REGIONS)
+
+		if selection == -1:
+			return
+
+		button.setLabel(label2=TMDB_REGIONS[selection])
+
 	def _setEncryptionProfile(self, button):
 		ids, names = ProfileManager().getProfileEntries()
 
@@ -486,14 +494,6 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		button.setLabel(label2=names[selection])
 		self.encryptionID = ids[selection - 1]
-
-	def _setCountry(self, button):
-		selection = self.dialog.select(30517, TMDB_REGIONS)
-
-		if selection == -1:
-			return
-
-		button.setLabel(label2=TMDB_REGIONS[selection])
 
 	def _setPrefix(self, button):
 		self._setAffix(button, "Prefix")

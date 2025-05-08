@@ -82,11 +82,6 @@ class Episode(Video):
 		self.season = None
 		self.episode = None
 
-	def setData(self, video, metadata, prefix, suffix):
-		super().setData(video, metadata, prefix, suffix)
-		self.season = video["season"]
-		self.episode = video["episode"]
-
 	def formatName(self, cacheManager, titleIdentifier):
 		season = f"{int(self.season):02d}"
 		episode = f"{self.episode:02d}" if isinstance(self.episode, int) else "-".join(f"{e:02d}" for e in self.episode)
@@ -102,3 +97,8 @@ class Episode(Video):
 			title, year = titleInfo
 			cacheManager.addSeries({"original_title": self.title, "original_year": self.year, "new_title": title, "new_year": year})
 			return {"title": title, "year": year, "filename": f"{title} S{season}E{episode}"}
+
+	def setData(self, video, metadata, prefix, suffix):
+		super().setData(video, metadata, prefix, suffix)
+		self.season = video["season"]
+		self.episode = video["episode"]

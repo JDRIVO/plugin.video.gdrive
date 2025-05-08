@@ -171,16 +171,6 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			**kwargs,
 		)
 
-	def _addControlImage(self, x, y, width, height, filename, **kwargs):
-		return xbmcgui.ControlImage(
-			x,
-			y,
-			width,
-			height,
-			filename,
-			**kwargs,
-		)
-
 	def _addControlEdit(self, label):
 		return xbmcgui.ControlEdit(
 			0,
@@ -191,6 +181,16 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
 			_alignment=4,
+		)
+
+	def _addControlImage(self, x, y, width, height, filename, **kwargs):
+		return xbmcgui.ControlImage(
+			x,
+			y,
+			width,
+			height,
+			filename,
+			**kwargs,
 		)
 
 	def _addControlRadioButton(self, label):

@@ -418,34 +418,6 @@ class Core:
 		profileManager.exportProfiles(filePath)
 		self.dialog.ok(f"{self.settings.getLocalizedString(30035)} {filename}")
 
-	def importAccounts(self):
-		filePath = self.dialog.browse(1, 30033, "", mask=".pkl")
-
-		if not filePath:
-			return
-
-		imported = self.accountManager.mergeAccounts(filePath)
-
-		if not imported:
-			self.dialog.ok(30037)
-		else:
-			self.dialog.notification(30036)
-			xbmc.executebuiltin("Container.Refresh")
-
-	def importEncryptionProfiles(self):
-		filePath = self.dialog.browse(1, 30033, "", mask=".pkl")
-
-		if not filePath:
-			return
-
-		profileManager = ProfileManager()
-		imported = profileManager.importProfiles(filePath)
-
-		if not imported:
-			self.dialog.ok(30118)
-		else:
-			self.dialog.notification(30119)
-
 	def forceSyncDrive(self):
 		driveID = self.settings.getParameter("drive_id")
 		serverPort = self.settings.getSettingInt("server_port", 8011)
@@ -505,6 +477,34 @@ class Core:
 		syncSettings = SyncSettings(drive_id=driveID, folder_id=folderID, folder_name=folderName, accounts=self.accounts, mode=mode)
 		syncSettings.doModal()
 		del syncSettings
+
+	def importAccounts(self):
+		filePath = self.dialog.browse(1, 30033, "", mask=".pkl")
+
+		if not filePath:
+			return
+
+		imported = self.accountManager.mergeAccounts(filePath)
+
+		if not imported:
+			self.dialog.ok(30037)
+		else:
+			self.dialog.notification(30036)
+			xbmc.executebuiltin("Container.Refresh")
+
+	def importEncryptionProfiles(self):
+		filePath = self.dialog.browse(1, 30033, "", mask=".pkl")
+
+		if not filePath:
+			return
+
+		profileManager = ProfileManager()
+		imported = profileManager.importProfiles(filePath)
+
+		if not imported:
+			self.dialog.ok(30118)
+		else:
+			self.dialog.notification(30119)
 
 	def listAccounts(self):
 		driveID = self.settings.getParameter("drive_id")
@@ -793,7 +793,7 @@ class Core:
 
 		if help:
 			url = "https://github.com/user-attachments/assets/d9ee3658-76b0-435a-bddd-3f4631fdf19a"
-			listItem = xbmcgui.ListItem("Client ID and Client Secret creation")
+			listItem = xbmcgui.ListItem(self.settings.getLocalizedString(30089))
 			xbmc.Player().play(url, listItem)
 
 	def resolutionPriority(self):
