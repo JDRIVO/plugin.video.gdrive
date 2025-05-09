@@ -111,5 +111,5 @@ with open(strmPath, "w+") as strm:
 	# plugin://plugin.video.gdrive/?mode=video&encrypted=True&file_id=7ctPNMUl4m8B4KBwY
 
 	url = "plugin://plugin.video.gdrive/?mode=video"
-	url += "".join(["&{}={}".format(k, v) for k, v in strmData.items()])
+	url += "".join("&{}={}".format(k, v) for k, v in strmData.items())
 	strm.write(url)

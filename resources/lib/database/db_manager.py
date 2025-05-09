@@ -104,7 +104,7 @@ class DatabaseManager:
 
 	@lock
 	def update(self, table, data, condition=None):
-		setValues = ", ".join([f"{column} = :{column}" for column in data.keys()])
+		setValues = ", ".join(f"{column} = :{column}" for column in data.keys())
 		query = f"UPDATE {table} SET {setValues}"
 
 		if condition:
