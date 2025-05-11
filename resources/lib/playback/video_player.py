@@ -3,7 +3,7 @@ from threading import Thread
 import xbmc
 
 from constants import SETTINGS
-from helpers import sendJSONRPCCommand
+from helpers import rpc
 
 
 class VideoPlayer(xbmc.Player):
@@ -60,20 +60,16 @@ class VideoPlayer(xbmc.Player):
 
 			if self.dbType == "movie":
 				query = {
-					"jsonrpc": "2.0",
-					"id": 1,
 					"method": "VideoLibrary.SetMovieDetails",
 					"params": {"movieid": self.dbID, "playcount": 1, "resume": {"position": 0, "total": 0}},
 				}
 			else:
 				query = {
-					"jsonrpc": "2.0",
-					"id": 1,
 					"method": "VideoLibrary.SetEpisodeDetails",
 					"params": {"episodeid": self.dbID, "playcount": 1, "resume": {"position": 0, "total": 0}},
 				}
 
-			sendJSONRPCCommand(query)
+			rpc(query)
 
 	def _updateTime(self):
 

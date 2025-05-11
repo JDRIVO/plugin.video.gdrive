@@ -4,7 +4,7 @@ from helpers import rfcToTimestamp
 from .file import File
 from .video import Episode, Movie, Video
 from .fs_helpers import removeProhibitedFSchars
-from .fs_constants import IMAGE_EXTENSIONS, MEDIA_ASSETS, SUBTITLE_EXTENSIONS, VIDEO_EXTENSIONS
+from .fs_constants import ARTWORK, IMAGE_EXTENSIONS, SUBTITLE_EXTENSIONS, VIDEO_EXTENSIONS
 from .. import ptn
 
 
@@ -100,7 +100,7 @@ def _identifyFileType(filename, fileExtension, mimeType):
 		return "subtitles"
 	elif fileExtension in IMAGE_EXTENSIONS:
 		filename = filename.lower()
-		return next((type for type in MEDIA_ASSETS if type in filename), None)
+		return next((type for type in ARTWORK if type in filename), None)
 	elif fileExtension == "strm":
 		return "strm"
 

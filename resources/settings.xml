@@ -25,15 +25,15 @@
 					<default>Subtitles aren't named the same as STRM and are in an isolated folder with STRM</default>
 					<constraints>
 						<options>
-							<option>Subtitles aren't named the same as STRM and are in an isolated folder with STRM</option>
-							<option>Subtitles are named the same as STRM</option>
+							<option label="30304">Subtitles aren't named the same as STRM and are in an isolated folder with STRM</option>
+							<option label="30305">Subtitles are named the same as STRM</option>
 						</options>
 					</constraints>
 					<control type="list" format="string">
 						<heading>30303</heading>
 					</control>
 				</setting>
-				<setting id="default_playback_account_name" type="string" label="30304" help="">
+				<setting id="default_playback_account_name" type="string" label="30306" help="">
 					<level>0</level>
 					<default/>
 					<constraints>

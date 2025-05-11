@@ -3,7 +3,7 @@ import time
 
 import xbmc
 
-from helpers import sendJSONRPCCommand
+from helpers import rpc
 from .sync_cache_updater import SyncCacheUpdater
 from ..filesystem.folder import Folder
 from ..filesystem.file_tree import FileTree
@@ -90,12 +90,10 @@ class Syncer:
 					syncRootPath = syncRootPath.replace("\\", "\\\\")
 
 				query = {
-					"jsonrpc": "2.0",
-					"id": 1,
 					"method": "VideoLibrary.Clean",
 					"params": {"showdialogs": False, "content": "video", "directory": syncRootPath},
 				}
-				sendJSONRPCCommand(query)
+				rpc(query)
 
 		self.cache.updateDrive({"page_token": pageToken, "last_sync": time.time()}, driveID)
 		return True

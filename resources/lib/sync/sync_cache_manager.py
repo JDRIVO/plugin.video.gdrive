@@ -144,7 +144,7 @@ class SyncCacheManager(DatabaseManager):
 	def getTable(self):
 		return self.select("sqlite_master", "name", {"type": "table", "name": "global"})
 
-	def getUniqueDirectoryPath(self, driveID, path, folderID=None, paths=set()):
+	def getUniqueDirectoryPath(self, driveID, path, folderID=None, paths=None):
 		path_ = path
 		copy = 1
 

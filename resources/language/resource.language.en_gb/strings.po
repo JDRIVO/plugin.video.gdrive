@@ -527,8 +527,8 @@ msgid "You must assign a salt."
 msgstr "You must assign a salt."
 
 msgctxt "#30129"
-msgid "Profile deletion"
-msgstr "Profile deletion"
+msgid "Profile Deletion"
+msgstr "Profile Deletion"
 
 msgctxt "#30130"
 msgid "Profile deleted"
@@ -655,6 +655,14 @@ msgid "Subtitle format"
 msgstr "Subtitle format"
 
 msgctxt "#30304"
+msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
+msgstr "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
+
+msgctxt "#30305"
+msgid "Subtitles are named the same as STRM"
+msgstr "Subtitles are named the same as STRM"
+
+msgctxt "#30306"
 msgid "Default playback account"
 msgstr "Default playback account"
 

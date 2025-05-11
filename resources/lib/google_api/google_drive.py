@@ -227,7 +227,7 @@ class GoogleDrive:
 		}
 		return http_requester.request(GOOGLE_TOKEN_URL, data)
 
-	def listDirectory(self, folderID="root", sharedWithMe=False, starred=False, search=False, customQuery=None):
+	def listDirectory(self, folderID="root", sharedWithMe=False, starred=False, searchQuery=None, customQuery=None):
 		params = {
 			"supportsAllDrives": "true",
 			"includeItemsFromAllDrives": "true",
@@ -243,8 +243,8 @@ class GoogleDrive:
 				params["q"] = "mimeType='application/vnd.google-apps.folder' and sharedWithMe=true and not trashed"
 			elif starred:
 				params["q"] = "mimeType='application/vnd.google-apps.folder' and starred and not trashed"
-			elif search:
-				params["q"] = f"mimeType='application/vnd.google-apps.folder' and name contains '{search}' and not trashed"
+			elif searchQuery:
+				params["q"] = f"mimeType='application/vnd.google-apps.folder' and name contains '{searchQuery}' and not trashed"
 			else:
 				params["q"] = f"mimeType='application/vnd.google-apps.folder' and '{folderID}' in parents and not trashed"
 

@@ -58,7 +58,8 @@ def secondsToHMS(seconds):
 	return time
 
 
-def sendJSONRPCCommand(query):
+def rpc(query):
+	query.update({"jsonrpc": "2.0", "id": 1})
 	query = json.dumps(query)
 	return json.loads(xbmc.executeJSONRPC(query))
 

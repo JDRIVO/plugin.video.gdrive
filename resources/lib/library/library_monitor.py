@@ -4,7 +4,7 @@ import json
 import xbmc
 
 from constants import SETTINGS
-from helpers import sendJSONRPCCommand
+from helpers import rpc
 from .library_editor import DatabaseEditor
 
 
@@ -30,13 +30,11 @@ class LibraryMonitor(xbmc.Monitor):
 
 		if type in ("movie", "episode"):
 			query = {
-				"jsonrpc": "2.0",
-				"id": "1",
 				"method": "VideoLibrary.GetMovieDetails" if type == "movie" else "VideoLibrary.GetEpisodeDetails",
 				"params": {f"{type}id": item["id"], "properties": ["file"]},
 			}
-			jsonResponse = sendJSONRPCCommand(query)
-			filePath = jsonResponse["result"][f"{type}details"]["file"]
+			response = rpc(query)
+			filePath = response["result"][f"{type}details"]["file"]
 			dirPath = os.path.dirname(filePath)
 			filename = os.path.basename(filePath)
 			fileExtension = os.path.splitext(filename)[1]

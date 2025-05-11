@@ -430,13 +430,13 @@ class Core:
 		url = f"http://localhost:{serverPort}/sync_all"
 		http_requester.request(url)
 
-	def getFolders(self, driveID, folderID, search=False):
+	def getFolders(self, driveID, folderID, searchQuery=None):
 		account = self.accountManager.getAccount(driveID)
 		self.cloudService.setAccount(account)
 		self.refreshToken(account.tokenExpiry)
 		sharedWithMe = self.settings.getParameter("shared_with_me")
 		starred = self.settings.getParameter("starred")
-		return self.cloudService.listDirectory(folderID=folderID, sharedWithMe=sharedWithMe, starred=starred, search=search)
+		return self.cloudService.listDirectory(folderID=folderID, sharedWithMe=sharedWithMe, starred=starred, searchQuery=searchQuery)
 
 	def getSpecificFolders(self, searchQuery, folders, folderIDs, threadCount):
 
@@ -640,7 +640,7 @@ class Core:
 	def modifyEncryptionProfile(self):
 		profileManager = ProfileManager()
 		ids, names = profileManager.getProfileEntries()
-		selection = self.dialog.select(self.settings.getLocalizedString(30116), names)
+		selection = self.dialog.select(30116, names)
 
 		if selection == -1:
 			return
@@ -755,7 +755,7 @@ class Core:
 		http_requester.request(url, data)
 		item = xbmcgui.ListItem(os.path.basename(filePath), path=f"http://localhost:{serverPort}/play")
 
-		if self.settings.getSetting("subtitles_format") == "Subtitles are named the same as STRM":
+		if self.settings.getSetting("subtitles_format") == self.settings.getLocalizedString(30305):
 			subtitles = glob.glob(glob.escape(filePath) + "*[!gom]")
 			item.setSubtitles(subtitles)
 		else:
@@ -814,7 +814,7 @@ class Core:
 			return
 
 		driveID = self.settings.getParameter("drive_id")
-		folders = self.getFolders(driveID, driveID, search=searchQuery)
+		folders = self.getFolders(driveID, driveID, searchQuery=searchQuery)
 		self.listFolders(driveID, folders)
 
 	def searchFolder(self):
@@ -1076,14 +1076,13 @@ class Core:
 
 		for account in list(accounts):
 			accountName = account.name
+			progressDialog.update(int(round(count / accountAmount * 100)), accountName)
+			self.cloudService.setAccount(account)
+			tokenRefresh = self.cloudService.refreshToken()
+			count += 1
 
 			if progressDialog.iscanceled():
 				return
-
-			self.cloudService.setAccount(account)
-			tokenRefresh = self.cloudService.refreshToken()
-			progressDialog.update(int(round(count / accountAmount * 100)), accountName)
-			count += 1
 
 			if not tokenRefresh:
 
