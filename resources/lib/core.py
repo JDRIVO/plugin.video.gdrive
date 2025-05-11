@@ -436,7 +436,7 @@ class Core:
 		self.refreshToken(account.tokenExpiry)
 		sharedWithMe = self.settings.getParameter("shared_with_me")
 		starred = self.settings.getParameter("starred")
-		return self.cloudService.listDirectory(folderID=folderID, sharedWithMe=sharedWithMe, foldersOnly=True, starred=starred, search=search)
+		return self.cloudService.listDirectory(folderID=folderID, sharedWithMe=sharedWithMe, starred=starred, search=search)
 
 	def getSpecificFolders(self, searchQuery, folders, folderIDs, threadCount):
 

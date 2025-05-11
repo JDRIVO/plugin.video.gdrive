@@ -550,6 +550,30 @@ msgctxt "#30134"
 msgid "Base Name"
 msgstr "Base Name"
 
+msgctxt "#30135"
+msgid "second"
+msgstr "second"
+
+msgctxt "#30136"
+msgid "seconds"
+msgstr "seconds"
+
+msgctxt "#30137"
+msgid "minute"
+msgstr "minute"
+
+msgctxt "#30138"
+msgid "minutes"
+msgstr "minutes"
+
+msgctxt "#30139"
+msgid "hour"
+msgstr "hour"
+
+msgctxt "#30140"
+msgid "hours"
+msgstr "hours"
+
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
 msgstr "Are you sure you want to delete account:"

@@ -107,14 +107,13 @@ class GoogleDrive:
 			basePath = cachedFolder["local_path"]
 			encryptionID = cachedFolder["encryption_id"]
 
-		if encryptionID:
+		if not encryptionID:
+			encryptor = None
+		else:
 			encryptorSet = encryptor.setEncryptor(encryptionID)
 
 			if not encryptorSet:
 				encryptor = None
-
-		else:
-			encryptor = None
 
 		dirs = [removeProhibitedFSchars(encryptor.decryptDirName(dir)) if encryptor else removeProhibitedFSchars(dir) for dir in dirs]
 		dirPath = os.path.join(basePath, *dirs).rstrip(os.sep)
@@ -228,7 +227,7 @@ class GoogleDrive:
 		}
 		return http_requester.request(GOOGLE_TOKEN_URL, data)
 
-	def listDirectory(self, folderID="root", sharedWithMe=False, foldersOnly=False, starred=False, search=False, customQuery=False):
+	def listDirectory(self, folderID="root", sharedWithMe=False, starred=False, search=False, customQuery=None):
 		params = {
 			"supportsAllDrives": "true",
 			"includeItemsFromAllDrives": "true",
@@ -238,7 +237,7 @@ class GoogleDrive:
 		if customQuery:
 			params["q"] = customQuery
 			params["fields"] = "nextPageToken,files(id,parents,name,mimeType,videoMediaMetadata,fileExtension,modifiedTime)"
-		elif foldersOnly:
+		else:
 
 			if sharedWithMe:
 				params["q"] = "mimeType='application/vnd.google-apps.folder' and sharedWithMe=true and not trashed"

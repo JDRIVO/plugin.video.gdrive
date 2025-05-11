@@ -4,6 +4,8 @@ import datetime
 
 import xbmc
 
+from constants import SETTINGS
+
 
 def floorDT(dt, interval):
 	replace = (dt.minute // interval) * interval
@@ -19,14 +21,14 @@ def getElapsedTime(timestamp):
 	hours, remainder = divmod(round(secondsElapsed), 3600)
 
 	if hours:
-		return f"{hours} hours" if hours > 1 else f"{hours} hour"
+		return f"{hours} {SETTINGS.getLocalizedString(30140)}" if hours > 1 else f"{hours} {SETTINGS.getLocalizedString(30139)}"
 
 	minutes, seconds = divmod(remainder, 60)
 
 	if minutes:
-		return f"{minutes} minutes" if minutes > 1 else f"{minutes} minute"
+		return f"{minutes} {SETTINGS.getLocalizedString(30138)}" if minutes > 1 else f"{minutes} {SETTINGS.getLocalizedString(30137)}"
 	else:
-		return f"{seconds} seconds" if seconds > 1 else f"{seconds} second"
+		return f"{seconds} {SETTINGS.getLocalizedString(30136)}" if seconds > 1 else f"{seconds} {SETTINGS.getLocalizedString(30135)}"
 
 
 def rfcToTimestamp(dateString):

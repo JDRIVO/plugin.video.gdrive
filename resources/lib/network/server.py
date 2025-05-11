@@ -508,12 +508,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			return
 
 		synced = self.server.taskManager.sync(driveID)
-
-		if synced:
-			id = 30044
-		else:
-			id = 30133
-
+		id = 30044 if synced else 30133
 		self.server.dialog.notification(id)
 
 	def handleSyncAll(self):

@@ -193,12 +193,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		elif label == self.settings.getLocalizedString(30050):
 			button.setLabel(label2=self.syncFrequency)
 		elif label == self.settings.getLocalizedString(30509):
-
-			if folderSettings:
-				encryptionID = folderSettings["encryption_id"]
-			else:
-				encryptionID = self.settings.getSetting("encryption_id")
-
+			encryptionID = folderSettings["encryption_id"] if folderSettings else self.settings.getSetting("encryption_id")
 			profileManager = ProfileManager()
 			profile = profileManager.getProfile(encryptionID)
 			label2 = profile.name if profile else " "
