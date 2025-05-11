@@ -265,13 +265,13 @@ class SyncCacheManager(DatabaseManager):
 		while directories:
 			directory = directories.pop()
 			folderID = directory["folder_id"]
-			directory["local_path"] = directory["local_path"].replace(oldPath, newPath, 1)
-			self.updateDirectory(directory, folderID)
 
 			if folderID in processedIDs:
 				continue
 
 			processedIDs.add(folderID)
+			directory["local_path"] = directory["local_path"].replace(oldPath, newPath, 1)
+			self.updateDirectory(directory, folderID)
 			directories += self.getDirectories({"parent_folder_id": folderID})
 
 	def updateDirectory(self, data, folderID):
