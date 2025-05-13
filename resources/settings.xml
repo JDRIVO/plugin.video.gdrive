@@ -12,28 +12,34 @@
 					<level>0</level>
 					<default>Original, 1080P, 720P, 480P, 360P</default>
 					<dependencies>
-						<dependency type="enable">
-							<condition operator="is" setting="resolution_prompt">false</condition>
-						</dependency>
+						<dependency type="enable" setting="resolution_prompt">false</dependency>
 					</dependencies>
 					<control type="button" format="action">
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=resolution_priority)</data>
 					</control>
 				</setting>
-				<setting id="subtitles_format" type="string" label="30303" help="">
+				<setting id="set_subtitles_automatically" type="boolean" label="30303" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="subtitles_format" type="string" label="30304" parent="set_subtitles_automatically" help="">
 					<level>0</level>
 					<default>Subtitles aren't named the same as STRM and are in an isolated folder with STRM</default>
+					<dependencies>
+						<dependency type="enable" setting="set_subtitles_automatically">true</dependency>
+					</dependencies>
 					<constraints>
 						<options>
-							<option label="30304">Subtitles aren't named the same as STRM and are in an isolated folder with STRM</option>
-							<option label="30305">Subtitles are named the same as STRM</option>
+							<option label="30305">Subtitles aren't named the same as STRM and are in an isolated folder with STRM</option>
+							<option label="30306">Subtitles are named the same as STRM</option>
 						</options>
 					</constraints>
 					<control type="list" format="string">
-						<heading>30303</heading>
+						<heading>30304</heading>
 					</control>
 				</setting>
-				<setting id="default_playback_account_name" type="string" label="30306" help="">
+				<setting id="default_playback_account_name" type="string" label="30307" help="">
 					<level>0</level>
 					<default/>
 					<constraints>

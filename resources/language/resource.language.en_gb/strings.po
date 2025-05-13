@@ -643,18 +643,22 @@ msgid "Video resolution priority"
 msgstr "Video resolution priority"
 
 msgctxt "#30303"
+msgid "Set subtitles automatically"
+msgstr "Set subtitles automatically"
+
+msgctxt "#30304"
 msgid "Subtitle format"
 msgstr "Subtitle format"
 
-msgctxt "#30304"
+msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
 msgstr "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
 
-msgctxt "#30305"
+msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
 msgstr "Subtitles are named the same as STRM"
 
-msgctxt "#30306"
+msgctxt "#30307"
 msgid "Default playback account"
 msgstr "Default playback account"
 

@@ -1,6 +1,5 @@
 import os
 import sys
-import glob
 import json
 import time
 import datetime
@@ -26,7 +25,7 @@ from .google_api.google_drive import GoogleDrive
 from .sync.sync_cache_manager import SyncCacheManager
 from .encryption.profile_manager import ProfileManager
 from .filesystem.fs_helpers import removeProhibitedFSchars
-from .filesystem.fs_constants import TMDB_LANGUAGES, TMDB_REGIONS
+from .filesystem.fs_constants import SUBTITLE_EXTENSIONS, TMDB_LANGUAGES, TMDB_REGIONS
 
 
 class Core:
@@ -680,6 +679,7 @@ class Core:
 				filePath = xbmc.getInfoLabel("ListItem.FileNameAndPath")
 
 		filePath = filePath[:-5]
+		filename = os.path.basename(filePath)
 		fileID = self.settings.getParameter("file_id")
 		driveURL = self.cloudService.getDownloadURL(fileID)
 		driveID = self.settings.getParameter("drive_id") or self.settings.getSetting("default_playback_account_id")
@@ -753,13 +753,30 @@ class Core:
 			"transcoded": transcoded,
 		}
 		http_requester.request(url, data)
-		item = xbmcgui.ListItem(os.path.basename(filePath), path=f"http://localhost:{serverPort}/play")
+		item = xbmcgui.ListItem(filename, path=f"http://localhost:{serverPort}/play")
 
-		if self.settings.getSetting("subtitles_format") == self.settings.getLocalizedString(30305):
-			subtitles = glob.glob(glob.escape(filePath) + "*[!gom]")
-			item.setSubtitles(subtitles)
-		else:
-			subtitles = glob.glob(glob.escape(os.path.dirname(filePath) + os.sep) + "*[!gom]")
+		if self.settings.getSetting("set_subtitles_automatically"):
+			subtitles = []
+
+			with os.scandir(os.path.dirname(filePath)) as entries:
+
+				if self.settings.getSetting("subtitles_format") == self.settings.getLocalizedString(30305):
+
+					for entry in entries:
+
+						if entry.is_file() and entry.name.lower().endswith(SUBTITLE_EXTENSIONS):
+							subtitles.append(entry.path)
+
+				else:
+
+					for entry in entries:
+
+						if entry.is_file():
+							name, extension = os.path.splitext(entry.name)
+
+							if name == filename and extension.lstrip(".").lower() in SUBTITLE_EXTENSIONS:
+								subtitles.append(entry.path)
+
 			item.setSubtitles(subtitles)
 
 		xbmcplugin.setResolvedUrl(self.pluginHandle, True, item)
