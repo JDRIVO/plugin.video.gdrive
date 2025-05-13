@@ -298,14 +298,6 @@ msgctxt "#30071"
 msgid "Enter the time to sync files"
 msgstr "Enter the time to sync files"
 
-msgctxt "#30072"
-msgid "Are you sure you want to stop syncing this folder?"
-msgstr "Are you sure you want to stop syncing this folder?"
-
-msgctxt "#30073"
-msgid "Are you sure you want to stop syncing all folders?"
-msgstr "Are you sure you want to stop syncing all folders?"
-
 msgctxt "#30074"
 msgid "Deleting sync folder"
 msgstr "Deleting sync folder"

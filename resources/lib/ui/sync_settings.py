@@ -649,24 +649,22 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 	def _stopSyncingFolder(self, *args):
 		folders = [self.cache.getFolder({"folder_id": self.folderID})]
-		selection = self.dialog.yesno(30072)
+		deleteFiles = self.dialog.yesnocustom(30063, 30067, defaultbutton=xbmcgui.DLG_YESNO_CUSTOM_BTN)
 
-		if not selection:
+		if deleteFiles in (-1, 2):
 			return
 
-		deleteFiles = self.dialog.yesno(30063, defaultbutton=xbmcgui.DLG_YESNO_YES_BTN)
 		self.close()
 		data = {"drive_id": self.driveID, "folders": folders, "delete_files": deleteFiles}
 		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"
 		http_requester.request(url, data)
 
 	def _stopSyncingFolders(self, *args):
-		selection = self.dialog.yesno(30073)
+		deleteFiles = self.dialog.yesnocustom(30064, 30067, defaultbutton=xbmcgui.DLG_YESNO_CUSTOM_BTN)
 
-		if not selection:
+		if deleteFiles in (-1, 2):
 			return
 
-		deleteFiles = self.dialog.yesno(30064, defaultbutton=xbmcgui.DLG_YESNO_YES_BTN)
 		self.close()
 		data = {"drive_id": self.driveID, "delete_files": deleteFiles}
 		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"

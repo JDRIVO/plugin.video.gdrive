@@ -41,6 +41,11 @@ class Dialog(xbmcgui.Dialog):
 		heading, message = self._resolve(heading, message)
 		return super().yesno(heading, message, nolabel, yeslabel, autoclose, defaultbutton)
 
+	def yesnocustom(self, message, customlabel, heading=None, nolabel=None, yeslabel=None, autoclose=0, defaultbutton=xbmcgui.DLG_YESNO_NO_BTN):
+		heading, message = self._resolve(heading, message)
+		customlabel = self._resolveMessage(customlabel)
+		return super().yesnocustom(heading, message, customlabel, nolabel, yeslabel, autoclose, defaultbutton)
+
 	def _resolve(self, heading, message):
 		return self._resolveHeading(heading), self._resolveMessage(message)
 
