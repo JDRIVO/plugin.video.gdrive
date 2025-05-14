@@ -757,7 +757,7 @@ class Core:
 		http_requester.request(url, data)
 		item = xbmcgui.ListItem(filename, path=f"http://localhost:{serverPort}/play")
 
-		if self.settings.getSetting("set_subtitles_automatically"):
+		if self.settings.getSetting("set_subtitles"):
 			subtitles = []
 
 			with os.scandir(os.path.dirname(filePath)) as entries:

@@ -18,16 +18,16 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=resolution_priority)</data>
 					</control>
 				</setting>
-				<setting id="set_subtitles_automatically" type="boolean" label="30303" help="">
+				<setting id="set_subtitles" type="boolean" label="30303" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="subtitles_format" type="string" label="30304" parent="set_subtitles_automatically" help="">
+				<setting id="subtitles_format" type="string" label="30304" parent="set_subtitles" help="">
 					<level>0</level>
 					<default>Subtitles aren't named the same as STRM and are in an isolated folder with STRM</default>
 					<dependencies>
-						<dependency type="enable" setting="set_subtitles_automatically">true</dependency>
+						<dependency type="enable" setting="set_subtitles">true</dependency>
 					</dependencies>
 					<constraints>
 						<options>
