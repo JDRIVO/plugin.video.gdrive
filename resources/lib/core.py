@@ -10,7 +10,7 @@ import xbmcvfs
 import xbmcplugin
 
 from constants import *
-from helpers import getElapsedTime
+from helpers import getElapsedTime, rpc
 from .ui.dialogs import Dialog
 from .ui.strm_affixer import StrmAffixer
 from .ui.sync_settings import SyncSettings
@@ -18,6 +18,7 @@ from .ui.resolution_order import ResolutionOrder
 from .ui.encryption_settings import EncryptionSettings
 from .ui.resolution_selector import ResolutionSelector
 from .network import http_requester
+from .network.network_helpers import unquote
 from .accounts.account import ServiceAccount
 from .accounts.account_manager import AccountManager
 from .threadpool.threadpool import ThreadPool
@@ -87,6 +88,7 @@ class Core:
 			"set_sync_root": self.setSyncRoot,
 			"set_tmdb_language": self.setTMDBlanguage,
 			"set_tmdb_region": self.setTMDBregion,
+			"set_video_source": self.setVideoSource,
 			"sync_all_folders": self.syncAllFolders,
 			"sync_folder": self.syncFolder,
 			"sync_multiple_folders": self.syncMultipleFolders,
@@ -977,7 +979,7 @@ class Core:
 		http_requester.request(url, data)
 
 	def setTMDBlanguage(self):
-		selection = self.dialog.select(30516, TMDB_LANGUAGES)
+		selection = self.dialog.select(30515, TMDB_LANGUAGES)
 
 		if selection == -1:
 			return
@@ -985,12 +987,40 @@ class Core:
 		self.settings.setSetting("tmdb_language", TMDB_LANGUAGES[selection])
 
 	def setTMDBregion(self):
-		selection = self.dialog.select(30517, TMDB_REGIONS)
+		selection = self.dialog.select(30516, TMDB_REGIONS)
 
 		if selection == -1:
 			return
 
 		self.settings.setSetting("tmdb_region", TMDB_REGIONS[selection])
+
+	def setVideoSource(self):
+		response = rpc({"method": "Files.GetSources", "params": {"media": "video"}})
+		sources = response.get("result", {}).get("sources", [])
+		listItems = []
+
+		for source in sources:
+			file = source["file"]
+
+			if file.startswith("addons://"):
+				continue
+
+			if file.startswith("multipath://"):
+				paths = [unquote(p) for p in file[len("multipath://"):].split("/") if p]
+			else:
+				paths = [file]
+
+			for path in paths:
+				listItem = xbmcgui.ListItem(source["label"], path)
+				listItem.setArt({"thumb": "DefaultFolder.png", "icon": "DefaultFolder.png"})
+				listItems.append(listItem)
+
+		selection = self.dialog.select(30072, listItems, useDetails=True)
+
+		if selection == -1:
+			return
+
+		self.settings.setSetting("video_source", os.path.normpath(listItems[selection].getLabel2()))
 
 	def showAccountsContextMenu(self):
 		options = [

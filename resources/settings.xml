@@ -93,6 +93,29 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="update_library" type="boolean" label="30404" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="clean_library" type="boolean" label="30405" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="video_source" type="string" label="30406" parent="clean_library" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable" setting="clean_library">true</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_video_source)</data>
+					</control>
+				</setting>
 			</group>
 		</category>
 		<category id="sync" label="30500" help="">
@@ -109,12 +132,7 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="update_library" type="boolean" label="30502" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="sync_root" type="string" label="30503" help="">
+				<setting id="sync_root" type="string" label="30502" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -124,7 +142,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_sync_root)</data>
 					</control>
 				</setting>
-				<setting id="delete_sync_cache" type="string" label="30504" help="">
+				<setting id="delete_sync_cache" type="string" label="30503" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -134,7 +152,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=delete_sync_cache)</data>
 					</control>
 				</setting>
-				<setting id="delete_sync_folder" type="string" label="30505" help="">
+				<setting id="delete_sync_folder" type="string" label="30504" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -145,8 +163,8 @@
 					</control>
 				</setting>
 			</group>
-			<group id="2" label="30506">
-				<setting id="strm_prefix" type="string" label="30507" help="">
+			<group id="2" label="30505">
+				<setting id="strm_prefix" type="string" label="30506" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -156,7 +174,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_strm_prefix)</data>
 					</control>
 				</setting>
-				<setting id="strm_suffix" type="string" label="30508" help="">
+				<setting id="strm_suffix" type="string" label="30507" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -166,7 +184,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_strm_suffix)</data>
 					</control>
 				</setting>
-				<setting id="encryption_name" type="string" label="30509" help="">
+				<setting id="encryption_name" type="string" label="30508" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -187,37 +205,37 @@
 					</control>
 					<visible>false</visible>
 				</setting>
-				<setting id="file_renaming" type="boolean" label="30510" help="">
+				<setting id="file_renaming" type="boolean" label="30509" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="folder_renaming" type="boolean" label="30511" help="">
+				<setting id="folder_renaming" type="boolean" label="30510" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_nfo" type="boolean" label="30512" help="">
+				<setting id="sync_nfo" type="boolean" label="30511" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_subtitles" type="boolean" label="30513" help="">
+				<setting id="sync_subtitles" type="boolean" label="30512" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_artwork" type="boolean" label="30514" help="">
+				<setting id="sync_artwork" type="boolean" label="30513" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="sync_strm" type="boolean" label="30515" help="">
+				<setting id="sync_strm" type="boolean" label="30514" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="tmdb_language" type="string" label="30516" help="">
+				<setting id="tmdb_language" type="string" label="30515" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -227,7 +245,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_language)</data>
 					</control>
 				</setting>
-				<setting id="tmdb_region" type="string" label="30517" help="">
+				<setting id="tmdb_region" type="string" label="30516" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -237,7 +255,7 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_tmdb_region)</data>
 					</control>
 				</setting>
-				<setting id="tmdb_adult" type="boolean" label="30518" help="">
+				<setting id="tmdb_adult" type="boolean" label="30517" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>

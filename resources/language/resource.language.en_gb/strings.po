@@ -298,6 +298,10 @@ msgctxt "#30071"
 msgid "Enter the time to sync files"
 msgstr "Enter the time to sync files"
 
+msgctxt "#30072"
+msgid "Select a video source"
+msgstr "Select a video source"
+
 msgctxt "#30074"
 msgid "Deleting sync folder"
 msgstr "Deleting sync folder"
@@ -678,6 +682,18 @@ msgctxt "#30403"
 msgid "Import media flag data from STRM"
 msgstr "Import media flag data from STRM"
 
+msgctxt "#30404"
+msgid "Update library automatically"
+msgstr "Update library automatically"
+
+msgctxt "#30405"
+msgid "Clean library automatically"
+msgstr "Clean library automatically"
+
+msgctxt "#30406"
+msgid "Video source"
+msgstr "Video source"
+
 msgctxt "#30500"
 msgid "Sync"
 msgstr "Sync"
@@ -690,67 +706,67 @@ msgctxt "#30502"
 msgid "Automatically update library"
 msgstr "Automatically update library"
 
-msgctxt "#30503"
+msgctxt "#30502"
 msgid "Move sync folder"
 msgstr "Move sync folder"
 
-msgctxt "#30504"
+msgctxt "#30503"
 msgid "Delete sync cache"
 msgstr "Delete sync cache"
 
-msgctxt "#30505"
+msgctxt "#30504"
 msgid "Delete sync folder"
 msgstr "Delete sync folder"
 
-msgctxt "#30506"
+msgctxt "#30505"
 msgid "Sync defaults"
 msgstr "Sync defaults"
 
-msgctxt "#30507"
+msgctxt "#30506"
 msgid "STRM prefix"
 msgstr "STRM prefix"
 
-msgctxt "#30508"
+msgctxt "#30507"
 msgid "STRM suffix"
 msgstr "STRM suffix"
 
-msgctxt "#30509"
+msgctxt "#30508"
 msgid "Has files encrypted with"
 msgstr "Has files encrypted with"
 
-msgctxt "#30510"
+msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
 msgstr "Rename videos to a Kodi friendly format"
 
-msgctxt "#30511"
+msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
 msgstr "Create a Kodi friendly directory structure"
 
-msgctxt "#30512"
+msgctxt "#30511"
 msgid "Sync nfo"
 msgstr "Sync nfo"
 
-msgctxt "#30513"
+msgctxt "#30512"
 msgid "Sync subtitles"
 msgstr "Sync subtitles"
 
-msgctxt "#30514"
+msgctxt "#30513"
 msgid "Sync artwork"
 msgstr "Sync artwork"
 
-msgctxt "#30515"
+msgctxt "#30514"
 msgid "Sync strm"
 msgstr "Sync strm"
 
-msgctxt "#30516"
+msgctxt "#30515"
 msgid "TMDB search language"
 msgstr "TMDB search language"
 
-msgctxt "#30517"
+msgctxt "#30516"
 msgid "TMDB region"
 msgstr "TMDB region"
 
-msgctxt "#30518"
+msgctxt "#30517"
 msgid "TMDB adult content"
 msgstr "TMDB adult content"
 

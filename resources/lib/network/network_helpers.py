@@ -25,3 +25,7 @@ def parseURL(urlString):
 
 def quote(string):
 	return urllib.parse.quote(string)
+
+
+def unquote(string):
+	return urllib.parse.unquote(string)

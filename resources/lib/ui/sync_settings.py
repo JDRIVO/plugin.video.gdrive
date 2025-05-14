@@ -29,15 +29,15 @@ class SyncSettings(xbmcgui.WindowDialog):
 		SETTINGS.getLocalizedString(30049): {"type": "drive", "name": "task_mode"},
 		SETTINGS.getLocalizedString(30050): {"type": "drive", "name": "task_frequency"},
 		SETTINGS.getLocalizedString(30051): {"type": "drive", "name": "startup_sync"},
-		SETTINGS.getLocalizedString(30507): {"type": "folder", "name": "strm_prefix"},
-		SETTINGS.getLocalizedString(30508): {"type": "folder", "name": "strm_suffix"},
-		SETTINGS.getLocalizedString(30509): {"type": "folder", "name": "encryption_id"},
-		SETTINGS.getLocalizedString(30510): {"type": "folder", "name": "file_renaming"},
-		SETTINGS.getLocalizedString(30511): {"type": "folder", "name": "folder_renaming"},
-		SETTINGS.getLocalizedString(30512): {"type": "folder", "name": "sync_nfo"},
-		SETTINGS.getLocalizedString(30513): {"type": "folder", "name": "sync_subtitles"},
-		SETTINGS.getLocalizedString(30514): {"type": "folder", "name": "sync_artwork"},
-		SETTINGS.getLocalizedString(30515): {"type": "folder", "name": "sync_strm"},
+		SETTINGS.getLocalizedString(30506): {"type": "folder", "name": "strm_prefix"},
+		SETTINGS.getLocalizedString(30507): {"type": "folder", "name": "strm_suffix"},
+		SETTINGS.getLocalizedString(30508): {"type": "folder", "name": "encryption_id"},
+		SETTINGS.getLocalizedString(30509): {"type": "folder", "name": "file_renaming"},
+		SETTINGS.getLocalizedString(30510): {"type": "folder", "name": "folder_renaming"},
+		SETTINGS.getLocalizedString(30511): {"type": "folder", "name": "sync_nfo"},
+		SETTINGS.getLocalizedString(30512): {"type": "folder", "name": "sync_subtitles"},
+		SETTINGS.getLocalizedString(30513): {"type": "folder", "name": "sync_artwork"},
+		SETTINGS.getLocalizedString(30514): {"type": "folder", "name": "sync_strm"},
 		SETTINGS.getLocalizedString(30058): {"type": "folder", "name": "tmdb_language"},
 		SETTINGS.getLocalizedString(30059): {"type": "folder", "name": "tmdb_region"},
 		SETTINGS.getLocalizedString(30060): {"type": "folder", "name": "tmdb_adult"},
@@ -184,15 +184,15 @@ class SyncSettings(xbmcgui.WindowDialog):
 			noFocusTexture=self.dGrayTexture,
 		)
 
-		if label == self.settings.getLocalizedString(30507):
+		if label == self.settings.getLocalizedString(30506):
 			button.setLabel(label2=folderSettings["strm_prefix"] if folderSettings else self.settings.getSetting("strm_prefix"))
-		elif label == self.settings.getLocalizedString(30508):
+		elif label == self.settings.getLocalizedString(30507):
 			button.setLabel(label2=folderSettings["strm_suffix"] if folderSettings else self.settings.getSetting("strm_suffix"))
 		elif label == self.settings.getLocalizedString(30049):
 			button.setLabel(label2=self.syncMode)
 		elif label == self.settings.getLocalizedString(30050):
 			button.setLabel(label2=self.syncFrequency)
-		elif label == self.settings.getLocalizedString(30509):
+		elif label == self.settings.getLocalizedString(30508):
 			encryptionID = folderSettings["encryption_id"] if folderSettings else self.settings.getSetting("encryption_id")
 			profileManager = ProfileManager()
 			profile = profileManager.getProfile(encryptionID)
@@ -316,19 +316,19 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 		radioButtons.update(
 			{
-				self.settings.getLocalizedString(30510): folderSettings["file_renaming"] if folderSettings else self.settings.getSetting("file_renaming"),
-				self.settings.getLocalizedString(30511): folderSettings["folder_renaming"] if folderSettings else self.settings.getSetting("folder_renaming"),
-				self.settings.getLocalizedString(30512): folderSettings["sync_nfo"] if folderSettings else self.settings.getSetting("sync_nfo"),
-				self.settings.getLocalizedString(30513): folderSettings["sync_subtitles"] if folderSettings else self.settings.getSetting("sync_subtitles"),
-				self.settings.getLocalizedString(30514): folderSettings["sync_artwork"] if folderSettings else self.settings.getSetting("sync_artwork"),
-				self.settings.getLocalizedString(30515): folderSettings["sync_strm"] if folderSettings else self.settings.getSetting("sync_strm"),
+				self.settings.getLocalizedString(30509): folderSettings["file_renaming"] if folderSettings else self.settings.getSetting("file_renaming"),
+				self.settings.getLocalizedString(30510): folderSettings["folder_renaming"] if folderSettings else self.settings.getSetting("folder_renaming"),
+				self.settings.getLocalizedString(30511): folderSettings["sync_nfo"] if folderSettings else self.settings.getSetting("sync_nfo"),
+				self.settings.getLocalizedString(30512): folderSettings["sync_subtitles"] if folderSettings else self.settings.getSetting("sync_subtitles"),
+				self.settings.getLocalizedString(30513): folderSettings["sync_artwork"] if folderSettings else self.settings.getSetting("sync_artwork"),
+				self.settings.getLocalizedString(30514): folderSettings["sync_strm"] if folderSettings else self.settings.getSetting("sync_strm"),
 			}
 		)
 		self.functions.update(
 			{
-				self.settings.getLocalizedString(30507): self._setPrefix,
-				self.settings.getLocalizedString(30508): self._setSuffix,
-				self.settings.getLocalizedString(30509): self._setEncryptionProfile,
+				self.settings.getLocalizedString(30506): self._setPrefix,
+				self.settings.getLocalizedString(30507): self._setSuffix,
+				self.settings.getLocalizedString(30508): self._setEncryptionProfile,
 			}
 		)
 		self.buttonAmount = len(self.functions) + len(radioButtons)
@@ -467,7 +467,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			button.setLabel(label2=" ")
 
 	def _setCountry(self, button):
-		selection = self.dialog.select(30517, TMDB_REGIONS)
+		selection = self.dialog.select(30516, TMDB_REGIONS)
 
 		if selection == -1:
 			return
@@ -494,7 +494,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self._setAffix(button, "Prefix")
 
 	def _setSearchLanguage(self, button):
-		selection = self.dialog.select(30516, TMDB_LANGUAGES)
+		selection = self.dialog.select(30515, TMDB_LANGUAGES)
 
 		if selection == -1:
 			return

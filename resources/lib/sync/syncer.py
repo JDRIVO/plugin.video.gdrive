@@ -84,14 +84,15 @@ class Syncer:
 		if self.deleted:
 			[self.cache.removeEmptyDirectories(dir) for dir in pathsToClean]
 
-			if self.settings.getSetting("update_library"):
+			if self.settings.getSetting("clean_library"):
+				videoSource = self.settings.getSetting("video_source")
 
-				if os.name == "nt":
-					syncRootPath = syncRootPath.replace("\\", "\\\\")
+				if not videoSource:
+					videoSource = syncRootPath
 
 				query = {
 					"method": "VideoLibrary.Clean",
-					"params": {"showdialogs": False, "content": "video", "directory": syncRootPath},
+					"params": {"showdialogs": False, "content": "video", "directory": videoSource},
 				}
 				rpc(query)
 

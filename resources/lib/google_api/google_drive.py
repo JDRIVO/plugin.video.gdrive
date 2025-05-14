@@ -4,7 +4,7 @@ import datetime
 import urllib.parse
 
 from ..network import http_requester
-from ..network.network_helpers import addQueryString, mergePaths
+from ..network.network_helpers import addQueryString, mergePaths, unquote
 from ..encryption.jwt import JsonWebToken
 from ..filesystem.fs_helpers import removeProhibitedFSchars
 
@@ -183,7 +183,7 @@ class GoogleDrive:
 		self.account.driveStream = re.search("DRIVE_STREAM=(.*?);", cookie).group(1)
 
 		for _ in range(5):
-			responseData = urllib.parse.unquote(responseData)
+			responseData = unquote(responseData)
 
 		urls = re.sub("\&url\=https://", "\@", responseData)
 		streams, resolutionMap = {}, {}
