@@ -703,10 +703,6 @@ msgid "Threads"
 msgstr "Threads"
 
 msgctxt "#30502"
-msgid "Automatically update library"
-msgstr "Automatically update library"
-
-msgctxt "#30502"
 msgid "Move sync folder"
 msgstr "Move sync folder"
 
