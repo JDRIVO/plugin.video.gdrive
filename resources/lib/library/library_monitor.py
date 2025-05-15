@@ -3,8 +3,8 @@ import json
 
 import xbmc
 
-from constants import SETTINGS
 from helpers import rpc
+from constants import SETTINGS
 from .library_editor import DatabaseEditor
 
 

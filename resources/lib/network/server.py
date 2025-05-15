@@ -224,9 +224,9 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.server.taskManager.removeTask(driveID)
 
 		if deleteFiles:
-			self.server.cache.removeFoldersAndFiles(driveID=driveID)
+			self.server.cache.removeFoldersAndFiles(driveID)
 		else:
-			self.server.cache.removeFolders(driveID=driveID)
+			self.server.cache.removeFolders(driveID)
 
 		self.server.cache.deleteDrive(driveID)
 		self.server.accountManager.deleteDrive(driveID)
@@ -492,9 +492,9 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.server.taskManager.removeTask(driveID)
 
 		if deleteFiles:
-			self.server.cache.removeFoldersAndFiles(folders, driveID)
+			self.server.cache.removeFoldersAndFiles(driveID, folders)
 		else:
-			self.server.cache.removeFolders(folders, driveID)
+			self.server.cache.removeFolders(driveID, folders)
 
 		self.server.taskManager.spawnTask(self.server.cache.getDrive(driveID), startUpRun=False)
 
@@ -502,14 +502,10 @@ class ServerHandler(BaseHTTPRequestHandler):
 		postData = self.getPostDataJSON()
 		self.handleResponse(200)
 		driveID = postData["drive_id"]
-		drive = self.server.cache.getDrive(driveID)
-
-		if not drive:
-			return
-
+		driveName = postData["drive_name"]
 		synced = self.server.taskManager.sync(driveID)
-		id = 30044 if synced else 30133
-		self.server.dialog.notification(id)
+		id = 30011 if synced else 30141
+		self.server.dialog.notification(f"{self.server.settings.getLocalizedString(id)} {driveName}")
 
 	def handleSyncAll(self):
 		self.handleResponse(200)

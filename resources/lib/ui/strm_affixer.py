@@ -210,7 +210,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 			y += 30
 
 	def _addBackground(self):
-		backgroundFade = self._addControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="CCFFFFFF")
+		backgroundFade = self._addControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="B3FFFFFF")
 		backgroundInvis = self._addControlButton(0, 0, self.viewportWidth, self.viewportHeight, focusTexture="", noFocusTexture="")
 		background = self._addControlButton(self.x, self.y, self.windowWidth, self.windowHeight, focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
 		bar = self._addControlButton(

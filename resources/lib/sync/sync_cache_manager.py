@@ -1,8 +1,8 @@
 import os
 
 from constants import *
-from ..ui.dialogs import Dialog, FileDeletionDialog
 from ..database.db_manager import DatabaseManager
+from ..ui.dialogs import Dialog, FileDeletionDialog
 from ..filesystem.file_operations import FileOperations
 
 if not os.path.exists(ADDON_PATH):
@@ -209,14 +209,14 @@ class SyncCacheManager(DatabaseManager):
 				self.deleteDirectory(folderID)
 				paths.remove(dirPath)
 
-	def removeFolders(self, folders=None, driveID=None):
+	def removeFolders(self, driveID=None, folders=None):
 
 		if folders:
 			[self._clearCache(folderID=folder["folder_id"]) for folder in folders]
 		else:
 			self._clearCache(driveID=driveID)
 
-	def removeFoldersAndFiles(self, folders=None, driveID=None):
+	def removeFoldersAndFiles(self, driveID, folders=None):
 
 		if folders:
 			deleteAllfolders = False

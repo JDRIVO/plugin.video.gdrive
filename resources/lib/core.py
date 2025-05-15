@@ -1,12 +1,10 @@
 import os
 import sys
-import json
 import time
 import datetime
 
 import xbmc
 import xbmcgui
-import xbmcvfs
 import xbmcplugin
 
 from constants import *
@@ -25,6 +23,7 @@ from .threadpool.threadpool import ThreadPool
 from .google_api.google_drive import GoogleDrive
 from .sync.sync_cache_manager import SyncCacheManager
 from .encryption.profile_manager import ProfileManager
+from .filesystem.file_operations import FileOperations
 from .filesystem.fs_helpers import removeProhibitedFSchars
 from .filesystem.fs_constants import SUBTITLE_EXTENSIONS, TMDB_LANGUAGES, TMDB_REGIONS
 
@@ -131,14 +130,11 @@ class Core:
 		if not name:
 			return
 
+		fileOperations = FileOperations()
 		accounts = []
-		driveID = self.settings.getParameter("drive_id")
 
 		for filePath in filePaths:
-
-			with xbmcvfs.File(filePath) as file:
-				data = json.loads(file.read())
-
+			data = fileOperations.loadJSONFile(filePath)
 			email = data.get("client_email")
 			key = data.get("private_key")
 			error = False
@@ -166,6 +162,7 @@ class Core:
 
 			accounts.append(account)
 
+		driveID = self.settings.getParameter("drive_id")
 		self.accountManager.addAccounts(accounts, driveID)
 		xbmc.executebuiltin("Container.Refresh")
 
@@ -227,7 +224,7 @@ class Core:
 			contextMenu = [
 				(
 					self.settings.getLocalizedString(30500),
-					f"RunPlugin({self.pluginURL}?mode=force_sync_drive&drive_id={driveID})",
+					f"RunPlugin({self.pluginURL}?mode=force_sync_drive&drive_id={driveID}&drive_name={displayName})",
 				),
 				(
 					self.settings.getLocalizedString(30002),
@@ -421,12 +418,20 @@ class Core:
 
 	def forceSyncDrive(self):
 		driveID = self.settings.getParameter("drive_id")
+		driveName = self.settings.getParameter("drive_name")
+		drive = self.cache.getDrive(driveID)
+
+		if not drive:
+			return
+
+		self.dialog.notification(f"{self.settings.getLocalizedString(30073)} {driveName}")
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/sync"
-		data = {"drive_id": driveID}
+		data = {"drive_id": driveID, "drive_name": driveName}
 		http_requester.request(url, data)
 
 	def forceSyncDrives(self):
+		self.dialog.notification(30142)
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/sync_all"
 		http_requester.request(url)
@@ -755,7 +760,7 @@ class Core:
 			"transcoded": transcoded,
 		}
 		http_requester.request(url, data)
-		item = xbmcgui.ListItem(filename, path=f"http://localhost:{serverPort}/play")
+		listItem = xbmcgui.ListItem(filename, path=f"http://localhost:{serverPort}/play")
 
 		if self.settings.getSetting("set_subtitles"):
 			subtitles = []
@@ -779,9 +784,9 @@ class Core:
 							if name == filename and extension.lstrip(".").lower() in SUBTITLE_EXTENSIONS:
 								subtitles.append(entry.path)
 
-			item.setSubtitles(subtitles)
+			listItem.setSubtitles(subtitles)
 
-		xbmcplugin.setResolvedUrl(self.pluginHandle, True, item)
+		xbmcplugin.setResolvedUrl(self.pluginHandle, True, listItem)
 		url = f"http://localhost:{serverPort}/start_player"
 		data = {"db_id": dbID, "db_type": dbType}
 		http_requester.request(url, data)
@@ -893,6 +898,9 @@ class Core:
 		url = f"http://localhost:{serverPort}/set_alias"
 		data = {"drive_id": driveID, "alias": alias}
 		http_requester.request(url, data)
+
+		if self.settings.getSetting("default_playback_account_id") == driveID:
+			self.settings.setSetting("default_playback_account_name", alias)
 
 	def setDefaultEncryptionProfile(self):
 		profileManager = ProfileManager()
@@ -1035,7 +1043,9 @@ class Core:
 		accounts = self.accountManager.getAccounts(driveID)
 		account = accounts[accountIndex]
 
-		if selection == 0:
+		if selection == -1:
+			return
+		elif selection == 0:
 			newAccountName = self.dialog.input(30025)
 
 			if not newAccountName or newAccountName == accountName:
@@ -1066,9 +1076,6 @@ class Core:
 				return
 
 			self.accountManager.deleteAccount(account, driveID)
-
-		else:
-			return
 
 		xbmc.executebuiltin("Container.Refresh")
 

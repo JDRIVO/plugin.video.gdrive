@@ -2,8 +2,8 @@ from threading import Thread
 
 import xbmc
 
-from constants import SETTINGS
 from helpers import rpc
+from constants import SETTINGS
 
 
 class VideoPlayer(xbmc.Player):

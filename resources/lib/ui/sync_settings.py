@@ -156,7 +156,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 				self.menuButtonIDs = self.TMDBButtonIDs
 
 	def _addBackground(self):
-		backgroundFade = xbmcgui.ControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="CCFFFFFF")
+		backgroundFade = xbmcgui.ControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="B3FFFFFF")
 		backgroundInvis = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
 		background = xbmcgui.ControlButton(self.x, self.y, self.windowWidth, self.windowHeight, "", focusTexture=self.grayTexture, noFocusTexture=self.grayTexture)
 		bar = xbmcgui.ControlButton(
@@ -678,7 +678,11 @@ class SyncSettings(xbmcgui.WindowDialog):
 		if not selection:
 			return
 
-		deleteFiles = self.dialog.yesno(30064, defaultbutton=xbmcgui.DLG_YESNO_YES_BTN)
+		deleteFiles = self.dialog.yesnocustom(30064, 30067, defaultbutton=xbmcgui.DLG_YESNO_YES_BTN)
+
+		if deleteFiles in (-1, 2):
+			return
+
 		self.close()
 		data = {"drive_id": self.driveID, "folders": [folders[idx] for idx in selection], "delete_files": deleteFiles}
 		url = f"http://localhost:{self.settings.getSettingInt('server_port', 8011)}/stop_syncing_folders"

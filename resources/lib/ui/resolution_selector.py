@@ -64,7 +64,7 @@ class ResolutionSelector(xbmcgui.WindowDialog):
 		self.close()
 
 	def _addBackground(self):
-		backgroundFade = xbmcgui.ControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="CCFFFFFF")
+		backgroundFade = xbmcgui.ControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="B3FFFFFF")
 		background = xbmcgui.ControlButton(0, 0, self.viewportWidth, self.viewportHeight, "", focusTexture="", noFocusTexture="")
 		self.addControls([backgroundFade, background])
 

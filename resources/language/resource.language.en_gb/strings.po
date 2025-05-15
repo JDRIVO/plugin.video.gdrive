@@ -302,6 +302,10 @@ msgctxt "#30072"
 msgid "Select a video source"
 msgstr "Select a video source"
 
+msgctxt "#30073"
+msgid "Syncing"
+msgstr "Syncing"
+
 msgctxt "#30074"
 msgid "Deleting sync folder"
 msgstr "Deleting sync folder"
@@ -569,6 +573,14 @@ msgstr "hour"
 msgctxt "#30140"
 msgid "hours"
 msgstr "hours"
+
+msgctxt "#30141"
+msgid "Failed to sync"
+msgstr "Failed to sync"
+
+msgctxt "#30142"
+msgid "Syncing all drives"
+msgstr "Syncing all drives"
 
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"

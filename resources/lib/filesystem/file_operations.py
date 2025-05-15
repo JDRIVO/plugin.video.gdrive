@@ -1,4 +1,5 @@
 import os
+import json
 import pickle
 import shutil
 import threading
@@ -89,6 +90,16 @@ class FileOperations:
 					os.utime(filePath, (modifiedTime, modifiedTime))
 
 		return filePath
+
+	@staticmethod
+	def loadJSONFile(filePath):
+
+		with xbmcvfs.File(filePath) as file:
+
+			try:
+				return json.loads(file.read())
+			except Exception:
+				return {}
 
 	@staticmethod
 	def loadPickleFile(filePath):

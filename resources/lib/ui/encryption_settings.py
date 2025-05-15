@@ -93,7 +93,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			self.buttonHandlers[self.buttonID](control)
 
 	def _addBackground(self):
-		backgroundFade = self._addControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="CCFFFFFF")
+		backgroundFade = self._addControlImage(0, 0, self.viewportWidth, self.viewportHeight, self.blackTexture, colorDiffuse="B3FFFFFF")
 		backgroundInvis = self._addControlButton(0, 0, self.viewportWidth, self.viewportHeight, focusTexture="", noFocusTexture="")
 		self.backgroundGrayGdrive = self._addControlButton(
 			self.x,

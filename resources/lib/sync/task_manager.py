@@ -89,8 +89,8 @@ class TaskManager:
 		if driveID in self.tasks:
 			del self.tasks[driveID]
 
-			while driveID in self.activeTasks:
-				time.sleep(0.1)
+		while driveID in self.activeTasks:
+			time.sleep(0.1)
 
 	def resetTask(self, driveID):
 		self.removeTask(driveID)
