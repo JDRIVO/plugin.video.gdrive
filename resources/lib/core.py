@@ -8,24 +8,12 @@ import xbmcgui
 import xbmcplugin
 
 from constants import *
-from helpers import getElapsedTime, rpc
 from .ui.dialogs import Dialog
-from .ui.strm_affixer import StrmAffixer
-from .ui.sync_settings import SyncSettings
-from .ui.resolution_order import ResolutionOrder
-from .ui.encryption_settings import EncryptionSettings
-from .ui.resolution_selector import ResolutionSelector
 from .network import http_requester
-from .network.network_helpers import unquote
-from .accounts.account import ServiceAccount
-from .accounts.account_manager import AccountManager
-from .threadpool.threadpool import ThreadPool
 from .google_api.google_drive import GoogleDrive
+from .accounts.account_manager import AccountManager
 from .sync.sync_cache_manager import SyncCacheManager
 from .encryption.profile_manager import ProfileManager
-from .filesystem.file_operations import FileOperations
-from .filesystem.fs_helpers import removeProhibitedFSchars
-from .filesystem.fs_constants import SUBTITLE_EXTENSIONS, TMDB_LANGUAGES, TMDB_REGIONS
 
 
 class Core:
@@ -117,7 +105,7 @@ class Core:
 		if contextMenu:
 			listItem.addContextMenuItems(contextMenu, True)
 
-		xbmcplugin.addDirectoryItem(self.pluginHandle, url, listItem, isFolder=isFolder)
+		xbmcplugin.addDirectoryItem(self.pluginHandle, url, listItem, isFolder)
 
 	def addServiceAccount(self):
 		filePaths = self.dialog.browse(1, 30026, "", mask=".json", enableMultiple=True)
@@ -130,6 +118,7 @@ class Core:
 		if not name:
 			return
 
+		from .filesystem.file_operations import FileOperations
 		fileOperations = FileOperations()
 		accounts = []
 
@@ -150,6 +139,7 @@ class Core:
 				self.dialog.ok(f"{self.settings.getLocalizedString(error)} {filePath}")
 				continue
 
+			from .accounts.account import ServiceAccount
 			account = ServiceAccount()
 			account.name = name
 			account.email = email
@@ -211,6 +201,7 @@ class Core:
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL)
 
 	def createDrivesMenu(self):
+		from helpers import getElapsedTime
 		displayLastSync = self.settings.getSetting("display_last_sync")
 		self.addMenuItem(
 			f"{self.pluginURL}?mode=register_account",
@@ -245,6 +236,7 @@ class Core:
 		xbmcplugin.addSortMethod(self.pluginHandle, xbmcplugin.SORT_METHOD_LABEL_IGNORE_FOLDERS)
 
 	def createEncryptionProfile(self):
+		from .ui.encryption_settings import EncryptionSettings
 		encryptionSettings = EncryptionSettings(mode="add")
 		encryptionSettings.doModal()
 		del encryptionSettings
@@ -442,7 +434,7 @@ class Core:
 		self.refreshToken(account.tokenExpiry)
 		sharedWithMe = self.settings.getParameter("shared_with_me")
 		starred = self.settings.getParameter("starred")
-		return self.cloudService.listDirectory(folderID=folderID, sharedWithMe=sharedWithMe, starred=starred, searchQuery=searchQuery)
+		return self.cloudService.listDirectory(folderID, sharedWithMe, starred, searchQuery)
 
 	def getSpecificFolders(self, searchQuery, folders, folderIDs, threadCount):
 
@@ -468,6 +460,8 @@ class Core:
 			queries.append(("mimeType='application/vnd.google-apps.folder' and not trashed and (" + " or ".join(f"'{id}' in parents" for id in ids) + ")",))
 			folderIDs = folderIDs[maxIDs:]
 
+		from .threadpool.threadpool import ThreadPool
+
 		with ThreadPool(threadCount) as pool:
 			pool.map(getFolders, queries)
 
@@ -480,6 +474,7 @@ class Core:
 		folderName = self.settings.getParameter("folder_name")
 		mode = self.settings.getParameter("sync_mode")
 		self.succeeded = False
+		from .ui.sync_settings import SyncSettings
 		syncSettings = SyncSettings(drive_id=driveID, folder_id=folderID, folder_name=folderName, accounts=self.accounts, mode=mode)
 		syncSettings.doModal()
 		del syncSettings
@@ -654,6 +649,7 @@ class Core:
 		id = ids[selection]
 		profile = profileManager.getProfile(id)
 		profileName = profile.name
+		from .ui.encryption_settings import EncryptionSettings
 		encryptionSettings = EncryptionSettings(profile=profile, mode="modify")
 		encryptionSettings.doModal()
 		modified = encryptionSettings.modified
@@ -729,6 +725,7 @@ class Core:
 				streams = self.cloudService.getStreams(fileID)
 
 				if streams and len(streams) > 1:
+					from .ui.resolution_selector import ResolutionSelector
 					resolutionSelector = ResolutionSelector(resolutions=streams)
 					resolutionSelector.doModal()
 
@@ -763,6 +760,7 @@ class Core:
 		listItem = xbmcgui.ListItem(filename, path=f"http://localhost:{serverPort}/play")
 
 		if self.settings.getSetting("set_subtitles"):
+			from .filesystem.fs_constants import SUBTITLE_EXTENSIONS
 			subtitles = []
 
 			with os.scandir(os.path.dirname(filePath)) as entries:
@@ -822,6 +820,7 @@ class Core:
 
 	def resolutionPriority(self):
 		resolutions = self.settings.getSetting("resolution_priority").split(", ")
+		from .ui.resolution_order import ResolutionOrder
 		resolutionOrder = ResolutionOrder(resolutions=resolutions)
 		resolutionOrder.doModal()
 
@@ -838,7 +837,7 @@ class Core:
 			return
 
 		driveID = self.settings.getParameter("drive_id")
-		folders = self.getFolders(driveID, driveID, searchQuery=searchQuery)
+		folders = self.getFolders(driveID, driveID, searchQuery)
 		self.listFolders(driveID, folders)
 
 	def searchFolder(self):
@@ -869,6 +868,7 @@ class Core:
 		excluded = ["duration", "extension", "resolution"]
 		included = [a for a in self.settings.getSetting(f"strm_{affix.lower()}").split(", ") if a]
 		[excluded.remove(include) for include in included]
+		from .ui.strm_affixer import StrmAffixer
 		strmAffixer = StrmAffixer(included=included, excluded=excluded, title=f"STRM {affix}")
 		strmAffixer.doModal()
 		closed = strmAffixer.closed
@@ -887,6 +887,7 @@ class Core:
 			return
 
 		xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
+		from .filesystem.fs_helpers import removeProhibitedFSchars
 		alias = removeProhibitedFSchars(alias)
 
 		if alias in self.accountManager.aliases:
@@ -987,6 +988,7 @@ class Core:
 		http_requester.request(url, data)
 
 	def setTMDBlanguage(self):
+		from .filesystem.fs_constants import TMDB_LANGUAGES
 		selection = self.dialog.select(30515, TMDB_LANGUAGES)
 
 		if selection == -1:
@@ -995,6 +997,7 @@ class Core:
 		self.settings.setSetting("tmdb_language", TMDB_LANGUAGES[selection])
 
 	def setTMDBregion(self):
+		from .filesystem.fs_constants import TMDB_REGIONS
 		selection = self.dialog.select(30516, TMDB_REGIONS)
 
 		if selection == -1:
@@ -1003,6 +1006,7 @@ class Core:
 		self.settings.setSetting("tmdb_region", TMDB_REGIONS[selection])
 
 	def setVideoSource(self):
+		from helpers import rpc
 		response = rpc({"method": "Files.GetSources", "params": {"media": "video"}})
 		sources = response.get("result", {}).get("sources", [])
 		listItems = []
@@ -1014,6 +1018,7 @@ class Core:
 				continue
 
 			if file.startswith("multipath://"):
+				from .network.network_helpers import unquote
 				paths = [unquote(p) for p in file[len("multipath://"):].split("/") if p]
 			else:
 				paths = [file]
@@ -1085,6 +1090,7 @@ class Core:
 		mode = self.settings.getParameter("sync_mode")
 		self.succeeded = False
 		folders = self.getFolders(driveID, parentFolderID)
+		from .ui.sync_settings import SyncSettings
 		syncSettings = SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
 		syncSettings.doModal()
 		del syncSettings
@@ -1097,6 +1103,7 @@ class Core:
 		folders = [{"id": folderID, "name": folderName, "modifiedTime": modifiedTime}]
 		mode = self.settings.getParameter("sync_mode")
 		self.succeeded = False
+		from .ui.sync_settings import SyncSettings
 		syncSettings = SyncSettings(drive_id=driveID, folder_name=folderName, accounts=self.accounts, folders=folders, mode=mode)
 		syncSettings.doModal()
 		del syncSettings
@@ -1107,7 +1114,7 @@ class Core:
 		mode = self.settings.getParameter("sync_mode")
 		self.succeeded = False
 		folders = self.getFolders(driveID, parentFolderID)
-		syncedFolders = [folder["folder_id"] for folder in self.cache.getFolders({"drive_id": driveID})]
+		syncedFolders = self.cache.getFolders({"drive_id": driveID}, column="folder_id")
 		folderNames = sorted([(folder["name"], index) for index, folder in enumerate(folders) if folder["id"] not in syncedFolders], key=lambda x: x[0].lower())
 		chosenFolders = self.dialog.multiselect(30086, [name for name, _ in folderNames])
 
@@ -1115,6 +1122,7 @@ class Core:
 			return
 
 		folders = [folders[folderNames[index][1]] for index in chosenFolders]
+		from .ui.sync_settings import SyncSettings
 		syncSettings = SyncSettings(drive_id=driveID, accounts=self.accounts, folders=folders, mode=mode)
 		syncSettings.doModal()
 		del syncSettings

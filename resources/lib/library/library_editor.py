@@ -37,7 +37,7 @@ class DatabaseEditor(DatabaseManager):
 	def _addStreamData(self, fileID, data, mediaType):
 		streamType = "0" if mediaType == "video" else "1"
 
-		if self.selectAll("streamdetails", {"idFile": fileID, "iStreamType": streamType}):
+		if self.select("streamdetails", condition={"idFile": fileID, "iStreamType": streamType}):
 			self.update("streamdetails", data, {"idFile": fileID, "iStreamType": streamType})
 		else:
 			self.insert("streamdetails", data)
@@ -69,7 +69,12 @@ class DatabaseEditor(DatabaseManager):
 		return data
 
 	def _getFileID(self, dirPath, filename):
-		return self.select("files", "idFile", {"idPath": f'(SELECT idPath FROM path WHERE strPath="{dirPath + os.sep}")', "strFilename": filename})
+		return self.select(
+			"files",
+			"idFile",
+			{"idPath": f'(SELECT idPath FROM path WHERE strPath="{dirPath + os.sep}")', "strFilename": filename},
+			fetchAll=False,
+		)
 
 	def _getVideoDB(self):
 		dbDirectory = xbmcvfs.translatePath("special://database")

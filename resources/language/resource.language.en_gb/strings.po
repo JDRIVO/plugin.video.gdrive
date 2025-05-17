@@ -699,10 +699,14 @@ msgid "Update library automatically"
 msgstr "Update library automatically"
 
 msgctxt "#30405"
+msgid "Display dialog"
+msgstr "Display dialog"
+
+msgctxt "#30406"
 msgid "Clean library automatically"
 msgstr "Clean library automatically"
 
-msgctxt "#30406"
+msgctxt "#30407"
 msgid "Video source"
 msgstr "Video source"
 

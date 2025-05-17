@@ -147,8 +147,8 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 	def _createButtons(self):
 		y = 60
 		self.buttons = [self._addControlButton(self.x + 10, self.y + y + 30 * i, self.buttonWidth, self.buttonHeight, res, alignment=2 + 4) for i, res in enumerate(self.resolutions)]
-		self.buttonOK = self._addControlButton(self.x + self.buttonWidth + 20, self.y + y, 80, self.buttonHeight, self.settings.getLocalizedString(30066), alignment=2 + 4)
-		self.buttonClose = self._addControlButton(self.x + self.buttonWidth + 20, self.y + y + 35, 80, self.buttonHeight, self.settings.getLocalizedString(30084), alignment=2 + 4)
+		self.buttonOK = self._addControlButton(self.x + self.buttonWidth + 20, self.y + y, 80, self.buttonHeight, self.settings.getLocalizedString(30066), alignment=2 + 4, font="font25_title")
+		self.buttonClose = self._addControlButton(self.x + self.buttonWidth + 20, self.y + y + 35, 80, self.buttonHeight, self.settings.getLocalizedString(30084), alignment=2 + 4, font="font25_title")
 		self.addControls(self.buttons + [self.buttonOK, self.buttonClose])
 		self.buttonIDs = [button.getId() for button in self.buttons]
 		self.buttonCloseID = self.buttonClose.getId()

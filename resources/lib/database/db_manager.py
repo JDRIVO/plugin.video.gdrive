@@ -71,7 +71,7 @@ class DatabaseManager:
 		self._close()
 
 	@lock
-	def select(self, table, column, condition=None, caseSensitive=True):
+	def select(self, table, column="*", condition=None, caseSensitive=True, fetchAll=True):
 		query = f"SELECT {column} FROM {table}"
 
 		if condition:
@@ -82,25 +82,18 @@ class DatabaseManager:
 
 		self._connect()
 		self.cursor.execute(query)
-		row = self.cursor.fetchone()
+
+		if fetchAll:
+			rows = self.cursor.fetchall()
+			data = [dict(r) for r in rows] if column == "*" else [r[0] for r in rows]
+		else:
+			data = self.cursor.fetchone()
+
+			if data:
+				data = dict(data) if column == "*" else data[0]
+
 		self._close()
-		if row: return row[0]
-
-	@lock
-	def selectAll(self, table, condition=None, caseSensitive=True):
-		query = f"SELECT * FROM {table}"
-
-		if condition:
-			query += f" {joinConditions(condition)}"
-
-		if not caseSensitive:
-			query += " COLLATE NOCASE"
-
-		self._connect()
-		self.cursor.execute(query)
-		rows = self.cursor.fetchall()
-		self._close()
-		return [dict(row) for row in rows]
+		return data
 
 	@lock
 	def update(self, table, data, condition=None):

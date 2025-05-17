@@ -25,12 +25,10 @@ class TitleCacheManager(DatabaseManager):
 		self.insert("series", data)
 
 	def getMovie(self, condition):
-		title = self.selectAll("movies", condition)
-		if title: return title[0]
+		return self.select("movies", condition, fetchAll=False)
 
 	def getSeries(self, condition):
-		title = self.selectAll("series", condition)
-		if title: return title[0]
+		return self.select("series", condition, fetchAll=False)
 
 	def _createTables(self):
 		columns = (

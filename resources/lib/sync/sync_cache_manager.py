@@ -104,52 +104,48 @@ class SyncCacheManager(DatabaseManager):
 	def deleteFolder(self, value, column="folder_id"):
 		self.delete("folders", {column: value})
 
-	def getDirectories(self, condition):
-		return self.selectAll("directories", condition)
+	def getDirectories(self, condition, column="*"):
+		return self.select("directories", column, condition)
 
-	def getDirectory(self, condition):
-		directory = self.selectAll("directories", condition)
-		if directory: return directory[0]
+	def getDirectory(self, condition, column="*", caseSensitive=True):
+		return self.select("directories", column, condition, caseSensitive, fetchAll=False)
 
-	def getDrive(self, driveID):
-		drive = self.selectAll("drives", {"drive_id": driveID})
-		if drive: return drive[0]
+	def getDrive(self, driveID, column="*"):
+		return self.select("drives", column, {"drive_id": driveID}, fetchAll=False)
 
 	def getDrives(self):
-		return self.selectAll("drives")
+		return self.select("drives")
 
-	def getFile(self, condition):
-		file = self.selectAll("files", condition)
-		if file: return file[0]
+	def getFile(self, condition, column="*"):
+		return self.select("files", column, condition, fetchAll=False)
 
 	def getFileCount(self, data):
 		return self.count("files", data)
 
-	def getFiles(self, condition):
-		return self.selectAll("files", condition)
+	def getFiles(self, condition, column="*"):
+		return self.select("files", column, condition)
 
-	def getFolder(self, condition):
-		folder = self.selectAll("folders", condition)
-		if folder: return folder[0]
+	def getFolder(self, condition, column="*"):
+		return self.select("folders", column, condition, fetchAll=False)
 
-	def getFolders(self, condition):
-		return self.selectAll("folders", condition)
+	def getFolders(self, condition, column="*", caseSensitive=True):
+		return self.select("folders", column, condition, caseSensitive)
 
 	def getLastSync(self, driveID):
-		return self.select("drives", "last_sync", {"drive_id": driveID})
+		return self.select("drives", "last_sync", {"drive_id": driveID}, fetchAll=False)
 
 	def getSyncRootPath(self):
-		return self.select("global", "local_path")
+		return self.select("global", "local_path", fetchAll=False)
 
 	def getTable(self):
-		return self.select("sqlite_master", "name", {"type": "table", "name": "global"})
+		return self.select("sqlite_master", "name", {"type": "table", "name": "global"}, fetchAll=False)
 
 	def getUniqueDirectoryPath(self, driveID, path, folderID=None, paths=None):
 		path_ = path
 		copy = 1
 
 		while True:
-			cachedFolderID = self.select("directories", "folder_id", {"drive_id": driveID, "local_path": path}, caseSensitive=False)
+			cachedFolderID = self.getDirectory({"drive_id": driveID, "local_path": path}, column="folder_id", caseSensitive=False)
 
 			if not cachedFolderID or folderID == cachedFolderID:
 				break
@@ -166,7 +162,7 @@ class SyncCacheManager(DatabaseManager):
 		path_ = path
 		copy = 1
 
-		while self.selectAll("folders", {"drive_id": driveID, "local_path": path}, caseSensitive=False):
+		while self.getFolders({"drive_id": driveID, "local_path": path}, caseSensitive=False):
 			path = f"{path_} ({copy})"
 			copy += 1
 
@@ -200,7 +196,7 @@ class SyncCacheManager(DatabaseManager):
 
 		for dirPath, folderID in directories:
 
-			if self.getFiles({"parent_folder_id": folderID}):
+			if self.getFile({"parent_folder_id": folderID}):
 				continue
 
 			head = dirPath + os.sep

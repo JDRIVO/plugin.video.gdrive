@@ -79,7 +79,11 @@ class Syncer:
 			self._syncFileAdditions(newFiles, syncRootPath)
 
 			if self.settings.getSetting("update_library"):
-				xbmc.executebuiltin(f"UpdateLibrary(video,{syncRootPath})")
+				query = {
+					"method": "VideoLibrary.Scan",
+					"params": {"showdialogs": self.settings.getSetting("update_library_dialog"), "directory": syncRootPath},
+				}
+				rpc(query)
 
 		if self.deleted:
 			[self.cache.removeEmptyDirectories(dir) for dir in pathsToClean]
@@ -92,7 +96,7 @@ class Syncer:
 
 				query = {
 					"method": "VideoLibrary.Clean",
-					"params": {"showdialogs": False, "content": "video", "directory": videoSource},
+					"params": {"showdialogs": self.settings.getSetting("clean_library_dialog"), "content": "video", "directory": videoSource},
 				}
 				rpc(query)
 

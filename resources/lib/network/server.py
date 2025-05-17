@@ -262,7 +262,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 				time.sleep(0.1)
 
 			xbmc.executebuiltin("Addon.OpenSettings(plugin.video.gdrive)")
-			xbmc.executebuiltin(f"SetFocus({cid - 21})")
+			xbmc.executebuiltin(f"SetFocus({cid - 20})")
 			xbmc.executebuiltin(f"SetFocus({cid})")
 
 		self.server.dialog.notification(30055)
@@ -287,7 +287,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 					time.sleep(0.1)
 
 				xbmc.executebuiltin("Addon.OpenSettings(plugin.video.gdrive)")
-				xbmc.executebuiltin(f"SetFocus({cid - 22})")
+				xbmc.executebuiltin(f"SetFocus({cid - 21})")
 				xbmc.executebuiltin(f"SetFocus({cid})")
 
 			self.server.dialog.notification(30095)
@@ -427,7 +427,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 			time.sleep(0.1)
 
 		xbmc.executebuiltin("Addon.OpenSettings(plugin.video.gdrive)")
-		xbmc.executebuiltin(f"SetFocus({cid - 20})")
+		xbmc.executebuiltin(f"SetFocus({cid - 19})")
 		xbmc.executebuiltin(f"SetFocus({cid})")
 
 		if os.path.exists(oldSyncPath):

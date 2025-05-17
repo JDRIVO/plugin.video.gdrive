@@ -261,6 +261,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.focusTexture,
 			alignment=2 + 4,
+			font="font25_title",
 		)
 		self.buttonClose = xbmcgui.ControlButton(
 			self.center + 200 if self.folders else self.center + 120,
@@ -271,6 +272,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			noFocusTexture=self.dGrayTexture,
 			focusTexture=self.focusTexture,
 			alignment=2 + 4,
+			font="font25_title",
 		)
 		self.addControls([self.buttonOK, self.buttonClose])
 		self.buttonCloseID = self.buttonClose.getId()
@@ -356,6 +358,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
 			alignment=2 + 4,
+			font="font25_title",
 		)
 		self.addControl(buttonGeneral)
 		self.buttonSwitchesIDs.append(buttonGeneral.getId())
@@ -368,6 +371,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			focusTexture=self.focusTexture,
 			noFocusTexture=self.dGrayTexture,
 			alignment=2 + 4,
+			font="font25_title",
 		)
 		self.addControl(buttonTMDB)
 		self.buttonSwitchesIDs.append(buttonTMDB.getId())

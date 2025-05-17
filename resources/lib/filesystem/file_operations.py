@@ -17,19 +17,12 @@ class FileOperations:
 		self.lock = threading.Lock()
 
 	def createDirs(self, dirPath):
-
-		try:
-
-			if not os.path.exists(dirPath):
-				os.makedirs(dirPath)
-
-		except FileExistsError:
-			return
+		os.makedirs(dirPath, exist_ok=True)
 
 	def createFile(self, dirPath, filename, content, modifiedTime=None, mode="wb"):
-		self.createDirs(dirPath)
 
 		with self.lock:
+			self.createDirs(dirPath)
 			filePath = generateFilePath(dirPath, filename)
 
 			with open(filePath, mode) as file:
@@ -72,17 +65,17 @@ class FileOperations:
 		return True
 
 	def downloadFile(self, dirPath, filename, fileID, modifiedTime=None, encrypted=False, encryptor=None):
-		self.createDirs(dirPath)
 		response = self.cloudService.downloadFile(fileID)
 
 		if not response:
 			return
 
 		if not encrypted:
-			filePath = self.createFile(dirPath, filename, response.data, modifiedTime=modifiedTime)
+			filePath = self.createFile(dirPath, filename, response.data, modifiedTime)
 		else:
 
 			with self.lock:
+				self.createDirs(dirPath)
 				filePath = generateFilePath(dirPath, filename)
 				encryptor.downloadFile(response, filePath)
 
@@ -123,9 +116,9 @@ class FileOperations:
 			return
 
 	def renameFile(self, syncRootPath, oldPath, dirPath, filename):
-		self.createDirs(dirPath)
 
 		with self.lock:
+			self.createDirs(dirPath)
 			newPath = duplicateFileCheck(dirPath, filename, oldPath)
 			shutil.move(oldPath, newPath)
 

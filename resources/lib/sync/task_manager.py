@@ -126,6 +126,7 @@ class TaskManager:
 	def sync(self, driveID):
 
 		if not self.cache.getFolder({"drive_id": driveID}):
+			self.cache.updateDrive({"last_sync": 0}, driveID)
 			return True
 
 		self.activeTasks.append(driveID)

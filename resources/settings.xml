@@ -98,12 +98,28 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="clean_library" type="boolean" label="30405" help="">
+				<setting id="update_library_dialog" type="boolean" label="30405" parent="update_library" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="enable" setting="update_library">true</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="clean_library" type="boolean" label="30406" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="video_source" type="string" label="30406" parent="clean_library" help="">
+				<setting id="clean_library_dialog" type="boolean" label="30405" parent="clean_library" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="enable" setting="clean_library">true</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="video_source" type="string" label="30407" parent="clean_library" help="">
 					<level>0</level>
 					<default/>
 					<constraints>

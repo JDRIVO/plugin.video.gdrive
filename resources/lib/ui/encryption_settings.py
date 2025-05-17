@@ -268,6 +268,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			self.buttonHeight,
 			self.settings.getLocalizedString(30066),
 			alignment=2 + 4,
+			font="font25_title",
 		)
 		self.buttonClose = self._addControlButton(
 			self.center + 120,
@@ -276,6 +277,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			self.buttonHeight,
 			self.settings.getLocalizedString(30067),
 			alignment=2 + 4,
+			font="font25_title",
 		)
 		self.addControls(buttons + [self.buttonOK, self.buttonClose])
 		self.buttonCloseID = self.buttonClose.getId()
