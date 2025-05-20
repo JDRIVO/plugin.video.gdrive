@@ -49,7 +49,7 @@ class GoogleDrive:
 
 		params = {
 			"pageToken": pageToken,
-			"fields": "nextPageToken,newStartPageToken,changes(file(id,name,parents,trashed,mimeType,fileExtension,videoMediaMetadata,modifiedTime))",
+			"fields": "nextPageToken,newStartPageToken,changes(fileId,changeType,removed,file(name,parents,trashed,mimeType,fileExtension,videoMediaMetadata,modifiedTime))",
 			"supportsAllDrives": "true",
 			"includeItemsFromAllDrives": "true",
 			"pageSize": "1000",

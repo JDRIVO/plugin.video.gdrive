@@ -47,7 +47,7 @@ class Syncer:
 			return True
 
 		changes = self._sortChanges(changes)
-		self.deleted = False
+		self.deletedStrm = False
 		syncedIDs, excludedIDs = [], []
 		newFiles = {}
 		pathsToClean = set()
@@ -75,6 +75,18 @@ class Syncer:
 			else:
 				self._syncFileChanges(item, parentFolderID, driveID, syncRootPath, drivePath, newFiles, excludedIDs)
 
+		if self.deletedStrm and self.settings.getSetting("clean_library"):
+			videoSource = self.settings.getSetting("video_source")
+
+			if not videoSource:
+				videoSource = syncRootPath
+
+			query = {
+				"method": "VideoLibrary.Clean",
+				"params": {"showdialogs": self.settings.getSetting("clean_library_dialog"), "content": "video", "directory": videoSource},
+			}
+			rpc(query)
+
 		if newFiles:
 			self._syncFileAdditions(newFiles, syncRootPath)
 
@@ -85,21 +97,7 @@ class Syncer:
 				}
 				rpc(query)
 
-		if self.deleted:
-			[self.cache.removeEmptyDirectories(dir) for dir in pathsToClean]
-
-			if self.settings.getSetting("clean_library"):
-				videoSource = self.settings.getSetting("video_source")
-
-				if not videoSource:
-					videoSource = syncRootPath
-
-				query = {
-					"method": "VideoLibrary.Clean",
-					"params": {"showdialogs": self.settings.getSetting("clean_library_dialog"), "content": "video", "directory": videoSource},
-				}
-				rpc(query)
-
+		[self.cache.removeEmptyDirectories(dir) for dir in pathsToClean]
 		self.cache.updateDrive({"page_token": pageToken, "last_sync": time.time()}, driveID)
 		return True
 
@@ -146,7 +144,26 @@ class Syncer:
 		trashed, existingFolders, newFolders, files = [], [], [], []
 
 		for change in changes:
+			id = change["fileId"]
+
+			if change["changeType"] != "file":
+				continue
+
+			if change["removed"]:
+
+				if self.cache.getDirectory({"folder_id": id}) or self.cache.getFolder({"folder_id": id}):
+					item = {"mimeType": "application/vnd.google-apps.folder"}
+				elif self.cache.getFile({"file_id": id}):
+					item = {"mimeType": "file"}
+				else:
+					continue
+
+				item.update({"id": id, "trashed": True, "parents": [True]})
+				trashed.append(item)
+				continue
+
 			item = change["file"]
+			item["id"] = id
 
 			if item["trashed"]:
 				trashed.append(item)
@@ -185,9 +202,12 @@ class Syncer:
 
 			if cachedFile["original_folder"]:
 				dirPath = os.path.join(drivePath, cachedDirectory["local_path"])
-				self.fileOperations.deleteFile(syncRootPath, dirPath, cachedFile["local_name"])
+				filename = cachedFile["local_name"]
+				self.deletedStrm = filename.endswith(".strm")
+				self.fileOperations.deleteFile(syncRootPath, dirPath, filename)
 			else:
 				filePath = os.path.join(syncRootPath, cachedFile["local_path"])
+				self.deletedStrm = filePath.endswith(".strm")
 				self.fileOperations.deleteFile(syncRootPath, filePath=filePath)
 
 		if not cachedFiles:
@@ -197,8 +217,6 @@ class Syncer:
 				return
 
 			pathsToClean.add(cachedDirectory["root_folder_id"])
-
-		self.deleted = True
 
 	def _syncFileAdditions(self, files, syncRootPath):
 		syncRootPath = syncRootPath + os.sep
@@ -256,7 +274,7 @@ class Syncer:
 
 				self.fileOperations.deleteFile(syncRootPath, filePath=cachedFilePath)
 				self.cache.deleteFile(fileID)
-				self.deleted = True
+				self.deletedStrm = cachedFilePath.endswith(".strm")
 				return
 
 			if not rootFolderID:
@@ -321,12 +339,11 @@ class Syncer:
 				# file contents modified > redownload file
 				self.fileOperations.deleteFile(syncRootPath, filePath=cachedFilePath)
 				self.cache.deleteFile(fileID)
-				self.deleted = True
 			elif not cachedFile["original_name"] or not cachedFile["original_folder"] or not os.path.exists(cachedFilePath):
 				# new filename needs to be processed or file not existent > redownload file
 				self.fileOperations.deleteFile(syncRootPath, filePath=cachedFilePath)
 				self.cache.deleteFile(fileID)
-				self.deleted = True
+				self.deletedStrm = cachedFilePath.endswith(".strm")
 			else:
 				# file either moved or renamed
 				newFilename = file.basename + os.path.splitext(cachedFile["local_name"])[1]
@@ -399,7 +416,6 @@ class Syncer:
 			if not dirPath:
 				# folder has moved outside of root folder hierarchy/tree > delete folder
 				self.cache.removeDirectory(syncRootPath, drivePath, folderID)
-				self.deleted = True
 			else:
 				self.cache.updateDirectory({"parent_folder_id": parentFolderID}, folderID)
 				cachedParentDirectory = self.cache.getDirectory({"folder_id": parentFolderID})
