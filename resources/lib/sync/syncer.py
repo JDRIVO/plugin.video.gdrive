@@ -1,8 +1,6 @@
 import os
 import time
 
-import xbmc
-
 from helpers import rpc
 from .sync_cache_updater import SyncCacheUpdater
 from ..filesystem.folder import Folder

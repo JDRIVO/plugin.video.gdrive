@@ -152,10 +152,15 @@ class ServerHandler(BaseHTTPRequestHandler):
 					if status != 404:
 						self.server.dialog.ok(message)
 					else:
+						confirmation = self.server.dialog.yesno(message)
 
-						if selection := self.server.dialog.yesno(message):
-							self.server.fileOperations.deleteFile(filePath=self.server.filePath)
-							self.server.dialog.notification(30144)
+						if confirmation:
+							deleted = self.server.fileOperations.deleteFile(filePath=self.server.filePath)
+
+							if deleted:
+								self.server.dialog.notification(30144)
+							else:
+								self.server.dialog.notification(30145)
 
 				return
 

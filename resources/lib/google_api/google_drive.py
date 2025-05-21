@@ -129,9 +129,8 @@ class GoogleDrive:
 
 	def getDriveID(self):
 		url = mergePaths(API["files"], "root")
-		response = http_requester.request(url, headers=self.getHeaders())
 
-		if response:
+		if response := http_requester.request(url, headers=self.getHeaders()):
 			return response.get("id")
 
 	def getDrives(self):
@@ -171,9 +170,8 @@ class GoogleDrive:
 		}
 		url = addQueryString(mergePaths(API["files"], fileID), params)
 		response = http_requester.request(url, headers=self.getHeaders())
-		id = response.get("parents")
 
-		if id:
+		if id := response.get("parents"):
 			return id[0]
 
 	def getStreams(self, fileID, resolutionPriority=None):
@@ -278,15 +276,11 @@ class GoogleDrive:
 				"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
 			}
 
-		response = http_requester.request(GOOGLE_TOKEN_URL, data)
-
-		if not response:
-			return
-
-		self.account.accessToken = response["access_token"].rstrip(".")
-		expiry = datetime.datetime.now() + datetime.timedelta(seconds=response["expires_in"] - 600)
-		self.account.tokenExpiry = expiry
-		return True
+		if response := http_requester.request(GOOGLE_TOKEN_URL, data):
+			self.account.accessToken = response["access_token"].rstrip(".")
+			expiry = datetime.datetime.now() + datetime.timedelta(seconds=response["expires_in"] - 600)
+			self.account.tokenExpiry = expiry
+			return True
 
 	def setAccount(self, account):
 		self.account = account

@@ -63,9 +63,7 @@ class AccountManager:
 		if driveID not in self.accounts:
 			return
 
-		alias = self.getAlias(driveID)
-
-		if alias:
+		if alias := self.getAlias(driveID):
 			del self.aliases[alias]
 
 		del self.accounts[driveID]
@@ -100,7 +98,8 @@ class AccountManager:
 
 		if not accounts:
 			return
-		elif accounts.get("version") != 2:
+
+		if accounts.get("version") != 2:
 			accounts = self._convertAccounts(accounts)
 
 		if not self.accounts:
@@ -146,9 +145,8 @@ class AccountManager:
 		self.aliases = self.accountData["aliases"]
 
 	def setAlias(self, alias, driveID):
-		currentAlias = self.getAlias(driveID)
 
-		if currentAlias:
+		if currentAlias := self.getAlias(driveID):
 			del self.aliases[currentAlias]
 
 		self.aliases[alias] = driveID

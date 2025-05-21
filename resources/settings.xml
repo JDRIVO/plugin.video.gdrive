@@ -406,13 +406,23 @@
 				</setting>
 			</group>
 		</category>
-		<category id="server" label="30900" help="">
+		<category id="misc" label="30900" help="">
 			<group id="1">
 				<setting id="server_port" type="integer" label="30901" help="">
-					<level>3</level>
+					<level>1</level>
 					<default>8011</default>
 					<control type="edit" format="integer">
 						<heading>30901</heading>
+					</control>
+				</setting>
+				<setting id="delete_titles_cache" type="string" label="30902" help="">
+					<level>1</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=delete_titles_cache)</data>
 					</control>
 				</setting>
 			</group>

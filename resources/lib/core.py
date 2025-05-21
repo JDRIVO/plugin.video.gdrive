@@ -47,6 +47,7 @@ class Core:
 			"delete_encryption_profiles": self.deleteEncryptionProfiles,
 			"delete_sync_cache": self.deleteSyncCache,
 			"delete_sync_folder": self.deleteSyncFolder,
+			"delete_titles_cache": self.deleteTitlesCache,
 			"export_accounts": self.exportAccounts,
 			"export_encryption_profiles": self.exportEncryptionProfiles,
 			"force_sync_drive": self.forceSyncDrive,
@@ -147,10 +148,8 @@ class Core:
 			self.cloudService.setAccount(account)
 			tokenRefresh = self.cloudService.refreshToken()
 
-			if not tokenRefresh:
-				continue
-
-			accounts.append(account)
+			if tokenRefresh:
+				accounts.append(account)
 
 		driveID = self.settings.getParameter("drive_id")
 		self.accountManager.addAccounts(accounts, driveID)
@@ -347,20 +346,14 @@ class Core:
 		http_requester.request(url, data)
 
 	def deleteSyncFolder(self):
-		syncRootCache = self.cache.getSyncRootPath()
-		syncRoot = syncRootCache or self.settings.getSetting("sync_root")
+		syncRoot = self.cache.getSyncRootPath() or self.settings.getSetting("sync_root")
 
 		if not syncRoot:
-			syncRoot = self.dialog.ok(30092)
-			self.settings.setSetting("sync_root", "")
+			self.dialog.ok(30092)
 			return
 
 		if not os.path.exists(syncRoot):
 			self.dialog.ok(30100)
-
-			if not syncRootCache:
-				self.settings.setSetting("sync_root", "")
-
 			return
 
 		cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()
@@ -374,6 +367,22 @@ class Core:
 		url = f"http://localhost:{serverPort}/delete_sync_folder"
 		data = {"sync_root": syncRoot, "cid": cid}
 		http_requester.request(url, data)
+
+	def deleteTitlesCache(self):
+		confirmation = self.dialog.yesno(30146)
+
+		if not confirmation:
+			return
+
+		self.dialog.notification(30147)
+		from .filesystem.file_operations import FileOperations
+		fileOperations = FileOperations()
+		deleted = fileOperations.deleteFile(filePath=os.path.join(ADDON_PATH, "titles_cache.db"))
+
+		if deleted:
+			self.dialog.notification(30055)
+		else:
+			self.dialog.ok(30056)
 
 	def exportAccounts(self):
 		dirPath = self.dialog.browse(3, 30034, "")
@@ -608,9 +617,6 @@ class Core:
 		self.cloudService.setAccount(account)
 		self.refreshToken(account.tokenExpiry)
 		sharedDrives = self.cloudService.getDrives()
-
-		if not sharedDrives:
-			return
 
 		for sharedDrive in sharedDrives:
 			sharedDriveID = sharedDrive["id"]
@@ -966,7 +972,6 @@ class Core:
 
 		if not syncRoot:
 			self.dialog.ok(30092)
-			self.settings.setSetting("sync_root", "")
 			return
 
 		cid = xbmcgui.Window(xbmcgui.getCurrentWindowDialogId()).getFocusId()
@@ -980,7 +985,8 @@ class Core:
 		if syncRoot in syncRootNew:
 			self.dialog.ok(30101)
 			return
-		elif os.path.exists(syncRootNew):
+
+		if os.path.exists(syncRootNew):
 			self.dialog.ok(30102)
 			return
 
@@ -1066,9 +1072,9 @@ class Core:
 			tokenRefresh = self.cloudService.refreshToken()
 
 			if not tokenRefresh:
-				selection = self.dialog.yesno(f"{accountName} {self.settings.getLocalizedString(30003)}")
+				confirmation = self.dialog.yesno(f"{accountName} {self.settings.getLocalizedString(30003)}")
 
-				if not selection:
+				if not confirmation:
 					return
 
 				self.accountManager.deleteAccount(account, driveID)
@@ -1078,9 +1084,9 @@ class Core:
 				return
 
 		elif selection == 2:
-			selection = self.dialog.yesno(f"{self.settings.getLocalizedString(30157)} {accountName}?")
+			confirmation = self.dialog.yesno(f"{self.settings.getLocalizedString(30157)} {accountName}?")
 
-			if not selection:
+			if not confirmation:
 				return
 
 			self.accountManager.deleteAccount(account, driveID)
@@ -1150,8 +1156,9 @@ class Core:
 				return
 
 			if not tokenRefresh:
+				confirmation = self.dialog.yesno(f"{accountName} {self.settings.getLocalizedString(30003)}")
 
-				if selection := self.dialog.yesno(f"{accountName} {self.settings.getLocalizedString(30003)}"):
+				if confirmation:
 					self.accountManager.deleteAccount(account, driveID)
 					deletion = True
 

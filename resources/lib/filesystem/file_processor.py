@@ -14,7 +14,6 @@ from ..title_identifier.title_identifier import TitleIdentifier
 from ..title_identifier.title_cache_manager import TitleCacheManager
 
 dbEditor = DatabaseEditor()
-cacheManager = TitleCacheManager()
 
 
 class RemoteFileProcessor(queue.Queue):
@@ -120,6 +119,7 @@ class LocalFileProcessor:
 		self.cache = cache
 		self.syncRootPath = syncRootPath
 		self.progressDialog = progressDialog
+		self.titleCacheManager = TitleCacheManager()
 
 	def processFiles(self, folder, folderSettings, threadCount):
 		files = folder.files
@@ -172,7 +172,7 @@ class LocalFileProcessor:
 
 		if mediaType in ("movie", "episode"):
 			newFilename = None
-			modifiedName = file.formatName(cacheManager, titleIdentifier)
+			modifiedName = file.formatName(self.titleCacheManager, titleIdentifier)
 
 			if modifiedName:
 				newFilename = modifiedName.get("filename")
@@ -233,7 +233,7 @@ class LocalFileProcessor:
 		newFilename = None
 
 		if mediaType in ("movie", "episode"):
-			modifiedName = file.formatName(cacheManager, titleIdentifier)
+			modifiedName = file.formatName(self.titleCacheManager, titleIdentifier)
 
 			if modifiedName:
 				newFilename = modifiedName.get("filename")
