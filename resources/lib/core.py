@@ -411,9 +411,8 @@ class Core:
 	def forceSyncDrive(self):
 		driveID = self.settings.getParameter("drive_id")
 		driveName = self.settings.getParameter("drive_name")
-		drive = self.cache.getDrive(driveID)
 
-		if not drive:
+		if not self.cache.getDrive(driveID):
 			return
 
 		self.dialog.notification(f"{self.settings.getLocalizedString(30073)} {driveName}")
@@ -423,6 +422,10 @@ class Core:
 		http_requester.request(url, data)
 
 	def forceSyncDrives(self):
+
+		if not self.cache.getDrives():
+			return
+
 		self.dialog.notification(30142)
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/sync_all"
@@ -681,8 +684,6 @@ class Core:
 				dbType = xbmc.getInfoLabel("ListItem.DBTYPE")
 				filePath = xbmc.getInfoLabel("ListItem.FileNameAndPath")
 
-		filePath = filePath[:-5]
-		filename = os.path.basename(filePath)
 		fileID = self.settings.getParameter("file_id")
 		driveURL = self.cloudService.getDownloadURL(fileID)
 		driveID = self.settings.getParameter("drive_id") or self.settings.getSetting("default_playback_account_id")
@@ -750,13 +751,15 @@ class Core:
 		serverPort = self.settings.getSettingInt("server_port", 8011)
 		url = f"http://localhost:{serverPort}/initialize_stream"
 		data = {
-			"encryption_id": encryptionID,
 			"url": driveURL,
 			"drive_id": driveID,
 			"file_id": fileID,
+			"file_path": filePath,
+			"encryption_id": encryptionID,
 			"transcoded": transcoded,
 		}
 		http_requester.request(url, data)
+		filename = os.path.basename(filePath)[:-5]
 		listItem = xbmcgui.ListItem(filename, path=f"http://localhost:{serverPort}/play")
 
 		if self.settings.getSetting("set_subtitles"):

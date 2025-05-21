@@ -447,7 +447,7 @@ class EncryptionSettings(xbmcgui.WindowDialog):
 			type = button["type"]
 
 			if type == "push":
-				button["button"].setLabel(label2=settings[button["setting"]])
+				button["button"].setLabel(label2=settings[button["setting"]] or " ")
 			elif type == "edit":
 				button["button"].setText(settings[button["setting"]])
 			elif type == "radio":

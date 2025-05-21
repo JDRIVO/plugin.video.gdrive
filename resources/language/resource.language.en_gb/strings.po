@@ -582,6 +582,14 @@ msgctxt "#30142"
 msgid "Syncing all drives"
 msgstr "Syncing all drives"
 
+msgctxt "#30143"
+msgid "Do you want to delete:"
+msgstr "Do you want to delete:"
+
+msgctxt "#30144"
+msgid "File deleted"
+msgstr "File deleted"
+
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
 msgstr "Are you sure you want to delete account:"

@@ -115,6 +115,10 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 	def do_HEAD(self):
 
+		if self.server.failed:
+			self.send_error(400)
+			return
+
 		try:
 			response = self.server.http.request("HEAD", self.server.url, headers=self.server.cloudService.getHeaders())
 
@@ -133,7 +137,8 @@ class ServerHandler(BaseHTTPRequestHandler):
 				if status == 401:
 					message = f"{self.server.settings.getLocalizedString(30018)} {self.server.account.name}"
 				elif status == 404:
-					message = f"{self.server.settings.getLocalizedString(30209)} {self.server.account.name}"
+					filename = os.path.basename(self.server.filePath)
+					message = f"{self.server.settings.getLocalizedString(30209)} {self.server.account.name}. {self.server.settings.getLocalizedString(30143)} {filename}?"
 				elif status in (403, 429):
 					message = f"{self.server.settings.getLocalizedString(30006)} {self.server.settings.getLocalizedString(30009)}"
 				else:
@@ -141,10 +146,16 @@ class ServerHandler(BaseHTTPRequestHandler):
 					xbmc.log(f"gdrive error: {e}", xbmc.LOGERROR)
 
 				if message:
+					time.sleep(2)
 					xbmc.executebuiltin("Dialog.Close(all,true)")
-					time.sleep(1)
-					xbmc.executebuiltin("Dialog.Close(all,true)")
-					self.server.dialog.ok(message)
+
+					if status != 404:
+						self.server.dialog.ok(message)
+					else:
+
+						if selection := self.server.dialog.yesno(message):
+							self.server.fileOperations.deleteFile(filePath=self.server.filePath)
+							self.server.dialog.notification(30144)
 
 				return
 
@@ -301,6 +312,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		self.server.url = postData["url"]
 		self.server.driveID = postData["drive_id"]
 		self.server.fileID = postData["file_id"]
+		self.server.filePath = postData["file_path"]
 		self.server.transcoded = postData["transcoded"]
 		encryptionID = postData["encryption_id"]
 

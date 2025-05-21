@@ -47,10 +47,10 @@ class Syncer:
 			return True
 
 		changes = self._sortChanges(changes)
-		self.deletedStrm = False
 		syncedIDs, excludedIDs = [], []
 		newFiles = {}
 		pathsToClean = set()
+		self.deletedStrm = False
 
 		for item in changes:
 			id = item["id"]
@@ -60,20 +60,14 @@ class Syncer:
 
 			syncedIDs.append(id)
 
-			try:
-				# shared items that google automatically adds to an account don't have parentFolderIDs
-				parentFolderID = item["parents"][0]
-			except KeyError:
-				continue
-
 			if item["trashed"]:
 				self._syncDeletions(item, syncRootPath, drivePath, pathsToClean)
 				continue
 
 			if item["mimeType"] == "application/vnd.google-apps.folder":
-				self._syncFolderChanges(item, parentFolderID, driveID, syncRootPath, drivePath, syncedIDs, excludedIDs)
+				self._syncFolderChanges(item, driveID, syncRootPath, drivePath, syncedIDs, excludedIDs)
 			else:
-				self._syncFileChanges(item, parentFolderID, driveID, syncRootPath, drivePath, newFiles, excludedIDs)
+				self._syncFileChanges(item, driveID, syncRootPath, drivePath, newFiles, excludedIDs)
 
 		if self.deletedStrm and self.settings.getSetting("clean_library"):
 			videoSource = self.settings.getSetting("video_source")
@@ -97,7 +91,11 @@ class Syncer:
 				}
 				rpc(query)
 
-		[self.cache.removeEmptyDirectories(dir) for dir in pathsToClean]
+		threadCount = self.settings.getSettingInt("thread_count", 1)
+
+		with ThreadPool(threadCount) as pool:
+			[pool.submit(self.cache.removeEmptyDirectories, dir) for dir in pathsToClean]
+
 		self.cache.updateDrive({"page_token": pageToken, "last_sync": time.time()}, driveID)
 		return True
 
@@ -158,19 +156,25 @@ class Syncer:
 				else:
 					continue
 
-				item.update({"id": id, "trashed": True, "parents": [True]})
+				item.update({"id": id, "trashed": True})
 				trashed.append(item)
 				continue
 
 			item = change["file"]
 			item["id"] = id
 
+			try:
+				# shared items that google automatically adds to an account don't have parentFolderIDs
+				item["parents"] = item["parents"][0]
+			except KeyError:
+				continue
+
 			if item["trashed"]:
 				trashed.append(item)
 				continue
 
 			if item["mimeType"] == "application/vnd.google-apps.folder":
-				cachedDirectory = self.cache.getDirectory({"folder_id": item["id"]})
+				cachedDirectory = self.cache.getDirectory({"folder_id": id})
 
 				if cachedDirectory:
 					existingFolders.append(item)
@@ -213,10 +217,8 @@ class Syncer:
 		if not cachedFiles:
 			cachedDirectory = self.cache.getDirectory({"folder_id": folderID})
 
-			if not cachedDirectory:
-				return
-
-			pathsToClean.add(cachedDirectory["root_folder_id"])
+			if cachedDirectory:
+				pathsToClean.add(cachedDirectory["root_folder_id"])
 
 	def _syncFileAdditions(self, files, syncRootPath):
 		syncRootPath = syncRootPath + os.sep
@@ -250,8 +252,9 @@ class Syncer:
 			localFileProcessor = LocalFileProcessor(self.fileOperations, self.cache, syncRootPath)
 			[pool.submit(localFileProcessor.processFiles, folder, folderSettings, threadCount) for folder, folderSettings in folders]
 
-	def _syncFileChanges(self, file, parentFolderID, driveID, syncRootPath, drivePath, newFiles, excludedIDs):
+	def _syncFileChanges(self, file, driveID, syncRootPath, drivePath, newFiles, excludedIDs):
 		fileID = file["id"]
+		parentFolderID = file["parents"]
 		cachedDirectory = self.cache.getDirectory({"folder_id": parentFolderID})
 		cachedFile = self.cache.getFile({"file_id": fileID})
 
@@ -369,9 +372,10 @@ class Syncer:
 		else:
 			files[file.type].append(file)
 
-	def _syncFolderChanges(self, folder, parentFolderID, driveID, syncRootPath, drivePath, syncedIDs, excludedIDs):
+	def _syncFolderChanges(self, folder, driveID, syncRootPath, drivePath, syncedIDs, excludedIDs):
 		folderID = folder["id"]
 		folderName = folder["name"]
+		parentFolderID = folder["parents"]
 		cachedDirectory = self.cache.getDirectory({"folder_id": folderID})
 
 		if not cachedDirectory:
