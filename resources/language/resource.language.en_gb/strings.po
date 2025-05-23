@@ -138,10 +138,6 @@ msgctxt "#30031"
 msgid "Folder moved"
 msgstr "Folder moved"
 
-msgctxt "#30032"
-msgid "Accounts"
-msgstr "Accounts"
-
 msgctxt "#30033"
 msgid "Select a file to import"
 msgstr "Select a file to import"

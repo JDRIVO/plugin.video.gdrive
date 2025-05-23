@@ -159,6 +159,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 							if deleted:
 								self.server.dialog.notification(30144)
+								xbmc.executebuiltin("Container.Refresh")
 							else:
 								self.server.dialog.notification(30145)
 

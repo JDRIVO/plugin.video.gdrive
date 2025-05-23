@@ -119,6 +119,7 @@ class Core:
 		if not name:
 			return
 
+		from .accounts.account import ServiceAccount
 		from .filesystem.file_operations import FileOperations
 		fileOperations = FileOperations()
 		accounts = []
@@ -140,7 +141,6 @@ class Core:
 				self.dialog.ok(f"{self.settings.getLocalizedString(error)} {filePath}")
 				continue
 
-			from .accounts.account import ServiceAccount
 			account = ServiceAccount()
 			account.name = name
 			account.email = email
@@ -174,7 +174,7 @@ class Core:
 
 		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_accounts&drive_id={driveID}",
-			f"[B][COLOR yellow]{self.settings.getLocalizedString(30032)}[/COLOR][/B]",
+			f"[B][COLOR yellow]{self.settings.getLocalizedString(30700)}[/COLOR][/B]",
 		)
 		self.addMenuItem(
 			f"{self.pluginURL}?mode=list_folders&drive_id={driveID}",
@@ -1016,6 +1016,7 @@ class Core:
 
 	def setVideoSource(self):
 		from helpers import rpc
+		from .network.network_helpers import unquote
 		response = rpc({"method": "Files.GetSources", "params": {"media": "video"}})
 		sources = response.get("result", {}).get("sources", [])
 		listItems = []
@@ -1027,7 +1028,6 @@ class Core:
 				continue
 
 			if file.startswith("multipath://"):
-				from .network.network_helpers import unquote
 				paths = [unquote(p) for p in file[len("multipath://"):].split("/") if p]
 			else:
 				paths = [file]
