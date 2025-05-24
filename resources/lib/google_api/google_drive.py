@@ -115,7 +115,11 @@ class GoogleDrive:
 			if not encryptorSet:
 				encryptor = None
 
-		dirs = [removeProhibitedFSchars(encryptor.decryptDirName(dir)) if encryptor else removeProhibitedFSchars(dir) for dir in dirs]
+		if encryptor:
+			dirs = [removeProhibitedFSchars(encryptor.decryptDirName(d)) for d in dirs]
+		else:
+			dirs = [removeProhibitedFSchars(d) for d in dirs]
+
 		dirPath = os.path.join(basePath, *dirs).rstrip(os.sep)
 		return dirPath, rootFolderID
 

@@ -51,12 +51,12 @@ class GDriveAdaptor(EncryptionStrategy):
 			return name
 
 		if fileExtension:
-			return None
+			return
 
 		try:
 			return self.encryptor.decryptString(name)
 		except Exception:
-			return None
+			return
 
 	def decryptStream(self, response, wfile, chunkOffset):
 		self.encryptor.decryptStreamChunk(response, wfile, chunkOffset)
@@ -100,7 +100,7 @@ class RcloneAdaptor(EncryptionStrategy):
 		try:
 			return self.decryptName(name)
 		except Exception:
-			return None
+			return
 
 	def decryptStream(self, response, wfile, blockIndex, blockOffset):
 		self.encryptor.file.decryptStreamChunk(response, wfile, blockIndex, blockOffset)

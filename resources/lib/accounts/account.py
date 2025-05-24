@@ -1,7 +1,7 @@
 from ..encryption.obscurer import obscure, unobscure
 
 
-class BaseAccount:
+class Account:
 
 	def __init__(self):
 		self.name = None
@@ -18,7 +18,7 @@ class BaseAccount:
 		self._accessToken = obscure(value)
 
 
-class OAuthAccount(BaseAccount):
+class OAuthAccount(Account):
 
 	def __init__(self):
 		super().__init__()
@@ -52,7 +52,7 @@ class OAuthAccount(BaseAccount):
 		self._refreshToken = obscure(value)
 
 
-class ServiceAccount(BaseAccount):
+class ServiceAccount(Account):
 
 	def __init__(self):
 		super().__init__()
@@ -75,15 +75,3 @@ class ServiceAccount(BaseAccount):
 	@key.setter
 	def key(self, value):
 		self._key = obscure(value)
-
-
-class Account:
-	name = None
-	clientID = None
-	clientSecret = None
-	accessToken = None
-	refreshToken = None
-	expiry = None
-	driveStream = None
-	key = None
-	email = None
