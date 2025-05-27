@@ -799,9 +799,8 @@ class Core:
 		http_requester.request(url, data)
 
 	def refreshToken(self, expiry):
-		timeNow = datetime.datetime.now()
 
-		if timeNow >= expiry:
+		if datetime.datetime.now() >= expiry:
 			self.cloudService.refreshToken()
 			self.accountManager.saveAccounts()
 
@@ -1024,7 +1023,7 @@ class Core:
 		for source in sources:
 			file = source["file"]
 
-			if file.startswith("addons://"):
+			if file.startswith(("addons://", "special://")):
 				continue
 
 			if file.startswith("multipath://"):

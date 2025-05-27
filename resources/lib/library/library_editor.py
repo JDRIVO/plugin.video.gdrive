@@ -36,9 +36,10 @@ class DatabaseEditor(DatabaseManager):
 
 	def _addStreamData(self, fileID, data, mediaType):
 		streamType = "0" if mediaType == "video" else "1"
+		condition = {"idFile": fileID, "iStreamType": streamType}
 
-		if self.select("streamdetails", condition={"idFile": fileID, "iStreamType": streamType}):
-			self.update("streamdetails", data, {"idFile": fileID, "iStreamType": streamType})
+		if self.select("streamdetails", condition=condition):
+			self.update("streamdetails", data, condition)
 		else:
 			self.insert("streamdetails", data)
 
