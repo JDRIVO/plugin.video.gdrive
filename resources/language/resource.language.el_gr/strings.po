@@ -1,0 +1,871 @@
+# XBMC Media Center language file
+msgid ""
+msgstr ""
+"Project-Id-Version: plugin.video.gdrive 3.0.2\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: el_gr\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#30000"
+msgid "gDrive"
+msgstr "gDrive"
+
+msgctxt "#30001"
+msgid "Help"
+msgstr "Βοήθεια"
+
+msgctxt "#30002"
+msgid "Rename"
+msgstr "Μετονομάζω"
+
+msgctxt "#30003"
+msgid "is no longer valid. Do you want to delete this account?"
+msgstr "δεν ισχύει πλέον. Θέλετε να διαγράψετε αυτόν τον λογαριασμό;"
+
+msgctxt "#30004"
+msgid "Drive Name"
+msgstr "Όνομα οδήγησης"
+
+msgctxt "#30005"
+msgid "Sync settings"
+msgstr "Ρυθμίσεις συγχρονισμού"
+
+msgctxt "#30006"
+msgid "API Ban:"
+msgstr "Απαγόρευση API:"
+
+msgctxt "#30007"
+msgid "Switching to fallback account"
+msgstr "Μετάβαση στον λογαριασμό Fallback"
+
+msgctxt "#30008"
+msgid "Videos"
+msgstr "Βίντεο"
+
+msgctxt "#30009"
+msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
+msgstr "Το όριο ημερήσιας ποσόστωσης ξεπέρασε. Η απαγόρευση θα ανυψωθεί εντός 24 ωρών."
+
+msgctxt "#30010"
+msgid "Sync all"
+msgstr "Συγχρονισμός όλων"
+
+msgctxt "#30011"
+msgid "Synced"
+msgstr "Συγχρονισμένος"
+
+msgctxt "#30012"
+msgid "Sync Settings"
+msgstr "Ρυθμίσεις συγχρονισμού"
+
+msgctxt "#30013"
+msgid "Sync folder"
+msgstr "Φάκελος συγχρονισμού"
+
+msgctxt "#30014"
+msgid "Select an account"
+msgstr "Επιλέξτε έναν λογαριασμό"
+
+msgctxt "#30015"
+msgid "The drive name already exists, it must be unique."
+msgstr "Το όνομα της μονάδας δίσκου υπάρχει ήδη, πρέπει να είναι μοναδικό."
+
+msgctxt "#30016"
+msgid "Are you sure you want to delete drive:"
+msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε τη μονάδα δίσκου:"
+
+msgctxt "#30017"
+msgid "Drive settings"
+msgstr "Ρυθμίσεις οδήγησης"
+
+msgctxt "#30018"
+msgid "Credential validation failed for account:"
+msgstr "Η επικύρωση πιστοποίησης απέτυχε για λογαριασμό:"
+
+msgctxt "#30019"
+msgid "Account validated"
+msgstr "Επικυρωμένος λογαριασμός"
+
+msgctxt "#30020"
+msgid "Accounts validated"
+msgstr "Επικυρωμένοι λογαριασμοί"
+
+msgctxt "#30021"
+msgid "Validate accounts"
+msgstr "Επικυρώστε τους λογαριασμούς"
+
+msgctxt "#30022"
+msgid "Delete accounts"
+msgstr "Διαγραφή λογαριασμών"
+
+msgctxt "#30023"
+msgid "Validate"
+msgstr "Επικυρώνω"
+
+msgctxt "#30024"
+msgid "Are you sure you want to delete the accounts file?"
+msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε το αρχείο λογαριασμών;"
+
+msgctxt "#30025"
+msgid "Account Name"
+msgstr "Όνομα λογαριασμού"
+
+msgctxt "#30026"
+msgid "Select files to import"
+msgstr "Επιλέξτε αρχεία για εισαγωγή"
+
+msgctxt "#30027"
+msgid "Do you want to delete all files associated with this drive?"
+msgstr "Θέλετε να διαγράψετε όλα τα αρχεία που σχετίζονται με αυτήν τη μονάδα;"
+
+msgctxt "#30028"
+msgid "The private key and client email weren't found in:"
+msgstr "Το ιδιωτικό κλειδί και το email του πελάτη δεν βρέθηκαν στο:"
+
+msgctxt "#30029"
+msgid "The client email wasn't found in:"
+msgstr "Το email του πελάτη δεν βρέθηκε στο:"
+
+msgctxt "#30030"
+msgid "The private key wasn't found in:"
+msgstr "Το ιδιωτικό κλειδί δεν βρέθηκε στο:"
+
+msgctxt "#30031"
+msgid "Folder moved"
+msgstr "Μετακινήθηκε φάκελος"
+
+msgctxt "#30033"
+msgid "Select a file to import"
+msgstr "Επιλέξτε ένα αρχείο για εισαγωγή"
+
+msgctxt "#30034"
+msgid "Select a folder to export to"
+msgstr "Επιλέξτε ένα φάκελο για εξαγωγή σε"
+
+msgctxt "#30035"
+msgid "File exported as"
+msgstr "Αρχείο που εξάγεται ως"
+
+msgctxt "#30036"
+msgid "Accounts imported"
+msgstr "Εισαγόμενοι λογαριασμοί"
+
+msgctxt "#30037"
+msgid "Account import failed."
+msgstr "Η εισαγωγή λογαριασμού απέτυχε."
+
+msgctxt "#30038"
+msgid "My Drive"
+msgstr "Η κίνηση μου"
+
+msgctxt "#30039"
+msgid "Shared With Me"
+msgstr "Μοιράστηκε μαζί μου"
+
+msgctxt "#30040"
+msgid "Shared Drives"
+msgstr "Κοινόχρηστοι δίσκοι"
+
+msgctxt "#30041"
+msgid "Search"
+msgstr "Ερευνα"
+
+msgctxt "#30042"
+msgid "Starred"
+msgstr "Αστεροειδής"
+
+msgctxt "#30043"
+msgid "Search Query"
+msgstr "Αναζήτηση αναζήτησης"
+
+msgctxt "#30044"
+msgid "Sync completed"
+msgstr "Ο συγχρονισμός ολοκληρώθηκε"
+
+msgctxt "#30045"
+msgid "Files have been deleted"
+msgstr "Έχουν διαγραφεί αρχεία"
+
+msgctxt "#30046"
+msgid "Account registration succeeded"
+msgstr "Η εγγραφή λογαριασμού πέτυχε"
+
+msgctxt "#30047"
+msgid "Account registration failed"
+msgstr "Η εγγραφή λογαριασμού απέτυχε"
+
+msgctxt "#30048"
+msgid "Sync path"
+msgstr "Διαδρομή συγχρονισμού"
+
+msgctxt "#30049"
+msgid "Sync mode"
+msgstr "Λειτουργία συγχρονισμού"
+
+msgctxt "#30050"
+msgid "Sync frequency"
+msgstr "Συχνότητα συγχρονισμού"
+
+msgctxt "#30051"
+msgid "Sync on startup"
+msgstr "Συγχρονισμός κατά την εκκίνηση"
+
+msgctxt "#30052"
+msgid "Syncing folders"
+msgstr "Συγχρονισμός φακέλων"
+
+msgctxt "#30053"
+msgid "Processing files"
+msgstr "Αρχεία επεξεργασίας"
+
+msgctxt "#30054"
+msgid "Are you sure you want to delete the sync cache?"
+msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε την προσωρινή μνήμη συγχρονισμού;"
+
+msgctxt "#30055"
+msgid "Cache deleted"
+msgstr "Διαγραμμένη μνήμη"
+
+msgctxt "#30056"
+msgid "Failed to delete the cache. See log for details."
+msgstr "Απέτυχε να διαγράψει την προσωρινή μνήμη. Δείτε το αρχείο καταγραφής για λεπτομέρειες."
+
+msgctxt "#30057"
+msgid "Playback account not found."
+msgstr "Ο λογαριασμός αναπαραγωγής δεν βρέθηκε."
+
+msgctxt "#30058"
+msgid "Search language"
+msgstr "Γλώσσα αναζήτησης"
+
+msgctxt "#30059"
+msgid "Region"
+msgstr "Περιοχή"
+
+msgctxt "#30060"
+msgid "Adult content"
+msgstr "Περιεχόμενο ενηλίκων"
+
+msgctxt "#30061"
+msgid "Stop syncing all folders"
+msgstr "Σταματήστε να συγχρονίζετε όλους τους φακέλους"
+
+msgctxt "#30062"
+msgid "Stop syncing folder"
+msgstr "Σταματήστε το φάκελο συγχρονισμού"
+
+msgctxt "#30063"
+msgid "Do you want to delete the local files associated with this folder?"
+msgstr "Θέλετε να διαγράψετε τα τοπικά αρχεία που σχετίζονται με αυτόν τον φάκελο;"
+
+msgctxt "#30064"
+msgid "Do you want to delete the local files associated with these folders?"
+msgstr "Θέλετε να διαγράψετε τα τοπικά αρχεία που σχετίζονται με αυτούς τους φακέλους;"
+
+msgctxt "#30065"
+msgid "General"
+msgstr "Γενικός"
+
+msgctxt "#30066"
+msgid "OK"
+msgstr "ΕΝΤΑΞΕΙ"
+
+msgctxt "#30067"
+msgid "Cancel"
+msgstr "Ματαίωση"
+
+msgctxt "#30068"
+msgid "interval"
+msgstr "διάστημα"
+
+msgctxt "#30069"
+msgid "schedule"
+msgstr "πρόγραμμα"
+
+msgctxt "#30070"
+msgid "Enter the sync interval in minutes"
+msgstr "Εισαγάγετε το διάστημα συγχρονισμού σε λίγα λεπτά"
+
+msgctxt "#30071"
+msgid "Enter the time to sync files"
+msgstr "Εισαγάγετε την ώρα για συγχρονισμό αρχείων"
+
+msgctxt "#30072"
+msgid "Select a video source"
+msgstr "Επιλέξτε μια πηγή βίντεο"
+
+msgctxt "#30073"
+msgid "Syncing"
+msgstr "Συγχρονισμός"
+
+msgctxt "#30074"
+msgid "Deleting sync folder"
+msgstr "Διαγραφή του φακέλου συγχρονισμού"
+
+msgctxt "#30075"
+msgid "Deleting files"
+msgstr "Διαγραφή αρχείων"
+
+msgctxt "#30076"
+msgid "Moving sync folder"
+msgstr "Μετακίνητος φάκελος συγχρονισμού"
+
+msgctxt "#30077"
+msgid "Select the folder that your files will be stored in"
+msgstr "Επιλέξτε το φάκελο που θα αποθηκευτούν τα αρχεία σας"
+
+msgctxt "#30078"
+msgid "There are no OAuth accounts connected to this drive."
+msgstr "Δεν υπάρχουν λογαριασμοί OAuth που συνδέονται με αυτήν τη μονάδα."
+
+msgctxt "#30079"
+msgid "You must assign a sync path."
+msgstr "Πρέπει να αντιστοιχίσετε μια διαδρομή συγχρονισμού."
+
+msgctxt "#30080"
+msgid "You must assign a sync mode."
+msgstr "Πρέπει να αντιστοιχίσετε μια λειτουργία συγχρονισμού."
+
+msgctxt "#30081"
+msgid "You must assign a sync frequency."
+msgstr "Πρέπει να αντιστοιχίσετε μια συχνότητα συγχρονισμού."
+
+msgctxt "#30082"
+msgid "Sync started"
+msgstr "Ξεκίνησε ο συγχρονισμός"
+
+msgctxt "#30083"
+msgid "Resolution Priority"
+msgstr "Προτεραιότητα επίλυσης"
+
+msgctxt "#30084"
+msgid "Close"
+msgstr "Κοντά"
+
+msgctxt "#30085"
+msgid "Drives"
+msgstr "Δίσκο"
+
+msgctxt "#30086"
+msgid "Folder Selection"
+msgstr "Επιλογή φακέλου"
+
+msgctxt "#30087"
+msgid "manual"
+msgstr "εγχειρίδιο"
+
+msgctxt "#30088"
+msgid "Deleting sync cache"
+msgstr "Διαγραφή cache συγχρονισμού"
+
+msgctxt "#30089"
+msgid "Client ID and Client Secret creation"
+msgstr "Αναγνωριστικό πελάτη και μυστική δημιουργία πελάτη"
+
+msgctxt "#30090"
+msgid "Sync multiple"
+msgstr "Συγχρονισμός πολλαπλών"
+
+msgctxt "#30091"
+msgid "Search folder"
+msgstr "Φάκελος αναζήτησης"
+
+msgctxt "#30092"
+msgid "Sync folder isn't set."
+msgstr "Ο φάκελος συγχρονισμού δεν έχει οριστεί."
+
+msgctxt "#30093"
+msgid "Select a folder to move to"
+msgstr "Επιλέξτε ένα φάκελο για να μετακινηθείτε στο"
+
+msgctxt "#30094"
+msgid "Are you sure you want to delete the sync folder?"
+msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε το φάκελο συγχρονισμού;"
+
+msgctxt "#30095"
+msgid "Folder deleted"
+msgstr "Διαγραμμένος φάκελος"
+
+msgctxt "#30096"
+msgid "Failed to delete the sync folder. See log for details."
+msgstr "Απέτυχε να διαγράψει το φάκελο συγχρονισμού. Δείτε το αρχείο καταγραφής για λεπτομέρειες."
+
+msgctxt "#30097"
+msgid "Accounts file deleted"
+msgstr "Αρχείο λογαριασμών διαγράφηκε"
+
+msgctxt "#30098"
+msgid "Failed to delete the accounts file. See log for details."
+msgstr "Απέτυχε να διαγράψει το αρχείο λογαριασμών. Δείτε το αρχείο καταγραφής για λεπτομέρειες."
+
+msgctxt "#30099"
+msgid "Enter the filename"
+msgstr "Εισαγάγετε το όνομα αρχείου"
+
+msgctxt "#30100"
+msgid "The sync folder doesn't exist."
+msgstr "Ο φάκελος συγχρονισμού δεν υπάρχει."
+
+msgctxt "#30101"
+msgid "Failed to move the folder. The folder can't be moved into itself."
+msgstr "Αποτυχία μετακίνησης του φακέλου. Ο φάκελος δεν μπορεί να μετακινηθεί στον εαυτό του."
+
+msgctxt "#30102"
+msgid "Failed to move the folder. The folder already exists."
+msgstr "Αποτυχία μετακίνησης του φακέλου. Ο φάκελος υπάρχει ήδη."
+
+msgctxt "#30103"
+msgid "Exclude"
+msgstr "Αποκλείω"
+
+msgctxt "#30104"
+msgid "Include"
+msgstr "Συμπεριλαμβάνω"
+
+msgctxt "#30105"
+msgid "Deleting Drive:"
+msgstr "Διαγραφή μονάδας δίσκου:"
+
+msgctxt "#30106"
+msgid "Deleted Drive:"
+msgstr "Διαγραμμένη μονάδα δίσκου:"
+
+msgctxt "#30107"
+msgid "Profile name"
+msgstr "Όνομα προφίλ"
+
+msgctxt "#30108"
+msgid "Encryption type"
+msgstr "Τύπος κρυπτογράφησης"
+
+msgctxt "#30109"
+msgid "Password"
+msgstr "Σύνθημα"
+
+msgctxt "#30110"
+msgid "Salt"
+msgstr "Αλας"
+
+msgctxt "#30111"
+msgid "Filename encryption"
+msgstr "Κρυπτογράφηση ονόματος αρχείου"
+
+msgctxt "#30112"
+msgid "Filename encoding"
+msgstr "Κωδικοποίηση ονόματος αρχείου"
+
+msgctxt "#30113"
+msgid "Suffix"
+msgstr "Κατάληξη"
+
+msgctxt "#30114"
+msgid "Encrypt file data"
+msgstr "Κρυπτογραφήστε δεδομένα αρχείων"
+
+msgctxt "#30115"
+msgid "Encrypt directory names"
+msgstr "Κρυπτογραφικά ονόματα καταλόγου"
+
+msgctxt "#30116"
+msgid "Select a profile"
+msgstr "Επιλέξτε ένα προφίλ"
+
+msgctxt "#30117"
+msgid "Profiles deleted"
+msgstr "Τα προφίλ διαγράφηκαν"
+
+msgctxt "#30118"
+msgid "Profile import failed."
+msgstr "Η εισαγωγή προφίλ απέτυχε."
+
+msgctxt "#30119"
+msgid "Profiles imported"
+msgstr "Τα προφίλ εισάγονται"
+
+msgctxt "#30120"
+msgid "Assign a default encryption profile before playing an encrypted video."
+msgstr "Εκχωρήστε ένα προεπιλεγμένο προφίλ κρυπτογράφησης πριν από την αναπαραγωγή ενός κρυπτογραφημένου βίντεο."
+
+msgctxt "#30121"
+msgid "The encryption profile associated with this file doesn't exist."
+msgstr "Το προφίλ κρυπτογράφησης που σχετίζεται με αυτό το αρχείο δεν υπάρχει."
+
+msgctxt "#30122"
+msgid "No encryption profiles found."
+msgstr "Δεν βρέθηκαν προφίλ κρυπτογράφησης."
+
+msgctxt "#30123"
+msgid "Profile Manager"
+msgstr "Διαχειριστής προφίλ"
+
+msgctxt "#30124"
+msgid "Profile created"
+msgstr "Δημιουργήθηκε προφίλ"
+
+msgctxt "#30125"
+msgid "Profile updated"
+msgstr "Ενημερώθηκε το προφίλ"
+
+msgctxt "#30126"
+msgid "You must assign a profile name."
+msgstr "Πρέπει να αντιστοιχίσετε ένα όνομα προφίλ."
+
+msgctxt "#30127"
+msgid "You must assign a password."
+msgstr "Πρέπει να εκχωρήσετε έναν κωδικό πρόσβασης."
+
+msgctxt "#30128"
+msgid "You must assign a salt."
+msgstr "Πρέπει να εκχωρήσετε ένα αλάτι."
+
+msgctxt "#30129"
+msgid "Profile Deletion"
+msgstr "Διαγραφή προφίλ"
+
+msgctxt "#30130"
+msgid "Profile deleted"
+msgstr "Διαγραμμένο προφίλ"
+
+msgctxt "#30131"
+msgid "Synced all drives"
+msgstr "Συγχρονισμένα όλους τους δίσκους"
+
+msgctxt "#30132"
+msgid "Failed to sync all drives"
+msgstr "Απέτυχε να συγχρονίσει όλες τις μονάδες δίσκου"
+
+msgctxt "#30133"
+msgid "Sync failed"
+msgstr "Ο συγχρονισμός απέτυχε"
+
+msgctxt "#30134"
+msgid "Base Name"
+msgstr "Όνομα βάσης"
+
+msgctxt "#30135"
+msgid "second"
+msgstr "δεύτερος"
+
+msgctxt "#30136"
+msgid "seconds"
+msgstr "δευτερόλεπτα"
+
+msgctxt "#30137"
+msgid "minute"
+msgstr "λεπτό"
+
+msgctxt "#30138"
+msgid "minutes"
+msgstr "πρακτικά"
+
+msgctxt "#30139"
+msgid "hour"
+msgstr "ώρα"
+
+msgctxt "#30140"
+msgid "hours"
+msgstr "ώρες"
+
+msgctxt "#30141"
+msgid "Failed to sync"
+msgstr "Αποτυχία συγχρονισμού"
+
+msgctxt "#30142"
+msgid "Syncing all drives"
+msgstr "Συγχρονίζοντας όλες τις μονάδες δίσκου"
+
+msgctxt "#30143"
+msgid "Do you want to delete:"
+msgstr "Θέλετε να διαγράψετε:"
+
+msgctxt "#30144"
+msgid "File deleted"
+msgstr "Διαγραμμένος αρχείο"
+
+msgctxt "#30145"
+msgid "File deletion failed"
+msgstr "Η διαγραφή αρχείων απέτυχε"
+
+msgctxt "#30146"
+msgid "Are you sure you want to delete the TMDB cache?"
+msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε την προσωρινή μνήμη TMDB;"
+
+msgctxt "#30147"
+msgid "Deleting TMDB cache"
+msgstr "Διαγραφή cache tmdb"
+
+msgctxt "#30157"
+msgid "Are you sure you want to delete account:"
+msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε τον λογαριασμό:"
+
+msgctxt "#30158"
+msgid "Account Deletion"
+msgstr "Διαγραφή λογαριασμού"
+
+msgctxt "#30159"
+msgid "Delete"
+msgstr "Διαγράφω"
+
+msgctxt "#30163"
+msgid "Stop syncing select folders"
+msgstr "Σταματήστε το συγχρονισμό Επιλέξτε φακέλους"
+
+msgctxt "#30165"
+msgid "Select folders to delete"
+msgstr "Επιλέξτε φακέλους για διαγραφή"
+
+msgctxt "#30207"
+msgid "Add account"
+msgstr "Προσθέστε λογαριασμό"
+
+msgctxt "#30209"
+msgid "The file wasn't found in the account:"
+msgstr "Το αρχείο δεν βρέθηκε στον λογαριασμό:"
+
+msgctxt "#30214"
+msgid "Add service accounts"
+msgstr "Προσθήκη λογαριασμών υπηρεσίας"
+
+msgctxt "#30215"
+msgid "Visit"
+msgstr "Επίσκεψη"
+
+msgctxt "#30216"
+msgid "in a web browser."
+msgstr "Σε ένα πρόγραμμα περιήγησης ιστού."
+
+msgctxt "#30217"
+msgid "You must create an"
+msgstr "Πρέπει να δημιουργήσετε ένα"
+
+msgctxt "#30218"
+msgid "OAuth Client ID"
+msgstr "Αναγνωριστικό πελάτη OAuth"
+
+msgctxt "#30219"
+msgid "Web Application"
+msgstr "Αίτημα ιστού"
+
+msgctxt "#30220"
+msgid "with this"
+msgstr "με αυτό"
+
+msgctxt "#30221"
+msgid "Redirect URI"
+msgstr "Ανακατεύθυνση URI"
+
+msgctxt "#30222"
+msgid "Validating"
+msgstr "Επικυρωτικός"
+
+msgctxt "#30300"
+msgid "Playback"
+msgstr "Αναπαραγωγή"
+
+msgctxt "#30301"
+msgid "Prompt resolution selection (if available)"
+msgstr "Επιλογή άμεσης επίλυσης (εάν υπάρχει)"
+
+msgctxt "#30302"
+msgid "Video resolution priority"
+msgstr "Προτεραιότητα επίλυσης βίντεο"
+
+msgctxt "#30303"
+msgid "Set subtitles automatically"
+msgstr "Ορίστε αυτόματα υπότιτλους"
+
+msgctxt "#30304"
+msgid "Subtitle format"
+msgstr "Υπότιτλος"
+
+msgctxt "#30305"
+msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
+msgstr "Οι υπότιτλοι δεν ονομάζονται το ίδιο με το STRM και βρίσκονται σε απομονωμένο φάκελο με STRM"
+
+msgctxt "#30306"
+msgid "Subtitles are named the same as STRM"
+msgstr "Οι υπότιτλοι ονομάζονται ίδιοι με το STRM"
+
+msgctxt "#30307"
+msgid "Default playback account"
+msgstr "Ο προεπιλεγμένος λογαριασμός αναπαραγωγής"
+
+msgctxt "#30400"
+msgid "Library"
+msgstr "Βιβλιοθήκη"
+
+msgctxt "#30401"
+msgid "Mark movies as watched at"
+msgstr "Σημειώστε τις ταινίες όπως παρακολούθησαν"
+
+msgctxt "#30402"
+msgid "Mark episodes as watched at"
+msgstr "Σημειώστε τα επεισόδια όπως παρακολούθησαν"
+
+msgctxt "#30403"
+msgid "Import media flag data from STRM"
+msgstr "Εισαγωγή δεδομένων σημαίας μέσων από το STRM"
+
+msgctxt "#30404"
+msgid "Update library automatically"
+msgstr "Ενημέρωση της βιβλιοθήκης αυτόματα"
+
+msgctxt "#30405"
+msgid "Display dialog"
+msgstr "Προβολή διαλόγου"
+
+msgctxt "#30406"
+msgid "Clean library automatically"
+msgstr "Καθαρή βιβλιοθήκη αυτόματα"
+
+msgctxt "#30407"
+msgid "Video source"
+msgstr "Πηγή βίντεο"
+
+msgctxt "#30500"
+msgid "Sync"
+msgstr "Συγχρονισμός"
+
+msgctxt "#30501"
+msgid "Threads"
+msgstr "Νήματα"
+
+msgctxt "#30502"
+msgid "Move sync folder"
+msgstr "Μετακίνηση του φακέλου συγχρονισμού"
+
+msgctxt "#30503"
+msgid "Delete sync cache"
+msgstr "Διαγραφή προσωρινής μνήμης συγχρονισμού"
+
+msgctxt "#30504"
+msgid "Delete sync folder"
+msgstr "Διαγραφή του φακέλου συγχρονισμού"
+
+msgctxt "#30505"
+msgid "Sync defaults"
+msgstr "Προεπιλογή συγχρονισμού"
+
+msgctxt "#30506"
+msgid "STRM prefix"
+msgstr "Πρόθεμα STRM"
+
+msgctxt "#30507"
+msgid "STRM suffix"
+msgstr "Επίθημα STRM"
+
+msgctxt "#30508"
+msgid "Has files encrypted with"
+msgstr "Έχει κρυπτογραφημένα αρχεία με"
+
+msgctxt "#30509"
+msgid "Rename videos to a Kodi friendly format"
+msgstr "Μετονομάστε βίντεο σε φιλική μορφή Kodi"
+
+msgctxt "#30510"
+msgid "Create a Kodi friendly directory structure"
+msgstr "Δημιουργήστε μια φιλική δομή καταλόγου Kodi"
+
+msgctxt "#30511"
+msgid "Sync NFO"
+msgstr "Συγχρονισμός NFO"
+
+msgctxt "#30512"
+msgid "Sync subtitles"
+msgstr "Υπότιτλος συγχρονισμού"
+
+msgctxt "#30513"
+msgid "Sync artwork"
+msgstr "Συγχρονισμός έργων τέχνης"
+
+msgctxt "#30514"
+msgid "Sync STRM"
+msgstr "Συγχρονισμός STRM"
+
+msgctxt "#30515"
+msgid "TMDB search language"
+msgstr "Γλώσσα αναζήτησης TMDB"
+
+msgctxt "#30516"
+msgid "TMDB region"
+msgstr "Περιοχή TMDB"
+
+msgctxt "#30517"
+msgid "TMDB adult content"
+msgstr "Περιεχόμενο ενηλίκων TMDB"
+
+msgctxt "#30600"
+msgid "GUI"
+msgstr "GUI"
+
+msgctxt "#30601"
+msgid "Display initial sync progress dialog"
+msgstr "Εμφάνιση αρχικού διαλόγου προόδου συγχρονισμού"
+
+msgctxt "#30602"
+msgid "Display file deletion dialog"
+msgstr "Εμφάνιση διαλόγου διαγραφής αρχείων"
+
+msgctxt "#30603"
+msgid "Display time since last sync in drive selection menu"
+msgstr "Χρόνος εμφάνισης από τον τελευταίο συγχρονισμό στο μενού επιλογής μονάδας δίσκου"
+
+msgctxt "#30700"
+msgid "Accounts"
+msgstr "Λογαριασμοί"
+
+msgctxt "#30701"
+msgid "Import accounts"
+msgstr "Λογαριασμούς εισαγωγής"
+
+msgctxt "#30702"
+msgid "Export accounts"
+msgstr "Λογαριασμοί εξαγωγής"
+
+msgctxt "#30703"
+msgid "Delete all accounts"
+msgstr "Διαγράψτε όλους τους λογαριασμούς"
+
+msgctxt "#30800"
+msgid "Encryption"
+msgstr "Κρυπτογράφηση"
+
+msgctxt "#30801"
+msgid "Default profile"
+msgstr "Προεπιλεγμένο προφίλ"
+
+msgctxt "#30802"
+msgid "Create profile"
+msgstr "Δημιουργία προφίλ"
+
+msgctxt "#30803"
+msgid "Modify profile"
+msgstr "Τροποποίηση προφίλ"
+
+msgctxt "#30804"
+msgid "Delete profiles"
+msgstr "Διαγραφή προφίλ"
+
+msgctxt "#30805"
+msgid "Import profiles"
+msgstr "Προφίλ εισαγωγής"
+
+msgctxt "#30806"
+msgid "Export profiles"
+msgstr "Προφίλ εξαγωγής"
+
+msgctxt "#30900"
+msgid "Misc"
+msgstr "Λοφίο"
+
+msgctxt "#30901"
+msgid "Server port (requires restart)"
+msgstr "Θύρα διακομιστή (απαιτεί επανεκκίνηση)"
+
+msgctxt "#30902"
+msgid "Delete TMDB cache"
+msgstr "Διαγραφή cache tmdb"

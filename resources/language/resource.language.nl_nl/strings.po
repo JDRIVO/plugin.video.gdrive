@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en_gb\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language: nl_nl\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#30000"
 msgid "gDrive"
@@ -16,259 +16,259 @@ msgstr "gDrive"
 
 msgctxt "#30001"
 msgid "Help"
-msgstr "Help"
+msgstr "Hulp"
 
 msgctxt "#30002"
 msgid "Rename"
-msgstr "Rename"
+msgstr "Hernoeming"
 
 msgctxt "#30003"
 msgid "is no longer valid. Do you want to delete this account?"
-msgstr "is no longer valid. Do you want to delete this account?"
+msgstr "is niet langer geldig. Wilt u dit account verwijderen?"
 
 msgctxt "#30004"
 msgid "Drive Name"
-msgstr "Drive Name"
+msgstr "Drive -naam"
 
 msgctxt "#30005"
 msgid "Sync settings"
-msgstr "Sync settings"
+msgstr "Synchronisatie -instellingen"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "API Ban:"
+msgstr "API -verbod:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "Switching to fallback account"
+msgstr "Overschakelen naar Fallback -account"
 
 msgctxt "#30008"
 msgid "Videos"
-msgstr "Videos"
+msgstr "Video's"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
-msgstr "Daily quota limit exceeded. Ban will lift within 24 hours."
+msgstr "Dagelijkse quotapimiet overschreden. Ban zal binnen 24 uur ophalen."
 
 msgctxt "#30010"
 msgid "Sync all"
-msgstr "Sync all"
+msgstr "Synchroniseer alles"
 
 msgctxt "#30011"
 msgid "Synced"
-msgstr "Synced"
+msgstr "Gesynchroniseerd"
 
 msgctxt "#30012"
 msgid "Sync Settings"
-msgstr "Sync Settings"
+msgstr "Synchronisatie -instellingen"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "Sync folder"
+msgstr "Synchronisatie map"
 
 msgctxt "#30014"
 msgid "Select an account"
-msgstr "Select an account"
+msgstr "Selecteer een account"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
-msgstr "The drive name already exists, it must be unique."
+msgstr "De drive -naam bestaat al, het moet uniek zijn."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
-msgstr "Are you sure you want to delete drive:"
+msgstr "Weet u zeker dat u Drive wilt verwijderen:"
 
 msgctxt "#30017"
 msgid "Drive settings"
-msgstr "Drive settings"
+msgstr "Rijdsinstellingen"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
-msgstr "Credential validation failed for account:"
+msgstr "Referentie -validatie is mislukt voor account:"
 
 msgctxt "#30019"
 msgid "Account validated"
-msgstr "Account validated"
+msgstr "Gevalideerd account"
 
 msgctxt "#30020"
 msgid "Accounts validated"
-msgstr "Accounts validated"
+msgstr "Accounts gevalideerd"
 
 msgctxt "#30021"
 msgid "Validate accounts"
-msgstr "Validate accounts"
+msgstr "Accounts valideren"
 
 msgctxt "#30022"
 msgid "Delete accounts"
-msgstr "Delete accounts"
+msgstr "Verwijder accounts"
 
 msgctxt "#30023"
 msgid "Validate"
-msgstr "Validate"
+msgstr "Bevestigen"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
-msgstr "Are you sure you want to delete the accounts file?"
+msgstr "Weet u zeker dat u het accountbestand wilt verwijderen?"
 
 msgctxt "#30025"
 msgid "Account Name"
-msgstr "Account Name"
+msgstr "Accountnaam"
 
 msgctxt "#30026"
 msgid "Select files to import"
-msgstr "Select files to import"
+msgstr "Selecteer bestanden om te importeren"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
-msgstr "Do you want to delete all files associated with this drive?"
+msgstr "Wilt u alle bestanden verwijderen die aan deze schijf zijn gekoppeld?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
-msgstr "The private key and client email weren't found in:"
+msgstr "De privésleutel en e -mail van de klant zijn niet gevonden in:"
 
 msgctxt "#30029"
 msgid "The client email wasn't found in:"
-msgstr "The client email wasn't found in:"
+msgstr "De e -mail van de klant was niet gevonden in:"
 
 msgctxt "#30030"
 msgid "The private key wasn't found in:"
-msgstr "The private key wasn't found in:"
+msgstr "De privésleutel werd niet gevonden in:"
 
 msgctxt "#30031"
 msgid "Folder moved"
-msgstr "Folder moved"
+msgstr "Map verplaatst"
 
 msgctxt "#30033"
 msgid "Select a file to import"
-msgstr "Select a file to import"
+msgstr "Selecteer een bestand om te importeren"
 
 msgctxt "#30034"
 msgid "Select a folder to export to"
-msgstr "Select a folder to export to"
+msgstr "Selecteer een map om naar te exporteren"
 
 msgctxt "#30035"
 msgid "File exported as"
-msgstr "File exported as"
+msgstr "Bestand geëxporteerd als"
 
 msgctxt "#30036"
 msgid "Accounts imported"
-msgstr "Accounts imported"
+msgstr "Geïmporteerde accounts"
 
 msgctxt "#30037"
 msgid "Account import failed."
-msgstr "Account import failed."
+msgstr "Account import is mislukt."
 
 msgctxt "#30038"
 msgid "My Drive"
-msgstr "My Drive"
+msgstr "Mijn drive"
 
 msgctxt "#30039"
 msgid "Shared With Me"
-msgstr "Shared With Me"
+msgstr "Gedeeld met mij"
 
 msgctxt "#30040"
 msgid "Shared Drives"
-msgstr "Shared Drives"
+msgstr "Gedeelde schijven"
 
 msgctxt "#30041"
 msgid "Search"
-msgstr "Search"
+msgstr "Zoekopdracht"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "Starred"
+msgstr "Sterren"
 
 msgctxt "#30043"
 msgid "Search Query"
-msgstr "Search Query"
+msgstr "Zoekopdracht"
 
 msgctxt "#30044"
 msgid "Sync completed"
-msgstr "Sync completed"
+msgstr "Synchronisatie voltooid"
 
 msgctxt "#30045"
 msgid "Files have been deleted"
-msgstr "Files have been deleted"
+msgstr "Bestanden zijn verwijderd"
 
 msgctxt "#30046"
 msgid "Account registration succeeded"
-msgstr "Account registration succeeded"
+msgstr "Accountregistratie is geslaagd"
 
 msgctxt "#30047"
 msgid "Account registration failed"
-msgstr "Account registration failed"
+msgstr "Accountregistratie is mislukt"
 
 msgctxt "#30048"
 msgid "Sync path"
-msgstr "Sync path"
+msgstr "Synchronisatiepad"
 
 msgctxt "#30049"
 msgid "Sync mode"
-msgstr "Sync mode"
+msgstr "Synchronisatie -modus"
 
 msgctxt "#30050"
 msgid "Sync frequency"
-msgstr "Sync frequency"
+msgstr "Synchronisatiefrequentie"
 
 msgctxt "#30051"
 msgid "Sync on startup"
-msgstr "Sync on startup"
+msgstr "Synchroniseerd bij het opstarten"
 
 msgctxt "#30052"
 msgid "Syncing folders"
-msgstr "Syncing folders"
+msgstr "Mappen synchroniseren"
 
 msgctxt "#30053"
 msgid "Processing files"
-msgstr "Processing files"
+msgstr "Het verwerken van bestanden"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
-msgstr "Are you sure you want to delete the sync cache?"
+msgstr "Weet u zeker dat u de synchronisatiecache wilt verwijderen?"
 
 msgctxt "#30055"
 msgid "Cache deleted"
-msgstr "Cache deleted"
+msgstr "Cache verwijderd"
 
 msgctxt "#30056"
 msgid "Failed to delete the cache. See log for details."
-msgstr "Failed to delete the cache. See log for details."
+msgstr "Kan de cache niet verwijderen. Zie logboek voor details."
 
 msgctxt "#30057"
 msgid "Playback account not found."
-msgstr "Playback account not found."
+msgstr "Afspeelaccount niet gevonden."
 
 msgctxt "#30058"
 msgid "Search language"
-msgstr "Search language"
+msgstr "Doorzoektaal"
 
 msgctxt "#30059"
 msgid "Region"
-msgstr "Region"
+msgstr "Regio"
 
 msgctxt "#30060"
 msgid "Adult content"
-msgstr "Adult content"
+msgstr "Inhoud voor volwassenen"
 
 msgctxt "#30061"
 msgid "Stop syncing all folders"
-msgstr "Stop syncing all folders"
+msgstr "Stop met het synchroniseren van alle mappen"
 
 msgctxt "#30062"
 msgid "Stop syncing folder"
-msgstr "Stop syncing folder"
+msgstr "Stop met synchronisatie map"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
-msgstr "Do you want to delete the local files associated with this folder?"
+msgstr "Wilt u de lokale bestanden verwijderen die aan deze map zijn gekoppeld?"
 
 msgctxt "#30064"
 msgid "Do you want to delete the local files associated with these folders?"
-msgstr "Do you want to delete the local files associated with these folders?"
+msgstr "Wilt u de lokale bestanden verwijderen die aan deze mappen zijn gekoppeld?"
 
 msgctxt "#30065"
 msgid "General"
-msgstr "General"
+msgstr "Algemeen"
 
 msgctxt "#30066"
 msgid "OK"
@@ -276,7 +276,7 @@ msgstr "OK"
 
 msgctxt "#30067"
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "Annuleren"
 
 msgctxt "#30068"
 msgid "interval"
@@ -284,503 +284,503 @@ msgstr "interval"
 
 msgctxt "#30069"
 msgid "schedule"
-msgstr "schedule"
+msgstr "schema"
 
 msgctxt "#30070"
 msgid "Enter the sync interval in minutes"
-msgstr "Enter the sync interval in minutes"
+msgstr "Voer het synchronisatie -interval in minuten in"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
-msgstr "Enter the time to sync files"
+msgstr "Voer de tijd in om bestanden te synchroniseren"
 
 msgctxt "#30072"
 msgid "Select a video source"
-msgstr "Select a video source"
+msgstr "Selecteer een videobron"
 
 msgctxt "#30073"
 msgid "Syncing"
-msgstr "Syncing"
+msgstr "Synchronisatie"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
-msgstr "Deleting sync folder"
+msgstr "Sync -map verwijderen"
 
 msgctxt "#30075"
 msgid "Deleting files"
-msgstr "Deleting files"
+msgstr "Bestanden verwijderen"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
-msgstr "Moving sync folder"
+msgstr "Verplaatsingssynchronisatie map"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
-msgstr "Select the folder that your files will be stored in"
+msgstr "Selecteer de map waarin uw bestanden worden opgeslagen"
 
 msgctxt "#30078"
 msgid "There are no OAuth accounts connected to this drive."
-msgstr "There are no OAuth accounts connected to this drive."
+msgstr "Er zijn geen OAuth -accounts verbonden met deze schijf."
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
-msgstr "You must assign a sync path."
+msgstr "U moet een synchronisatiepad toewijzen."
 
 msgctxt "#30080"
 msgid "You must assign a sync mode."
-msgstr "You must assign a sync mode."
+msgstr "U moet een synchronisatie -modus toewijzen."
 
 msgctxt "#30081"
 msgid "You must assign a sync frequency."
-msgstr "You must assign a sync frequency."
+msgstr "U moet een sync -frequentie toewijzen."
 
 msgctxt "#30082"
 msgid "Sync started"
-msgstr "Sync started"
+msgstr "Synchronisatie begon"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
-msgstr "Resolution Priority"
+msgstr "Resolutieprioriteit"
 
 msgctxt "#30084"
 msgid "Close"
-msgstr "Close"
+msgstr "Dichtbij"
 
 msgctxt "#30085"
 msgid "Drives"
-msgstr "Drives"
+msgstr "Schijven"
 
 msgctxt "#30086"
 msgid "Folder Selection"
-msgstr "Folder Selection"
+msgstr "Mapselectie"
 
 msgctxt "#30087"
 msgid "manual"
-msgstr "manual"
+msgstr "handmatig"
 
 msgctxt "#30088"
 msgid "Deleting sync cache"
-msgstr "Deleting sync cache"
+msgstr "Sync cache verwijderen"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "Client ID and Client Secret creation"
+msgstr "Client -ID en client geheim creatie"
 
 msgctxt "#30090"
 msgid "Sync multiple"
-msgstr "Sync multiple"
+msgstr "Synchroniseer meerdere"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Search folder"
+msgstr "Zoekmap"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
-msgstr "Sync folder isn't set."
+msgstr "Synchronisatiemap is niet ingesteld."
 
 msgctxt "#30093"
 msgid "Select a folder to move to"
-msgstr "Select a folder to move to"
+msgstr "Selecteer een map om naar toe te gaan"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
-msgstr "Are you sure you want to delete the sync folder?"
+msgstr "Weet u zeker dat u de synchronisatiemap wilt verwijderen?"
 
 msgctxt "#30095"
 msgid "Folder deleted"
-msgstr "Folder deleted"
+msgstr "Map verwijderd"
 
 msgctxt "#30096"
 msgid "Failed to delete the sync folder. See log for details."
-msgstr "Failed to delete the sync folder. See log for details."
+msgstr "Kan de Sync -map niet verwijderen. Zie logboek voor details."
 
 msgctxt "#30097"
 msgid "Accounts file deleted"
-msgstr "Accounts file deleted"
+msgstr "Accounts -bestand verwijderd"
 
 msgctxt "#30098"
 msgid "Failed to delete the accounts file. See log for details."
-msgstr "Failed to delete the accounts file. See log for details."
+msgstr "Kan het accountbestand niet verwijderen. Zie logboek voor details."
 
 msgctxt "#30099"
 msgid "Enter the filename"
-msgstr "Enter the filename"
+msgstr "Voer de bestandsnaam in"
 
 msgctxt "#30100"
 msgid "The sync folder doesn't exist."
-msgstr "The sync folder doesn't exist."
+msgstr "De synchronisatiemap bestaat niet."
 
 msgctxt "#30101"
 msgid "Failed to move the folder. The folder can't be moved into itself."
-msgstr "Failed to move the folder. The folder can't be moved into itself."
+msgstr "Kan de map niet verplaatsen. De map kan niet in zichzelf worden verplaatst."
 
 msgctxt "#30102"
 msgid "Failed to move the folder. The folder already exists."
-msgstr "Failed to move the folder. The folder already exists."
+msgstr "Kan de map niet verplaatsen. De map bestaat al."
 
 msgctxt "#30103"
 msgid "Exclude"
-msgstr "Exclude"
+msgstr "Uitsluiten"
 
 msgctxt "#30104"
 msgid "Include"
-msgstr "Include"
+msgstr "Erbij betrekken"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
-msgstr "Deleting Drive:"
+msgstr "Drive verwijderen:"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
-msgstr "Deleted Drive:"
+msgstr "Verwijderde schijf:"
 
 msgctxt "#30107"
 msgid "Profile name"
-msgstr "Profile name"
+msgstr "Profielnaam"
 
 msgctxt "#30108"
 msgid "Encryption type"
-msgstr "Encryption type"
+msgstr "Coderingstype"
 
 msgctxt "#30109"
 msgid "Password"
-msgstr "Password"
+msgstr "Wachtwoord"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Salt"
+msgstr "Zout"
 
 msgctxt "#30111"
 msgid "Filename encryption"
-msgstr "Filename encryption"
+msgstr "Bestandsnaam codering"
 
 msgctxt "#30112"
 msgid "Filename encoding"
-msgstr "Filename encoding"
+msgstr "Bestandsnaam codering"
 
 msgctxt "#30113"
 msgid "Suffix"
-msgstr "Suffix"
+msgstr "Achtervoegsel"
 
 msgctxt "#30114"
 msgid "Encrypt file data"
-msgstr "Encrypt file data"
+msgstr "Bestandsgegevens coderen"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
-msgstr "Encrypt directory names"
+msgstr "Namen van de directory coderen"
 
 msgctxt "#30116"
 msgid "Select a profile"
-msgstr "Select a profile"
+msgstr "Selecteer een profiel"
 
 msgctxt "#30117"
 msgid "Profiles deleted"
-msgstr "Profiles deleted"
+msgstr "Profielen verwijderd"
 
 msgctxt "#30118"
 msgid "Profile import failed."
-msgstr "Profile import failed."
+msgstr "Profielimport is mislukt."
 
 msgctxt "#30119"
 msgid "Profiles imported"
-msgstr "Profiles imported"
+msgstr "Profielen geïmporteerd"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
-msgstr "Assign a default encryption profile before playing an encrypted video."
+msgstr "Wijs een standaardcoderingsprofiel toe voordat u een gecodeerde video afspeelt."
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
-msgstr "The encryption profile associated with this file doesn't exist."
+msgstr "Het coderingsprofiel dat aan dit bestand is gekoppeld, bestaat niet."
 
 msgctxt "#30122"
 msgid "No encryption profiles found."
-msgstr "No encryption profiles found."
+msgstr "Geen coderingsprofielen gevonden."
 
 msgctxt "#30123"
 msgid "Profile Manager"
-msgstr "Profile Manager"
+msgstr "Profielbeheerder"
 
 msgctxt "#30124"
 msgid "Profile created"
-msgstr "Profile created"
+msgstr "Profiel gemaakt"
 
 msgctxt "#30125"
 msgid "Profile updated"
-msgstr "Profile updated"
+msgstr "Profiel bijgewerkt"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
-msgstr "You must assign a profile name."
+msgstr "U moet een profielnaam toewijzen."
 
 msgctxt "#30127"
 msgid "You must assign a password."
-msgstr "You must assign a password."
+msgstr "U moet een wachtwoord toewijzen."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "You must assign a salt."
+msgstr "U moet een zout toewijzen."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
-msgstr "Profile Deletion"
+msgstr "Profielverwijdering"
 
 msgctxt "#30130"
 msgid "Profile deleted"
-msgstr "Profile deleted"
+msgstr "Profiel verwijderd"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "Synced all drives"
+msgstr "Alle schijven gesynchroniseerd"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
-msgstr "Failed to sync all drives"
+msgstr "Kan niet alle schijven synchroniseren"
 
 msgctxt "#30133"
 msgid "Sync failed"
-msgstr "Sync failed"
+msgstr "Synchronisatie is mislukt"
 
 msgctxt "#30134"
 msgid "Base Name"
-msgstr "Base Name"
+msgstr "Basisnaam"
 
 msgctxt "#30135"
 msgid "second"
-msgstr "second"
+msgstr "seconde"
 
 msgctxt "#30136"
 msgid "seconds"
-msgstr "seconds"
+msgstr "seconden"
 
 msgctxt "#30137"
 msgid "minute"
-msgstr "minute"
+msgstr "minuut"
 
 msgctxt "#30138"
 msgid "minutes"
-msgstr "minutes"
+msgstr "notulen"
 
 msgctxt "#30139"
 msgid "hour"
-msgstr "hour"
+msgstr "uur"
 
 msgctxt "#30140"
 msgid "hours"
-msgstr "hours"
+msgstr "uren"
 
 msgctxt "#30141"
 msgid "Failed to sync"
-msgstr "Failed to sync"
+msgstr "Kan niet worden gesynchroniseerd"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "Syncing all drives"
+msgstr "Alle schijven synchroniseren"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
-msgstr "Do you want to delete:"
+msgstr "Wil je verwijderen:"
 
 msgctxt "#30144"
 msgid "File deleted"
-msgstr "File deleted"
+msgstr "Bestand verwijderd"
 
 msgctxt "#30145"
 msgid "File deletion failed"
-msgstr "File deletion failed"
+msgstr "Bestandsverwijdering is mislukt"
 
 msgctxt "#30146"
 msgid "Are you sure you want to delete the TMDB cache?"
-msgstr "Are you sure you want to delete the TMDB cache?"
+msgstr "Weet u zeker dat u de TMDB -cache wilt verwijderen?"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
-msgstr "Deleting TMDB cache"
+msgstr "TMDB -cache verwijderen"
 
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
-msgstr "Are you sure you want to delete account:"
+msgstr "Weet je zeker dat je account wilt verwijderen:"
 
 msgctxt "#30158"
 msgid "Account Deletion"
-msgstr "Account Deletion"
+msgstr "Accountverwijdering"
 
 msgctxt "#30159"
 msgid "Delete"
-msgstr "Delete"
+msgstr "Verwijderen"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Stop syncing select folders"
+msgstr "Stop met synchroniseren select mappen"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
-msgstr "Select folders to delete"
+msgstr "Selecteer mappen om te verwijderen"
 
 msgctxt "#30207"
 msgid "Add account"
-msgstr "Add account"
+msgstr "Account toevoegen"
 
 msgctxt "#30209"
 msgid "The file wasn't found in the account:"
-msgstr "The file wasn't found in the account:"
+msgstr "Het bestand werd niet in het account gevonden:"
 
 msgctxt "#30214"
 msgid "Add service accounts"
-msgstr "Add service accounts"
+msgstr "Serviceaccounts toevoegen"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Visit"
+msgstr "Bezoek"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "in a web browser."
+msgstr "in een webbrowser."
 
 msgctxt "#30217"
 msgid "You must create an"
-msgstr "You must create an"
+msgstr "U moet een"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
-msgstr "OAuth Client ID"
+msgstr "Oauth -client -ID"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "Web Application"
+msgstr "Webtoepassing"
 
 msgctxt "#30220"
 msgid "with this"
-msgstr "with this"
+msgstr "hiermee"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "Redirect URI"
+msgstr "Direct Uri omleiden"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "Validating"
+msgstr "Het valideren"
 
 msgctxt "#30300"
 msgid "Playback"
-msgstr "Playback"
+msgstr "Afspelen"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "Prompt resolution selection (if available)"
+msgstr "Selectie van snelle resolutie (indien beschikbaar)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
-msgstr "Video resolution priority"
+msgstr "Video -resolutie prioriteit"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
-msgstr "Set subtitles automatically"
+msgstr "Stel ondertitels automatisch in"
 
 msgctxt "#30304"
 msgid "Subtitle format"
-msgstr "Subtitle format"
+msgstr "Ondertitelformaat"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
-msgstr "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
+msgstr "Ondertitels worden niet hetzelfde genoemd als STRM en bevinden zich in een geïsoleerde map met STRM"
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
-msgstr "Subtitles are named the same as STRM"
+msgstr "Ondertitels worden hetzelfde genoemd als STRM"
 
 msgctxt "#30307"
 msgid "Default playback account"
-msgstr "Default playback account"
+msgstr "Standaard afspeelaccount"
 
 msgctxt "#30400"
 msgid "Library"
-msgstr "Library"
+msgstr "Bibliotheek"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "Mark movies as watched at"
+msgstr "Markeer films zoals bekeken op"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "Mark episodes as watched at"
+msgstr "Markeer afleveringen zoals bekeken op"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "Import media flag data from STRM"
+msgstr "Importeer media -vlaggegevens van STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "Update library automatically"
+msgstr "Update Library automatisch"
 
 msgctxt "#30405"
 msgid "Display dialog"
-msgstr "Display dialog"
+msgstr "Dialoogvenster dialoogvenster"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "Clean library automatically"
+msgstr "Schone bibliotheek automatisch"
 
 msgctxt "#30407"
 msgid "Video source"
-msgstr "Video source"
+msgstr "Videobron"
 
 msgctxt "#30500"
 msgid "Sync"
-msgstr "Sync"
+msgstr "Synchroniseren"
 
 msgctxt "#30501"
 msgid "Threads"
-msgstr "Threads"
+msgstr "Draden"
 
 msgctxt "#30502"
 msgid "Move sync folder"
-msgstr "Move sync folder"
+msgstr "Verplaats de synchronisatiemap"
 
 msgctxt "#30503"
 msgid "Delete sync cache"
-msgstr "Delete sync cache"
+msgstr "Sync cache verwijderen"
 
 msgctxt "#30504"
 msgid "Delete sync folder"
-msgstr "Delete sync folder"
+msgstr "Verwijder synchronisatiemap"
 
 msgctxt "#30505"
 msgid "Sync defaults"
-msgstr "Sync defaults"
+msgstr "Synchronisatie -standaardwaarden"
 
 msgctxt "#30506"
 msgid "STRM prefix"
-msgstr "STRM prefix"
+msgstr "STRM -voorvoegsel"
 
 msgctxt "#30507"
 msgid "STRM suffix"
-msgstr "STRM suffix"
+msgstr "STRM -achtervoegsel"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
-msgstr "Has files encrypted with"
+msgstr "Heeft bestanden gecodeerd met"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Rename videos to a Kodi friendly format"
+msgstr "Hernoem video's tot een Kodi -vriendelijk formaat"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Create a Kodi friendly directory structure"
+msgstr "Maak een Kodi -vriendelijke directorystructuur"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "Sync NFO"
+msgstr "Synchronisatie NFO"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "Sync subtitles"
+msgstr "Synchronisatie ondertitels"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Sync artwork"
+msgstr "Synchronisatiewerkwerk"
 
 msgctxt "#30514"
 msgid "Sync STRM"
@@ -788,15 +788,15 @@ msgstr "Sync STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"
-msgstr "TMDB search language"
+msgstr "TMDB -zoektaal"
 
 msgctxt "#30516"
 msgid "TMDB region"
-msgstr "TMDB region"
+msgstr "TMDB -regio"
 
 msgctxt "#30517"
 msgid "TMDB adult content"
-msgstr "TMDB adult content"
+msgstr "TMDB -inhoud voor volwassenen"
 
 msgctxt "#30600"
 msgid "GUI"
@@ -804,68 +804,68 @@ msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Display initial sync progress dialog"
+msgstr "Dialoogvenster Initiële synchronisatie voortgang weergeven"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
-msgstr "Display file deletion dialog"
+msgstr "Dialoogvenster Bestandsverwijdering weergeven"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Display time since last sync in drive selection menu"
+msgstr "Weergave tijd sinds de laatste synchronisatie in het menu Station Selection"
 
 msgctxt "#30700"
 msgid "Accounts"
-msgstr "Accounts"
+msgstr "Rekeningen"
 
 msgctxt "#30701"
 msgid "Import accounts"
-msgstr "Import accounts"
+msgstr "Rekeningen importeren"
 
 msgctxt "#30702"
 msgid "Export accounts"
-msgstr "Export accounts"
+msgstr "Exportrekeningen exporteren"
 
 msgctxt "#30703"
 msgid "Delete all accounts"
-msgstr "Delete all accounts"
+msgstr "Verwijder alle accounts"
 
 msgctxt "#30800"
 msgid "Encryption"
-msgstr "Encryption"
+msgstr "Codering"
 
 msgctxt "#30801"
 msgid "Default profile"
-msgstr "Default profile"
+msgstr "Standaardprofiel"
 
 msgctxt "#30802"
 msgid "Create profile"
-msgstr "Create profile"
+msgstr "Profiel maken"
 
 msgctxt "#30803"
 msgid "Modify profile"
-msgstr "Modify profile"
+msgstr "Profiel wijzigen"
 
 msgctxt "#30804"
 msgid "Delete profiles"
-msgstr "Delete profiles"
+msgstr "Verwijder profielen"
 
 msgctxt "#30805"
 msgid "Import profiles"
-msgstr "Import profiles"
+msgstr "Importprofielen importeren"
 
 msgctxt "#30806"
 msgid "Export profiles"
-msgstr "Export profiles"
+msgstr "Exportprofielen exporteren"
 
 msgctxt "#30900"
 msgid "Misc"
-msgstr "Misc"
+msgstr "Misdrijf"
 
 msgctxt "#30901"
 msgid "Server port (requires restart)"
-msgstr "Server port (requires restart)"
+msgstr "Serverpoort (vereist opnieuw opstarten)"
 
 msgctxt "#30902"
 msgid "Delete TMDB cache"
-msgstr "Delete TMDB cache"
+msgstr "Verwijder TMDB -cache"

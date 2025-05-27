@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en_gb\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language: ro_ro\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20)) ? 1 : 2;\n"
 
 msgctxt "#30000"
 msgid "gDrive"
@@ -16,255 +16,255 @@ msgstr "gDrive"
 
 msgctxt "#30001"
 msgid "Help"
-msgstr "Help"
+msgstr "Ajutor"
 
 msgctxt "#30002"
 msgid "Rename"
-msgstr "Rename"
+msgstr "Redenumire"
 
 msgctxt "#30003"
 msgid "is no longer valid. Do you want to delete this account?"
-msgstr "is no longer valid. Do you want to delete this account?"
+msgstr "nu mai este valabil. Doriți să ștergeți acest cont?"
 
 msgctxt "#30004"
 msgid "Drive Name"
-msgstr "Drive Name"
+msgstr "Numele unității"
 
 msgctxt "#30005"
 msgid "Sync settings"
-msgstr "Sync settings"
+msgstr "Setări de sincronizare"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "API Ban:"
+msgstr "Ban API:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "Switching to fallback account"
+msgstr "Trecerea la contul Fallback"
 
 msgctxt "#30008"
 msgid "Videos"
-msgstr "Videos"
+msgstr "Videoclipuri"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
-msgstr "Daily quota limit exceeded. Ban will lift within 24 hours."
+msgstr "Limita de cotă zilnică a depășit -o. Ban se va ridica în 24 de ore."
 
 msgctxt "#30010"
 msgid "Sync all"
-msgstr "Sync all"
+msgstr "Sincronizați toate"
 
 msgctxt "#30011"
 msgid "Synced"
-msgstr "Synced"
+msgstr "Sincronizat"
 
 msgctxt "#30012"
 msgid "Sync Settings"
-msgstr "Sync Settings"
+msgstr "Setări de sincronizare"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "Sync folder"
+msgstr "Folder de sincronizare"
 
 msgctxt "#30014"
 msgid "Select an account"
-msgstr "Select an account"
+msgstr "Selectați un cont"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
-msgstr "The drive name already exists, it must be unique."
+msgstr "Numele unității există deja, trebuie să fie unic."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
-msgstr "Are you sure you want to delete drive:"
+msgstr "Sunteți sigur că doriți să ștergeți unitatea:"
 
 msgctxt "#30017"
 msgid "Drive settings"
-msgstr "Drive settings"
+msgstr "Setări de unitate"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
-msgstr "Credential validation failed for account:"
+msgstr "Validarea acreditării a eșuat pentru cont:"
 
 msgctxt "#30019"
 msgid "Account validated"
-msgstr "Account validated"
+msgstr "Cont validat"
 
 msgctxt "#30020"
 msgid "Accounts validated"
-msgstr "Accounts validated"
+msgstr "Conturi validate"
 
 msgctxt "#30021"
 msgid "Validate accounts"
-msgstr "Validate accounts"
+msgstr "Validați conturile"
 
 msgctxt "#30022"
 msgid "Delete accounts"
-msgstr "Delete accounts"
+msgstr "Ștergeți conturile"
 
 msgctxt "#30023"
 msgid "Validate"
-msgstr "Validate"
+msgstr "Valida"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
-msgstr "Are you sure you want to delete the accounts file?"
+msgstr "Sunteți sigur că doriți să ștergeți fișierul de conturi?"
 
 msgctxt "#30025"
 msgid "Account Name"
-msgstr "Account Name"
+msgstr "Numele contului"
 
 msgctxt "#30026"
 msgid "Select files to import"
-msgstr "Select files to import"
+msgstr "Selectați fișiere pentru a importa"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
-msgstr "Do you want to delete all files associated with this drive?"
+msgstr "Doriți să ștergeți toate fișierele asociate cu această unitate?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
-msgstr "The private key and client email weren't found in:"
+msgstr "Cheia privată și e -mailul clientului nu a fost găsit în:"
 
 msgctxt "#30029"
 msgid "The client email wasn't found in:"
-msgstr "The client email wasn't found in:"
+msgstr "E -mailul clientului nu a fost găsit în:"
 
 msgctxt "#30030"
 msgid "The private key wasn't found in:"
-msgstr "The private key wasn't found in:"
+msgstr "Cheia privată nu a fost găsită în:"
 
 msgctxt "#30031"
 msgid "Folder moved"
-msgstr "Folder moved"
+msgstr "Folder mutat"
 
 msgctxt "#30033"
 msgid "Select a file to import"
-msgstr "Select a file to import"
+msgstr "Selectați un fișier de importat"
 
 msgctxt "#30034"
 msgid "Select a folder to export to"
-msgstr "Select a folder to export to"
+msgstr "Selectați un folder pentru a exporta la"
 
 msgctxt "#30035"
 msgid "File exported as"
-msgstr "File exported as"
+msgstr "Fișier exportat ca"
 
 msgctxt "#30036"
 msgid "Accounts imported"
-msgstr "Accounts imported"
+msgstr "Conturi importate"
 
 msgctxt "#30037"
 msgid "Account import failed."
-msgstr "Account import failed."
+msgstr "Importul contului a eșuat."
 
 msgctxt "#30038"
 msgid "My Drive"
-msgstr "My Drive"
+msgstr "Conducerea mea"
 
 msgctxt "#30039"
 msgid "Shared With Me"
-msgstr "Shared With Me"
+msgstr "Împărtășit cu mine"
 
 msgctxt "#30040"
 msgid "Shared Drives"
-msgstr "Shared Drives"
+msgstr "Unități partajate"
 
 msgctxt "#30041"
 msgid "Search"
-msgstr "Search"
+msgstr "Căutare"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "Starred"
+msgstr "A jucat"
 
 msgctxt "#30043"
 msgid "Search Query"
-msgstr "Search Query"
+msgstr "Căutați interogare"
 
 msgctxt "#30044"
 msgid "Sync completed"
-msgstr "Sync completed"
+msgstr "Sincronizare completată"
 
 msgctxt "#30045"
 msgid "Files have been deleted"
-msgstr "Files have been deleted"
+msgstr "Fișierele au fost șterse"
 
 msgctxt "#30046"
 msgid "Account registration succeeded"
-msgstr "Account registration succeeded"
+msgstr "Înregistrarea contului a reușit"
 
 msgctxt "#30047"
 msgid "Account registration failed"
-msgstr "Account registration failed"
+msgstr "Înregistrarea contului a eșuat"
 
 msgctxt "#30048"
 msgid "Sync path"
-msgstr "Sync path"
+msgstr "Calea de sincronizare"
 
 msgctxt "#30049"
 msgid "Sync mode"
-msgstr "Sync mode"
+msgstr "Mod de sincronizare"
 
 msgctxt "#30050"
 msgid "Sync frequency"
-msgstr "Sync frequency"
+msgstr "Frecvența de sincronizare"
 
 msgctxt "#30051"
 msgid "Sync on startup"
-msgstr "Sync on startup"
+msgstr "Sincronizați la pornire"
 
 msgctxt "#30052"
 msgid "Syncing folders"
-msgstr "Syncing folders"
+msgstr "Sincronizarea folderelor"
 
 msgctxt "#30053"
 msgid "Processing files"
-msgstr "Processing files"
+msgstr "Procesarea fișierelor"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
-msgstr "Are you sure you want to delete the sync cache?"
+msgstr "Ești sigur că vrei să ștergi memoria cache de sincronizare?"
 
 msgctxt "#30055"
 msgid "Cache deleted"
-msgstr "Cache deleted"
+msgstr "Cache șters"
 
 msgctxt "#30056"
 msgid "Failed to delete the cache. See log for details."
-msgstr "Failed to delete the cache. See log for details."
+msgstr "Nu a reușit să șteargă memoria cache. Consultați jurnalul pentru detalii."
 
 msgctxt "#30057"
 msgid "Playback account not found."
-msgstr "Playback account not found."
+msgstr "Contul de redare nu a fost găsit."
 
 msgctxt "#30058"
 msgid "Search language"
-msgstr "Search language"
+msgstr "Limba de căutare"
 
 msgctxt "#30059"
 msgid "Region"
-msgstr "Region"
+msgstr "Regiune"
 
 msgctxt "#30060"
 msgid "Adult content"
-msgstr "Adult content"
+msgstr "Conținut pentru adulți"
 
 msgctxt "#30061"
 msgid "Stop syncing all folders"
-msgstr "Stop syncing all folders"
+msgstr "Nu mai sincronizați toate folderele"
 
 msgctxt "#30062"
 msgid "Stop syncing folder"
-msgstr "Stop syncing folder"
+msgstr "Opriți sincronizarea folderului"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
-msgstr "Do you want to delete the local files associated with this folder?"
+msgstr "Doriți să ștergeți fișierele locale asociate cu acest folder?"
 
 msgctxt "#30064"
 msgid "Do you want to delete the local files associated with these folders?"
-msgstr "Do you want to delete the local files associated with these folders?"
+msgstr "Doriți să ștergeți fișierele locale asociate cu aceste foldere?"
 
 msgctxt "#30065"
 msgid "General"
@@ -272,11 +272,11 @@ msgstr "General"
 
 msgctxt "#30066"
 msgid "OK"
-msgstr "OK"
+msgstr "Bine"
 
 msgctxt "#30067"
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "Anula"
 
 msgctxt "#30068"
 msgid "interval"
@@ -284,75 +284,75 @@ msgstr "interval"
 
 msgctxt "#30069"
 msgid "schedule"
-msgstr "schedule"
+msgstr "programa"
 
 msgctxt "#30070"
 msgid "Enter the sync interval in minutes"
-msgstr "Enter the sync interval in minutes"
+msgstr "Introduceți intervalul de sincronizare în câteva minute"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
-msgstr "Enter the time to sync files"
+msgstr "Introduceți timpul pentru a sincroniza fișierele"
 
 msgctxt "#30072"
 msgid "Select a video source"
-msgstr "Select a video source"
+msgstr "Selectați o sursă video"
 
 msgctxt "#30073"
 msgid "Syncing"
-msgstr "Syncing"
+msgstr "Sincronizare"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
-msgstr "Deleting sync folder"
+msgstr "Ștergerea folderului de sincronizare"
 
 msgctxt "#30075"
 msgid "Deleting files"
-msgstr "Deleting files"
+msgstr "Ștergerea fișierelor"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
-msgstr "Moving sync folder"
+msgstr "Mutarea folderului de sincronizare"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
-msgstr "Select the folder that your files will be stored in"
+msgstr "Selectați folderul în care vor fi stocate fișierele dvs."
 
 msgctxt "#30078"
 msgid "There are no OAuth accounts connected to this drive."
-msgstr "There are no OAuth accounts connected to this drive."
+msgstr "Nu există conturi OAuth conectate la această unitate."
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
-msgstr "You must assign a sync path."
+msgstr "Trebuie să atribuiți o cale de sincronizare."
 
 msgctxt "#30080"
 msgid "You must assign a sync mode."
-msgstr "You must assign a sync mode."
+msgstr "Trebuie să atribuiți un mod de sincronizare."
 
 msgctxt "#30081"
 msgid "You must assign a sync frequency."
-msgstr "You must assign a sync frequency."
+msgstr "Trebuie să atribuiți o frecvență de sincronizare."
 
 msgctxt "#30082"
 msgid "Sync started"
-msgstr "Sync started"
+msgstr "Sincronizarea a început"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
-msgstr "Resolution Priority"
+msgstr "Prioritatea rezoluției"
 
 msgctxt "#30084"
 msgid "Close"
-msgstr "Close"
+msgstr "Aproape"
 
 msgctxt "#30085"
 msgid "Drives"
-msgstr "Drives"
+msgstr "Conduce"
 
 msgctxt "#30086"
 msgid "Folder Selection"
-msgstr "Folder Selection"
+msgstr "Selectarea folderului"
 
 msgctxt "#30087"
 msgid "manual"
@@ -360,63 +360,63 @@ msgstr "manual"
 
 msgctxt "#30088"
 msgid "Deleting sync cache"
-msgstr "Deleting sync cache"
+msgstr "Ștergerea cache -ului de sincronizare"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "Client ID and Client Secret creation"
+msgstr "ID -ul clientului și crearea secretului clientului"
 
 msgctxt "#30090"
 msgid "Sync multiple"
-msgstr "Sync multiple"
+msgstr "Sincronizați multiplu"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Search folder"
+msgstr "Folder de căutare"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
-msgstr "Sync folder isn't set."
+msgstr "Folderul de sincronizare nu este setat."
 
 msgctxt "#30093"
 msgid "Select a folder to move to"
-msgstr "Select a folder to move to"
+msgstr "Selectați un folder la care să vă mutați"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
-msgstr "Are you sure you want to delete the sync folder?"
+msgstr "Ești sigur că vrei să ștergeți folderul de sincronizare?"
 
 msgctxt "#30095"
 msgid "Folder deleted"
-msgstr "Folder deleted"
+msgstr "Dosarul șters"
 
 msgctxt "#30096"
 msgid "Failed to delete the sync folder. See log for details."
-msgstr "Failed to delete the sync folder. See log for details."
+msgstr "Nu a reușit să ștergeți folderul de sincronizare. Consultați jurnalul pentru detalii."
 
 msgctxt "#30097"
 msgid "Accounts file deleted"
-msgstr "Accounts file deleted"
+msgstr "Fișierul de conturi șters"
 
 msgctxt "#30098"
 msgid "Failed to delete the accounts file. See log for details."
-msgstr "Failed to delete the accounts file. See log for details."
+msgstr "Nu a reușit să ștergeți fișierul de conturi. Consultați jurnalul pentru detalii."
 
 msgctxt "#30099"
 msgid "Enter the filename"
-msgstr "Enter the filename"
+msgstr "Introduceți numele fișierului"
 
 msgctxt "#30100"
 msgid "The sync folder doesn't exist."
-msgstr "The sync folder doesn't exist."
+msgstr "Folderul de sincronizare nu există."
 
 msgctxt "#30101"
 msgid "Failed to move the folder. The folder can't be moved into itself."
-msgstr "Failed to move the folder. The folder can't be moved into itself."
+msgstr "Nu a reușit să mute folderul. Folderul nu poate fi mutat în sine."
 
 msgctxt "#30102"
 msgid "Failed to move the folder. The folder already exists."
-msgstr "Failed to move the folder. The folder already exists."
+msgstr "Nu a reușit să mute folderul. Folderul există deja."
 
 msgctxt "#30103"
 msgid "Exclude"
@@ -428,375 +428,375 @@ msgstr "Include"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
-msgstr "Deleting Drive:"
+msgstr "Ștergerea unității:"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
-msgstr "Deleted Drive:"
+msgstr "Unitatea ștersă:"
 
 msgctxt "#30107"
 msgid "Profile name"
-msgstr "Profile name"
+msgstr "Numele profilului"
 
 msgctxt "#30108"
 msgid "Encryption type"
-msgstr "Encryption type"
+msgstr "Tip de criptare"
 
 msgctxt "#30109"
 msgid "Password"
-msgstr "Password"
+msgstr "Parolă"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Salt"
+msgstr "Sare"
 
 msgctxt "#30111"
 msgid "Filename encryption"
-msgstr "Filename encryption"
+msgstr "Criptarea numelor de fișier"
 
 msgctxt "#30112"
 msgid "Filename encoding"
-msgstr "Filename encoding"
+msgstr "Numele fișierului codificare"
 
 msgctxt "#30113"
 msgid "Suffix"
-msgstr "Suffix"
+msgstr "Sufix"
 
 msgctxt "#30114"
 msgid "Encrypt file data"
-msgstr "Encrypt file data"
+msgstr "Criptați datele fișierului"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
-msgstr "Encrypt directory names"
+msgstr "Encrypt Directory Nume"
 
 msgctxt "#30116"
 msgid "Select a profile"
-msgstr "Select a profile"
+msgstr "Selectați un profil"
 
 msgctxt "#30117"
 msgid "Profiles deleted"
-msgstr "Profiles deleted"
+msgstr "Profiluri șterse"
 
 msgctxt "#30118"
 msgid "Profile import failed."
-msgstr "Profile import failed."
+msgstr "Importul de profil a eșuat."
 
 msgctxt "#30119"
 msgid "Profiles imported"
-msgstr "Profiles imported"
+msgstr "Profiluri importate"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
-msgstr "Assign a default encryption profile before playing an encrypted video."
+msgstr "Alocați un profil de criptare implicit înainte de a reda un videoclip criptat."
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
-msgstr "The encryption profile associated with this file doesn't exist."
+msgstr "Profilul de criptare asociat cu acest fișier nu există."
 
 msgctxt "#30122"
 msgid "No encryption profiles found."
-msgstr "No encryption profiles found."
+msgstr "Nu s -au găsit profiluri de criptare."
 
 msgctxt "#30123"
 msgid "Profile Manager"
-msgstr "Profile Manager"
+msgstr "Manager de profil"
 
 msgctxt "#30124"
 msgid "Profile created"
-msgstr "Profile created"
+msgstr "Profil creat"
 
 msgctxt "#30125"
 msgid "Profile updated"
-msgstr "Profile updated"
+msgstr "Profil actualizat"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
-msgstr "You must assign a profile name."
+msgstr "Trebuie să atribuiți un nume de profil."
 
 msgctxt "#30127"
 msgid "You must assign a password."
-msgstr "You must assign a password."
+msgstr "Trebuie să alocați o parolă."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "You must assign a salt."
+msgstr "Trebuie să alocați o sare."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
-msgstr "Profile Deletion"
+msgstr "Ștergerea profilului"
 
 msgctxt "#30130"
 msgid "Profile deleted"
-msgstr "Profile deleted"
+msgstr "Profil șters"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "Synced all drives"
+msgstr "A sincronizat toate unitățile"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
-msgstr "Failed to sync all drives"
+msgstr "Nu a reușit să sincronizeze toate unitățile"
 
 msgctxt "#30133"
 msgid "Sync failed"
-msgstr "Sync failed"
+msgstr "Sincronizarea a eșuat"
 
 msgctxt "#30134"
 msgid "Base Name"
-msgstr "Base Name"
+msgstr "Numele de bază"
 
 msgctxt "#30135"
 msgid "second"
-msgstr "second"
+msgstr "doilea"
 
 msgctxt "#30136"
 msgid "seconds"
-msgstr "seconds"
+msgstr "secunde"
 
 msgctxt "#30137"
 msgid "minute"
-msgstr "minute"
+msgstr "minut"
 
 msgctxt "#30138"
 msgid "minutes"
-msgstr "minutes"
+msgstr "minute"
 
 msgctxt "#30139"
 msgid "hour"
-msgstr "hour"
+msgstr "oră"
 
 msgctxt "#30140"
 msgid "hours"
-msgstr "hours"
+msgstr "ore"
 
 msgctxt "#30141"
 msgid "Failed to sync"
-msgstr "Failed to sync"
+msgstr "Nu a reușit sincronizarea"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "Syncing all drives"
+msgstr "Sincronizarea tuturor unităților"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
-msgstr "Do you want to delete:"
+msgstr "Doriți să ștergeți:"
 
 msgctxt "#30144"
 msgid "File deleted"
-msgstr "File deleted"
+msgstr "Fișier șters"
 
 msgctxt "#30145"
 msgid "File deletion failed"
-msgstr "File deletion failed"
+msgstr "Ștergerea fișierului a eșuat"
 
 msgctxt "#30146"
 msgid "Are you sure you want to delete the TMDB cache?"
-msgstr "Are you sure you want to delete the TMDB cache?"
+msgstr "Ești sigur că vrei să ștergeți cache -ul TMDB?"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
-msgstr "Deleting TMDB cache"
+msgstr "Ștergerea cache -ului TMDB"
 
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
-msgstr "Are you sure you want to delete account:"
+msgstr "Sunteți sigur că doriți să ștergeți contul:"
 
 msgctxt "#30158"
 msgid "Account Deletion"
-msgstr "Account Deletion"
+msgstr "Ștergerea contului"
 
 msgctxt "#30159"
 msgid "Delete"
-msgstr "Delete"
+msgstr "Şterge"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Stop syncing select folders"
+msgstr "Opriți sincronizarea folderelor selectate"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
-msgstr "Select folders to delete"
+msgstr "Selectați folderele pentru a șterge"
 
 msgctxt "#30207"
 msgid "Add account"
-msgstr "Add account"
+msgstr "Adăugați cont"
 
 msgctxt "#30209"
 msgid "The file wasn't found in the account:"
-msgstr "The file wasn't found in the account:"
+msgstr "Fișierul nu a fost găsit în cont:"
 
 msgctxt "#30214"
 msgid "Add service accounts"
-msgstr "Add service accounts"
+msgstr "Adăugați conturi de servicii"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Visit"
+msgstr "Vizita"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "in a web browser."
+msgstr "într -un browser web."
 
 msgctxt "#30217"
 msgid "You must create an"
-msgstr "You must create an"
+msgstr "Trebuie să creați un"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
-msgstr "OAuth Client ID"
+msgstr "OAuth ID client"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "Web Application"
+msgstr "Aplicație web"
 
 msgctxt "#30220"
 msgid "with this"
-msgstr "with this"
+msgstr "cu asta"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "Redirect URI"
+msgstr "Redirecționarea Uri"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "Validating"
+msgstr "Validare"
 
 msgctxt "#30300"
 msgid "Playback"
-msgstr "Playback"
+msgstr "Redare"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "Prompt resolution selection (if available)"
+msgstr "Selecție promptă a rezoluției (dacă este disponibil)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
-msgstr "Video resolution priority"
+msgstr "Prioritate de rezoluție video"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
-msgstr "Set subtitles automatically"
+msgstr "Setați automat subtitrări"
 
 msgctxt "#30304"
 msgid "Subtitle format"
-msgstr "Subtitle format"
+msgstr "Format subtitrare"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
-msgstr "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
+msgstr "Subtitrările nu sunt numite la fel ca STRM și sunt într -un folder izolat cu STRM"
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
-msgstr "Subtitles are named the same as STRM"
+msgstr "Subtitrările sunt numite la fel ca STRM"
 
 msgctxt "#30307"
 msgid "Default playback account"
-msgstr "Default playback account"
+msgstr "Cont de redare implicit"
 
 msgctxt "#30400"
 msgid "Library"
-msgstr "Library"
+msgstr "Bibliotecă"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "Mark movies as watched at"
+msgstr "Marchează filmele așa cum se vizionează"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "Mark episodes as watched at"
+msgstr "Marcați episoadele așa cum s -a urmărit"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "Import media flag data from STRM"
+msgstr "Importați datele de pavilion media de la STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "Update library automatically"
+msgstr "Actualizați automat biblioteca"
 
 msgctxt "#30405"
 msgid "Display dialog"
-msgstr "Display dialog"
+msgstr "Afișare dialog"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "Clean library automatically"
+msgstr "Curățați automat biblioteca"
 
 msgctxt "#30407"
 msgid "Video source"
-msgstr "Video source"
+msgstr "Sursă video"
 
 msgctxt "#30500"
 msgid "Sync"
-msgstr "Sync"
+msgstr "Sincronizare"
 
 msgctxt "#30501"
 msgid "Threads"
-msgstr "Threads"
+msgstr "Fire"
 
 msgctxt "#30502"
 msgid "Move sync folder"
-msgstr "Move sync folder"
+msgstr "Mutați folderul de sincronizare"
 
 msgctxt "#30503"
 msgid "Delete sync cache"
-msgstr "Delete sync cache"
+msgstr "Ștergeți cache de sincronizare"
 
 msgctxt "#30504"
 msgid "Delete sync folder"
-msgstr "Delete sync folder"
+msgstr "Ștergeți folderul de sincronizare"
 
 msgctxt "#30505"
 msgid "Sync defaults"
-msgstr "Sync defaults"
+msgstr "Sincronizare implicită"
 
 msgctxt "#30506"
 msgid "STRM prefix"
-msgstr "STRM prefix"
+msgstr "Prefix STRM"
 
 msgctxt "#30507"
 msgid "STRM suffix"
-msgstr "STRM suffix"
+msgstr "Sufix STRM"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
-msgstr "Has files encrypted with"
+msgstr "Are fișiere criptate cu"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Rename videos to a Kodi friendly format"
+msgstr "Redenumiți videoclipuri într -un format prietenos cu Kodi"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Create a Kodi friendly directory structure"
+msgstr "Creați o structură de director prietenos Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "Sync NFO"
+msgstr "Sincronizare NFO"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "Sync subtitles"
+msgstr "Subtitrări de sincronizare"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Sync artwork"
+msgstr "Sincronizarea operei de artă"
 
 msgctxt "#30514"
 msgid "Sync STRM"
-msgstr "Sync STRM"
+msgstr "Sincronizare STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"
-msgstr "TMDB search language"
+msgstr "Limba de căutare TMDB"
 
 msgctxt "#30516"
 msgid "TMDB region"
-msgstr "TMDB region"
+msgstr "Regiunea TMDB"
 
 msgctxt "#30517"
 msgid "TMDB adult content"
-msgstr "TMDB adult content"
+msgstr "Conținut pentru adulți TMDB"
 
 msgctxt "#30600"
 msgid "GUI"
@@ -804,68 +804,68 @@ msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Display initial sync progress dialog"
+msgstr "Afișați dialogul inițial Sync Progress"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
-msgstr "Display file deletion dialog"
+msgstr "Afișați dialogul de ștergere a fișierelor"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Display time since last sync in drive selection menu"
+msgstr "Timp de afișare de la ultima sincronizare în meniul de selecție a unității"
 
 msgctxt "#30700"
 msgid "Accounts"
-msgstr "Accounts"
+msgstr "Conturi"
 
 msgctxt "#30701"
 msgid "Import accounts"
-msgstr "Import accounts"
+msgstr "Conturi de import"
 
 msgctxt "#30702"
 msgid "Export accounts"
-msgstr "Export accounts"
+msgstr "Conturi de export"
 
 msgctxt "#30703"
 msgid "Delete all accounts"
-msgstr "Delete all accounts"
+msgstr "Ștergeți toate conturile"
 
 msgctxt "#30800"
 msgid "Encryption"
-msgstr "Encryption"
+msgstr "Criptare"
 
 msgctxt "#30801"
 msgid "Default profile"
-msgstr "Default profile"
+msgstr "Profil implicit"
 
 msgctxt "#30802"
 msgid "Create profile"
-msgstr "Create profile"
+msgstr "Creați profil"
 
 msgctxt "#30803"
 msgid "Modify profile"
-msgstr "Modify profile"
+msgstr "Modificați profilul"
 
 msgctxt "#30804"
 msgid "Delete profiles"
-msgstr "Delete profiles"
+msgstr "Ștergeți profilurile"
 
 msgctxt "#30805"
 msgid "Import profiles"
-msgstr "Import profiles"
+msgstr "Profiluri de import"
 
 msgctxt "#30806"
 msgid "Export profiles"
-msgstr "Export profiles"
+msgstr "Profiluri de export"
 
 msgctxt "#30900"
 msgid "Misc"
-msgstr "Misc"
+msgstr "Diverse"
 
 msgctxt "#30901"
 msgid "Server port (requires restart)"
-msgstr "Server port (requires restart)"
+msgstr "Port server (necesită repornire)"
 
 msgctxt "#30902"
 msgid "Delete TMDB cache"
-msgstr "Delete TMDB cache"
+msgstr "Ștergeți cache TMDB"

@@ -1,0 +1,871 @@
+# XBMC Media Center language file
+msgid ""
+msgstr ""
+"Project-Id-Version: plugin.video.gdrive 3.0.2\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: hi_in\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#30000"
+msgid "gDrive"
+msgstr "gDrive"
+
+msgctxt "#30001"
+msgid "Help"
+msgstr "मदद"
+
+msgctxt "#30002"
+msgid "Rename"
+msgstr "नाम बदलें"
+
+msgctxt "#30003"
+msgid "is no longer valid. Do you want to delete this account?"
+msgstr "अब मान्य नहीं है। क्या आप इस खाते को हटाना चाहते हैं?"
+
+msgctxt "#30004"
+msgid "Drive Name"
+msgstr "ड्राइव का नाम"
+
+msgctxt "#30005"
+msgid "Sync settings"
+msgstr "सिंक सेटिंग्स"
+
+msgctxt "#30006"
+msgid "API Ban:"
+msgstr "एपीआई प्रतिबंध:"
+
+msgctxt "#30007"
+msgid "Switching to fallback account"
+msgstr "फॉलबैक अकाउंट पर स्विच करना"
+
+msgctxt "#30008"
+msgid "Videos"
+msgstr "वीडियो"
+
+msgctxt "#30009"
+msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
+msgstr "दैनिक कोटा सीमा पार हो गई। प्रतिबंध 24 घंटे के भीतर उठ जाएगा।"
+
+msgctxt "#30010"
+msgid "Sync all"
+msgstr "सभी को सिंक करें"
+
+msgctxt "#30011"
+msgid "Synced"
+msgstr "सिंक किया गया"
+
+msgctxt "#30012"
+msgid "Sync Settings"
+msgstr "सिंक सेटिंग्स"
+
+msgctxt "#30013"
+msgid "Sync folder"
+msgstr "सिंक फ़ोल्डर"
+
+msgctxt "#30014"
+msgid "Select an account"
+msgstr "एक खाता चुनें"
+
+msgctxt "#30015"
+msgid "The drive name already exists, it must be unique."
+msgstr "ड्राइव का नाम पहले से मौजूद है, यह अद्वितीय होना चाहिए।"
+
+msgctxt "#30016"
+msgid "Are you sure you want to delete drive:"
+msgstr "क्या आप सुनिश्चित हैं कि आप ड्राइव को हटाना चाहते हैं:"
+
+msgctxt "#30017"
+msgid "Drive settings"
+msgstr "ड्राइव सेटिंग्स"
+
+msgctxt "#30018"
+msgid "Credential validation failed for account:"
+msgstr "खाते के लिए क्रेडेंशियल सत्यापन विफल:"
+
+msgctxt "#30019"
+msgid "Account validated"
+msgstr "मान्य खाता"
+
+msgctxt "#30020"
+msgid "Accounts validated"
+msgstr "मान्य लेखा"
+
+msgctxt "#30021"
+msgid "Validate accounts"
+msgstr "मान्य खाते"
+
+msgctxt "#30022"
+msgid "Delete accounts"
+msgstr "खातों को हटा दें"
+
+msgctxt "#30023"
+msgid "Validate"
+msgstr "मान्य"
+
+msgctxt "#30024"
+msgid "Are you sure you want to delete the accounts file?"
+msgstr "क्या आप सुनिश्चित हैं कि आप खाते फ़ाइल को हटाना चाहते हैं?"
+
+msgctxt "#30025"
+msgid "Account Name"
+msgstr "खाता नाम"
+
+msgctxt "#30026"
+msgid "Select files to import"
+msgstr "आयात करने के लिए फ़ाइलों का चयन करें"
+
+msgctxt "#30027"
+msgid "Do you want to delete all files associated with this drive?"
+msgstr "क्या आप इस ड्राइव से जुड़ी सभी फ़ाइलों को हटाना चाहते हैं?"
+
+msgctxt "#30028"
+msgid "The private key and client email weren't found in:"
+msgstr "निजी कुंजी और क्लाइंट ईमेल में नहीं मिला:"
+
+msgctxt "#30029"
+msgid "The client email wasn't found in:"
+msgstr "क्लाइंट ईमेल में नहीं मिला:"
+
+msgctxt "#30030"
+msgid "The private key wasn't found in:"
+msgstr "निजी कुंजी में नहीं पाया गया:"
+
+msgctxt "#30031"
+msgid "Folder moved"
+msgstr "फ़ोल्डर ले जाया गया"
+
+msgctxt "#30033"
+msgid "Select a file to import"
+msgstr "आयात करने के लिए एक फ़ाइल का चयन करें"
+
+msgctxt "#30034"
+msgid "Select a folder to export to"
+msgstr "निर्यात करने के लिए एक फ़ोल्डर का चयन करें"
+
+msgctxt "#30035"
+msgid "File exported as"
+msgstr "फ़ाइल निर्यात की गई फ़ाइल"
+
+msgctxt "#30036"
+msgid "Accounts imported"
+msgstr "आयातित लेखे"
+
+msgctxt "#30037"
+msgid "Account import failed."
+msgstr "खाता आयात विफल रहा।"
+
+msgctxt "#30038"
+msgid "My Drive"
+msgstr "मेरी ड्राइव"
+
+msgctxt "#30039"
+msgid "Shared With Me"
+msgstr "मेरे साथ साझा किया"
+
+msgctxt "#30040"
+msgid "Shared Drives"
+msgstr "साझा अभियान"
+
+msgctxt "#30041"
+msgid "Search"
+msgstr "खोज"
+
+msgctxt "#30042"
+msgid "Starred"
+msgstr "तारांकित"
+
+msgctxt "#30043"
+msgid "Search Query"
+msgstr "प्रश्न खोजना"
+
+msgctxt "#30044"
+msgid "Sync completed"
+msgstr "सिंक पूरा हुआ"
+
+msgctxt "#30045"
+msgid "Files have been deleted"
+msgstr "फ़ाइलें हटा दी गई हैं"
+
+msgctxt "#30046"
+msgid "Account registration succeeded"
+msgstr "खाता पंजीकरण सफल हुआ"
+
+msgctxt "#30047"
+msgid "Account registration failed"
+msgstr "खाता पंजीकरण विफल"
+
+msgctxt "#30048"
+msgid "Sync path"
+msgstr "सिंक पथ"
+
+msgctxt "#30049"
+msgid "Sync mode"
+msgstr "सिंक मोड"
+
+msgctxt "#30050"
+msgid "Sync frequency"
+msgstr "सिंक आवृत्ति"
+
+msgctxt "#30051"
+msgid "Sync on startup"
+msgstr "स्टार्टअप पर सिंक करें"
+
+msgctxt "#30052"
+msgid "Syncing folders"
+msgstr "सिंकिंग फ़ोल्डर्स"
+
+msgctxt "#30053"
+msgid "Processing files"
+msgstr "प्रसंस्करण फ़ाइलें"
+
+msgctxt "#30054"
+msgid "Are you sure you want to delete the sync cache?"
+msgstr "क्या आप सुनिश्चित हैं कि आप सिंक कैश को हटाना चाहते हैं?"
+
+msgctxt "#30055"
+msgid "Cache deleted"
+msgstr "कैश हटा दिया गया"
+
+msgctxt "#30056"
+msgid "Failed to delete the cache. See log for details."
+msgstr "कैश को हटाने में विफल रहा। विवरण के लिए लॉग देखें।"
+
+msgctxt "#30057"
+msgid "Playback account not found."
+msgstr "प्लेबैक खाता नहीं मिला।"
+
+msgctxt "#30058"
+msgid "Search language"
+msgstr "खोज भाषा"
+
+msgctxt "#30059"
+msgid "Region"
+msgstr "क्षेत्र"
+
+msgctxt "#30060"
+msgid "Adult content"
+msgstr "वयस्क सामग्री"
+
+msgctxt "#30061"
+msgid "Stop syncing all folders"
+msgstr "सभी फ़ोल्डरों को सिंक करना बंद करें"
+
+msgctxt "#30062"
+msgid "Stop syncing folder"
+msgstr "सिंकिंग फ़ोल्डर बंद करो"
+
+msgctxt "#30063"
+msgid "Do you want to delete the local files associated with this folder?"
+msgstr "क्या आप इस फ़ोल्डर से जुड़ी स्थानीय फ़ाइलों को हटाना चाहते हैं?"
+
+msgctxt "#30064"
+msgid "Do you want to delete the local files associated with these folders?"
+msgstr "क्या आप इन फ़ोल्डरों से जुड़ी स्थानीय फ़ाइलों को हटाना चाहते हैं?"
+
+msgctxt "#30065"
+msgid "General"
+msgstr "सामान्य"
+
+msgctxt "#30066"
+msgid "OK"
+msgstr "ठीक है"
+
+msgctxt "#30067"
+msgid "Cancel"
+msgstr "रद्द करना"
+
+msgctxt "#30068"
+msgid "interval"
+msgstr "अंतराल"
+
+msgctxt "#30069"
+msgid "schedule"
+msgstr "अनुसूची"
+
+msgctxt "#30070"
+msgid "Enter the sync interval in minutes"
+msgstr "मिनटों में सिंक अंतराल दर्ज करें"
+
+msgctxt "#30071"
+msgid "Enter the time to sync files"
+msgstr "फ़ाइलों को सिंक करने के लिए समय दर्ज करें"
+
+msgctxt "#30072"
+msgid "Select a video source"
+msgstr "एक वीडियो स्रोत का चयन करें"
+
+msgctxt "#30073"
+msgid "Syncing"
+msgstr "सिंक्रनाइज़ किए जा रहे"
+
+msgctxt "#30074"
+msgid "Deleting sync folder"
+msgstr "सिंक फ़ोल्डर हटाना"
+
+msgctxt "#30075"
+msgid "Deleting files"
+msgstr "फ़ाइलों को हटाना"
+
+msgctxt "#30076"
+msgid "Moving sync folder"
+msgstr "चलती सिंक फ़ोल्डर"
+
+msgctxt "#30077"
+msgid "Select the folder that your files will be stored in"
+msgstr "उस फ़ोल्डर का चयन करें जिसे आपकी फ़ाइलों में संग्रहीत किया जाएगा"
+
+msgctxt "#30078"
+msgid "There are no OAuth accounts connected to this drive."
+msgstr "इस ड्राइव से जुड़े कोई Oauth खाते नहीं हैं।"
+
+msgctxt "#30079"
+msgid "You must assign a sync path."
+msgstr "आपको एक सिंक पथ असाइन करना होगा।"
+
+msgctxt "#30080"
+msgid "You must assign a sync mode."
+msgstr "आपको एक सिंक मोड असाइन करना होगा।"
+
+msgctxt "#30081"
+msgid "You must assign a sync frequency."
+msgstr "आपको एक सिंक फ़्रीक्वेंसी असाइन करना होगा।"
+
+msgctxt "#30082"
+msgid "Sync started"
+msgstr "सिंक शुरू हुआ"
+
+msgctxt "#30083"
+msgid "Resolution Priority"
+msgstr "संकल्प प्राथमिकता"
+
+msgctxt "#30084"
+msgid "Close"
+msgstr "बंद करना"
+
+msgctxt "#30085"
+msgid "Drives"
+msgstr "ड्राइव"
+
+msgctxt "#30086"
+msgid "Folder Selection"
+msgstr "फ़ोल्डर चयन"
+
+msgctxt "#30087"
+msgid "manual"
+msgstr "नियमावली"
+
+msgctxt "#30088"
+msgid "Deleting sync cache"
+msgstr "सिंक कैश हटाना"
+
+msgctxt "#30089"
+msgid "Client ID and Client Secret creation"
+msgstr "क्लाइंट आईडी और क्लाइंट सीक्रेट क्रिएशन"
+
+msgctxt "#30090"
+msgid "Sync multiple"
+msgstr "एकाधिक सिंक करें"
+
+msgctxt "#30091"
+msgid "Search folder"
+msgstr "खोज फ़ोल्डर"
+
+msgctxt "#30092"
+msgid "Sync folder isn't set."
+msgstr "सिंक फ़ोल्डर सेट नहीं है।"
+
+msgctxt "#30093"
+msgid "Select a folder to move to"
+msgstr "स्थानांतरित करने के लिए एक फ़ोल्डर का चयन करें"
+
+msgctxt "#30094"
+msgid "Are you sure you want to delete the sync folder?"
+msgstr "क्या आप सुनिश्चित हैं कि आप सिंक फ़ोल्डर को हटाना चाहते हैं?"
+
+msgctxt "#30095"
+msgid "Folder deleted"
+msgstr "फ़ोल्डर हटा दिया गया"
+
+msgctxt "#30096"
+msgid "Failed to delete the sync folder. See log for details."
+msgstr "सिंक फ़ोल्डर को हटाने में विफल रहा। विवरण के लिए लॉग देखें।"
+
+msgctxt "#30097"
+msgid "Accounts file deleted"
+msgstr "हटाए गए लेखा फ़ाइल"
+
+msgctxt "#30098"
+msgid "Failed to delete the accounts file. See log for details."
+msgstr "खातों फ़ाइल को हटाने में विफल रहा। विवरण के लिए लॉग देखें।"
+
+msgctxt "#30099"
+msgid "Enter the filename"
+msgstr "फ़ाइल नाम दर्ज करें"
+
+msgctxt "#30100"
+msgid "The sync folder doesn't exist."
+msgstr "सिंक फ़ोल्डर मौजूद नहीं है।"
+
+msgctxt "#30101"
+msgid "Failed to move the folder. The folder can't be moved into itself."
+msgstr "फ़ोल्डर को स्थानांतरित करने में विफल रहा। फ़ोल्डर को अपने आप में स्थानांतरित नहीं किया जा सकता है।"
+
+msgctxt "#30102"
+msgid "Failed to move the folder. The folder already exists."
+msgstr "फ़ोल्डर को स्थानांतरित करने में विफल रहा। फ़ोल्डर पहले से मौजूद है।"
+
+msgctxt "#30103"
+msgid "Exclude"
+msgstr "बाहर करना"
+
+msgctxt "#30104"
+msgid "Include"
+msgstr "शामिल करना"
+
+msgctxt "#30105"
+msgid "Deleting Drive:"
+msgstr "डिलीटिंग ड्राइव:"
+
+msgctxt "#30106"
+msgid "Deleted Drive:"
+msgstr "हटाए गए ड्राइव:"
+
+msgctxt "#30107"
+msgid "Profile name"
+msgstr "प्रोफ़ाइल नाम"
+
+msgctxt "#30108"
+msgid "Encryption type"
+msgstr "एन्क्रिप्शन प्रकार"
+
+msgctxt "#30109"
+msgid "Password"
+msgstr "पासवर्ड"
+
+msgctxt "#30110"
+msgid "Salt"
+msgstr "नमक"
+
+msgctxt "#30111"
+msgid "Filename encryption"
+msgstr "फ़ाइल नाम एन्क्रिप्शन"
+
+msgctxt "#30112"
+msgid "Filename encoding"
+msgstr "फ़ाइल नाम एन्कोडिंग"
+
+msgctxt "#30113"
+msgid "Suffix"
+msgstr "प्रत्यय"
+
+msgctxt "#30114"
+msgid "Encrypt file data"
+msgstr "एन्क्रिप्ट फ़ाइल डेटा"
+
+msgctxt "#30115"
+msgid "Encrypt directory names"
+msgstr "एन्क्रिप्ट निर्देशिका नाम"
+
+msgctxt "#30116"
+msgid "Select a profile"
+msgstr "एक प्रोफ़ाइल का चयन करें"
+
+msgctxt "#30117"
+msgid "Profiles deleted"
+msgstr "हटाए गए प्रोफाइल"
+
+msgctxt "#30118"
+msgid "Profile import failed."
+msgstr "प्रोफ़ाइल आयात विफल रहा।"
+
+msgctxt "#30119"
+msgid "Profiles imported"
+msgstr "आयातित प्रोफाइल"
+
+msgctxt "#30120"
+msgid "Assign a default encryption profile before playing an encrypted video."
+msgstr "एन्क्रिप्टेड वीडियो खेलने से पहले एक डिफ़ॉल्ट एन्क्रिप्शन प्रोफ़ाइल असाइन करें।"
+
+msgctxt "#30121"
+msgid "The encryption profile associated with this file doesn't exist."
+msgstr "इस फ़ाइल से जुड़ी एन्क्रिप्शन प्रोफ़ाइल मौजूद नहीं है।"
+
+msgctxt "#30122"
+msgid "No encryption profiles found."
+msgstr "कोई एन्क्रिप्शन प्रोफाइल नहीं मिला।"
+
+msgctxt "#30123"
+msgid "Profile Manager"
+msgstr "प्रोफ़ाइल प्रबंधक"
+
+msgctxt "#30124"
+msgid "Profile created"
+msgstr "प्रोफ़ाइल बनाई गई"
+
+msgctxt "#30125"
+msgid "Profile updated"
+msgstr "प्रोफाइल अद्यतन किया गया"
+
+msgctxt "#30126"
+msgid "You must assign a profile name."
+msgstr "आपको एक प्रोफ़ाइल नाम असाइन करना होगा।"
+
+msgctxt "#30127"
+msgid "You must assign a password."
+msgstr "आपको एक पासवर्ड असाइन करना होगा।"
+
+msgctxt "#30128"
+msgid "You must assign a salt."
+msgstr "आपको एक नमक असाइन करना होगा।"
+
+msgctxt "#30129"
+msgid "Profile Deletion"
+msgstr "प्रोफ़ाइल विलोपन"
+
+msgctxt "#30130"
+msgid "Profile deleted"
+msgstr "प्रोफ़ाइल हटा दी गई"
+
+msgctxt "#30131"
+msgid "Synced all drives"
+msgstr "सभी ड्राइव को समन्वित किया"
+
+msgctxt "#30132"
+msgid "Failed to sync all drives"
+msgstr "सभी ड्राइव को सिंक करने में विफल रहा"
+
+msgctxt "#30133"
+msgid "Sync failed"
+msgstr "सिंक विफल"
+
+msgctxt "#30134"
+msgid "Base Name"
+msgstr "आधार नाम"
+
+msgctxt "#30135"
+msgid "second"
+msgstr "दूसरा"
+
+msgctxt "#30136"
+msgid "seconds"
+msgstr "सेकंड"
+
+msgctxt "#30137"
+msgid "minute"
+msgstr "मिनट"
+
+msgctxt "#30138"
+msgid "minutes"
+msgstr "मिनट"
+
+msgctxt "#30139"
+msgid "hour"
+msgstr "घंटा"
+
+msgctxt "#30140"
+msgid "hours"
+msgstr "घंटे"
+
+msgctxt "#30141"
+msgid "Failed to sync"
+msgstr "सिंक करने में विफल"
+
+msgctxt "#30142"
+msgid "Syncing all drives"
+msgstr "सभी ड्राइव को सिंक करना"
+
+msgctxt "#30143"
+msgid "Do you want to delete:"
+msgstr "क्या आप हटाना चाहते हैं:"
+
+msgctxt "#30144"
+msgid "File deleted"
+msgstr "फ़ाइल हटा दी गई फ़ाइल"
+
+msgctxt "#30145"
+msgid "File deletion failed"
+msgstr "फ़ाइल विलोपन विफल रहा"
+
+msgctxt "#30146"
+msgid "Are you sure you want to delete the TMDB cache?"
+msgstr "क्या आप सुनिश्चित हैं कि आप TMDB कैश को हटाना चाहते हैं?"
+
+msgctxt "#30147"
+msgid "Deleting TMDB cache"
+msgstr "TMDB कैश हटाना"
+
+msgctxt "#30157"
+msgid "Are you sure you want to delete account:"
+msgstr "क्या आप सुनिश्चित हैं कि आप खाता हटाना चाहते हैं:"
+
+msgctxt "#30158"
+msgid "Account Deletion"
+msgstr "खाता विलोपन"
+
+msgctxt "#30159"
+msgid "Delete"
+msgstr "मिटाना"
+
+msgctxt "#30163"
+msgid "Stop syncing select folders"
+msgstr "सिलेक्ट फ़ोल्डर्स को सिंक्रनाइज़ करना बंद करें"
+
+msgctxt "#30165"
+msgid "Select folders to delete"
+msgstr "हटाने के लिए फ़ोल्डर का चयन करें"
+
+msgctxt "#30207"
+msgid "Add account"
+msgstr "खाता जोड़ें"
+
+msgctxt "#30209"
+msgid "The file wasn't found in the account:"
+msgstr "फ़ाइल खाते में नहीं मिली:"
+
+msgctxt "#30214"
+msgid "Add service accounts"
+msgstr "सेवा खाते जोड़ें"
+
+msgctxt "#30215"
+msgid "Visit"
+msgstr "मिलने जाना"
+
+msgctxt "#30216"
+msgid "in a web browser."
+msgstr "एक वेब ब्राउज़र में।"
+
+msgctxt "#30217"
+msgid "You must create an"
+msgstr "आपको एक बनाना होगा"
+
+msgctxt "#30218"
+msgid "OAuth Client ID"
+msgstr "Oauth ग्राहक आईडी"
+
+msgctxt "#30219"
+msgid "Web Application"
+msgstr "वेब अनुप्रयोग"
+
+msgctxt "#30220"
+msgid "with this"
+msgstr "इस के साथ"
+
+msgctxt "#30221"
+msgid "Redirect URI"
+msgstr "पुनर्निर्देशित उरी"
+
+msgctxt "#30222"
+msgid "Validating"
+msgstr "सत्यापित किया जा रहा"
+
+msgctxt "#30300"
+msgid "Playback"
+msgstr "प्लेबैक"
+
+msgctxt "#30301"
+msgid "Prompt resolution selection (if available)"
+msgstr "शीघ्र संकल्प चयन (यदि उपलब्ध हो)"
+
+msgctxt "#30302"
+msgid "Video resolution priority"
+msgstr "वीडियो संकल्प प्राथमिकता"
+
+msgctxt "#30303"
+msgid "Set subtitles automatically"
+msgstr "उपशीर्षक स्वचालित रूप से सेट करें"
+
+msgctxt "#30304"
+msgid "Subtitle format"
+msgstr "उपशीर्षक प्रारूप"
+
+msgctxt "#30305"
+msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
+msgstr "उपशीर्षक STRM के समान नहीं हैं और STRM के साथ एक पृथक फ़ोल्डर में हैं"
+
+msgctxt "#30306"
+msgid "Subtitles are named the same as STRM"
+msgstr "उपशीर्षक को STRM के रूप में नामित किया गया है"
+
+msgctxt "#30307"
+msgid "Default playback account"
+msgstr "डिफ़ॉल्ट प्लेबैक खाता"
+
+msgctxt "#30400"
+msgid "Library"
+msgstr "पुस्तकालय"
+
+msgctxt "#30401"
+msgid "Mark movies as watched at"
+msgstr "फिल्मों को चिह्नित करें जैसा कि देखा गया है"
+
+msgctxt "#30402"
+msgid "Mark episodes as watched at"
+msgstr "मार्क एपिसोड के रूप में देखा गया"
+
+msgctxt "#30403"
+msgid "Import media flag data from STRM"
+msgstr "STRM से मीडिया ध्वज डेटा आयात करें"
+
+msgctxt "#30404"
+msgid "Update library automatically"
+msgstr "स्वचालित रूप से लाइब्रेरी को अपडेट करें"
+
+msgctxt "#30405"
+msgid "Display dialog"
+msgstr "प्रदर्शन संवाद"
+
+msgctxt "#30406"
+msgid "Clean library automatically"
+msgstr "स्वच्छ पुस्तकालय स्वचालित रूप से"
+
+msgctxt "#30407"
+msgid "Video source"
+msgstr "वीडियो स्रोत"
+
+msgctxt "#30500"
+msgid "Sync"
+msgstr "साथ-साथ करना"
+
+msgctxt "#30501"
+msgid "Threads"
+msgstr "धागे"
+
+msgctxt "#30502"
+msgid "Move sync folder"
+msgstr "सिंक फ़ोल्डर को स्थानांतरित करें"
+
+msgctxt "#30503"
+msgid "Delete sync cache"
+msgstr "सिंक कैश हटाएं"
+
+msgctxt "#30504"
+msgid "Delete sync folder"
+msgstr "सिंक फ़ोल्डर हटाएं"
+
+msgctxt "#30505"
+msgid "Sync defaults"
+msgstr "सिंक डिफॉल्ट"
+
+msgctxt "#30506"
+msgid "STRM prefix"
+msgstr "STRM उपसर्ग"
+
+msgctxt "#30507"
+msgid "STRM suffix"
+msgstr "STRM प्रत्यय"
+
+msgctxt "#30508"
+msgid "Has files encrypted with"
+msgstr "के साथ फाइलें एन्क्रिप्ट की गई हैं"
+
+msgctxt "#30509"
+msgid "Rename videos to a Kodi friendly format"
+msgstr "कोडी फ्रेंडली प्रारूप में वीडियो का नाम बदलें"
+
+msgctxt "#30510"
+msgid "Create a Kodi friendly directory structure"
+msgstr "एक कोडी फ्रेंडली निर्देशिका संरचना बनाएं"
+
+msgctxt "#30511"
+msgid "Sync NFO"
+msgstr "सिंक एनएफओ"
+
+msgctxt "#30512"
+msgid "Sync subtitles"
+msgstr "सिंक उपशीर्षक"
+
+msgctxt "#30513"
+msgid "Sync artwork"
+msgstr "सिंक कलाकृति"
+
+msgctxt "#30514"
+msgid "Sync STRM"
+msgstr "सिंक एसटीआरएम"
+
+msgctxt "#30515"
+msgid "TMDB search language"
+msgstr "TMDB खोज भाषा"
+
+msgctxt "#30516"
+msgid "TMDB region"
+msgstr "TMDB क्षेत्र"
+
+msgctxt "#30517"
+msgid "TMDB adult content"
+msgstr "TMDB वयस्क सामग्री"
+
+msgctxt "#30600"
+msgid "GUI"
+msgstr "जीयूआई"
+
+msgctxt "#30601"
+msgid "Display initial sync progress dialog"
+msgstr "प्रारंभिक सिंक प्रगति संवाद प्रदर्शित करें"
+
+msgctxt "#30602"
+msgid "Display file deletion dialog"
+msgstr "फ़ाइल विलोपन संवाद प्रदर्शित करें"
+
+msgctxt "#30603"
+msgid "Display time since last sync in drive selection menu"
+msgstr "ड्राइव चयन मेनू में अंतिम सिंक के बाद से समय प्रदर्शित करें"
+
+msgctxt "#30700"
+msgid "Accounts"
+msgstr "हिसाब किताब"
+
+msgctxt "#30701"
+msgid "Import accounts"
+msgstr "आयात लेखा"
+
+msgctxt "#30702"
+msgid "Export accounts"
+msgstr "निर्यात लेखा"
+
+msgctxt "#30703"
+msgid "Delete all accounts"
+msgstr "सभी खातों को हटा दें"
+
+msgctxt "#30800"
+msgid "Encryption"
+msgstr "कूटलेखन"
+
+msgctxt "#30801"
+msgid "Default profile"
+msgstr "डिफ़ॉल्ट प्रोफ़ाइल"
+
+msgctxt "#30802"
+msgid "Create profile"
+msgstr "प्रोफ़ाइल बनाएँ"
+
+msgctxt "#30803"
+msgid "Modify profile"
+msgstr "प्रोफ़ाइल को संशोधित करें"
+
+msgctxt "#30804"
+msgid "Delete profiles"
+msgstr "प्रोफाइल हटाएं"
+
+msgctxt "#30805"
+msgid "Import profiles"
+msgstr "आयात प्रोफाइल"
+
+msgctxt "#30806"
+msgid "Export profiles"
+msgstr "निर्यात प्रोफाइल"
+
+msgctxt "#30900"
+msgid "Misc"
+msgstr "विविध"
+
+msgctxt "#30901"
+msgid "Server port (requires restart)"
+msgstr "सर्वर पोर्ट (पुनरारंभ की आवश्यकता है)"
+
+msgctxt "#30902"
+msgid "Delete TMDB cache"
+msgstr "TMDB कैश हटाएं"

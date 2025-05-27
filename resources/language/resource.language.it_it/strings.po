@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en_gb\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language: it_it\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#30000"
 msgid "gDrive"
@@ -16,259 +16,259 @@ msgstr "gDrive"
 
 msgctxt "#30001"
 msgid "Help"
-msgstr "Help"
+msgstr "Aiuto"
 
 msgctxt "#30002"
 msgid "Rename"
-msgstr "Rename"
+msgstr "Rinominare"
 
 msgctxt "#30003"
 msgid "is no longer valid. Do you want to delete this account?"
-msgstr "is no longer valid. Do you want to delete this account?"
+msgstr "non è più valido. Vuoi eliminare questo account?"
 
 msgctxt "#30004"
 msgid "Drive Name"
-msgstr "Drive Name"
+msgstr "Nome da unità"
 
 msgctxt "#30005"
 msgid "Sync settings"
-msgstr "Sync settings"
+msgstr "Impostazioni di sincronizzazione"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "API Ban:"
+msgstr "BAN API:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "Switching to fallback account"
+msgstr "Passa all'account fallback"
 
 msgctxt "#30008"
 msgid "Videos"
-msgstr "Videos"
+msgstr "Video"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
-msgstr "Daily quota limit exceeded. Ban will lift within 24 hours."
+msgstr "Limite quotidiano superata. Ban si solleverà entro 24 ore."
 
 msgctxt "#30010"
 msgid "Sync all"
-msgstr "Sync all"
+msgstr "Sincronizzare tutto"
 
 msgctxt "#30011"
 msgid "Synced"
-msgstr "Synced"
+msgstr "Sincronizzato"
 
 msgctxt "#30012"
 msgid "Sync Settings"
-msgstr "Sync Settings"
+msgstr "Impostazioni di sincronizzazione"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "Sync folder"
+msgstr "Cartella di sincronizzazione"
 
 msgctxt "#30014"
 msgid "Select an account"
-msgstr "Select an account"
+msgstr "Seleziona un account"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
-msgstr "The drive name already exists, it must be unique."
+msgstr "Il nome dell'unità esiste già, deve essere unico."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
-msgstr "Are you sure you want to delete drive:"
+msgstr "Sei sicuro di voler eliminare l'unità:"
 
 msgctxt "#30017"
 msgid "Drive settings"
-msgstr "Drive settings"
+msgstr "Impostazioni di azionamento"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
-msgstr "Credential validation failed for account:"
+msgstr "Convalida delle credenziali non riuscita per il conto:"
 
 msgctxt "#30019"
 msgid "Account validated"
-msgstr "Account validated"
+msgstr "Conto convalidato"
 
 msgctxt "#30020"
 msgid "Accounts validated"
-msgstr "Accounts validated"
+msgstr "Conti convalidati"
 
 msgctxt "#30021"
 msgid "Validate accounts"
-msgstr "Validate accounts"
+msgstr "Convalida conti"
 
 msgctxt "#30022"
 msgid "Delete accounts"
-msgstr "Delete accounts"
+msgstr "Elimina account"
 
 msgctxt "#30023"
 msgid "Validate"
-msgstr "Validate"
+msgstr "Convalidare"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
-msgstr "Are you sure you want to delete the accounts file?"
+msgstr "Sei sicuro di voler eliminare il file degli account?"
 
 msgctxt "#30025"
 msgid "Account Name"
-msgstr "Account Name"
+msgstr "Nome utente"
 
 msgctxt "#30026"
 msgid "Select files to import"
-msgstr "Select files to import"
+msgstr "Seleziona i file da importare"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
-msgstr "Do you want to delete all files associated with this drive?"
+msgstr "Vuoi eliminare tutti i file associati a questa unità?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
-msgstr "The private key and client email weren't found in:"
+msgstr "La chiave privata e l'e -mail del cliente non sono state trovate in:"
 
 msgctxt "#30029"
 msgid "The client email wasn't found in:"
-msgstr "The client email wasn't found in:"
+msgstr "L'e -mail del cliente non è stata trovata in:"
 
 msgctxt "#30030"
 msgid "The private key wasn't found in:"
-msgstr "The private key wasn't found in:"
+msgstr "La chiave privata non è stata trovata in:"
 
 msgctxt "#30031"
 msgid "Folder moved"
-msgstr "Folder moved"
+msgstr "Cartella spostata"
 
 msgctxt "#30033"
 msgid "Select a file to import"
-msgstr "Select a file to import"
+msgstr "Seleziona un file da importare"
 
 msgctxt "#30034"
 msgid "Select a folder to export to"
-msgstr "Select a folder to export to"
+msgstr "Seleziona una cartella da esportare in"
 
 msgctxt "#30035"
 msgid "File exported as"
-msgstr "File exported as"
+msgstr "File esportato come"
 
 msgctxt "#30036"
 msgid "Accounts imported"
-msgstr "Accounts imported"
+msgstr "Conti importati"
 
 msgctxt "#30037"
 msgid "Account import failed."
-msgstr "Account import failed."
+msgstr "Importazione del conto non riuscita."
 
 msgctxt "#30038"
 msgid "My Drive"
-msgstr "My Drive"
+msgstr "Il mio viaggio"
 
 msgctxt "#30039"
 msgid "Shared With Me"
-msgstr "Shared With Me"
+msgstr "Condiviso con me"
 
 msgctxt "#30040"
 msgid "Shared Drives"
-msgstr "Shared Drives"
+msgstr "Unità condivisa"
 
 msgctxt "#30041"
 msgid "Search"
-msgstr "Search"
+msgstr "Ricerca"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "Starred"
+msgstr "Interpretato"
 
 msgctxt "#30043"
 msgid "Search Query"
-msgstr "Search Query"
+msgstr "Ricerca di ricerca"
 
 msgctxt "#30044"
 msgid "Sync completed"
-msgstr "Sync completed"
+msgstr "Sincronizzazione completata"
 
 msgctxt "#30045"
 msgid "Files have been deleted"
-msgstr "Files have been deleted"
+msgstr "I file sono stati eliminati"
 
 msgctxt "#30046"
 msgid "Account registration succeeded"
-msgstr "Account registration succeeded"
+msgstr "La registrazione del conto è riuscita"
 
 msgctxt "#30047"
 msgid "Account registration failed"
-msgstr "Account registration failed"
+msgstr "Registrazione del conto non riuscita"
 
 msgctxt "#30048"
 msgid "Sync path"
-msgstr "Sync path"
+msgstr "Percorso di sincronizzazione"
 
 msgctxt "#30049"
 msgid "Sync mode"
-msgstr "Sync mode"
+msgstr "Modalità di sincronizzazione"
 
 msgctxt "#30050"
 msgid "Sync frequency"
-msgstr "Sync frequency"
+msgstr "Frequenza di sincronizzazione"
 
 msgctxt "#30051"
 msgid "Sync on startup"
-msgstr "Sync on startup"
+msgstr "Sincronizzazione all'avvio"
 
 msgctxt "#30052"
 msgid "Syncing folders"
-msgstr "Syncing folders"
+msgstr "Cartelle di sincronizzazione"
 
 msgctxt "#30053"
 msgid "Processing files"
-msgstr "Processing files"
+msgstr "Elaborazione di file"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
-msgstr "Are you sure you want to delete the sync cache?"
+msgstr "Sei sicuro di voler eliminare la cache di sincronizzazione?"
 
 msgctxt "#30055"
 msgid "Cache deleted"
-msgstr "Cache deleted"
+msgstr "Cache eliminata"
 
 msgctxt "#30056"
 msgid "Failed to delete the cache. See log for details."
-msgstr "Failed to delete the cache. See log for details."
+msgstr "Impossibile eliminare la cache. Vedi registro per i dettagli."
 
 msgctxt "#30057"
 msgid "Playback account not found."
-msgstr "Playback account not found."
+msgstr "Account di riproduzione non trovato."
 
 msgctxt "#30058"
 msgid "Search language"
-msgstr "Search language"
+msgstr "Lingua di ricerca"
 
 msgctxt "#30059"
 msgid "Region"
-msgstr "Region"
+msgstr "Regione"
 
 msgctxt "#30060"
 msgid "Adult content"
-msgstr "Adult content"
+msgstr "Contenuto per adulti"
 
 msgctxt "#30061"
 msgid "Stop syncing all folders"
-msgstr "Stop syncing all folders"
+msgstr "Smetti di sincronizzare tutte le cartelle"
 
 msgctxt "#30062"
 msgid "Stop syncing folder"
-msgstr "Stop syncing folder"
+msgstr "Smetti di sincronizzare la cartella"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
-msgstr "Do you want to delete the local files associated with this folder?"
+msgstr "Vuoi eliminare i file locali associati a questa cartella?"
 
 msgctxt "#30064"
 msgid "Do you want to delete the local files associated with these folders?"
-msgstr "Do you want to delete the local files associated with these folders?"
+msgstr "Vuoi eliminare i file locali associati a queste cartelle?"
 
 msgctxt "#30065"
 msgid "General"
-msgstr "General"
+msgstr "Generale"
 
 msgctxt "#30066"
 msgid "OK"
@@ -276,171 +276,171 @@ msgstr "OK"
 
 msgctxt "#30067"
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "Cancellare"
 
 msgctxt "#30068"
 msgid "interval"
-msgstr "interval"
+msgstr "intervallo"
 
 msgctxt "#30069"
 msgid "schedule"
-msgstr "schedule"
+msgstr "programma"
 
 msgctxt "#30070"
 msgid "Enter the sync interval in minutes"
-msgstr "Enter the sync interval in minutes"
+msgstr "Immettere l'intervallo di sincronizzazione in minuti"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
-msgstr "Enter the time to sync files"
+msgstr "Immettere il tempo per sincronizzare i file"
 
 msgctxt "#30072"
 msgid "Select a video source"
-msgstr "Select a video source"
+msgstr "Seleziona una fonte video"
 
 msgctxt "#30073"
 msgid "Syncing"
-msgstr "Syncing"
+msgstr "Sincronizzazione"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
-msgstr "Deleting sync folder"
+msgstr "Eliminazione della cartella di sincronizzazione"
 
 msgctxt "#30075"
 msgid "Deleting files"
-msgstr "Deleting files"
+msgstr "Eliminazione di file"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
-msgstr "Moving sync folder"
+msgstr "Cartella di sincronizzazione in movimento"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
-msgstr "Select the folder that your files will be stored in"
+msgstr "Seleziona la cartella in cui verranno archiviati i file"
 
 msgctxt "#30078"
 msgid "There are no OAuth accounts connected to this drive."
-msgstr "There are no OAuth accounts connected to this drive."
+msgstr "Non ci sono account OAuth collegati a questa unità."
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
-msgstr "You must assign a sync path."
+msgstr "È necessario assegnare un percorso di sincronizzazione."
 
 msgctxt "#30080"
 msgid "You must assign a sync mode."
-msgstr "You must assign a sync mode."
+msgstr "È necessario assegnare una modalità di sincronizzazione."
 
 msgctxt "#30081"
 msgid "You must assign a sync frequency."
-msgstr "You must assign a sync frequency."
+msgstr "È necessario assegnare una frequenza di sincronizzazione."
 
 msgctxt "#30082"
 msgid "Sync started"
-msgstr "Sync started"
+msgstr "Sync ha iniziato"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
-msgstr "Resolution Priority"
+msgstr "Priorità di risoluzione"
 
 msgctxt "#30084"
 msgid "Close"
-msgstr "Close"
+msgstr "Vicino"
 
 msgctxt "#30085"
 msgid "Drives"
-msgstr "Drives"
+msgstr "Unità"
 
 msgctxt "#30086"
 msgid "Folder Selection"
-msgstr "Folder Selection"
+msgstr "Selezione delle cartelle"
 
 msgctxt "#30087"
 msgid "manual"
-msgstr "manual"
+msgstr "manuale"
 
 msgctxt "#30088"
 msgid "Deleting sync cache"
-msgstr "Deleting sync cache"
+msgstr "Eliminazione della cache di sincronizzazione"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "Client ID and Client Secret creation"
+msgstr "ID client e creazione segreta del client"
 
 msgctxt "#30090"
 msgid "Sync multiple"
-msgstr "Sync multiple"
+msgstr "Sincronizzare multipli"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Search folder"
+msgstr "Cartella di ricerca"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
-msgstr "Sync folder isn't set."
+msgstr "La cartella di sincronizzazione non è impostata."
 
 msgctxt "#30093"
 msgid "Select a folder to move to"
-msgstr "Select a folder to move to"
+msgstr "Seleziona una cartella per spostarsi"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
-msgstr "Are you sure you want to delete the sync folder?"
+msgstr "Sei sicuro di voler eliminare la cartella di sincronizzazione?"
 
 msgctxt "#30095"
 msgid "Folder deleted"
-msgstr "Folder deleted"
+msgstr "Cartella eliminata"
 
 msgctxt "#30096"
 msgid "Failed to delete the sync folder. See log for details."
-msgstr "Failed to delete the sync folder. See log for details."
+msgstr "Impossibile eliminare la cartella di sincronizzazione. Vedi registro per i dettagli."
 
 msgctxt "#30097"
 msgid "Accounts file deleted"
-msgstr "Accounts file deleted"
+msgstr "File account eliminato"
 
 msgctxt "#30098"
 msgid "Failed to delete the accounts file. See log for details."
-msgstr "Failed to delete the accounts file. See log for details."
+msgstr "Impossibile eliminare il file degli account. Vedi registro per i dettagli."
 
 msgctxt "#30099"
 msgid "Enter the filename"
-msgstr "Enter the filename"
+msgstr "Immettere il nome file"
 
 msgctxt "#30100"
 msgid "The sync folder doesn't exist."
-msgstr "The sync folder doesn't exist."
+msgstr "La cartella di sincronizzazione non esiste."
 
 msgctxt "#30101"
 msgid "Failed to move the folder. The folder can't be moved into itself."
-msgstr "Failed to move the folder. The folder can't be moved into itself."
+msgstr "Impossibile spostare la cartella. La cartella non può essere spostata in se stessa."
 
 msgctxt "#30102"
 msgid "Failed to move the folder. The folder already exists."
-msgstr "Failed to move the folder. The folder already exists."
+msgstr "Impossibile spostare la cartella. La cartella esiste già."
 
 msgctxt "#30103"
 msgid "Exclude"
-msgstr "Exclude"
+msgstr "Escludere"
 
 msgctxt "#30104"
 msgid "Include"
-msgstr "Include"
+msgstr "Includere"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
-msgstr "Deleting Drive:"
+msgstr "Eliminazione dell'unità:"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
-msgstr "Deleted Drive:"
+msgstr "Drive eliminata:"
 
 msgctxt "#30107"
 msgid "Profile name"
-msgstr "Profile name"
+msgstr "Nome del profilo"
 
 msgctxt "#30108"
 msgid "Encryption type"
-msgstr "Encryption type"
+msgstr "Tipo di crittografia"
 
 msgctxt "#30109"
 msgid "Password"
@@ -448,339 +448,339 @@ msgstr "Password"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Salt"
+msgstr "Sale"
 
 msgctxt "#30111"
 msgid "Filename encryption"
-msgstr "Filename encryption"
+msgstr "Crittografia del nome file"
 
 msgctxt "#30112"
 msgid "Filename encoding"
-msgstr "Filename encoding"
+msgstr "Codifica del nome file"
 
 msgctxt "#30113"
 msgid "Suffix"
-msgstr "Suffix"
+msgstr "Suffisso"
 
 msgctxt "#30114"
 msgid "Encrypt file data"
-msgstr "Encrypt file data"
+msgstr "Crittografare i dati dei file"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
-msgstr "Encrypt directory names"
+msgstr "Crittografia dei nomi delle directory"
 
 msgctxt "#30116"
 msgid "Select a profile"
-msgstr "Select a profile"
+msgstr "Seleziona un profilo"
 
 msgctxt "#30117"
 msgid "Profiles deleted"
-msgstr "Profiles deleted"
+msgstr "Profili eliminati"
 
 msgctxt "#30118"
 msgid "Profile import failed."
-msgstr "Profile import failed."
+msgstr "Importazione del profilo non riuscita."
 
 msgctxt "#30119"
 msgid "Profiles imported"
-msgstr "Profiles imported"
+msgstr "Profili importati"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
-msgstr "Assign a default encryption profile before playing an encrypted video."
+msgstr "Assegna un profilo di crittografia predefinito prima di riprodurre un video crittografato."
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
-msgstr "The encryption profile associated with this file doesn't exist."
+msgstr "Il profilo di crittografia associato a questo file non esiste."
 
 msgctxt "#30122"
 msgid "No encryption profiles found."
-msgstr "No encryption profiles found."
+msgstr "Nessun profilo di crittografia trovato."
 
 msgctxt "#30123"
 msgid "Profile Manager"
-msgstr "Profile Manager"
+msgstr "Profilo Manager"
 
 msgctxt "#30124"
 msgid "Profile created"
-msgstr "Profile created"
+msgstr "Profilo creato"
 
 msgctxt "#30125"
 msgid "Profile updated"
-msgstr "Profile updated"
+msgstr "Profilo aggiornato"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
-msgstr "You must assign a profile name."
+msgstr "È necessario assegnare un nome del profilo."
 
 msgctxt "#30127"
 msgid "You must assign a password."
-msgstr "You must assign a password."
+msgstr "È necessario assegnare una password."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "You must assign a salt."
+msgstr "Devi assegnare un sale."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
-msgstr "Profile Deletion"
+msgstr "Eliminazione del profilo"
 
 msgctxt "#30130"
 msgid "Profile deleted"
-msgstr "Profile deleted"
+msgstr "Profilo eliminato"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "Synced all drives"
+msgstr "Tutte le unità sincronizzate"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
-msgstr "Failed to sync all drives"
+msgstr "Impossibile sincronizzare tutte le unità"
 
 msgctxt "#30133"
 msgid "Sync failed"
-msgstr "Sync failed"
+msgstr "Sincronizzazione non riuscita"
 
 msgctxt "#30134"
 msgid "Base Name"
-msgstr "Base Name"
+msgstr "Nome base"
 
 msgctxt "#30135"
 msgid "second"
-msgstr "second"
+msgstr "secondo"
 
 msgctxt "#30136"
 msgid "seconds"
-msgstr "seconds"
+msgstr "Secondi"
 
 msgctxt "#30137"
 msgid "minute"
-msgstr "minute"
+msgstr "minuto"
 
 msgctxt "#30138"
 msgid "minutes"
-msgstr "minutes"
+msgstr "minuti"
 
 msgctxt "#30139"
 msgid "hour"
-msgstr "hour"
+msgstr "ora"
 
 msgctxt "#30140"
 msgid "hours"
-msgstr "hours"
+msgstr "ore"
 
 msgctxt "#30141"
 msgid "Failed to sync"
-msgstr "Failed to sync"
+msgstr "Impossibile sincronizzare"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "Syncing all drives"
+msgstr "Sincronizzare tutte le unità"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
-msgstr "Do you want to delete:"
+msgstr "Vuoi eliminare:"
 
 msgctxt "#30144"
 msgid "File deleted"
-msgstr "File deleted"
+msgstr "File eliminato"
 
 msgctxt "#30145"
 msgid "File deletion failed"
-msgstr "File deletion failed"
+msgstr "Eliminazione del file non riuscita"
 
 msgctxt "#30146"
 msgid "Are you sure you want to delete the TMDB cache?"
-msgstr "Are you sure you want to delete the TMDB cache?"
+msgstr "Sei sicuro di voler eliminare la cache TMDB?"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
-msgstr "Deleting TMDB cache"
+msgstr "Eliminazione della cache TMDB"
 
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
-msgstr "Are you sure you want to delete account:"
+msgstr "Sei sicuro di voler eliminare l'account:"
 
 msgctxt "#30158"
 msgid "Account Deletion"
-msgstr "Account Deletion"
+msgstr "Eliminazione dell'account"
 
 msgctxt "#30159"
 msgid "Delete"
-msgstr "Delete"
+msgstr "Eliminare"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Stop syncing select folders"
+msgstr "Smetti di sincronizzare seleziona cartelle"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
-msgstr "Select folders to delete"
+msgstr "Seleziona le cartelle da eliminare"
 
 msgctxt "#30207"
 msgid "Add account"
-msgstr "Add account"
+msgstr "Aggiungi account"
 
 msgctxt "#30209"
 msgid "The file wasn't found in the account:"
-msgstr "The file wasn't found in the account:"
+msgstr "Il file non è stato trovato nell'account:"
 
 msgctxt "#30214"
 msgid "Add service accounts"
-msgstr "Add service accounts"
+msgstr "Aggiungi account di servizio"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Visit"
+msgstr "Visita"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "in a web browser."
+msgstr "In un browser web."
 
 msgctxt "#30217"
 msgid "You must create an"
-msgstr "You must create an"
+msgstr "Devi creare un"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
-msgstr "OAuth Client ID"
+msgstr "ID client OAuth"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "Web Application"
+msgstr "Applicazione Web"
 
 msgctxt "#30220"
 msgid "with this"
-msgstr "with this"
+msgstr "con questo"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "Redirect URI"
+msgstr "Reindirizza l'URI"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "Validating"
+msgstr "Convalidamento"
 
 msgctxt "#30300"
 msgid "Playback"
-msgstr "Playback"
+msgstr "Riproduzione"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "Prompt resolution selection (if available)"
+msgstr "Selezione della risoluzione prompt (se disponibile)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
-msgstr "Video resolution priority"
+msgstr "Priorità di risoluzione video"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
-msgstr "Set subtitles automatically"
+msgstr "Imposta automaticamente i sottotitoli"
 
 msgctxt "#30304"
 msgid "Subtitle format"
-msgstr "Subtitle format"
+msgstr "Formato sottotitolo"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
-msgstr "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
+msgstr "I sottotitoli non sono nominati uguali a STRM e si trovano in una cartella isolata con STRM"
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
-msgstr "Subtitles are named the same as STRM"
+msgstr "I sottotitoli sono nominati uguali a STRM"
 
 msgctxt "#30307"
 msgid "Default playback account"
-msgstr "Default playback account"
+msgstr "Account di riproduzione predefinito"
 
 msgctxt "#30400"
 msgid "Library"
-msgstr "Library"
+msgstr "Biblioteca"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "Mark movies as watched at"
+msgstr "Segna i film come guardato a"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "Mark episodes as watched at"
+msgstr "Segna gli episodi come guardato a"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "Import media flag data from STRM"
+msgstr "Importa i dati di flag multimediale da STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "Update library automatically"
+msgstr "Aggiorna automaticamente la libreria"
 
 msgctxt "#30405"
 msgid "Display dialog"
-msgstr "Display dialog"
+msgstr "Visualizza il dialogo"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "Clean library automatically"
+msgstr "Pulisci la libreria automaticamente"
 
 msgctxt "#30407"
 msgid "Video source"
-msgstr "Video source"
+msgstr "Fonte video"
 
 msgctxt "#30500"
 msgid "Sync"
-msgstr "Sync"
+msgstr "Sincronizzazione"
 
 msgctxt "#30501"
 msgid "Threads"
-msgstr "Threads"
+msgstr "Discussioni"
 
 msgctxt "#30502"
 msgid "Move sync folder"
-msgstr "Move sync folder"
+msgstr "Sposta la cartella di sincronizzazione"
 
 msgctxt "#30503"
 msgid "Delete sync cache"
-msgstr "Delete sync cache"
+msgstr "Elimina la cache di sincronizzazione"
 
 msgctxt "#30504"
 msgid "Delete sync folder"
-msgstr "Delete sync folder"
+msgstr "Elimina la cartella di sincronizzazione"
 
 msgctxt "#30505"
 msgid "Sync defaults"
-msgstr "Sync defaults"
+msgstr "Sincronizzazione predefinite"
 
 msgctxt "#30506"
 msgid "STRM prefix"
-msgstr "STRM prefix"
+msgstr "Prefisso STRM"
 
 msgctxt "#30507"
 msgid "STRM suffix"
-msgstr "STRM suffix"
+msgstr "Suffisso STRM"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
-msgstr "Has files encrypted with"
+msgstr "Ha file crittografato con"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Rename videos to a Kodi friendly format"
+msgstr "Rinomina i video in un formato amichevole Kodi"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Create a Kodi friendly directory structure"
+msgstr "Crea una struttura di directory amichevole Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "Sync NFO"
+msgstr "Sincronizzazione NFO"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "Sync subtitles"
+msgstr "Sottotitoli di sincronizzazione"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Sync artwork"
+msgstr "Syncrwork"
 
 msgctxt "#30514"
 msgid "Sync STRM"
@@ -788,15 +788,15 @@ msgstr "Sync STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"
-msgstr "TMDB search language"
+msgstr "Lingua di ricerca TMDB"
 
 msgctxt "#30516"
 msgid "TMDB region"
-msgstr "TMDB region"
+msgstr "Regione TMDB"
 
 msgctxt "#30517"
 msgid "TMDB adult content"
-msgstr "TMDB adult content"
+msgstr "Contenuto per adulti TMDB"
 
 msgctxt "#30600"
 msgid "GUI"
@@ -804,59 +804,59 @@ msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Display initial sync progress dialog"
+msgstr "Visualizza la finestra di dialogo Progresso di sincronizzazione iniziale"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
-msgstr "Display file deletion dialog"
+msgstr "Visualizza la finestra di dialogo Eliminazione del file"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Display time since last sync in drive selection menu"
+msgstr "Visualizza il tempo dall'ultima sincronizzazione nel menu di selezione dell'unità"
 
 msgctxt "#30700"
 msgid "Accounts"
-msgstr "Accounts"
+msgstr "Account"
 
 msgctxt "#30701"
 msgid "Import accounts"
-msgstr "Import accounts"
+msgstr "Account di importazione"
 
 msgctxt "#30702"
 msgid "Export accounts"
-msgstr "Export accounts"
+msgstr "Account di esportazione"
 
 msgctxt "#30703"
 msgid "Delete all accounts"
-msgstr "Delete all accounts"
+msgstr "Elimina tutti gli account"
 
 msgctxt "#30800"
 msgid "Encryption"
-msgstr "Encryption"
+msgstr "Crittografia"
 
 msgctxt "#30801"
 msgid "Default profile"
-msgstr "Default profile"
+msgstr "Profilo predefinito"
 
 msgctxt "#30802"
 msgid "Create profile"
-msgstr "Create profile"
+msgstr "Crea profilo"
 
 msgctxt "#30803"
 msgid "Modify profile"
-msgstr "Modify profile"
+msgstr "Modifica profilo"
 
 msgctxt "#30804"
 msgid "Delete profiles"
-msgstr "Delete profiles"
+msgstr "Elimina i profili"
 
 msgctxt "#30805"
 msgid "Import profiles"
-msgstr "Import profiles"
+msgstr "Profili di importazione"
 
 msgctxt "#30806"
 msgid "Export profiles"
-msgstr "Export profiles"
+msgstr "Profili di esportazione"
 
 msgctxt "#30900"
 msgid "Misc"
@@ -864,8 +864,8 @@ msgstr "Misc"
 
 msgctxt "#30901"
 msgid "Server port (requires restart)"
-msgstr "Server port (requires restart)"
+msgstr "Porta server (richiede il riavvio)"
 
 msgctxt "#30902"
 msgid "Delete TMDB cache"
-msgstr "Delete TMDB cache"
+msgstr "Elimina la cache TMDB"

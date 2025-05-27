@@ -1,0 +1,871 @@
+# XBMC Media Center language file
+msgid ""
+msgstr ""
+"Project-Id-Version: plugin.video.gdrive 3.0.2\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: uk_ua\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 == 0 || (n % 10 >= 5 && n % 10 <= 9) || (n % 100 >= 11 && n % 100 <= 14 )) ? 2: 3);\n"
+
+msgctxt "#30000"
+msgid "gDrive"
+msgstr "gDrive"
+
+msgctxt "#30001"
+msgid "Help"
+msgstr "Допомога"
+
+msgctxt "#30002"
+msgid "Rename"
+msgstr "Перейменувати"
+
+msgctxt "#30003"
+msgid "is no longer valid. Do you want to delete this account?"
+msgstr "вже не дійсне. Ви хочете видалити цей рахунок?"
+
+msgctxt "#30004"
+msgid "Drive Name"
+msgstr "Ім'я приводу"
+
+msgctxt "#30005"
+msgid "Sync settings"
+msgstr "Налаштування синхронізації"
+
+msgctxt "#30006"
+msgid "API Ban:"
+msgstr "Заборона API:"
+
+msgctxt "#30007"
+msgid "Switching to fallback account"
+msgstr "Перехід на резервний обліковий запис"
+
+msgctxt "#30008"
+msgid "Videos"
+msgstr "Відеоролики"
+
+msgctxt "#30009"
+msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
+msgstr "Щоденний ліміт квот перевищений. Заборона підніметься протягом 24 годин."
+
+msgctxt "#30010"
+msgid "Sync all"
+msgstr "Синхронізувати всі"
+
+msgctxt "#30011"
+msgid "Synced"
+msgstr "Синхронізований"
+
+msgctxt "#30012"
+msgid "Sync Settings"
+msgstr "Налаштування синхронізації"
+
+msgctxt "#30013"
+msgid "Sync folder"
+msgstr "Папка синхронізації"
+
+msgctxt "#30014"
+msgid "Select an account"
+msgstr "Виберіть рахунок"
+
+msgctxt "#30015"
+msgid "The drive name already exists, it must be unique."
+msgstr "Назва приводу вже існує, воно повинно бути унікальним."
+
+msgctxt "#30016"
+msgid "Are you sure you want to delete drive:"
+msgstr "Ви впевнені, що хочете видалити привід:"
+
+msgctxt "#30017"
+msgid "Drive settings"
+msgstr "Налаштування приводу"
+
+msgctxt "#30018"
+msgid "Credential validation failed for account:"
+msgstr "Не вдалося для облікового запису перевірку облікових даних:"
+
+msgctxt "#30019"
+msgid "Account validated"
+msgstr "Обліковий запис затверджений"
+
+msgctxt "#30020"
+msgid "Accounts validated"
+msgstr "Облікові записи підтверджені"
+
+msgctxt "#30021"
+msgid "Validate accounts"
+msgstr "Валідувати рахунки"
+
+msgctxt "#30022"
+msgid "Delete accounts"
+msgstr "Видалити рахунки"
+
+msgctxt "#30023"
+msgid "Validate"
+msgstr "Перевірити"
+
+msgctxt "#30024"
+msgid "Are you sure you want to delete the accounts file?"
+msgstr "Ви впевнені, що хочете видалити файл облікових записів?"
+
+msgctxt "#30025"
+msgid "Account Name"
+msgstr "Назва рахунку"
+
+msgctxt "#30026"
+msgid "Select files to import"
+msgstr "Виберіть файли для імпорту"
+
+msgctxt "#30027"
+msgid "Do you want to delete all files associated with this drive?"
+msgstr "Ви хочете видалити всі файли, пов’язані з цим накопичувачем?"
+
+msgctxt "#30028"
+msgid "The private key and client email weren't found in:"
+msgstr "Приватний ключ та електронна пошта клієнта не були знайдені в:"
+
+msgctxt "#30029"
+msgid "The client email wasn't found in:"
+msgstr "Клієнт -електронний лист не знайшов у:"
+
+msgctxt "#30030"
+msgid "The private key wasn't found in:"
+msgstr "Приватний ключ не знайдено в:"
+
+msgctxt "#30031"
+msgid "Folder moved"
+msgstr "Папка рухалася"
+
+msgctxt "#30033"
+msgid "Select a file to import"
+msgstr "Виберіть файл для імпорту"
+
+msgctxt "#30034"
+msgid "Select a folder to export to"
+msgstr "Виберіть папку, щоб експортувати до"
+
+msgctxt "#30035"
+msgid "File exported as"
+msgstr "Файл експортується як"
+
+msgctxt "#30036"
+msgid "Accounts imported"
+msgstr "Рахунки імпортовані"
+
+msgctxt "#30037"
+msgid "Account import failed."
+msgstr "Імпорт рахунку не вдалося."
+
+msgctxt "#30038"
+msgid "My Drive"
+msgstr "Мій привід"
+
+msgctxt "#30039"
+msgid "Shared With Me"
+msgstr "Поділився зі мною"
+
+msgctxt "#30040"
+msgid "Shared Drives"
+msgstr "Спільні диски"
+
+msgctxt "#30041"
+msgid "Search"
+msgstr "Обшук"
+
+msgctxt "#30042"
+msgid "Starred"
+msgstr "Знятий"
+
+msgctxt "#30043"
+msgid "Search Query"
+msgstr "Пошук запит"
+
+msgctxt "#30044"
+msgid "Sync completed"
+msgstr "Синхронізовано завершено"
+
+msgctxt "#30045"
+msgid "Files have been deleted"
+msgstr "Файли були видалені"
+
+msgctxt "#30046"
+msgid "Account registration succeeded"
+msgstr "Реєстрація рахунку вдалося"
+
+msgctxt "#30047"
+msgid "Account registration failed"
+msgstr "Не вдалося реєстрація рахунку"
+
+msgctxt "#30048"
+msgid "Sync path"
+msgstr "Синхронний шлях"
+
+msgctxt "#30049"
+msgid "Sync mode"
+msgstr "Режим синхронізації"
+
+msgctxt "#30050"
+msgid "Sync frequency"
+msgstr "Частота синхронізації"
+
+msgctxt "#30051"
+msgid "Sync on startup"
+msgstr "Синхронізувати на запуску"
+
+msgctxt "#30052"
+msgid "Syncing folders"
+msgstr "Синхронізація папки"
+
+msgctxt "#30053"
+msgid "Processing files"
+msgstr "Обробка файлів"
+
+msgctxt "#30054"
+msgid "Are you sure you want to delete the sync cache?"
+msgstr "Ви впевнені, що хочете видалити кеш синхронізації?"
+
+msgctxt "#30055"
+msgid "Cache deleted"
+msgstr "Кеш видалений"
+
+msgctxt "#30056"
+msgid "Failed to delete the cache. See log for details."
+msgstr "Не вдалося видалити кеш. Детальніше див. Журнал."
+
+msgctxt "#30057"
+msgid "Playback account not found."
+msgstr "Обліковий запис відтворення не знайдено."
+
+msgctxt "#30058"
+msgid "Search language"
+msgstr "Мови пошуку"
+
+msgctxt "#30059"
+msgid "Region"
+msgstr "Область"
+
+msgctxt "#30060"
+msgid "Adult content"
+msgstr "Вміст для дорослих"
+
+msgctxt "#30061"
+msgid "Stop syncing all folders"
+msgstr "Перестань синхронізувати всі папки"
+
+msgctxt "#30062"
+msgid "Stop syncing folder"
+msgstr "Перестань синхронізувати папку"
+
+msgctxt "#30063"
+msgid "Do you want to delete the local files associated with this folder?"
+msgstr "Ви хочете видалити локальні файли, пов’язані з цією папкою?"
+
+msgctxt "#30064"
+msgid "Do you want to delete the local files associated with these folders?"
+msgstr "Ви хочете видалити локальні файли, пов’язані з цими папками?"
+
+msgctxt "#30065"
+msgid "General"
+msgstr "Загальний"
+
+msgctxt "#30066"
+msgid "OK"
+msgstr "Добре"
+
+msgctxt "#30067"
+msgid "Cancel"
+msgstr "Скасувати"
+
+msgctxt "#30068"
+msgid "interval"
+msgstr "інтервал"
+
+msgctxt "#30069"
+msgid "schedule"
+msgstr "розклад"
+
+msgctxt "#30070"
+msgid "Enter the sync interval in minutes"
+msgstr "Введіть інтервал синхронізації за лічені хвилини"
+
+msgctxt "#30071"
+msgid "Enter the time to sync files"
+msgstr "Введіть час для синхронізації файлів"
+
+msgctxt "#30072"
+msgid "Select a video source"
+msgstr "Виберіть джерело відео"
+
+msgctxt "#30073"
+msgid "Syncing"
+msgstr "Синхронізація"
+
+msgctxt "#30074"
+msgid "Deleting sync folder"
+msgstr "Видалення папки синхронізації"
+
+msgctxt "#30075"
+msgid "Deleting files"
+msgstr "Видалення файлів"
+
+msgctxt "#30076"
+msgid "Moving sync folder"
+msgstr "Рухомий папка синхронізації"
+
+msgctxt "#30077"
+msgid "Select the folder that your files will be stored in"
+msgstr "Виберіть папку, в якій будуть зберігатися ваші файли"
+
+msgctxt "#30078"
+msgid "There are no OAuth accounts connected to this drive."
+msgstr "Немає облікових записів OAuth, підключених до цього накопичувача."
+
+msgctxt "#30079"
+msgid "You must assign a sync path."
+msgstr "Ви повинні призначити шлях синхронізації."
+
+msgctxt "#30080"
+msgid "You must assign a sync mode."
+msgstr "Ви повинні призначити режим синхронізації."
+
+msgctxt "#30081"
+msgid "You must assign a sync frequency."
+msgstr "Ви повинні призначити частоту синхронізації."
+
+msgctxt "#30082"
+msgid "Sync started"
+msgstr "Синхронік розпочався"
+
+msgctxt "#30083"
+msgid "Resolution Priority"
+msgstr "Пріоритет роздільної здатності"
+
+msgctxt "#30084"
+msgid "Close"
+msgstr "Закривати"
+
+msgctxt "#30085"
+msgid "Drives"
+msgstr "Накопичувач"
+
+msgctxt "#30086"
+msgid "Folder Selection"
+msgstr "Вибір папки"
+
+msgctxt "#30087"
+msgid "manual"
+msgstr "посібник"
+
+msgctxt "#30088"
+msgid "Deleting sync cache"
+msgstr "Видалення кешу синхронізації"
+
+msgctxt "#30089"
+msgid "Client ID and Client Secret creation"
+msgstr "Ідентифікатор клієнта та таємне створення клієнта"
+
+msgctxt "#30090"
+msgid "Sync multiple"
+msgstr "Синхронізувати множин"
+
+msgctxt "#30091"
+msgid "Search folder"
+msgstr "Папка пошуку"
+
+msgctxt "#30092"
+msgid "Sync folder isn't set."
+msgstr "Папка синхронізації не встановлена."
+
+msgctxt "#30093"
+msgid "Select a folder to move to"
+msgstr "Виберіть папку, щоб перейти до"
+
+msgctxt "#30094"
+msgid "Are you sure you want to delete the sync folder?"
+msgstr "Ви впевнені, що хочете видалити папку Sync?"
+
+msgctxt "#30095"
+msgid "Folder deleted"
+msgstr "Папка видалена"
+
+msgctxt "#30096"
+msgid "Failed to delete the sync folder. See log for details."
+msgstr "Не вдалося видалити папку Sync. Детальніше див. Журнал."
+
+msgctxt "#30097"
+msgid "Accounts file deleted"
+msgstr "Файл облікових записів видалено"
+
+msgctxt "#30098"
+msgid "Failed to delete the accounts file. See log for details."
+msgstr "Не вдалося видалити файл облікових записів. Детальніше див. Журнал."
+
+msgctxt "#30099"
+msgid "Enter the filename"
+msgstr "Введіть ім'я файлу"
+
+msgctxt "#30100"
+msgid "The sync folder doesn't exist."
+msgstr "Папка синхронізації не існує."
+
+msgctxt "#30101"
+msgid "Failed to move the folder. The folder can't be moved into itself."
+msgstr "Не вдалося перемістити папку. Папку неможливо перемістити в себе."
+
+msgctxt "#30102"
+msgid "Failed to move the folder. The folder already exists."
+msgstr "Не вдалося перемістити папку. Папка вже існує."
+
+msgctxt "#30103"
+msgid "Exclude"
+msgstr "Виключати"
+
+msgctxt "#30104"
+msgid "Include"
+msgstr "Включати"
+
+msgctxt "#30105"
+msgid "Deleting Drive:"
+msgstr "Видалення приводу:"
+
+msgctxt "#30106"
+msgid "Deleted Drive:"
+msgstr "Видалений привід:"
+
+msgctxt "#30107"
+msgid "Profile name"
+msgstr "Назва профілю"
+
+msgctxt "#30108"
+msgid "Encryption type"
+msgstr "Тип шифрування"
+
+msgctxt "#30109"
+msgid "Password"
+msgstr "Пароль"
+
+msgctxt "#30110"
+msgid "Salt"
+msgstr "Соляна"
+
+msgctxt "#30111"
+msgid "Filename encryption"
+msgstr "Шифрування імені файлу"
+
+msgctxt "#30112"
+msgid "Filename encoding"
+msgstr "Кодування імені файлу"
+
+msgctxt "#30113"
+msgid "Suffix"
+msgstr "Суфікс"
+
+msgctxt "#30114"
+msgid "Encrypt file data"
+msgstr "Зашифровувати дані файлів"
+
+msgctxt "#30115"
+msgid "Encrypt directory names"
+msgstr "Назви каталогів шифрування"
+
+msgctxt "#30116"
+msgid "Select a profile"
+msgstr "Виберіть профіль"
+
+msgctxt "#30117"
+msgid "Profiles deleted"
+msgstr "Профілі видалені"
+
+msgctxt "#30118"
+msgid "Profile import failed."
+msgstr "Імпорт профілю не вдалося."
+
+msgctxt "#30119"
+msgid "Profiles imported"
+msgstr "Профілі імпортовані"
+
+msgctxt "#30120"
+msgid "Assign a default encryption profile before playing an encrypted video."
+msgstr "Призначте профіль шифрування за замовчуванням перед відтворенням зашифрованого відео."
+
+msgctxt "#30121"
+msgid "The encryption profile associated with this file doesn't exist."
+msgstr "Профіль шифрування, пов'язаний з цим файлом, не існує."
+
+msgctxt "#30122"
+msgid "No encryption profiles found."
+msgstr "Профілів шифрування не знайдено."
+
+msgctxt "#30123"
+msgid "Profile Manager"
+msgstr "Менеджер профілю"
+
+msgctxt "#30124"
+msgid "Profile created"
+msgstr "Створений профіль"
+
+msgctxt "#30125"
+msgid "Profile updated"
+msgstr "Профіль оновлений"
+
+msgctxt "#30126"
+msgid "You must assign a profile name."
+msgstr "Ви повинні призначити ім'я профілю."
+
+msgctxt "#30127"
+msgid "You must assign a password."
+msgstr "Ви повинні призначити пароль."
+
+msgctxt "#30128"
+msgid "You must assign a salt."
+msgstr "Ви повинні призначити сіль."
+
+msgctxt "#30129"
+msgid "Profile Deletion"
+msgstr "Видалення профілю"
+
+msgctxt "#30130"
+msgid "Profile deleted"
+msgstr "Профіль видалено"
+
+msgctxt "#30131"
+msgid "Synced all drives"
+msgstr "Синхронізував усі диски"
+
+msgctxt "#30132"
+msgid "Failed to sync all drives"
+msgstr "Не вдалося синхронізувати всі диски"
+
+msgctxt "#30133"
+msgid "Sync failed"
+msgstr "Синхронізовано не вдалося"
+
+msgctxt "#30134"
+msgid "Base Name"
+msgstr "Базова назва"
+
+msgctxt "#30135"
+msgid "second"
+msgstr "другий"
+
+msgctxt "#30136"
+msgid "seconds"
+msgstr "секунди"
+
+msgctxt "#30137"
+msgid "minute"
+msgstr "хвилина"
+
+msgctxt "#30138"
+msgid "minutes"
+msgstr "хвилини"
+
+msgctxt "#30139"
+msgid "hour"
+msgstr "година"
+
+msgctxt "#30140"
+msgid "hours"
+msgstr "годинник"
+
+msgctxt "#30141"
+msgid "Failed to sync"
+msgstr "Не вдалося синхронізувати"
+
+msgctxt "#30142"
+msgid "Syncing all drives"
+msgstr "Синхронізація всіх дисків"
+
+msgctxt "#30143"
+msgid "Do you want to delete:"
+msgstr "Ви хочете видалити:"
+
+msgctxt "#30144"
+msgid "File deleted"
+msgstr "Файл видалено"
+
+msgctxt "#30145"
+msgid "File deletion failed"
+msgstr "Видалення файлу не вдалося"
+
+msgctxt "#30146"
+msgid "Are you sure you want to delete the TMDB cache?"
+msgstr "Ви впевнені, що хочете видалити кеш TMDB?"
+
+msgctxt "#30147"
+msgid "Deleting TMDB cache"
+msgstr "Видалення кешу TMDB"
+
+msgctxt "#30157"
+msgid "Are you sure you want to delete account:"
+msgstr "Ви впевнені, що хочете видалити обліковий запис:"
+
+msgctxt "#30158"
+msgid "Account Deletion"
+msgstr "Видалення рахунку"
+
+msgctxt "#30159"
+msgid "Delete"
+msgstr "Видаляти"
+
+msgctxt "#30163"
+msgid "Stop syncing select folders"
+msgstr "Зупиніть синхронізувати вибрати папки"
+
+msgctxt "#30165"
+msgid "Select folders to delete"
+msgstr "Виберіть папки для видалення"
+
+msgctxt "#30207"
+msgid "Add account"
+msgstr "Додати рахунок"
+
+msgctxt "#30209"
+msgid "The file wasn't found in the account:"
+msgstr "Файл не знайдено в обліковому записі:"
+
+msgctxt "#30214"
+msgid "Add service accounts"
+msgstr "Додайте облікові записи послуг"
+
+msgctxt "#30215"
+msgid "Visit"
+msgstr "Відвідувати"
+
+msgctxt "#30216"
+msgid "in a web browser."
+msgstr "у веб -браузері."
+
+msgctxt "#30217"
+msgid "You must create an"
+msgstr "Ви повинні створити"
+
+msgctxt "#30218"
+msgid "OAuth Client ID"
+msgstr "ID OAuth клієнта"
+
+msgctxt "#30219"
+msgid "Web Application"
+msgstr "Веб -додаток"
+
+msgctxt "#30220"
+msgid "with this"
+msgstr "З цим"
+
+msgctxt "#30221"
+msgid "Redirect URI"
+msgstr "Перенаправлення URI"
+
+msgctxt "#30222"
+msgid "Validating"
+msgstr "Валідний"
+
+msgctxt "#30300"
+msgid "Playback"
+msgstr "Відтворення"
+
+msgctxt "#30301"
+msgid "Prompt resolution selection (if available)"
+msgstr "Вибір оперативної роздільної здатності (за наявності)"
+
+msgctxt "#30302"
+msgid "Video resolution priority"
+msgstr "Пріоритет роздільної здатності відео"
+
+msgctxt "#30303"
+msgid "Set subtitles automatically"
+msgstr "Встановити субтитри автоматично"
+
+msgctxt "#30304"
+msgid "Subtitle format"
+msgstr "Формат підзаголовок"
+
+msgctxt "#30305"
+msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
+msgstr "Субтитри не називаються такими ж, як STRM, і знаходяться в ізольованій папці з STRM"
+
+msgctxt "#30306"
+msgid "Subtitles are named the same as STRM"
+msgstr "Субтитри названі такими ж, як і STRM"
+
+msgctxt "#30307"
+msgid "Default playback account"
+msgstr "Обліковий запис відтворення за замовчуванням"
+
+msgctxt "#30400"
+msgid "Library"
+msgstr "Бібліотека"
+
+msgctxt "#30401"
+msgid "Mark movies as watched at"
+msgstr "Марк фільмів, як дивилися на"
+
+msgctxt "#30402"
+msgid "Mark episodes as watched at"
+msgstr "Марк епізодів, як дивилися на"
+
+msgctxt "#30403"
+msgid "Import media flag data from STRM"
+msgstr "Імпортувати дані прапора медіа з STRM"
+
+msgctxt "#30404"
+msgid "Update library automatically"
+msgstr "Автоматично оновлювати бібліотеку"
+
+msgctxt "#30405"
+msgid "Display dialog"
+msgstr "Діалогове вікно відображення"
+
+msgctxt "#30406"
+msgid "Clean library automatically"
+msgstr "Очистіть бібліотеку автоматично"
+
+msgctxt "#30407"
+msgid "Video source"
+msgstr "Джерело відео"
+
+msgctxt "#30500"
+msgid "Sync"
+msgstr "Синхронізувати"
+
+msgctxt "#30501"
+msgid "Threads"
+msgstr "Нитки"
+
+msgctxt "#30502"
+msgid "Move sync folder"
+msgstr "Перемістіть папку синхронізації"
+
+msgctxt "#30503"
+msgid "Delete sync cache"
+msgstr "Видалити кеш синхронізації"
+
+msgctxt "#30504"
+msgid "Delete sync folder"
+msgstr "Видалити папку Sync"
+
+msgctxt "#30505"
+msgid "Sync defaults"
+msgstr "Синхронізувати за замовчуванням"
+
+msgctxt "#30506"
+msgid "STRM prefix"
+msgstr "Префікс STRM"
+
+msgctxt "#30507"
+msgid "STRM suffix"
+msgstr "Суфікс STRM"
+
+msgctxt "#30508"
+msgid "Has files encrypted with"
+msgstr "Має зашифровані файли"
+
+msgctxt "#30509"
+msgid "Rename videos to a Kodi friendly format"
+msgstr "Перейменуйте відео у формат, дружній Kodi"
+
+msgctxt "#30510"
+msgid "Create a Kodi friendly directory structure"
+msgstr "Створіть структуру каталогів, дружньої Kodi"
+
+msgctxt "#30511"
+msgid "Sync NFO"
+msgstr "Синхронізувати НФО"
+
+msgctxt "#30512"
+msgid "Sync subtitles"
+msgstr "Синхронізовані субтитри"
+
+msgctxt "#30513"
+msgid "Sync artwork"
+msgstr "Синхронізувати художні твори"
+
+msgctxt "#30514"
+msgid "Sync STRM"
+msgstr "Синхронізувати STRM"
+
+msgctxt "#30515"
+msgid "TMDB search language"
+msgstr "Мова пошуку TMDB"
+
+msgctxt "#30516"
+msgid "TMDB region"
+msgstr "TMDB -регіон"
+
+msgctxt "#30517"
+msgid "TMDB adult content"
+msgstr "Вміст для дорослих TMDB"
+
+msgctxt "#30600"
+msgid "GUI"
+msgstr "GUI"
+
+msgctxt "#30601"
+msgid "Display initial sync progress dialog"
+msgstr "Відображення діалогового вікна початкового синхронізації"
+
+msgctxt "#30602"
+msgid "Display file deletion dialog"
+msgstr "Відображення діалогового вікна видалення файлу"
+
+msgctxt "#30603"
+msgid "Display time since last sync in drive selection menu"
+msgstr "Час відображення з останнього синхронізації в меню вибору накопичувача"
+
+msgctxt "#30700"
+msgid "Accounts"
+msgstr "Рахунки"
+
+msgctxt "#30701"
+msgid "Import accounts"
+msgstr "Імпортувати рахунки"
+
+msgctxt "#30702"
+msgid "Export accounts"
+msgstr "Експортні рахунки"
+
+msgctxt "#30703"
+msgid "Delete all accounts"
+msgstr "Видалити всі рахунки"
+
+msgctxt "#30800"
+msgid "Encryption"
+msgstr "Шифрування"
+
+msgctxt "#30801"
+msgid "Default profile"
+msgstr "Профіль за замовчуванням"
+
+msgctxt "#30802"
+msgid "Create profile"
+msgstr "Створити профіль"
+
+msgctxt "#30803"
+msgid "Modify profile"
+msgstr "Змініть профіль"
+
+msgctxt "#30804"
+msgid "Delete profiles"
+msgstr "Видалити профілі"
+
+msgctxt "#30805"
+msgid "Import profiles"
+msgstr "Профілі імпорту"
+
+msgctxt "#30806"
+msgid "Export profiles"
+msgstr "Експортні профілі"
+
+msgctxt "#30900"
+msgid "Misc"
+msgstr "Різний"
+
+msgctxt "#30901"
+msgid "Server port (requires restart)"
+msgstr "Порт сервера (вимагає перезапуску)"
+
+msgctxt "#30902"
+msgid "Delete TMDB cache"
+msgstr "Видалити кеш TMDB"
