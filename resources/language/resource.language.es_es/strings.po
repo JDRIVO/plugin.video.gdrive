@@ -28,7 +28,7 @@ msgstr "ya no es válido. ¿Quieres eliminar esta cuenta?"
 
 msgctxt "#30004"
 msgid "Drive Name"
-msgstr "Nombre de conducción"
+msgstr "Nombre de la unidad"
 
 msgctxt "#30005"
 msgid "Sync settings"
@@ -72,7 +72,7 @@ msgstr "Seleccione una cuenta"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
-msgstr "El nombre de la unidad ya existe, debe ser único."
+msgstr "El nombre de la unidad ya existe; debe ser único."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
@@ -80,7 +80,7 @@ msgstr "¿Estás seguro de que quieres eliminar la unidad?"
 
 msgctxt "#30017"
 msgid "Drive settings"
-msgstr "Configuración de conducción"
+msgstr "Configuración de la unidad"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
@@ -120,7 +120,7 @@ msgstr "Seleccione archivos para importar"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
-msgstr "¿Desea eliminar todos los archivos asociados con esta unidad?"
+msgstr "¿Deseas eliminar todos los archivos asociados con esta unidad?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
@@ -160,7 +160,7 @@ msgstr "La importación de la cuenta falló."
 
 msgctxt "#30038"
 msgid "My Drive"
-msgstr "Mi viaje"
+msgstr "Mi unidad"
 
 msgctxt "#30039"
 msgid "Shared With Me"
@@ -176,7 +176,7 @@ msgstr "Buscar"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "Sembrado de estrellas"
+msgstr "Destacados"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -348,7 +348,7 @@ msgstr "Cerca"
 
 msgctxt "#30085"
 msgid "Drives"
-msgstr "Impulsos"
+msgstr "Unidades"
 
 msgctxt "#30086"
 msgid "Folder Selection"
@@ -428,7 +428,7 @@ msgstr "Incluir"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
-msgstr "Eliminar la unidad:"
+msgstr "Eliminando unidad:"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
@@ -536,7 +536,7 @@ msgstr "Sincronizado todas las unidades"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
-msgstr "No se pudo sincronizar todas las unidades"
+msgstr "Error al sincronizar todas las unidades"
 
 msgctxt "#30133"
 msgid "Sync failed"
@@ -576,7 +576,7 @@ msgstr "No se ha sincronizado"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "Sincronizar todos los unidades"
+msgstr "Sincronizando todas las unidades"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
@@ -732,7 +732,7 @@ msgstr "Sincronización"
 
 msgctxt "#30501"
 msgid "Threads"
-msgstr "Trapos"
+msgstr "Hilos"
 
 msgctxt "#30502"
 msgid "Move sync folder"
@@ -788,7 +788,7 @@ msgstr "Sincronización STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"
-msgstr "Lenguaje de búsqueda tmdb"
+msgstr "Lenguaje de búsqueda TMDB"
 
 msgctxt "#30516"
 msgid "TMDB region"
@@ -812,7 +812,7 @@ msgstr "Diálogo de eliminación de archivos de visualización"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Mostrar tiempo desde la última sincronización en el menú de selección de la unidad"
+msgstr "Mostrar el tiempo desde la última sincronización en el menú de selección de unidad"
 
 msgctxt "#30700"
 msgid "Accounts"

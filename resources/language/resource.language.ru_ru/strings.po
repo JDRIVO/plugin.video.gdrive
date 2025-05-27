@@ -28,7 +28,7 @@ msgstr "больше не действителен. Вы хотите удали
 
 msgctxt "#30004"
 msgid "Drive Name"
-msgstr "Название движения"
+msgstr "Имя диска"
 
 msgctxt "#30005"
 msgid "Sync settings"
@@ -72,7 +72,7 @@ msgstr "Выберите учетную запись"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
-msgstr "Название диска уже существует, оно должно быть уникальным."
+msgstr "Имя диска уже существует, оно должно быть уникальным."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
@@ -160,7 +160,7 @@ msgstr "Импорт счета не удался."
 
 msgctxt "#30038"
 msgid "My Drive"
-msgstr "Мой драйв"
+msgstr "Мой диск"
 
 msgctxt "#30039"
 msgid "Shared With Me"
@@ -176,7 +176,7 @@ msgstr "Поиск"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "Стал главным"
+msgstr "Помеченные звёздочкой"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -320,7 +320,7 @@ msgstr "Выберите папку, в которой будут хранить
 
 msgctxt "#30078"
 msgid "There are no OAuth accounts connected to this drive."
-msgstr "Там нет учетных записей OAuth, подключенных к этому диску."
+msgstr "К этому диску не подключено ни одной учетной записи OAuth."
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
@@ -348,7 +348,7 @@ msgstr "Закрывать"
 
 msgctxt "#30085"
 msgid "Drives"
-msgstr "Приводы"
+msgstr "Диски"
 
 msgctxt "#30086"
 msgid "Folder Selection"
@@ -432,7 +432,7 @@ msgstr "Удаление диска:"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
-msgstr "Удаленный диск:"
+msgstr "Диск удален:"
 
 msgctxt "#30107"
 msgid "Profile name"
@@ -548,7 +548,7 @@ msgstr "Базовое название"
 
 msgctxt "#30135"
 msgid "second"
-msgstr "второй"
+msgstr "секунда"
 
 msgctxt "#30136"
 msgid "seconds"
@@ -576,7 +576,7 @@ msgstr "Не удалось синхронизировать"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "Синхронизировать все диски"
+msgstr "Синхронизация всех дисков"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
@@ -732,7 +732,7 @@ msgstr "Синхронизированный"
 
 msgctxt "#30501"
 msgid "Threads"
-msgstr "Нить"
+msgstr "Потоки"
 
 msgctxt "#30502"
 msgid "Move sync folder"
@@ -812,7 +812,7 @@ msgstr "Диалог удаления файла отображения"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Время отображения с момента последней синхронизации в меню «Выбор диска»"
+msgstr "Показать время с момента последней синхронизации в меню выбора диска"
 
 msgctxt "#30700"
 msgid "Accounts"

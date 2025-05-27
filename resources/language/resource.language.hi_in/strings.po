@@ -80,7 +80,7 @@ msgstr "क्या आप सुनिश्चित हैं कि आप 
 
 msgctxt "#30017"
 msgid "Drive settings"
-msgstr "ड्राइव सेटिंग्स"
+msgstr "ड्राइव की सेटिंग्स"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
@@ -168,7 +168,7 @@ msgstr "मेरे साथ साझा किया"
 
 msgctxt "#30040"
 msgid "Shared Drives"
-msgstr "साझा अभियान"
+msgstr "साझा ड्राइव"
 
 msgctxt "#30041"
 msgid "Search"
@@ -176,7 +176,7 @@ msgstr "खोज"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "तारांकित"
+msgstr "सितारे वाले"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -320,7 +320,7 @@ msgstr "उस फ़ोल्डर का चयन करें जिसे 
 
 msgctxt "#30078"
 msgid "There are no OAuth accounts connected to this drive."
-msgstr "इस ड्राइव से जुड़े कोई Oauth खाते नहीं हैं।"
+msgstr "इस ड्राइव से कोई OAuth खाता जुड़ा नहीं है।"
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
@@ -348,7 +348,7 @@ msgstr "बंद करना"
 
 msgctxt "#30085"
 msgid "Drives"
-msgstr "ड्राइव"
+msgstr "ड्राइव्स"
 
 msgctxt "#30086"
 msgid "Folder Selection"
@@ -428,11 +428,11 @@ msgstr "शामिल करना"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
-msgstr "डिलीटिंग ड्राइव:"
+msgstr "ड्राइव हटाई जा रही है:"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
-msgstr "हटाए गए ड्राइव:"
+msgstr "ड्राइव हटा दी गई:"
 
 msgctxt "#30107"
 msgid "Profile name"
@@ -536,7 +536,7 @@ msgstr "सभी ड्राइव को समन्वित किया"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
-msgstr "सभी ड्राइव को सिंक करने में विफल रहा"
+msgstr "सभी ड्राइव्स को सिंक करने में विफल"
 
 msgctxt "#30133"
 msgid "Sync failed"
@@ -548,7 +548,7 @@ msgstr "आधार नाम"
 
 msgctxt "#30135"
 msgid "second"
-msgstr "दूसरा"
+msgstr "सेकंड"
 
 msgctxt "#30136"
 msgid "seconds"
@@ -732,7 +732,7 @@ msgstr "साथ-साथ करना"
 
 msgctxt "#30501"
 msgid "Threads"
-msgstr "धागे"
+msgstr "थ्रेड्स"
 
 msgctxt "#30502"
 msgid "Move sync folder"

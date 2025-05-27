@@ -28,7 +28,7 @@ msgstr "non è più valido. Vuoi eliminare questo account?"
 
 msgctxt "#30004"
 msgid "Drive Name"
-msgstr "Nome da unità"
+msgstr "Nome dell'unità"
 
 msgctxt "#30005"
 msgid "Sync settings"
@@ -72,7 +72,7 @@ msgstr "Seleziona un account"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
-msgstr "Il nome dell'unità esiste già, deve essere unico."
+msgstr "Il nome dell'unità esiste già, deve essere univoco."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
@@ -80,7 +80,7 @@ msgstr "Sei sicuro di voler eliminare l'unità:"
 
 msgctxt "#30017"
 msgid "Drive settings"
-msgstr "Impostazioni di azionamento"
+msgstr "Impostazioni dell'unità"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
@@ -160,7 +160,7 @@ msgstr "Importazione del conto non riuscita."
 
 msgctxt "#30038"
 msgid "My Drive"
-msgstr "Il mio viaggio"
+msgstr "Il mio Drive"
 
 msgctxt "#30039"
 msgid "Shared With Me"
@@ -168,7 +168,7 @@ msgstr "Condiviso con me"
 
 msgctxt "#30040"
 msgid "Shared Drives"
-msgstr "Unità condivisa"
+msgstr "Unità condivise"
 
 msgctxt "#30041"
 msgid "Search"
@@ -176,7 +176,7 @@ msgstr "Ricerca"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "Interpretato"
+msgstr "Contrassegnati con una stella"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -432,7 +432,7 @@ msgstr "Eliminazione dell'unità:"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
-msgstr "Drive eliminata:"
+msgstr "Unità eliminata:"
 
 msgctxt "#30107"
 msgid "Profile name"
@@ -536,7 +536,7 @@ msgstr "Tutte le unità sincronizzate"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
-msgstr "Impossibile sincronizzare tutte le unità"
+msgstr "Sincronizzazione di tutte le unità non riuscita"
 
 msgctxt "#30133"
 msgid "Sync failed"
@@ -552,7 +552,7 @@ msgstr "secondo"
 
 msgctxt "#30136"
 msgid "seconds"
-msgstr "Secondi"
+msgstr "secondi"
 
 msgctxt "#30137"
 msgid "minute"
@@ -576,7 +576,7 @@ msgstr "Impossibile sincronizzare"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "Sincronizzare tutte le unità"
+msgstr "Sincronizzazione di tutte le unità"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
@@ -732,7 +732,7 @@ msgstr "Sincronizzazione"
 
 msgctxt "#30501"
 msgid "Threads"
-msgstr "Discussioni"
+msgstr "Threads"
 
 msgctxt "#30502"
 msgid "Move sync folder"
@@ -812,7 +812,7 @@ msgstr "Visualizza la finestra di dialogo Eliminazione del file"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Visualizza il tempo dall'ultima sincronizzazione nel menu di selezione dell'unità"
+msgstr "Mostra il tempo dall'ultima sincronizzazione nel menu di selezione dell'unità"
 
 msgctxt "#30700"
 msgid "Accounts"

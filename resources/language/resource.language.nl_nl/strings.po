@@ -28,7 +28,7 @@ msgstr "is niet langer geldig. Wilt u dit account verwijderen?"
 
 msgctxt "#30004"
 msgid "Drive Name"
-msgstr "Drive -naam"
+msgstr "Schijfnaam"
 
 msgctxt "#30005"
 msgid "Sync settings"
@@ -72,15 +72,15 @@ msgstr "Selecteer een account"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
-msgstr "De drive -naam bestaat al, het moet uniek zijn."
+msgstr "De schijfnaam bestaat al en moet uniek zijn."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
-msgstr "Weet u zeker dat u Drive wilt verwijderen:"
+msgstr "Weet u zeker dat u deze schijf wilt verwijderen:"
 
 msgctxt "#30017"
 msgid "Drive settings"
-msgstr "Rijdsinstellingen"
+msgstr "Schijfinstellingen"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
@@ -120,7 +120,7 @@ msgstr "Selecteer bestanden om te importeren"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
-msgstr "Wilt u alle bestanden verwijderen die aan deze schijf zijn gekoppeld?"
+msgstr "Wilt u alle bestanden verwijderen die aan deze schijf gekoppeld zijn?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
@@ -160,7 +160,7 @@ msgstr "Account import is mislukt."
 
 msgctxt "#30038"
 msgid "My Drive"
-msgstr "Mijn drive"
+msgstr "Mijn schijf"
 
 msgctxt "#30039"
 msgid "Shared With Me"
@@ -176,7 +176,7 @@ msgstr "Zoekopdracht"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "Sterren"
+msgstr "Met ster"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -320,7 +320,7 @@ msgstr "Selecteer de map waarin uw bestanden worden opgeslagen"
 
 msgctxt "#30078"
 msgid "There are no OAuth accounts connected to this drive."
-msgstr "Er zijn geen OAuth -accounts verbonden met deze schijf."
+msgstr "Er zijn geen OAuth-accounts verbonden met deze schijf."
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
@@ -428,11 +428,11 @@ msgstr "Erbij betrekken"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
-msgstr "Drive verwijderen:"
+msgstr "Schijf wordt verwijderd:"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
-msgstr "Verwijderde schijf:"
+msgstr "Schijf verwijderd:"
 
 msgctxt "#30107"
 msgid "Profile name"
@@ -536,7 +536,7 @@ msgstr "Alle schijven gesynchroniseerd"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
-msgstr "Kan niet alle schijven synchroniseren"
+msgstr "Kan alle schijven niet synchroniseren"
 
 msgctxt "#30133"
 msgid "Sync failed"
@@ -560,7 +560,7 @@ msgstr "minuut"
 
 msgctxt "#30138"
 msgid "minutes"
-msgstr "notulen"
+msgstr "minuten"
 
 msgctxt "#30139"
 msgid "hour"
@@ -576,7 +576,7 @@ msgstr "Kan niet worden gesynchroniseerd"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "Alle schijven synchroniseren"
+msgstr "Alle schijven worden gesynchroniseerd"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
@@ -732,7 +732,7 @@ msgstr "Synchroniseren"
 
 msgctxt "#30501"
 msgid "Threads"
-msgstr "Draden"
+msgstr "Threads"
 
 msgctxt "#30502"
 msgid "Move sync folder"
@@ -812,7 +812,7 @@ msgstr "Dialoogvenster Bestandsverwijdering weergeven"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Weergave tijd sinds de laatste synchronisatie in het menu Station Selection"
+msgstr "Toon tijd sinds laatste synchronisatie in het schijfselectiemenu"
 
 msgctxt "#30700"
 msgid "Accounts"

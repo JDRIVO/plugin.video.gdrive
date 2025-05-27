@@ -80,7 +80,7 @@ msgstr "Êtes-vous sûr de vouloir supprimer le lecteur:"
 
 msgctxt "#30017"
 msgid "Drive settings"
-msgstr "Paramètres d'entraînement"
+msgstr "Paramètres du lecteur"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
@@ -168,7 +168,7 @@ msgstr "Partagé avec moi"
 
 msgctxt "#30040"
 msgid "Shared Drives"
-msgstr "Drives partagés"
+msgstr "Lecteurs partagés"
 
 msgctxt "#30041"
 msgid "Search"
@@ -176,7 +176,7 @@ msgstr "Recherche"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "Vex"
+msgstr "Suivis"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -348,7 +348,7 @@ msgstr "Fermer"
 
 msgctxt "#30085"
 msgid "Drives"
-msgstr "Promenades"
+msgstr "Lecteurs"
 
 msgctxt "#30086"
 msgid "Folder Selection"
@@ -432,7 +432,7 @@ msgstr "Suppression du lecteur:"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
-msgstr "Drive supprimé:"
+msgstr "Lecteur supprimé:"
 
 msgctxt "#30107"
 msgid "Profile name"
@@ -548,7 +548,7 @@ msgstr "Nom de base"
 
 msgctxt "#30135"
 msgid "second"
-msgstr "deuxième"
+msgstr "seconde"
 
 msgctxt "#30136"
 msgid "seconds"
@@ -812,7 +812,7 @@ msgstr "Afficher la boîte de dialogue de suppression du fichier"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Afficher l'heure depuis la dernière synchronisation dans le menu de sélection du lecteur"
+msgstr "Afficher le temps écoulé depuis la dernière synchronisation dans le menu de sélection du lecteur"
 
 msgctxt "#30700"
 msgid "Accounts"

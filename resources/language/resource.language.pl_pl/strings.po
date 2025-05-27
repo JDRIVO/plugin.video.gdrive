@@ -28,7 +28,7 @@ msgstr "nie jest już ważne. Chcesz usunąć to konto?"
 
 msgctxt "#30004"
 msgid "Drive Name"
-msgstr "Nazwa napędu"
+msgstr "Nazwa dysku"
 
 msgctxt "#30005"
 msgid "Sync settings"
@@ -72,15 +72,15 @@ msgstr "Wybierz konto"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
-msgstr "Nazwa napędu już istnieje, musi być unikalna."
+msgstr "Taka nazwa dysku już istnieje — musi być unikalna."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
-msgstr "Czy na pewno chcesz usunąć napęd:"
+msgstr "Czy na pewno chcesz usunąć ten dysk:"
 
 msgctxt "#30017"
 msgid "Drive settings"
-msgstr "Ustawienia napędu"
+msgstr "Ustawienia dysku"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
@@ -120,7 +120,7 @@ msgstr "Wybierz pliki do importu"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
-msgstr "Czy chcesz usunąć wszystkie pliki powiązane z tym dyskem?"
+msgstr "Czy chcesz usunąć wszystkie pliki powiązane z tym dyskiem?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
@@ -160,7 +160,7 @@ msgstr "Import konta nie powiódł się."
 
 msgctxt "#30038"
 msgid "My Drive"
-msgstr "Mój jazda"
+msgstr "Mój dysk"
 
 msgctxt "#30039"
 msgid "Shared With Me"
@@ -168,7 +168,7 @@ msgstr "Udostępniono mi"
 
 msgctxt "#30040"
 msgid "Shared Drives"
-msgstr "Wspólne dyski"
+msgstr "Udostępnione dyski"
 
 msgctxt "#30041"
 msgid "Search"
@@ -176,7 +176,7 @@ msgstr "Szukaj"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "Wystąpił"
+msgstr "Oznaczone gwiazdką"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -320,7 +320,7 @@ msgstr "Wybierz folder, w którym pliki będą przechowywane"
 
 msgctxt "#30078"
 msgid "There are no OAuth accounts connected to this drive."
-msgstr "Nie ma żadnych kont OAuth podłączonych do tego dysku."
+msgstr "Brak kont OAuth połączonych z tym dyskiem."
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
@@ -348,7 +348,7 @@ msgstr "Zamknąć"
 
 msgctxt "#30085"
 msgid "Drives"
-msgstr "Drives"
+msgstr "Dyski"
 
 msgctxt "#30086"
 msgid "Folder Selection"
@@ -428,11 +428,11 @@ msgstr "Włączać"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
-msgstr "Usuwanie napędu:"
+msgstr "Usuwanie dysku:"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
-msgstr "Usunięty napęd:"
+msgstr "Usunięto dysk:"
 
 msgctxt "#30107"
 msgid "Profile name"
@@ -532,7 +532,7 @@ msgstr "Profil usunięty"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "Synchronizowane wszystkie dyski"
+msgstr "Zsynchronizowano wszystkie dyski"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
@@ -548,19 +548,19 @@ msgstr "Nazwa podstawowa"
 
 msgctxt "#30135"
 msgid "second"
-msgstr "drugi"
+msgstr "sekunda"
 
 msgctxt "#30136"
 msgid "seconds"
-msgstr "towary drugiej jakości"
+msgstr "sekundy"
 
 msgctxt "#30137"
 msgid "minute"
-msgstr "chwila"
+msgstr "minuta"
 
 msgctxt "#30138"
 msgid "minutes"
-msgstr "protokół"
+msgstr "minuty"
 
 msgctxt "#30139"
 msgid "hour"
@@ -576,7 +576,7 @@ msgstr "Nie udało się zsynchronizować"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "Synchronizacja wszystkich dysków"
+msgstr "Synchronizowanie wszystkich dysków"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
@@ -812,7 +812,7 @@ msgstr "Wyświetl okno dialogowe Usuwanie pliku"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Czas wyświetlania od ostatniej synchronizacji w menu wyboru dysku"
+msgstr "Wyświetl czas od ostatniej synchronizacji w menu wyboru dysku"
 
 msgctxt "#30700"
 msgid "Accounts"

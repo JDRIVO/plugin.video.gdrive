@@ -176,7 +176,7 @@ msgstr "搜索"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "出演"
+msgstr "已加星标"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -548,7 +548,7 @@ msgstr "基本名称"
 
 msgctxt "#30135"
 msgid "second"
-msgstr "第二"
+msgstr "秒"
 
 msgctxt "#30136"
 msgid "seconds"

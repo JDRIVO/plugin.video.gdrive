@@ -176,7 +176,7 @@ msgstr "찾다"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "출연"
+msgstr "별표됨"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -548,7 +548,7 @@ msgstr "기본 이름"
 
 msgctxt "#30135"
 msgid "second"
-msgstr "두번째"
+msgstr "초"
 
 msgctxt "#30136"
 msgid "seconds"

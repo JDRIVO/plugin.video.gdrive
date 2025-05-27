@@ -28,7 +28,7 @@ msgstr "вже не дійсне. Ви хочете видалити цей ра
 
 msgctxt "#30004"
 msgid "Drive Name"
-msgstr "Ім'я приводу"
+msgstr "Ім’я диска"
 
 msgctxt "#30005"
 msgid "Sync settings"
@@ -72,15 +72,15 @@ msgstr "Виберіть рахунок"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
-msgstr "Назва приводу вже існує, воно повинно бути унікальним."
+msgstr "Назва диска вже існує, вона має бути унікальною."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
-msgstr "Ви впевнені, що хочете видалити привід:"
+msgstr "Ви впевнені, що хочете видалити диск:"
 
 msgctxt "#30017"
 msgid "Drive settings"
-msgstr "Налаштування приводу"
+msgstr "Налаштування диска"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
@@ -120,7 +120,7 @@ msgstr "Виберіть файли для імпорту"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
-msgstr "Ви хочете видалити всі файли, пов’язані з цим накопичувачем?"
+msgstr "Бажаєте видалити всі файли, пов’язані з цим диском?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
@@ -160,7 +160,7 @@ msgstr "Імпорт рахунку не вдалося."
 
 msgctxt "#30038"
 msgid "My Drive"
-msgstr "Мій привід"
+msgstr "Мій диск"
 
 msgctxt "#30039"
 msgid "Shared With Me"
@@ -176,7 +176,7 @@ msgstr "Обшук"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "Знятий"
+msgstr "Позначені зірочкою"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -320,7 +320,7 @@ msgstr "Виберіть папку, в якій будуть зберігати
 
 msgctxt "#30078"
 msgid "There are no OAuth accounts connected to this drive."
-msgstr "Немає облікових записів OAuth, підключених до цього накопичувача."
+msgstr "До цього диска не підключено жодного облікового запису OAuth."
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
@@ -348,7 +348,7 @@ msgstr "Закривати"
 
 msgctxt "#30085"
 msgid "Drives"
-msgstr "Накопичувач"
+msgstr "Диски"
 
 msgctxt "#30086"
 msgid "Folder Selection"
@@ -428,11 +428,11 @@ msgstr "Включати"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
-msgstr "Видалення приводу:"
+msgstr "Видалення диска:"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
-msgstr "Видалений привід:"
+msgstr "Диск видалено:"
 
 msgctxt "#30107"
 msgid "Profile name"
@@ -532,7 +532,7 @@ msgstr "Профіль видалено"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "Синхронізував усі диски"
+msgstr "Усі диски синхронізовано"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
@@ -548,7 +548,7 @@ msgstr "Базова назва"
 
 msgctxt "#30135"
 msgid "second"
-msgstr "другий"
+msgstr "секунда"
 
 msgctxt "#30136"
 msgid "seconds"
@@ -732,7 +732,7 @@ msgstr "Синхронізувати"
 
 msgctxt "#30501"
 msgid "Threads"
-msgstr "Нитки"
+msgstr "Потоки"
 
 msgctxt "#30502"
 msgid "Move sync folder"
@@ -812,7 +812,7 @@ msgstr "Відображення діалогового вікна видале�
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Час відображення з останнього синхронізації в меню вибору накопичувача"
+msgstr "Показувати час із моменту останньої синхронізації в меню вибору диска"
 
 msgctxt "#30700"
 msgid "Accounts"

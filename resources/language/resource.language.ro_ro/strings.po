@@ -76,11 +76,11 @@ msgstr "Numele unității există deja, trebuie să fie unic."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
-msgstr "Sunteți sigur că doriți să ștergeți unitatea:"
+msgstr "Sigur doriți să ștergeți unitatea:"
 
 msgctxt "#30017"
 msgid "Drive settings"
-msgstr "Setări de unitate"
+msgstr "Setări unitate"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
@@ -120,7 +120,7 @@ msgstr "Selectați fișiere pentru a importa"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
-msgstr "Doriți să ștergeți toate fișierele asociate cu această unitate?"
+msgstr "Doriți să ștergeți toate fișierele asociate acestei unități?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
@@ -160,7 +160,7 @@ msgstr "Importul contului a eșuat."
 
 msgctxt "#30038"
 msgid "My Drive"
-msgstr "Conducerea mea"
+msgstr "Unitatea mea"
 
 msgctxt "#30039"
 msgid "Shared With Me"
@@ -176,7 +176,7 @@ msgstr "Căutare"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "A jucat"
+msgstr "Marcate cu stea"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -348,7 +348,7 @@ msgstr "Aproape"
 
 msgctxt "#30085"
 msgid "Drives"
-msgstr "Conduce"
+msgstr "Unități"
 
 msgctxt "#30086"
 msgid "Folder Selection"
@@ -432,7 +432,7 @@ msgstr "Ștergerea unității:"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
-msgstr "Unitatea ștersă:"
+msgstr "Unitate ștearsă:"
 
 msgctxt "#30107"
 msgid "Profile name"
@@ -532,11 +532,11 @@ msgstr "Profil șters"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "A sincronizat toate unitățile"
+msgstr "Toate unitățile au fost sincronizate"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
-msgstr "Nu a reușit să sincronizeze toate unitățile"
+msgstr "Nu s-au putut sincroniza toate unitățile"
 
 msgctxt "#30133"
 msgid "Sync failed"
@@ -548,7 +548,7 @@ msgstr "Numele de bază"
 
 msgctxt "#30135"
 msgid "second"
-msgstr "doilea"
+msgstr "secundă"
 
 msgctxt "#30136"
 msgid "seconds"
@@ -576,7 +576,7 @@ msgstr "Nu a reușit sincronizarea"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "Sincronizarea tuturor unităților"
+msgstr "Se sincronizează toate unitățile"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
@@ -732,7 +732,7 @@ msgstr "Sincronizare"
 
 msgctxt "#30501"
 msgid "Threads"
-msgstr "Fire"
+msgstr "Fire de execuție"
 
 msgctxt "#30502"
 msgid "Move sync folder"
@@ -812,7 +812,7 @@ msgstr "Afișați dialogul de ștergere a fișierelor"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Timp de afișare de la ultima sincronizare în meniul de selecție a unității"
+msgstr "Afișează timpul de la ultima sincronizare în meniul de selecție a unității"
 
 msgctxt "#30700"
 msgid "Accounts"

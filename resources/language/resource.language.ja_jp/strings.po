@@ -176,7 +176,7 @@ msgstr "検索"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "星"
+msgstr "スター付き"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -548,7 +548,7 @@ msgstr "ベース名"
 
 msgctxt "#30135"
 msgid "second"
-msgstr "2番"
+msgstr "秒"
 
 msgctxt "#30136"
 msgid "seconds"
