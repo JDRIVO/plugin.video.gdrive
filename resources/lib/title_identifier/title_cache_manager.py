@@ -14,15 +14,35 @@ class TitleCacheManager(DatabaseManager):
 	def __init__(self):
 		newDB = not os.path.exists(CACHE_PATH)
 		super().__init__(CACHE_PATH)
+		self.movies = []
+		self.series = []
 
 		if newDB:
 			self._createTables()
 
 	def addMovie(self, data):
-		self.insert("movies", data)
+		self.movies.append(data)
 
 	def addSeries(self, data):
-		self.insert("series", data)
+		self.series.append(data)
+
+	def insertMovies(self):
+		columns = (
+			"original_title",
+			"original_year",
+			"new_title",
+			"new_year",
+		)
+		self.insertMany("movies", columns, self.movies)
+
+	def insertSeries(self):
+		columns = (
+			"original_title",
+			"original_year",
+			"new_title",
+			"new_year",
+		)
+		self.insertMany("series", columns, self.series)
 
 	def getMovie(self, condition):
 		return self.select("movies", condition=condition, fetchAll=False)

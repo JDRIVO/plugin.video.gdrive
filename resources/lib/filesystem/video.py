@@ -71,7 +71,7 @@ class Movie(Video):
 
 		if titleInfo:
 			title, year = titleInfo
-			cacheManager.addMovie({"original_title": self.title, "original_year": self.year, "new_title": title, "new_year": year})
+			cacheManager.addMovie((self.title, self.year, title, year))
 			return {"title": title, "year": year, "filename": f"{title} ({year})"}
 
 
@@ -95,7 +95,7 @@ class Episode(Video):
 
 		if titleInfo:
 			title, year = titleInfo
-			cacheManager.addSeries({"original_title": self.title, "original_year": self.year, "new_title": title, "new_year": year})
+			cacheManager.addSeries((self.title, self.year, title, year))
 			return {"title": title, "year": year, "filename": f"{title} S{season}E{episode}"}
 
 	def setData(self, video, metadata, prefix, suffix):

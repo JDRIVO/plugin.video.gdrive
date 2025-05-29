@@ -123,10 +123,11 @@ class Syncer:
 			progressDialog.processFolder()
 
 		if folderRenaming or fileRenaming:
-			localFileProcessor = LocalFileProcessor(self.fileOperations, self.cache, syncRootPath, progressDialog)
 
-			with ThreadPool(threadCount) as pool:
-				[pool.submit(localFileProcessor.processFiles, folder, folderSettings, threadCount) for folder in fileTree]
+			with LocalFileProcessor(self.fileOperations, self.cache, syncRootPath, progressDialog) as localFileProcessor:
+
+				with ThreadPool(threadCount) as pool:
+					[pool.submit(localFileProcessor.processFiles, folder, folderSettings, threadCount) for folder in fileTree]
 
 		for folder in fileTree:
 			modifiedTime = folder.modifiedTime
@@ -246,9 +247,10 @@ class Syncer:
 					if folderRenaming or fileRenaming:
 						folders.append((folder, folderSettings))
 
-		with ThreadPool(threadCount) as pool:
-			localFileProcessor = LocalFileProcessor(self.fileOperations, self.cache, syncRootPath)
-			[pool.submit(localFileProcessor.processFiles, folder, folderSettings, threadCount) for folder, folderSettings in folders]
+		with LocalFileProcessor(self.fileOperations, self.cache, syncRootPath) as localFileProcessor:
+
+			with ThreadPool(threadCount) as pool:
+				[pool.submit(localFileProcessor.processFiles, folder, folderSettings, threadCount) for folder, folderSettings in folders]
 
 	def _syncFileChanges(self, file, driveID, syncRootPath, drivePath, newFiles, excludedIDs):
 		fileID = file["id"]

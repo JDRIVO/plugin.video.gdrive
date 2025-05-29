@@ -1,6 +1,8 @@
 import sqlite3
 import threading
 
+import xbmc
+
 from .db_helpers import joinConditions
 
 
@@ -18,7 +20,8 @@ class DatabaseManager:
 
 				try:
 					return func(self, *args, **kwargs)
-				except sqlite3.Error:
+				except sqlite3.Error as e:
+					xbmc.log(f"gdrive error: {e}", xbmc.LOGERROR)
 					return
 
 		return wrapper
@@ -64,7 +67,7 @@ class DatabaseManager:
 	@lock
 	def insertMany(self, table, columns, data):
 		placeholders = ", ".join("?" * len(columns))
-		query = f"INSERT INTO {table} {columns} VALUES ({placeholders})"
+		query = f"INSERT OR REPLACE INTO {table} {columns} VALUES ({placeholders})"
 		self._connect()
 		self.cursor.executemany(query, data)
 		self.conn.commit()

@@ -121,6 +121,13 @@ class LocalFileProcessor:
 		self.progressDialog = progressDialog
 		self.titleCacheManager = TitleCacheManager()
 
+	def __enter__(self):
+		return self
+
+	def __exit__(self, excType, excValue, excTraceback):
+		self.titleCacheManager.insertMovies()
+		self.titleCacheManager.insertSeries()
+
 	def processFiles(self, folder, folderSettings, threadCount):
 		files = folder.files
 		dirPath = folder.localPath
