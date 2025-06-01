@@ -26,6 +26,12 @@ class TitleCacheManager(DatabaseManager):
 	def addSeries(self, data):
 		self.series.append(data)
 
+	def getMovie(self, condition):
+		return self.select("movies", condition=condition, fetchAll=False)
+
+	def getSeries(self, condition):
+		return self.select("series", condition=condition, fetchAll=False)
+
 	def insertMovies(self):
 		columns = (
 			"original_title",
@@ -43,12 +49,6 @@ class TitleCacheManager(DatabaseManager):
 			"new_year",
 		)
 		self.insertMany("series", columns, self.series)
-
-	def getMovie(self, condition):
-		return self.select("movies", condition=condition, fetchAll=False)
-
-	def getSeries(self, condition):
-		return self.select("series", condition=condition, fetchAll=False)
 
 	def _createTables(self):
 		columns = (

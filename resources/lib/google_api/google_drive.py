@@ -107,15 +107,9 @@ class GoogleDrive:
 			basePath = cachedFolder["local_path"]
 			encryptionID = cachedFolder["encryption_id"]
 
-		if not encryptionID:
-			encryptor = None
-		else:
-			encryptorSet = encryptor.setEncryptor(encryptionID)
+		encryptorSet = encryptor.setEncryptor(encryptionID) if encryptionID else False
 
-			if not encryptorSet:
-				encryptor = None
-
-		if encryptor:
+		if encryptorSet:
 			dirs = [removeProhibitedFSchars(encryptor.decryptDirName(d)) for d in dirs]
 		else:
 			dirs = [removeProhibitedFSchars(d) for d in dirs]

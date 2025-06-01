@@ -62,7 +62,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 		self.fileOperations = FileOperations()
 		self.dialog = Dialog()
 		self.shutdownRequest = False
-		self.failed = False
+		self.streamFailed = False
 
 
 class ServerHandler(BaseHTTPRequestHandler):
@@ -115,7 +115,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 	def do_HEAD(self):
 
-		if self.server.failed:
+		if self.server.streamFailed:
 			self.send_error(400)
 			return
 
@@ -128,7 +128,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		except urllib3.exceptions.HTTPError as e:
 			args = args[0] if (args := e.args) else {}
 			status = int(args.get("status", 0))
-			self.server.failed = True
+			self.server.streamFailed = True
 			accounts = self.server.accountManager.getAccounts(self.server.driveID)
 
 			if not self.changeAccount(accounts):
@@ -165,7 +165,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 				return
 
-		self.server.failed = False
+		self.server.streamFailed = False
 		self.server.length = int(response.headers.get("Content-Length"))
 		self.handleResponse(200, {
 			"Content-Length": self.server.length,
@@ -314,7 +314,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 	def handleInitializeStream(self):
 		postData = self.getPostDataJSON()
 		self.handleResponse(200)
-		self.server.failed = False
+		self.server.streamFailed = False
 		self.server.url = postData["url"]
 		self.server.driveID = postData["drive_id"]
 		self.server.fileID = postData["file_id"]
@@ -334,7 +334,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 
 	def handlePlayRequest(self):
 
-		if self.server.failed:
+		if self.server.streamFailed:
 			return
 
 		match = re.search("bytes=(\d+)-(\d*)", self.headers["range"])
