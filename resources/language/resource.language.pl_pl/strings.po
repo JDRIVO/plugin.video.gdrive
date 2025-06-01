@@ -20,11 +20,11 @@ msgstr "Pomoc"
 
 msgctxt "#30002"
 msgid "Rename"
-msgstr "Przemianować"
+msgstr "Zmień nazwę"
 
 msgctxt "#30003"
 msgid "is no longer valid. Do you want to delete this account?"
-msgstr "nie jest już ważne. Chcesz usunąć to konto?"
+msgstr "nie jest już aktywne. Czy chcesz usunąć to konto?"
 
 msgctxt "#30004"
 msgid "Drive Name"
@@ -36,11 +36,11 @@ msgstr "Ustawienia synchronizacji"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "Zakaz API:"
+msgstr "Blokada API:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "Przełączanie na konto Fallback"
+msgstr "Przełączanie na konto zapasowe"
 
 msgctxt "#30008"
 msgid "Videos"
@@ -48,11 +48,11 @@ msgstr "Filmy"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
-msgstr "Codzienny limit kwoty przekroczony. Zakaz podniesie się w ciągu 24 godzin."
+msgstr "Przekroczono dzienny limit przydziału. Blokada zostanie zniesiona w ciągu 24 godzin."
 
 msgctxt "#30010"
 msgid "Sync all"
-msgstr "Synchronizacja wszystkich"
+msgstr "Synchronizuj wszystko"
 
 msgctxt "#30011"
 msgid "Synced"
@@ -104,7 +104,7 @@ msgstr "Usuń konta"
 
 msgctxt "#30023"
 msgid "Validate"
-msgstr "Uprawomocnić"
+msgstr "Zweryfikuj"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
@@ -124,11 +124,11 @@ msgstr "Czy chcesz usunąć wszystkie pliki powiązane z tym dyskiem?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
-msgstr "Klucz prywatny i e -mail z klientem nie znaleziono w:"
+msgstr "Klucz prywatny i e-mail z klienta nie znaleziono w:"
 
 msgctxt "#30029"
 msgid "The client email wasn't found in:"
-msgstr "E -mail klienta nie został znaleziony w:"
+msgstr "E-mail klienta nie został znaleziony w:"
 
 msgctxt "#30030"
 msgid "The private key wasn't found in:"
@@ -180,7 +180,7 @@ msgstr "Oznaczone gwiazdką"
 
 msgctxt "#30043"
 msgid "Search Query"
-msgstr "Wyszukaj zapytanie"
+msgstr "Zapytanie wyszukiwania"
 
 msgctxt "#30044"
 msgid "Sync completed"
@@ -192,7 +192,7 @@ msgstr "Pliki zostały usunięte"
 
 msgctxt "#30046"
 msgid "Account registration succeeded"
-msgstr "Rejestracja konta została powiodła"
+msgstr "Rejestracja konta powiodła się"
 
 msgctxt "#30047"
 msgid "Account registration failed"
@@ -240,7 +240,7 @@ msgstr "Nie znaleziono konta odtwarzania."
 
 msgctxt "#30058"
 msgid "Search language"
-msgstr "Szukaj języka"
+msgstr "Język wyszukiwania"
 
 msgctxt "#30059"
 msgid "Region"
@@ -276,7 +276,7 @@ msgstr "OK"
 
 msgctxt "#30067"
 msgid "Cancel"
-msgstr "Anulować"
+msgstr "Anuluj"
 
 msgctxt "#30068"
 msgid "interval"
@@ -288,7 +288,7 @@ msgstr "harmonogram"
 
 msgctxt "#30070"
 msgid "Enter the sync interval in minutes"
-msgstr "Wprowadź interwał synchronizacji w ciągu kilku minut"
+msgstr "Wprowadź interwał synchronizacji w minutach"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
@@ -312,7 +312,7 @@ msgstr "Usuwanie plików"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
-msgstr "Poruszający się folder synchronizacji"
+msgstr "Przenoszenie folderu synchronizacji"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
@@ -344,7 +344,7 @@ msgstr "Priorytet rozwiązywania"
 
 msgctxt "#30084"
 msgid "Close"
-msgstr "Zamknąć"
+msgstr "Zamknij"
 
 msgctxt "#30085"
 msgid "Drives"
@@ -356,7 +356,7 @@ msgstr "Wybór folderu"
 
 msgctxt "#30087"
 msgid "manual"
-msgstr "podręcznik"
+msgstr "ręczny"
 
 msgctxt "#30088"
 msgid "Deleting sync cache"
@@ -368,7 +368,7 @@ msgstr "Identyfikator klienta i tajne tworzenie klienta"
 
 msgctxt "#30090"
 msgid "Sync multiple"
-msgstr "Synchronizacja wielu"
+msgstr "Synchronizuj wielu"
 
 msgctxt "#30091"
 msgid "Search folder"
@@ -598,6 +598,18 @@ msgctxt "#30147"
 msgid "Deleting TMDB cache"
 msgstr "Usuwanie pamięci podręcznej TMDB"
 
+msgctxt "#30148"
+msgid "duration"
+msgstr "czas trwania"
+
+msgctxt "#30149"
+msgid "extension"
+msgstr "rozszerzenie"
+
+msgctxt "#30150"
+msgid "resolution"
+msgstr "rozdzielczość"
+
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
 msgstr "Czy na pewno chcesz usunąć konto:"
@@ -668,7 +680,7 @@ msgstr "Odtwarzanie nagranego dźwięku"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "Wybór szybkiego rozdzielczości (jeśli jest dostępny)"
+msgstr "Wybierz rozdzielczość (jeśli dostępna)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
@@ -700,11 +712,11 @@ msgstr "Biblioteka"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "Oznaczają filmy, jak oglądano o"
+msgstr "Oznacz filmy jako obejrzane o"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "Odcinki znaku, jak oglądano w"
+msgstr "Oznacz odcinki jako obejrzane o"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
@@ -720,7 +732,7 @@ msgstr "Wyświetl okno dialogowe"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "Clean Library automatycznie"
+msgstr "Automatycznie czyść bibliotekę"
 
 msgctxt "#30407"
 msgid "Video source"
@@ -728,7 +740,7 @@ msgstr "Źródło wideo"
 
 msgctxt "#30500"
 msgid "Sync"
-msgstr "Synchronizacja"
+msgstr "synchronizuj"
 
 msgctxt "#30501"
 msgid "Threads"
@@ -752,7 +764,7 @@ msgstr "Synchronizacja domyślnie"
 
 msgctxt "#30506"
 msgid "STRM prefix"
-msgstr "Prefiks STRM"
+msgstr "STRM Prefiks"
 
 msgctxt "#30507"
 msgid "STRM suffix"
@@ -772,19 +784,19 @@ msgstr "Utwórz strukturę katalogu przyjaznego Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "Synchronizacja NFO"
+msgstr "Synchronizuj NFO"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "SYNC PIMPTILES"
+msgstr "Synchronizuj napisów"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Dzieła synchronizacja"
+msgstr "Synchronizuj grafikę"
 
 msgctxt "#30514"
 msgid "Sync STRM"
-msgstr "Sync STRM"
+msgstr "Synchronizuj STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"
@@ -800,11 +812,11 @@ msgstr "TMDB Treść dla dorosłych"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "GUI"
+msgstr "Graficzny interfejs użytkownika"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Wyświetl początkowe okno dialogowe Progress Progress"
+msgstr "Wyświetl początkowe okno dialogowe postępu synchronizacji"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
@@ -860,7 +872,7 @@ msgstr "Profile eksportu"
 
 msgctxt "#30900"
 msgid "Misc"
-msgstr "Misc"
+msgstr "Różne"
 
 msgctxt "#30901"
 msgid "Server port (requires restart)"

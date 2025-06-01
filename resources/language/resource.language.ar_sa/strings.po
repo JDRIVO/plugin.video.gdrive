@@ -16,7 +16,7 @@ msgstr "gDrive"
 
 msgctxt "#30001"
 msgid "Help"
-msgstr "يساعد"
+msgstr "مساعدة"
 
 msgctxt "#30002"
 msgid "Rename"
@@ -36,11 +36,11 @@ msgstr "إعدادات المزامنة"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "حظر API:"
+msgstr "حظر الـ API:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "التحول إلى حساب الاحتياط"
+msgstr "التبديل إلى الحساب الاحتياطي"
 
 msgctxt "#30008"
 msgid "Videos"
@@ -48,15 +48,15 @@ msgstr "مقاطع الفيديو"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
-msgstr "حصة الحصص اليومية تجاوزت. سوف يرفع الحظر في غضون 24 ساعة."
+msgstr "تم تجاوز الحصة اليومية. سيُرفع الحظر خلال 24 ساعة."
 
 msgctxt "#30010"
 msgid "Sync all"
-msgstr "مزامنة الكل"
+msgstr "زامن الكل"
 
 msgctxt "#30011"
 msgid "Synced"
-msgstr "مزامنة"
+msgstr "تمت المزامنة"
 
 msgctxt "#30012"
 msgid "Sync Settings"
@@ -64,11 +64,11 @@ msgstr "إعدادات المزامنة"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "مجلد المزامنة"
+msgstr "زامن المجلد"
 
 msgctxt "#30014"
 msgid "Select an account"
-msgstr "حدد حساب"
+msgstr "اختر حسابًا"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
@@ -88,11 +88,11 @@ msgstr "فشل التحقق من صحة الاعتماد في الحساب:"
 
 msgctxt "#30019"
 msgid "Account validated"
-msgstr "الحساب التحقق من صحة"
+msgstr "تم التحقق من صحة الحساب"
 
 msgctxt "#30020"
 msgid "Accounts validated"
-msgstr "الحسابات التحقق من صحة"
+msgstr "تم التحقق من صحة الحسابات"
 
 msgctxt "#30021"
 msgid "Validate accounts"
@@ -104,7 +104,7 @@ msgstr "حذف الحسابات"
 
 msgctxt "#30023"
 msgid "Validate"
-msgstr "التحقق"
+msgstr "تحقق"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
@@ -112,7 +112,7 @@ msgstr "هل أنت متأكد من أنك تريد حذف ملف الحسابا
 
 msgctxt "#30025"
 msgid "Account Name"
-msgstr "إسم الحساب"
+msgstr "اسم الحساب"
 
 msgctxt "#30026"
 msgid "Select files to import"
@@ -136,7 +136,7 @@ msgstr "لم يتم العثور على المفتاح الخاص في:"
 
 msgctxt "#30031"
 msgid "Folder moved"
-msgstr "انتقل المجلد"
+msgstr "تم نقل المجلد"
 
 msgctxt "#30033"
 msgid "Select a file to import"
@@ -144,15 +144,15 @@ msgstr "حدد ملفًا للاستيراد"
 
 msgctxt "#30034"
 msgid "Select a folder to export to"
-msgstr "حدد مجلد للتصدير إلى"
+msgstr "حدد المجلد للتصدير إليه"
 
 msgctxt "#30035"
 msgid "File exported as"
-msgstr "ملف تم تصديره"
+msgstr "تم تصدير الملف باسم"
 
 msgctxt "#30036"
 msgid "Accounts imported"
-msgstr "الحسابات المستوردة"
+msgstr "تم استيراد الحسابات"
 
 msgctxt "#30037"
 msgid "Account import failed."
@@ -164,7 +164,7 @@ msgstr "محرك الأقراص الخاص بي"
 
 msgctxt "#30039"
 msgid "Shared With Me"
-msgstr "شارك معي"
+msgstr "المجلدات المشتركة معي"
 
 msgctxt "#30040"
 msgid "Shared Drives"
@@ -172,7 +172,7 @@ msgstr "محركات الأقراص المشتركة"
 
 msgctxt "#30041"
 msgid "Search"
-msgstr "يبحث"
+msgstr "بحث"
 
 msgctxt "#30042"
 msgid "Starred"
@@ -180,11 +180,11 @@ msgstr "المميّزة بنجمة"
 
 msgctxt "#30043"
 msgid "Search Query"
-msgstr "البحث عن استعلام"
+msgstr "استعلام البحث"
 
 msgctxt "#30044"
 msgid "Sync completed"
-msgstr "الانتهاء من المزامنة"
+msgstr "تمت المزامنة"
 
 msgctxt "#30045"
 msgid "Files have been deleted"
@@ -208,11 +208,11 @@ msgstr "وضع المزامنة"
 
 msgctxt "#30050"
 msgid "Sync frequency"
-msgstr "تزامن التردد"
+msgstr "تردد المزامنة"
 
 msgctxt "#30051"
 msgid "Sync on startup"
-msgstr "مزامنة على بدء التشغيل"
+msgstr "المزامنة عند بدء التشغيل"
 
 msgctxt "#30052"
 msgid "Syncing folders"
@@ -224,7 +224,7 @@ msgstr "معالجة الملفات"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
-msgstr "هل أنت متأكد من أنك تريد حذف ذاكرة التخزين المؤقت المزامنة؟"
+msgstr "هل أنت متأكد أنك تريد حذف ذاكرة التخزين المؤقتة للمزامنة؟"
 
 msgctxt "#30055"
 msgid "Cache deleted"
@@ -248,7 +248,7 @@ msgstr "منطقة"
 
 msgctxt "#30060"
 msgid "Adult content"
-msgstr "محتوى البالغين"
+msgstr "محتوى للبالغين"
 
 msgctxt "#30061"
 msgid "Stop syncing all folders"
@@ -272,15 +272,15 @@ msgstr "عام"
 
 msgctxt "#30066"
 msgid "OK"
-msgstr "نعم"
+msgstr "حسناً"
 
 msgctxt "#30067"
 msgid "Cancel"
-msgstr "يلغي"
+msgstr "إلغاء"
 
 msgctxt "#30068"
 msgid "interval"
-msgstr "فاصلة"
+msgstr "فاصل"
 
 msgctxt "#30069"
 msgid "schedule"
@@ -288,7 +288,7 @@ msgstr "جدول"
 
 msgctxt "#30070"
 msgid "Enter the sync interval in minutes"
-msgstr "أدخل فاصل المزامنة في دقائق"
+msgstr "أدخل مدة المزامنة بالدقائق"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
@@ -316,7 +316,7 @@ msgstr "نقل مجلد المزامنة"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
-msgstr "حدد المجلد الذي سيتم تخزين ملفاتك"
+msgstr "حدد المجلد الذي سيتم تخزين ملفاتك فيه"
 
 msgctxt "#30078"
 msgid "There are no OAuth accounts connected to this drive."
@@ -324,7 +324,7 @@ msgstr "لا توجد حسابات OAuth متصلة بهذا المحرك."
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
-msgstr "يجب عليك تعيين مسار المزامنة."
+msgstr "عليك تحديد مسار المزامنة."
 
 msgctxt "#30080"
 msgid "You must assign a sync mode."
@@ -340,11 +340,11 @@ msgstr "بدأت المزامنة"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
-msgstr "أولوية القرار"
+msgstr "أولوية دقة الفيديو"
 
 msgctxt "#30084"
 msgid "Close"
-msgstr "يغلق"
+msgstr "إغلاق"
 
 msgctxt "#30085"
 msgid "Drives"
@@ -360,7 +360,7 @@ msgstr "يدوي"
 
 msgctxt "#30088"
 msgid "Deleting sync cache"
-msgstr "حذف ذاكرة التخزين المؤقت Sync"
+msgstr "يتم حذف ذاكرة التخزين المؤقت للمزامنة"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
@@ -368,7 +368,7 @@ msgstr "معرف العميل وإنشاء سر العميل"
 
 msgctxt "#30090"
 msgid "Sync multiple"
-msgstr "مزامنة متعددة"
+msgstr "زامن العديد"
 
 msgctxt "#30091"
 msgid "Search folder"
@@ -436,7 +436,7 @@ msgstr "تم حذف محرك الأقراص:"
 
 msgctxt "#30107"
 msgid "Profile name"
-msgstr "اسم الملف الشخصي"
+msgstr "اسم الملف التعريفي"
 
 msgctxt "#30108"
 msgid "Encryption type"
@@ -472,7 +472,7 @@ msgstr "تشفير أسماء الدليل"
 
 msgctxt "#30116"
 msgid "Select a profile"
-msgstr "حدد ملف تعريف"
+msgstr "اختر ملفًا تعريفيًا"
 
 msgctxt "#30117"
 msgid "Profiles deleted"
@@ -484,7 +484,7 @@ msgstr "فشل استيراد الملف الشخصي."
 
 msgctxt "#30119"
 msgid "Profiles imported"
-msgstr "ملامح مستوردة"
+msgstr "تم استيراد ملفات التعريف"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
@@ -496,7 +496,7 @@ msgstr "ملف تعريف التشفير المرتبط بهذا الملف غي
 
 msgctxt "#30122"
 msgid "No encryption profiles found."
-msgstr "لم يتم العثور على ملامح تشفير."
+msgstr "لم يتم العثور على ملفات تعريف التشفير."
 
 msgctxt "#30123"
 msgid "Profile Manager"
@@ -552,7 +552,7 @@ msgstr "ثانية"
 
 msgctxt "#30136"
 msgid "seconds"
-msgstr "ثوان"
+msgstr "ثوانٍ"
 
 msgctxt "#30137"
 msgid "minute"
@@ -598,6 +598,18 @@ msgctxt "#30147"
 msgid "Deleting TMDB cache"
 msgstr "حذف ذاكرة التخزين المؤقت TMDB"
 
+msgctxt "#30148"
+msgid "duration"
+msgstr "المدة الزمنية"
+
+msgctxt "#30149"
+msgid "extension"
+msgstr "الامتداد"
+
+msgctxt "#30150"
+msgid "resolution"
+msgstr "الدقة"
+
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
 msgstr "هل أنت متأكد من أنك تريد حذف الحساب:"
@@ -608,7 +620,7 @@ msgstr "حذف الحساب"
 
 msgctxt "#30159"
 msgid "Delete"
-msgstr "يمسح"
+msgstr "احذف"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
@@ -616,7 +628,7 @@ msgstr "توقف عن مزامنة المجلدات المحددة"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
-msgstr "حدد مجلدات لحذفها"
+msgstr "حدد المجلدات المراد حذفها"
 
 msgctxt "#30207"
 msgid "Add account"
@@ -632,11 +644,11 @@ msgstr "إضافة حسابات الخدمة"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "يزور"
+msgstr "زيارة"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "في متصفح الويب."
+msgstr "عبر متصفح الويب."
 
 msgctxt "#30217"
 msgid "You must create an"
@@ -660,7 +672,7 @@ msgstr "إعادة توجيه URI"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "التحقق من التحقق"
+msgstr "جارٍ التحقق"
 
 msgctxt "#30300"
 msgid "Playback"
@@ -668,11 +680,11 @@ msgstr "التشغيل"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "اختيار الدقة المطالبة (إذا كان ذلك متاحًا)"
+msgstr "طلب اختيار الدقة (إذا توفرت)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
-msgstr "أولوية قرار الفيديو"
+msgstr "أولوية دقة الفيديو"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
@@ -688,7 +700,7 @@ msgstr "لا يتم تسمية الترجمات بنفس اسم STRM وهي في
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
-msgstr "تتم تسمية الترجمة بنفس القدر مثل STRM"
+msgstr "ملفات الترجمة تحمل نفس اسم ملفات STRM"
 
 msgctxt "#30307"
 msgid "Default playback account"
@@ -700,15 +712,15 @@ msgstr "مكتبة"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "وضع علامة على الأفلام كما شاهد في"
+msgstr "وضع علامة على الأفلام كمشاهدة في"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "علامة الحلقات كما تمت مراقبتها في"
+msgstr "وضع علامة على الحلقات كمشاهدة في"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "استيراد بيانات علم الوسائط من STRM"
+msgstr "استيراد بيانات علامة الوسائط من STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
@@ -720,7 +732,7 @@ msgstr "عرض الحوار"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "مكتبة تنظيف تلقائيا"
+msgstr "تنظيف المكتبة تلقائيًا"
 
 msgctxt "#30407"
 msgid "Video source"
@@ -728,7 +740,7 @@ msgstr "مصدر الفيديو"
 
 msgctxt "#30500"
 msgid "Sync"
-msgstr "المزامنة"
+msgstr "زامن"
 
 msgctxt "#30501"
 msgid "Threads"
@@ -736,7 +748,7 @@ msgstr "الخيوط"
 
 msgctxt "#30502"
 msgid "Move sync folder"
-msgstr "نقل المجلد المزامنة"
+msgstr "نقل مجلّد المزامنة"
 
 msgctxt "#30503"
 msgid "Delete sync cache"
@@ -756,7 +768,7 @@ msgstr "بادئة STRM"
 
 msgctxt "#30507"
 msgid "STRM suffix"
-msgstr "لاحقة ستار"
+msgstr "لاحقة STRM"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
@@ -768,23 +780,23 @@ msgstr "إعادة تسمية مقاطع الفيديو إلى تنسيق ودو
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "قم بإنشاء هيكل دليل ودود Kodi"
+msgstr "قم بإنشاء بنية مجلدات متوافقة مع Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "مزامنة NFO"
+msgstr "NFO المزامنة"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "تزامن ترجمات"
+msgstr "زامن الترجمات"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "مزامنة العمل الفني"
+msgstr "زامن الرسومات"
 
 msgctxt "#30514"
 msgid "Sync STRM"
-msgstr "مزامنة STRM"
+msgstr "زامن STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"
@@ -796,15 +808,15 @@ msgstr "منطقة TMDB"
 
 msgctxt "#30517"
 msgid "TMDB adult content"
-msgstr "TMDB محتوى البالغين"
+msgstr "محتوى البالغين في TMDB"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "واجهة المستخدم الرسومية"
+msgstr "الواجهة"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "عرض مربع حوار تقدم المزامنة الأولي"
+msgstr "عرض مربع حوار تقدم المزامنة الأولية"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
@@ -820,11 +832,11 @@ msgstr "حسابات"
 
 msgctxt "#30701"
 msgid "Import accounts"
-msgstr "حسابات الاستيراد"
+msgstr "استيراد الحسابات"
 
 msgctxt "#30702"
 msgid "Export accounts"
-msgstr "حسابات التصدير"
+msgstr "تصدير الحسابات"
 
 msgctxt "#30703"
 msgid "Delete all accounts"
@@ -852,11 +864,11 @@ msgstr "حذف الملفات الشخصية"
 
 msgctxt "#30805"
 msgid "Import profiles"
-msgstr "ملامح استيراد"
+msgstr "استيراد ملفات التعريف"
 
 msgctxt "#30806"
 msgid "Export profiles"
-msgstr "ملامح التصدير"
+msgstr "تصدير ملفات التعريف"
 
 msgctxt "#30900"
 msgid "Misc"

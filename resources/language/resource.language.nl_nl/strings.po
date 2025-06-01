@@ -20,7 +20,7 @@ msgstr "Hulp"
 
 msgctxt "#30002"
 msgid "Rename"
-msgstr "Hernoeming"
+msgstr "Hernoem"
 
 msgctxt "#30003"
 msgid "is no longer valid. Do you want to delete this account?"
@@ -32,15 +32,15 @@ msgstr "Schijfnaam"
 
 msgctxt "#30005"
 msgid "Sync settings"
-msgstr "Synchronisatie -instellingen"
+msgstr "Synchronisatie-instellingen"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "API -verbod:"
+msgstr "API-blokkering:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "Overschakelen naar Fallback -account"
+msgstr "Overschakelen naar Fallback-account"
 
 msgctxt "#30008"
 msgid "Videos"
@@ -48,7 +48,7 @@ msgstr "Video's"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
-msgstr "Dagelijkse quotapimiet overschreden. Ban zal binnen 24 uur ophalen."
+msgstr "Dagelijkse quotabeperking overschreden. De beperking wordt binnen 24 uur opgeheven."
 
 msgctxt "#30010"
 msgid "Sync all"
@@ -60,11 +60,11 @@ msgstr "Gesynchroniseerd"
 
 msgctxt "#30012"
 msgid "Sync Settings"
-msgstr "Synchronisatie -instellingen"
+msgstr "Synchronisatie-instellingen"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "Synchronisatie map"
+msgstr "Synchronisatiemap"
 
 msgctxt "#30014"
 msgid "Select an account"
@@ -84,11 +84,11 @@ msgstr "Schijfinstellingen"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
-msgstr "Referentie -validatie is mislukt voor account:"
+msgstr "Inloggegevensvalidatie is mislukt voor account:"
 
 msgctxt "#30019"
 msgid "Account validated"
-msgstr "Gevalideerd account"
+msgstr "Account gevalideerd"
 
 msgctxt "#30020"
 msgid "Accounts validated"
@@ -104,7 +104,7 @@ msgstr "Verwijder accounts"
 
 msgctxt "#30023"
 msgid "Validate"
-msgstr "Bevestigen"
+msgstr "Valideren"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
@@ -124,15 +124,15 @@ msgstr "Wilt u alle bestanden verwijderen die aan deze schijf gekoppeld zijn?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
-msgstr "De privésleutel en e -mail van de klant zijn niet gevonden in:"
+msgstr "De privésleutel en klant-e-mail zijn niet gevonden in:"
 
 msgctxt "#30029"
 msgid "The client email wasn't found in:"
-msgstr "De e -mail van de klant was niet gevonden in:"
+msgstr "De klant-e-mail zijn niet gevonden in:"
 
 msgctxt "#30030"
 msgid "The private key wasn't found in:"
-msgstr "De privésleutel werd niet gevonden in:"
+msgstr "De privésleutel zijn niet gevonden in:"
 
 msgctxt "#30031"
 msgid "Folder moved"
@@ -172,7 +172,7 @@ msgstr "Gedeelde schijven"
 
 msgctxt "#30041"
 msgid "Search"
-msgstr "Zoekopdracht"
+msgstr "Zoeken"
 
 msgctxt "#30042"
 msgid "Starred"
@@ -204,7 +204,7 @@ msgstr "Synchronisatiepad"
 
 msgctxt "#30049"
 msgid "Sync mode"
-msgstr "Synchronisatie -modus"
+msgstr "Synchronisatie-modus"
 
 msgctxt "#30050"
 msgid "Sync frequency"
@@ -216,7 +216,7 @@ msgstr "Synchroniseerd bij het opstarten"
 
 msgctxt "#30052"
 msgid "Syncing folders"
-msgstr "Mappen synchroniseren"
+msgstr "Synchroniseren van mappen"
 
 msgctxt "#30053"
 msgid "Processing files"
@@ -288,7 +288,7 @@ msgstr "schema"
 
 msgctxt "#30070"
 msgid "Enter the sync interval in minutes"
-msgstr "Voer het synchronisatie -interval in minuten in"
+msgstr "Voer het synchronisatie-interval in minuten in"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
@@ -300,11 +300,11 @@ msgstr "Selecteer een videobron"
 
 msgctxt "#30073"
 msgid "Syncing"
-msgstr "Synchronisatie"
+msgstr "Bezig met synchroniseren"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
-msgstr "Sync -map verwijderen"
+msgstr "Sync-map verwijderen"
 
 msgctxt "#30075"
 msgid "Deleting files"
@@ -312,7 +312,7 @@ msgstr "Bestanden verwijderen"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
-msgstr "Verplaatsingssynchronisatie map"
+msgstr "Synchronisatiemap wordt verplaatst"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
@@ -328,15 +328,15 @@ msgstr "U moet een synchronisatiepad toewijzen."
 
 msgctxt "#30080"
 msgid "You must assign a sync mode."
-msgstr "U moet een synchronisatie -modus toewijzen."
+msgstr "U moet een synchronisatie-modus toewijzen."
 
 msgctxt "#30081"
 msgid "You must assign a sync frequency."
-msgstr "U moet een sync -frequentie toewijzen."
+msgstr "U moet een sync-frequentie toewijzen."
 
 msgctxt "#30082"
 msgid "Sync started"
-msgstr "Synchronisatie begon"
+msgstr "Synchronisatie gestart"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
@@ -344,7 +344,7 @@ msgstr "Resolutieprioriteit"
 
 msgctxt "#30084"
 msgid "Close"
-msgstr "Dichtbij"
+msgstr "Sluiten"
 
 msgctxt "#30085"
 msgid "Drives"
@@ -364,7 +364,7 @@ msgstr "Sync cache verwijderen"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "Client -ID en client geheim creatie"
+msgstr "Client-ID en clientgeheim aanmaken"
 
 msgctxt "#30090"
 msgid "Sync multiple"
@@ -392,11 +392,11 @@ msgstr "Map verwijderd"
 
 msgctxt "#30096"
 msgid "Failed to delete the sync folder. See log for details."
-msgstr "Kan de Sync -map niet verwijderen. Zie logboek voor details."
+msgstr "Kan de Sync-map niet verwijderen. Zie logboek voor details."
 
 msgctxt "#30097"
 msgid "Accounts file deleted"
-msgstr "Accounts -bestand verwijderd"
+msgstr "Accounts-bestand verwijderd"
 
 msgctxt "#30098"
 msgid "Failed to delete the accounts file. See log for details."
@@ -452,11 +452,11 @@ msgstr "Zout"
 
 msgctxt "#30111"
 msgid "Filename encryption"
-msgstr "Bestandsnaam codering"
+msgstr "Bestandsnaamversleuteling"
 
 msgctxt "#30112"
 msgid "Filename encoding"
-msgstr "Bestandsnaam codering"
+msgstr "Bestandsnaamcodering"
 
 msgctxt "#30113"
 msgid "Suffix"
@@ -592,11 +592,23 @@ msgstr "Bestandsverwijdering is mislukt"
 
 msgctxt "#30146"
 msgid "Are you sure you want to delete the TMDB cache?"
-msgstr "Weet u zeker dat u de TMDB -cache wilt verwijderen?"
+msgstr "Weet u zeker dat u de TMDB-cache wilt verwijderen?"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
-msgstr "TMDB -cache verwijderen"
+msgstr "TMDB-cache verwijderen"
+
+msgctxt "#30148"
+msgid "duration"
+msgstr "duur"
+
+msgctxt "#30149"
+msgid "extension"
+msgstr "extensie"
+
+msgctxt "#30150"
+msgid "resolution"
+msgstr "resolutie"
 
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
@@ -632,7 +644,7 @@ msgstr "Serviceaccounts toevoegen"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Bezoek"
+msgstr "Bezoeken"
 
 msgctxt "#30216"
 msgid "in a web browser."
@@ -644,7 +656,7 @@ msgstr "U moet een"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
-msgstr "Oauth -client -ID"
+msgstr "Oauth-client-ID"
 
 msgctxt "#30219"
 msgid "Web Application"
@@ -672,7 +684,7 @@ msgstr "Selectie van snelle resolutie (indien beschikbaar)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
-msgstr "Video -resolutie prioriteit"
+msgstr "Video-resolutie prioriteit"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
@@ -700,15 +712,15 @@ msgstr "Bibliotheek"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "Markeer films zoals bekeken op"
+msgstr "Markeer films als bekeken op"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "Markeer afleveringen zoals bekeken op"
+msgstr "Markeer afleveringen als bekeken op"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "Importeer media -vlaggegevens van STRM"
+msgstr "Importeer media-vlaggegevens van STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
@@ -716,7 +728,7 @@ msgstr "Update Library automatisch"
 
 msgctxt "#30405"
 msgid "Display dialog"
-msgstr "Dialoogvenster dialoogvenster"
+msgstr "Dialoogvenster weergeven"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
@@ -728,7 +740,7 @@ msgstr "Videobron"
 
 msgctxt "#30500"
 msgid "Sync"
-msgstr "Synchroniseren"
+msgstr "Synchroniseer"
 
 msgctxt "#30501"
 msgid "Threads"
@@ -736,7 +748,7 @@ msgstr "Threads"
 
 msgctxt "#30502"
 msgid "Move sync folder"
-msgstr "Verplaats de synchronisatiemap"
+msgstr "Synchronisatiemap verplaatsen"
 
 msgctxt "#30503"
 msgid "Delete sync cache"
@@ -748,15 +760,15 @@ msgstr "Verwijder synchronisatiemap"
 
 msgctxt "#30505"
 msgid "Sync defaults"
-msgstr "Synchronisatie -standaardwaarden"
+msgstr "Synchronisatie-standaardwaarden"
 
 msgctxt "#30506"
 msgid "STRM prefix"
-msgstr "STRM -voorvoegsel"
+msgstr "STRM-voorvoegsel"
 
 msgctxt "#30507"
 msgid "STRM suffix"
-msgstr "STRM -achtervoegsel"
+msgstr "STRM-achtervoegsel"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
@@ -764,39 +776,39 @@ msgstr "Heeft bestanden gecodeerd met"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Hernoem video's tot een Kodi -vriendelijk formaat"
+msgstr "Hernoem video's tot een Kodi-vriendelijk formaat"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Maak een Kodi -vriendelijke directorystructuur"
+msgstr "Maak een Kodi-vriendelijke directorystructuur"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "Synchronisatie NFO"
+msgstr "Synchroniseer NFO"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "Synchronisatie ondertitels"
+msgstr "Synchroniseer ondertitels"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Synchronisatiewerkwerk"
+msgstr "Synchroniseer illustraties"
 
 msgctxt "#30514"
 msgid "Sync STRM"
-msgstr "Sync STRM"
+msgstr "Synchroniseer STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"
-msgstr "TMDB -zoektaal"
+msgstr "TMDB-zoektaal"
 
 msgctxt "#30516"
 msgid "TMDB region"
-msgstr "TMDB -regio"
+msgstr "TMDB-regio"
 
 msgctxt "#30517"
 msgid "TMDB adult content"
-msgstr "TMDB -inhoud voor volwassenen"
+msgstr "TMDB-inhoud voor volwassenen"
 
 msgctxt "#30600"
 msgid "GUI"
@@ -860,7 +872,7 @@ msgstr "Exportprofielen exporteren"
 
 msgctxt "#30900"
 msgid "Misc"
-msgstr "Misdrijf"
+msgstr "Diversen"
 
 msgctxt "#30901"
 msgid "Server port (requires restart)"
@@ -868,4 +880,4 @@ msgstr "Serverpoort (vereist opnieuw opstarten)"
 
 msgctxt "#30902"
 msgid "Delete TMDB cache"
-msgstr "Verwijder TMDB -cache"
+msgstr "Verwijder TMDB-cache"

@@ -598,6 +598,18 @@ msgctxt "#30147"
 msgid "Deleting TMDB cache"
 msgstr "Deleting TMDB cache"
 
+msgctxt "#30148"
+msgid "duration"
+msgstr "duration"
+
+msgctxt "#30149"
+msgid "extension"
+msgstr "extension"
+
+msgctxt "#30150"
+msgid "resolution"
+msgstr "resolution"
+
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
 msgstr "Are you sure you want to delete account:"

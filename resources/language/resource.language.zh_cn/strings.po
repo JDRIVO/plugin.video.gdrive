@@ -598,6 +598,18 @@ msgctxt "#30147"
 msgid "Deleting TMDB cache"
 msgstr "删除TMDB缓存"
 
+msgctxt "#30148"
+msgid "duration"
+msgstr "时长"
+
+msgctxt "#30149"
+msgid "extension"
+msgstr "扩展名"
+
+msgctxt "#30150"
+msgid "resolution"
+msgstr "分辨率"
+
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
 msgstr "您确定要删除帐户："
@@ -800,7 +812,7 @@ msgstr "TMDB成人内容"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "GUI"
+msgstr "图形用户界面"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
