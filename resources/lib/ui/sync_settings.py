@@ -447,7 +447,11 @@ class SyncSettings(xbmcgui.WindowDialog):
 
 	def _setAffix(self, button, affix):
 		folderSettings = self.cache.getFolder({"folder_id": self.folderID})
-		excluded = ["duration", "extension", "resolution"]
+		excluded = [
+			self.settings.getLocalizedString(30148),
+			self.settings.getLocalizedString(30149),
+			self.settings.getLocalizedString(30150),
+		]
 
 		if button.getLabel2():
 			included = [a for a in button.getLabel2().split(", ") if a != " "]

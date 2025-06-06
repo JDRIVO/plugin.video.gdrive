@@ -873,12 +873,11 @@ class Core:
 		self.listFolders(driveID, folders)
 
 	def setAffix(self, affix):
-		excluded = ["duration", "extension", "resolution"]
-		# excluded = [
-			# self.settings.getLocalizedString(30148),
-			# self.settings.getLocalizedString(30149),
-			# self.settings.getLocalizedString(30150),
-		# ]
+		excluded = [
+			self.settings.getLocalizedString(30148),
+			self.settings.getLocalizedString(30149),
+			self.settings.getLocalizedString(30150),
+		]
 		included = [a for a in self.settings.getSetting(f"strm_{affix.lower()}").split(", ") if a]
 		[excluded.remove(include) for include in included]
 		from .ui.strm_affixer import StrmAffixer

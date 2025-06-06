@@ -32,6 +32,11 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		self.buttonWidth = 120
 		self.buttonHeight = 30
 		self.buttonAmount = len(self.excluded) + len(self.included)
+		self.valueMap = {
+			self.settings.getLocalizedString(30148): "duration",
+			self.settings.getLocalizedString(30149): "extension",
+			self.settings.getLocalizedString(30150): "resolution",
+		}
 		self._initializePaths()
 		self._calculateViewport()
 		self._addBackground()
@@ -197,7 +202,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 			self.close()
 		elif self.focusedButtonID == self.buttonOKid:
 			self.included.clear()
-			[self.included.append(button.getLabel()) for button in self.includedButtons if button.isVisible()]
+			[self.included.append(self.valueMap[button.getLabel()]) for button in self.includedButtons if button.isVisible()]
 			self.close()
 
 	def _addAffixButtons(self, items, buttons, x):
