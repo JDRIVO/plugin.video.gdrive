@@ -60,7 +60,7 @@ msgstr "Синхронизировано"
 
 msgctxt "#30012"
 msgid "Sync Settings"
-msgstr "Синхронизированные настройки"
+msgstr "Настройки синхронизации"
 
 msgctxt "#30013"
 msgid "Sync folder"
@@ -344,7 +344,7 @@ msgstr "Приоритет разрешения"
 
 msgctxt "#30084"
 msgid "Close"
-msgstr "Закрывать"
+msgstr "Закрыть"
 
 msgctxt "#30085"
 msgid "Drives"
@@ -624,11 +624,11 @@ msgstr "Удалить"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Прекратить синхронизировать папки Select"
+msgstr "Прекратить синхронизацию выбранных папок"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
-msgstr "Выберите папки, чтобы удалить"
+msgstr "Выберите папки для удаления"
 
 msgctxt "#30207"
 msgid "Add account"
@@ -644,11 +644,11 @@ msgstr "Добавить учетные записи"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Посещать"
+msgstr "Перейти"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "в веб -браузере."
+msgstr "в веб-браузере."
 
 msgctxt "#30217"
 msgid "You must create an"
@@ -684,7 +684,7 @@ msgstr "Выбор разрешения (если доступно)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
-msgstr "Приоритет резолюции видео"
+msgstr "Приоритет разрешения видео"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
@@ -816,15 +816,15 @@ msgstr "Графический интерфейс"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Отобразить диалог прогресса начальной синхронизации"
+msgstr "Показать диалог прогресса начальной синхронизации"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
-msgstr "Отобразить диалог удаления файла"
+msgstr "Показать диалог удаления файла"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Отобразить время с последней синхронизации в меню выбора диска"
+msgstr "Показать время с последней синхронизации в меню выбора диска"
 
 msgctxt "#30700"
 msgid "Accounts"

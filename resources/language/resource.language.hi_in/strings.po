@@ -356,7 +356,7 @@ msgstr "फ़ोल्डर चयन"
 
 msgctxt "#30087"
 msgid "manual"
-msgstr "हस्तचालित"
+msgstr "मैनुअल"
 
 msgctxt "#30088"
 msgid "Deleting sync cache"
@@ -364,7 +364,7 @@ msgstr "सिंक कैश हटाना"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "क्लाइंट आईडी और क्लाइंट सीक्रेट क्रिएशन"
+msgstr "क्लाइंट आईडी और क्लाइंट सीक्रेट निर्माण"
 
 msgctxt "#30090"
 msgid "Sync multiple"
@@ -712,11 +712,11 @@ msgstr "पुस्तकालय"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "फिल्मों को देखा गया के रूप में चिह्नित करें"
+msgstr "फिल्मों को देखे गए के रूप में चिह्नित करें"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "एपिसोड को देखा गया के रूप में चिह्नित करें"
+msgstr "एपिसोड को देखे गए के रूप में चिह्नित करें"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"

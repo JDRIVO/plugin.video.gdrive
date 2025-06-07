@@ -292,7 +292,7 @@ msgstr "Geben Sie das Synchronisierungsintervall in Minuten ein"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
-msgstr "Geben Sie die Zeit ein, um Dateien zu synchronisieren"
+msgstr "Geben Sie die Uhrzeit für die Dateisynchronisierung ein"
 
 msgctxt "#30072"
 msgid "Select a video source"
@@ -336,7 +336,7 @@ msgstr "Sie müssen eine Synchronisierungsfrequenz zuweisen."
 
 msgctxt "#30082"
 msgid "Sync started"
-msgstr "Synchronisation begann"
+msgstr "Synchronisierung gestartet"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
@@ -392,7 +392,7 @@ msgstr "Ordner gelöscht"
 
 msgctxt "#30096"
 msgid "Failed to delete the sync folder. See log for details."
-msgstr "Das Synchronisationsverzeichnis konnte nicht gelöscht werden. Siehe Protokoll für Details."
+msgstr "Der Synchronisierungsordner konnte nicht gelöscht werden. Weitere Informationen finden Sie im Protokoll."
 
 msgctxt "#30097"
 msgid "Accounts file deleted"
@@ -492,7 +492,7 @@ msgstr "Weisen Sie ein Standardverschlüsselungsprofil zu, bevor Sie ein verschl
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
-msgstr "Das dieser Datei zugeordnete Verschlüsselungsprofil gibt es nicht."
+msgstr "Das dem dieser Datei zugeordnete Verschlüsselungsprofil existiert nicht."
 
 msgctxt "#30122"
 msgid "No encryption profiles found."
@@ -548,27 +548,27 @@ msgstr "Grundname"
 
 msgctxt "#30135"
 msgid "second"
-msgstr "sekunde"
+msgstr "Sekunde"
 
 msgctxt "#30136"
 msgid "seconds"
-msgstr "sekunden"
+msgstr "Sekunden"
 
 msgctxt "#30137"
 msgid "minute"
-msgstr "minute"
+msgstr "Minute"
 
 msgctxt "#30138"
 msgid "minutes"
-msgstr "minuten"
+msgstr "Minuten"
 
 msgctxt "#30139"
 msgid "hour"
-msgstr "stunde"
+msgstr "Stunde"
 
 msgctxt "#30140"
 msgid "hours"
-msgstr "stunden"
+msgstr "Stunden"
 
 msgctxt "#30141"
 msgid "Failed to sync"
@@ -600,15 +600,15 @@ msgstr "TMDB-Cache löschen"
 
 msgctxt "#30148"
 msgid "duration"
-msgstr "dauer"
+msgstr "Dauer"
 
 msgctxt "#30149"
 msgid "extension"
-msgstr "erweiterung"
+msgstr "Erweiterung"
 
 msgctxt "#30150"
 msgid "resolution"
-msgstr "auflösung"
+msgstr "Auflösung"
 
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
@@ -624,7 +624,7 @@ msgstr "Löschen"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Synchronisierung ausgewählter Ordner stoppen"
+msgstr "Ausgewählte Ordner nicht mehr synchronisieren"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
@@ -668,7 +668,7 @@ msgstr "damit"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "Uri umleiten"
+msgstr "Weiterleitungs-URI"
 
 msgctxt "#30222"
 msgid "Validating"
@@ -776,11 +776,11 @@ msgstr "Hat Dateien verschlüsselt mit"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Benennen Sie Videos in ein kodi-freundliches Format um"
+msgstr "Videos in ein Kodi-kompatibles Format umbenennen"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Kodi-taugliche Verzeichnisstruktur erstellen"
+msgstr "Kodi-kompatible Verzeichnisstruktur erstellen"
 
 msgctxt "#30511"
 msgid "Sync NFO"

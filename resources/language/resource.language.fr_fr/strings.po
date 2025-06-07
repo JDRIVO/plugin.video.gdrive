@@ -24,7 +24,7 @@ msgstr "Renommer"
 
 msgctxt "#30003"
 msgid "is no longer valid. Do you want to delete this account?"
-msgstr "n'est plus valide. Voulez-vous supprimer ce compte?"
+msgstr "n'est plus valide. Voulez-vous supprimer ce compte ?"
 
 msgctxt "#30004"
 msgid "Drive Name"
@@ -36,7 +36,7 @@ msgstr "Paramètres de synchronisation"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "Interdiction d’API:"
+msgstr "Interdiction d’API :"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
@@ -76,7 +76,7 @@ msgstr "Le nom du lecteur existe déjà, il doit être unique."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
-msgstr "Êtes-vous sûr de vouloir supprimer le lecteur:"
+msgstr "Êtes-vous sûr de vouloir supprimer le lecteur :"
 
 msgctxt "#30017"
 msgid "Drive settings"
@@ -84,7 +84,7 @@ msgstr "Paramètres du lecteur"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
-msgstr "La validation des informations d'identification a échoué pour le compte:"
+msgstr "La validation des informations d'identification a échoué pour le compte :"
 
 msgctxt "#30019"
 msgid "Account validated"
@@ -108,7 +108,7 @@ msgstr "Valider"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
-msgstr "Êtes-vous sûr de vouloir supprimer le fichier de comptes?"
+msgstr "Êtes-vous sûr de vouloir supprimer le fichier de comptes ?"
 
 msgctxt "#30025"
 msgid "Account Name"
@@ -120,19 +120,19 @@ msgstr "Sélectionnez des fichiers à importer"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
-msgstr "Voulez-vous supprimer tous les fichiers associés à ce lecteur?"
+msgstr "Voulez-vous supprimer tous les fichiers associés à ce lecteur ?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
-msgstr "La clé privée et le courriel client n'ont pas été trouvés dans:"
+msgstr "La clé privée et le courriel client n'ont pas été trouvés dans :"
 
 msgctxt "#30029"
 msgid "The client email wasn't found in:"
-msgstr "L'e-mail du client n'a pas été trouvé dans:"
+msgstr "L'e-mail du client n'a pas été trouvé dans :"
 
 msgctxt "#30030"
 msgid "The private key wasn't found in:"
-msgstr "La clé privée n'a pas été trouvée dans:"
+msgstr "La clé privée n'a pas été trouvée dans :"
 
 msgctxt "#30031"
 msgid "Folder moved"
@@ -144,7 +144,7 @@ msgstr "Sélectionnez un fichier à importer"
 
 msgctxt "#30034"
 msgid "Select a folder to export to"
-msgstr "Sélectionnez un dossier pour exporter vers"
+msgstr "Sélectionnez un dossier dans lequel exporter"
 
 msgctxt "#30035"
 msgid "File exported as"
@@ -176,7 +176,7 @@ msgstr "Recherche"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "Suivis"
+msgstr "Favoris"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -224,7 +224,7 @@ msgstr "Traitement des fichiers"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
-msgstr "Êtes-vous sûr de vouloir supprimer le cache de synchronisation?"
+msgstr "Êtes-vous sûr de vouloir supprimer le cache de synchronisation ?"
 
 msgctxt "#30055"
 msgid "Cache deleted"
@@ -252,7 +252,7 @@ msgstr "Contenu adulte"
 
 msgctxt "#30061"
 msgid "Stop syncing all folders"
-msgstr "Arrêtez de synchroniser tous les dossiers"
+msgstr "Arrêter de synchroniser tous les dossiers"
 
 msgctxt "#30062"
 msgid "Stop syncing folder"
@@ -260,11 +260,11 @@ msgstr "Arrêter de synchroniser le dossier"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
-msgstr "Voulez-vous supprimer les fichiers locaux associés à ce dossier?"
+msgstr "Voulez-vous supprimer les fichiers locaux associés à ce dossier ?"
 
 msgctxt "#30064"
 msgid "Do you want to delete the local files associated with these folders?"
-msgstr "Voulez-vous supprimer les fichiers locaux associés à ces dossiers?"
+msgstr "Voulez-vous supprimer les fichiers locaux associés à ces dossiers ?"
 
 msgctxt "#30065"
 msgid "General"
@@ -328,7 +328,7 @@ msgstr "Vous devez attribuer un chemin de synchronisation."
 
 msgctxt "#30080"
 msgid "You must assign a sync mode."
-msgstr "Vous devez attribuer un mode synchronisation."
+msgstr "Vous devez attribuer un mode de synchronisation."
 
 msgctxt "#30081"
 msgid "You must assign a sync frequency."
@@ -336,7 +336,7 @@ msgstr "Vous devez attribuer une fréquence de synchronisation."
 
 msgctxt "#30082"
 msgid "Sync started"
-msgstr "La synchronisation a commencé"
+msgstr "Synchronisation commencée"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
@@ -384,7 +384,7 @@ msgstr "Sélectionnez un dossier vers lequel déplacer"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
-msgstr "Êtes-vous sûr de vouloir supprimer le dossier de synchronisation?"
+msgstr "Êtes-vous sûr de vouloir supprimer le dossier de synchronisation ?"
 
 msgctxt "#30095"
 msgid "Folder deleted"
@@ -428,11 +428,11 @@ msgstr "Inclure"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
-msgstr "Suppression du lecteur:"
+msgstr "Suppression du lecteur :"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
-msgstr "Lecteur supprimé:"
+msgstr "Lecteur supprimé :"
 
 msgctxt "#30107"
 msgid "Profile name"
@@ -580,7 +580,7 @@ msgstr "Synchroniser tous les disques"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
-msgstr "Voulez-vous supprimer:"
+msgstr "Voulez-vous supprimer :"
 
 msgctxt "#30144"
 msgid "File deleted"
@@ -592,7 +592,7 @@ msgstr "La suppression du fichier a échoué"
 
 msgctxt "#30146"
 msgid "Are you sure you want to delete the TMDB cache?"
-msgstr "Êtes-vous sûr de vouloir supprimer le cache TMDB?"
+msgstr "Êtes-vous sûr de vouloir supprimer le cache TMDB ?"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
@@ -612,7 +612,7 @@ msgstr "résolution"
 
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
-msgstr "Êtes-vous sûr de supprimer le compte:"
+msgstr "Êtes-vous sûr de vouloir supprimer le compte :"
 
 msgctxt "#30158"
 msgid "Account Deletion"
@@ -624,11 +624,11 @@ msgstr "Supprimer"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Arrêter de synchroniser les dossiers sélectionnés"
+msgstr "Arrêter de synchroniser certains dossiers"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
-msgstr "Sélectionnez des dossiers à supprimer"
+msgstr "Sélectionnez les dossiers à supprimer"
 
 msgctxt "#30207"
 msgid "Add account"
@@ -636,7 +636,7 @@ msgstr "Ajouter un compte"
 
 msgctxt "#30209"
 msgid "The file wasn't found in the account:"
-msgstr "Le fichier n'a pas été trouvé dans le compte:"
+msgstr "Le fichier n'a pas été trouvé dans le compte :"
 
 msgctxt "#30214"
 msgid "Add service accounts"
@@ -696,11 +696,11 @@ msgstr "Format de sous-titre"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
-msgstr "Les sous-titres ne sont pas nommés les mêmes que STRM et sont dans un dossier isolé avec STRM"
+msgstr "Les sous-titres ne portent pas le même nom que le STRM et se trouvent dans un dossier isolé avec le STRM"
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
-msgstr "Les sous-titres sont nommés les mêmes que STRM"
+msgstr "Les sous-titres portent le même nom que le STRM"
 
 msgctxt "#30307"
 msgid "Default playback account"
@@ -776,11 +776,11 @@ msgstr "A des fichiers chiffrés avec"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Renommer les vidéos au format adapté à Kodi"
+msgstr "Renommer les vidéos dans un format compatible avec Kodi"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Créer une structure Kodi conviviale"
+msgstr "Créer une structure de répertoires compatible avec Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
@@ -836,7 +836,7 @@ msgstr "Importer des comptes"
 
 msgctxt "#30702"
 msgid "Export accounts"
-msgstr "Exporter les comptes"
+msgstr "Exporter des comptes"
 
 msgctxt "#30703"
 msgid "Delete all accounts"
@@ -864,11 +864,11 @@ msgstr "Supprimer les profils"
 
 msgctxt "#30805"
 msgid "Import profiles"
-msgstr "Importer les profils"
+msgstr "Importer des profils"
 
 msgctxt "#30806"
 msgid "Export profiles"
-msgstr "Exporter les profils"
+msgstr "Exporter des profils"
 
 msgctxt "#30900"
 msgid "Misc"

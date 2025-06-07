@@ -364,7 +364,7 @@ msgstr "يتم حذف ذاكرة التخزين المؤقت للمزامنة"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "معرف العميل وإنشاء سر العميل"
+msgstr "إنشاء معرف العميل وسر العميل"
 
 msgctxt "#30090"
 msgid "Sync multiple"
@@ -380,7 +380,7 @@ msgstr "لم يتم تعيين مجلد المزامنة."
 
 msgctxt "#30093"
 msgid "Select a folder to move to"
-msgstr "حدد مجلد للانتقال إلى"
+msgstr "حدد مجلدًا للانتقال إليه"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
@@ -628,7 +628,7 @@ msgstr "توقف عن مزامنة المجلدات المحددة"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
-msgstr "حدد المجلدات المراد حذفها"
+msgstr "اختر المجلدات التي تريد حذفها"
 
 msgctxt "#30207"
 msgid "Add account"
@@ -644,11 +644,11 @@ msgstr "إضافة حسابات الخدمة"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "زيارة"
+msgstr "قم بزيارة"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "عبر متصفح الويب."
+msgstr "في متصفح الويب."
 
 msgctxt "#30217"
 msgid "You must create an"
@@ -688,7 +688,7 @@ msgstr "أولوية دقة الفيديو"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
-msgstr "تعيين ترجمات تلقائيا"
+msgstr "تعيين الترجمات تلقائيًا"
 
 msgctxt "#30304"
 msgid "Subtitle format"
@@ -776,11 +776,11 @@ msgstr "يحتوي على ملفات مشفرة مع"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "إعادة تسمية مقاطع الفيديو إلى تنسيق ودود Kodi"
+msgstr "إعادة تسمية مقاطع الفيديو إلى تنسيق متوافق مع Kodi"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "قم بإنشاء بنية مجلدات متوافقة مع Kodi"
+msgstr "إنشاء بنية مجلدات متوافقة مع Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"

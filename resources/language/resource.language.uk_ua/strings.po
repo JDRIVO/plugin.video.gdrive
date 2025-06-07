@@ -84,7 +84,7 @@ msgstr "Налаштування диска"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
-msgstr "Не вдалося для облікового запису перевірку облікових даних:"
+msgstr "Не вдалося перевірити облікові дані для облікового запису:"
 
 msgctxt "#30019"
 msgid "Account validated"
@@ -92,7 +92,7 @@ msgstr "Обліковий запис підтверджений"
 
 msgctxt "#30020"
 msgid "Accounts validated"
-msgstr "Облікові записи підтверджений"
+msgstr "Облікові записи підтверджені"
 
 msgctxt "#30021"
 msgid "Validate accounts"
@@ -196,7 +196,7 @@ msgstr "Реєстрація облікового запису вдалася"
 
 msgctxt "#30047"
 msgid "Account registration failed"
-msgstr "Реєстрація облікового запису не вдалося"
+msgstr "Реєстрація облікового запису не вдалася"
 
 msgctxt "#30048"
 msgid "Sync path"
@@ -252,11 +252,11 @@ msgstr "Вміст для дорослих"
 
 msgctxt "#30061"
 msgid "Stop syncing all folders"
-msgstr "Перестань синхронізувати всі папки"
+msgstr "Зупинити синхронізацію всіх папок"
 
 msgctxt "#30062"
 msgid "Stop syncing folder"
-msgstr "Перестань синхронізувати папку"
+msgstr "Зупинити синхронізацію папки"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
@@ -312,7 +312,7 @@ msgstr "Видалення файлів"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
-msgstr "Рухомий папка синхронізації"
+msgstr "Переміщення папки синхронізації"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
@@ -344,7 +344,7 @@ msgstr "Пріоритет роздільної здатності"
 
 msgctxt "#30084"
 msgid "Close"
-msgstr "Закривати"
+msgstr "Закрити"
 
 msgctxt "#30085"
 msgid "Drives"
@@ -364,7 +364,7 @@ msgstr "Видалення кешу синхронізації"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "Ідентифікатор клієнта та таємне створення клієнта"
+msgstr "Створення ідентифікатора клієнта та секретного ключа клієнта"
 
 msgctxt "#30090"
 msgid "Sync multiple"
@@ -624,7 +624,7 @@ msgstr "Видаляти"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Зупиніть синхронізувати вибрати папки"
+msgstr "Зупинити синхронізацію вибраних папок"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
@@ -632,7 +632,7 @@ msgstr "Виберіть папки для видалення"
 
 msgctxt "#30207"
 msgid "Add account"
-msgstr "Додати рахунок"
+msgstr "Додати обліковий запис"
 
 msgctxt "#30209"
 msgid "The file wasn't found in the account:"
@@ -640,7 +640,7 @@ msgstr "Файл не знайдено в обліковому записі:"
 
 msgctxt "#30214"
 msgid "Add service accounts"
-msgstr "Додайте облікові записи послуг"
+msgstr "Додати службові облікові записи"
 
 msgctxt "#30215"
 msgid "Visit"
@@ -648,7 +648,7 @@ msgstr "Відвідувати"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "у веб -браузері."
+msgstr "у веб-браузері."
 
 msgctxt "#30217"
 msgid "You must create an"
@@ -692,7 +692,7 @@ msgstr "Встановити субтитри автоматично"
 
 msgctxt "#30304"
 msgid "Subtitle format"
-msgstr "Формат підзаголовок"
+msgstr "Формат субтитрів"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"

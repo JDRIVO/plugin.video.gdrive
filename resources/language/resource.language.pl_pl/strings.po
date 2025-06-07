@@ -364,7 +364,7 @@ msgstr "Usuwanie pamięci podręcznej synchronizacji"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "Identyfikator klienta i tajne tworzenie klienta"
+msgstr "Tworzenie identyfikatora klienta i klucza tajnego klienta"
 
 msgctxt "#30090"
 msgid "Sync multiple"
@@ -468,7 +468,7 @@ msgstr "Szyfruj dane plików"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
-msgstr "Nazwy katalogu szyfrowania"
+msgstr "Szyfruj nazwy katalogów"
 
 msgctxt "#30116"
 msgid "Select a profile"
@@ -624,7 +624,7 @@ msgstr "Usuwać"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Przestań synchronizować foldery wybrane"
+msgstr "Przestań synchronizować wybrane foldery"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
@@ -724,7 +724,7 @@ msgstr "Importuj dane flagi mediów z STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "Automatycznie biblioteka aktualizacji"
+msgstr "Automatycznie aktualizuj bibliotekę"
 
 msgctxt "#30405"
 msgid "Display dialog"
@@ -832,11 +832,11 @@ msgstr "Konta"
 
 msgctxt "#30701"
 msgid "Import accounts"
-msgstr "Konta importu"
+msgstr "Importuj konta"
 
 msgctxt "#30702"
 msgid "Export accounts"
-msgstr "Konta eksportu"
+msgstr "Eksportuj konta"
 
 msgctxt "#30703"
 msgid "Delete all accounts"
@@ -864,11 +864,11 @@ msgstr "Usuń profile"
 
 msgctxt "#30805"
 msgid "Import profiles"
-msgstr "Profile importu"
+msgstr "Importuj profile"
 
 msgctxt "#30806"
 msgid "Export profiles"
-msgstr "Profile eksportu"
+msgstr "Eksportuj profile"
 
 msgctxt "#30900"
 msgid "Misc"

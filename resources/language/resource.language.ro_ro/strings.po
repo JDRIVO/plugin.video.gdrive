@@ -284,7 +284,7 @@ msgstr "interval"
 
 msgctxt "#30069"
 msgid "schedule"
-msgstr "programa"
+msgstr "orar"
 
 msgctxt "#30070"
 msgid "Enter the sync interval in minutes"
@@ -452,11 +452,11 @@ msgstr "Sare"
 
 msgctxt "#30111"
 msgid "Filename encryption"
-msgstr "Criptarea numelor de fișier"
+msgstr "Criptarea nume fișier"
 
 msgctxt "#30112"
 msgid "Filename encoding"
-msgstr "Numele fișierului codificare"
+msgstr "Codificare nume fișier"
 
 msgctxt "#30113"
 msgid "Suffix"

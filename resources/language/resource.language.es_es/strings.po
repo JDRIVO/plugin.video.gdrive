@@ -76,7 +76,7 @@ msgstr "El nombre de la unidad ya existe; debe ser único."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
-msgstr "¿Estás seguro de que deseas eliminar la unidad:"
+msgstr "¿Está seguro de que desea eliminar la unidad:"
 
 msgctxt "#30017"
 msgid "Drive settings"
@@ -252,11 +252,11 @@ msgstr "Contenido para adultos"
 
 msgctxt "#30061"
 msgid "Stop syncing all folders"
-msgstr "Deja de sincronizar todas las carpetas"
+msgstr "Dejar de sincronizar todas las carpetas"
 
 msgctxt "#30062"
 msgid "Stop syncing folder"
-msgstr "Deja de sincronizar carpeta"
+msgstr "Dejar de sincronizar la carpeta"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
@@ -360,11 +360,11 @@ msgstr "manual"
 
 msgctxt "#30088"
 msgid "Deleting sync cache"
-msgstr "Eliminar la caché de sincronización"
+msgstr "Eliminando caché de sincronización"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "Creación de ID de cliente y secreto del cliente"
+msgstr "Creación del ID y secreto de cliente"
 
 msgctxt "#30090"
 msgid "Sync multiple"

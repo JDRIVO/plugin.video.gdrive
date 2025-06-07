@@ -128,11 +128,11 @@ msgstr "De privésleutel en klant-e-mail zijn niet gevonden in:"
 
 msgctxt "#30029"
 msgid "The client email wasn't found in:"
-msgstr "De klant-e-mail zijn niet gevonden in:"
+msgstr "De klant-e-mail is niet gevonden in::"
 
 msgctxt "#30030"
 msgid "The private key wasn't found in:"
-msgstr "De privésleutel zijn niet gevonden in:"
+msgstr "De privésleutel is niet gevonden in:"
 
 msgctxt "#30031"
 msgid "Folder moved"
@@ -256,7 +256,7 @@ msgstr "Stop met het synchroniseren van alle mappen"
 
 msgctxt "#30062"
 msgid "Stop syncing folder"
-msgstr "Stop met synchronisatie map"
+msgstr "Stop met het synchroniseren van de map"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
@@ -296,7 +296,7 @@ msgstr "Voer de tijd in om bestanden te synchroniseren"
 
 msgctxt "#30072"
 msgid "Select a video source"
-msgstr "Selecteer een videobron"
+msgstr "Selecteer een video-bron"
 
 msgctxt "#30073"
 msgid "Syncing"
@@ -356,7 +356,7 @@ msgstr "Mapselectie"
 
 msgctxt "#30087"
 msgid "manual"
-msgstr "handmatig"
+msgstr "handmatige"
 
 msgctxt "#30088"
 msgid "Deleting sync cache"
@@ -380,7 +380,7 @@ msgstr "Synchronisatiemap is niet ingesteld."
 
 msgctxt "#30093"
 msgid "Select a folder to move to"
-msgstr "Selecteer een map om naar toe te gaan"
+msgstr "Selecteer een map om naartoe te verplaatsen"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
@@ -392,7 +392,7 @@ msgstr "Map verwijderd"
 
 msgctxt "#30096"
 msgid "Failed to delete the sync folder. See log for details."
-msgstr "Kan de Sync-map niet verwijderen. Zie logboek voor details."
+msgstr "Kan de synchronisatiemap niet verwijderen. Zie logboek voor details."
 
 msgctxt "#30097"
 msgid "Accounts file deleted"
@@ -400,7 +400,7 @@ msgstr "Accounts-bestand verwijderd"
 
 msgctxt "#30098"
 msgid "Failed to delete the accounts file. See log for details."
-msgstr "Kan het accountbestand niet verwijderen. Zie logboek voor details."
+msgstr "Kan het accountsbestand niet verwijderen. Zie logboek voor details."
 
 msgctxt "#30099"
 msgid "Enter the filename"
@@ -624,7 +624,7 @@ msgstr "Verwijderen"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Stop met synchroniseren select mappen"
+msgstr "Stop met het synchroniseren van geselecteerde mappen"
 
 msgctxt "#30165"
 msgid "Select folders to delete"

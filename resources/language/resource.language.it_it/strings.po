@@ -760,7 +760,7 @@ msgstr "Elimina la cartella di sincronizzazione"
 
 msgctxt "#30505"
 msgid "Sync defaults"
-msgstr "Sincronizzazione predefinite"
+msgstr "Impostazioni di sincronizzazione predefinite"
 
 msgctxt "#30506"
 msgid "STRM prefix"
@@ -820,7 +820,7 @@ msgstr "Mostra finestra di avanzamento sincronizzazione iniziale"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
-msgstr "Visualizza la finestra di dialogo Eliminazione del file"
+msgstr "Mostra la finestra di dialogo per l'eliminazione dei file""
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
@@ -832,11 +832,11 @@ msgstr "Account"
 
 msgctxt "#30701"
 msgid "Import accounts"
-msgstr "Account di importazione"
+msgstr "Importa account"
 
 msgctxt "#30702"
 msgid "Export accounts"
-msgstr "Account di esportazione"
+msgstr "Esporta account"
 
 msgctxt "#30703"
 msgid "Delete all accounts"
@@ -864,11 +864,11 @@ msgstr "Elimina i profili"
 
 msgctxt "#30805"
 msgid "Import profiles"
-msgstr "Profili di importazione"
+msgstr "Importa profili"
 
 msgctxt "#30806"
 msgid "Export profiles"
-msgstr "Profili di esportazione"
+msgstr "Esporta profili"
 
 msgctxt "#30900"
 msgid "Misc"

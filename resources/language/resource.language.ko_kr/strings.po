@@ -36,7 +36,7 @@ msgstr "설정 동기화"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "API 차단 :"
+msgstr "API 차단:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
@@ -68,11 +68,11 @@ msgstr "폴더 동기화"
 
 msgctxt "#30014"
 msgid "Select an account"
-msgstr "계정을 선택하십시오"
+msgstr "계정을 선택하세요"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
-msgstr "드라이브 이름은 이미 존재합니다. 독특해야합니다."
+msgstr "드라이브 이름이 이미 존재합니다. 고유해야 합니다."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
@@ -84,11 +84,11 @@ msgstr "드라이브 설정"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
-msgstr "계정 자격 증명 검증에 실패했습니다:"
+msgstr "계정의 자격 증명 확인에 실패했습니다:"
 
 msgctxt "#30019"
 msgid "Account validated"
-msgstr "계정 검증"
+msgstr "계정이 확인되었습니다"
 
 msgctxt "#30020"
 msgid "Accounts validated"
@@ -96,7 +96,7 @@ msgstr "계정이 검증되었습니다"
 
 msgctxt "#30021"
 msgid "Validate accounts"
-msgstr "계정을 확인하십시오"
+msgstr "계정 유효성 검사"
 
 msgctxt "#30022"
 msgid "Delete accounts"
@@ -108,7 +108,7 @@ msgstr "검증"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
-msgstr "계정 파일을 삭제 하시겠습니까?"
+msgstr "계정 파일을 삭제하시겠습니까?"
 
 msgctxt "#30025"
 msgid "Account Name"
@@ -116,11 +116,11 @@ msgstr "계정 이름"
 
 msgctxt "#30026"
 msgid "Select files to import"
-msgstr "가져올 파일을 선택합니다"
+msgstr "가져올 파일을 선택하세요"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
-msgstr "이 드라이브와 관련된 모든 파일을 삭제 하시겠습니까?"
+msgstr "이 드라이브와 관련된 모든 파일을 삭제하시겠습니까?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
@@ -136,15 +136,15 @@ msgstr "파일에서 개인 키를 찾을 수 없습니다:"
 
 msgctxt "#30031"
 msgid "Folder moved"
-msgstr "폴더가 이동했습니다"
+msgstr "폴더가 이동되었습니다"
 
 msgctxt "#30033"
 msgid "Select a file to import"
-msgstr "가져올 파일을 선택하십시오"
+msgstr "가져올 파일을 선택하세요"
 
 msgctxt "#30034"
 msgid "Select a folder to export to"
-msgstr "내보내는 폴더를 선택하십시오"
+msgstr "내보낼 폴더를 선택하세요"
 
 msgctxt "#30035"
 msgid "File exported as"
@@ -156,7 +156,7 @@ msgstr "가져온 계정"
 
 msgctxt "#30037"
 msgid "Account import failed."
-msgstr "계정 수입이 실패했습니다."
+msgstr "계정 가져오기에 실패했습니다."
 
 msgctxt "#30038"
 msgid "My Drive"
@@ -164,7 +164,7 @@ msgstr "내 드라이브"
 
 msgctxt "#30039"
 msgid "Shared With Me"
-msgstr "나와 공유했습니다"
+msgstr "나와 공유됨"
 
 msgctxt "#30040"
 msgid "Shared Drives"
@@ -172,7 +172,7 @@ msgstr "공유 드라이브"
 
 msgctxt "#30041"
 msgid "Search"
-msgstr "찾다"
+msgstr "검색"
 
 msgctxt "#30042"
 msgid "Starred"
@@ -208,11 +208,11 @@ msgstr "동기화 모드"
 
 msgctxt "#30050"
 msgid "Sync frequency"
-msgstr "동기 주파수"
+msgstr "동기화 빈도"
 
 msgctxt "#30051"
 msgid "Sync on startup"
-msgstr "스타트 업에 동기화됩니다"
+msgstr "시작 시 동기화"
 
 msgctxt "#30052"
 msgid "Syncing folders"
@@ -224,7 +224,7 @@ msgstr "파일 처리"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
-msgstr "동기화 캐시를 삭제 하시겠습니까?"
+msgstr "동기화 캐시를 삭제하시겠습니까?"
 
 msgctxt "#30055"
 msgid "Cache deleted"
@@ -232,7 +232,7 @@ msgstr "캐시가 삭제되었습니다"
 
 msgctxt "#30056"
 msgid "Failed to delete the cache. See log for details."
-msgstr "캐시를 삭제하지 못했습니다. 자세한 내용은 로그를 참조하십시오."
+msgstr "캐시를 삭제하지 못했습니다. 자세한 내용은 로그를 확인하세요."
 
 msgctxt "#30057"
 msgid "Playback account not found."
@@ -260,19 +260,19 @@ msgstr "폴더 동기화 중지"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
-msgstr "이 폴더와 관련된 로컬 파일을 삭제 하시겠습니까?"
+msgstr "이 폴더와 관련된 로컬 파일을 삭제하시겠습니까?"
 
 msgctxt "#30064"
 msgid "Do you want to delete the local files associated with these folders?"
-msgstr "이 폴더와 관련된 로컬 파일을 삭제 하시겠습니까?"
+msgstr "이 폴더들과 관련된 로컬 파일을 삭제하시겠습니까?"
 
 msgctxt "#30065"
 msgid "General"
-msgstr "일반적인"
+msgstr "일반"
 
 msgctxt "#30066"
 msgid "OK"
-msgstr "좋아요"
+msgstr "확인"
 
 msgctxt "#30067"
 msgid "Cancel"
@@ -288,11 +288,11 @@ msgstr "일정"
 
 msgctxt "#30070"
 msgid "Enter the sync interval in minutes"
-msgstr "몇 분 안에 동기 간격을 입력하십시오"
+msgstr "동기화 간격을 분 단위로 입력하세요"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
-msgstr "파일을 동기화하려면 시간을 입력하십시오"
+msgstr "파일을 동기화할 시간을 입력하세요"
 
 msgctxt "#30072"
 msgid "Select a video source"
@@ -316,7 +316,7 @@ msgstr "동기화 폴더 이동"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
-msgstr "파일이 저장 될 폴더를 선택하십시오."
+msgstr "파일이 저장될 폴더를 선택하십시오."
 
 msgctxt "#30078"
 msgid "There are no OAuth accounts connected to this drive."
@@ -324,15 +324,15 @@ msgstr "이 드라이브에 연결된 Oauth 계정은 없습니다."
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
-msgstr "동기화 경로를 할당해야합니다."
+msgstr "동기화 경로를 할당해야 합니다."
 
 msgctxt "#30080"
 msgid "You must assign a sync mode."
-msgstr "동기화 모드를 할당해야합니다."
+msgstr "동기화 모드를 할당해야 합니다."
 
 msgctxt "#30081"
 msgid "You must assign a sync frequency."
-msgstr "동기 주파수를 할당해야합니다."
+msgstr "동기화 빈도를 설정해야 합니다."
 
 msgctxt "#30082"
 msgid "Sync started"
@@ -344,11 +344,11 @@ msgstr "해결 우선 순위"
 
 msgctxt "#30084"
 msgid "Close"
-msgstr "닫다"
+msgstr "닫기"
 
 msgctxt "#30085"
 msgid "Drives"
-msgstr "운전"
+msgstr "드라이브"
 
 msgctxt "#30086"
 msgid "Folder Selection"
@@ -364,11 +364,11 @@ msgstr "동기화 캐시 삭제"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "클라이언트 ID 및 클라이언트 비밀 생성"
+msgstr "클라이언트 ID 및 클라이언트 시크릿 생성"
 
 msgctxt "#30090"
 msgid "Sync multiple"
-msgstr "다중 동기화"
+msgstr "여러 개를 동기화"
 
 msgctxt "#30091"
 msgid "Search folder"
@@ -380,11 +380,11 @@ msgstr "동기화 폴더가 설정되지 않았습니다."
 
 msgctxt "#30093"
 msgid "Select a folder to move to"
-msgstr "이동할 폴더를 선택하십시오"
+msgstr "이동할 폴더를 선택하세요"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
-msgstr "동기화 폴더를 삭제 하시겠습니까?"
+msgstr "동기화 폴더를 삭제하시겠습니까?"
 
 msgctxt "#30095"
 msgid "Folder deleted"
@@ -392,7 +392,7 @@ msgstr "폴더가 삭제되었습니다"
 
 msgctxt "#30096"
 msgid "Failed to delete the sync folder. See log for details."
-msgstr "동기화 폴더를 삭제하지 못했습니다. 자세한 내용은 로그를 참조하십시오."
+msgstr "동기화 폴더를 삭제하지 못했습니다. 자세한 내용은 로그를 확인하세요."
 
 msgctxt "#30097"
 msgid "Accounts file deleted"
@@ -400,7 +400,7 @@ msgstr "계정 파일이 삭제되었습니다"
 
 msgctxt "#30098"
 msgid "Failed to delete the accounts file. See log for details."
-msgstr "계정 파일을 삭제하지 못했습니다. 자세한 내용은 로그를 참조하십시오."
+msgstr "계정 파일을 삭제하지 못했습니다. 자세한 내용은 로그를 확인하세요."
 
 msgctxt "#30099"
 msgid "Enter the filename"
@@ -412,7 +412,7 @@ msgstr "동기화 폴더가 존재하지 않습니다."
 
 msgctxt "#30101"
 msgid "Failed to move the folder. The folder can't be moved into itself."
-msgstr "폴더를 이동하지 못했습니다. 폴더는 그 자체로 이동할 수 없습니다."
+msgstr "폴더를 이동하지 못했습니다. 폴더를 자기 자신 안으로 이동할 수 없습니다."
 
 msgctxt "#30102"
 msgid "Failed to move the folder. The folder already exists."
@@ -428,11 +428,11 @@ msgstr "포함하다"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
-msgstr "드라이브 삭제 :"
+msgstr "드라이브 삭제 중:"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
-msgstr "삭제 된 드라이브 :"
+msgstr "삭제된 드라이브:"
 
 msgctxt "#30107"
 msgid "Profile name"
@@ -448,7 +448,7 @@ msgstr "비밀번호"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "소금"
+msgstr "Salt"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -464,11 +464,11 @@ msgstr "접미사"
 
 msgctxt "#30114"
 msgid "Encrypt file data"
-msgstr "파일 데이터를 암호화합니다"
+msgstr "파일 데이터 암호화"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
-msgstr "암호화 디렉토리 이름"
+msgstr "디렉터리 이름 암호화"
 
 msgctxt "#30116"
 msgid "Select a profile"
@@ -476,27 +476,27 @@ msgstr "프로필을 선택하십시오"
 
 msgctxt "#30117"
 msgid "Profiles deleted"
-msgstr "프로파일이 삭제되었습니다"
+msgstr "프로필이 삭제되었습니다"
 
 msgctxt "#30118"
 msgid "Profile import failed."
-msgstr "프로필 가져 오기가 실패했습니다."
+msgstr "프로필 가져오기에 실패했습니다."
 
 msgctxt "#30119"
 msgid "Profiles imported"
-msgstr "수입 된 프로파일"
+msgstr "프로필이 가져와졌습니다"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
-msgstr "암호화 된 비디오를 재생하기 전에 기본 암호화 프로파일을 할당하십시오."
+msgstr "암호화된 비디오를 재생하기 전에 기본 암호화 프로필을 할당하세요."
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
-msgstr "이 파일과 관련된 암호화 프로파일이 존재하지 않습니다."
+msgstr "이 파일과 관련된 암호화 프로필이 존재하지 않습니다."
 
 msgctxt "#30122"
 msgid "No encryption profiles found."
-msgstr "암호화 프로파일이 없습니다."
+msgstr "암호화 프로필이 없습니다."
 
 msgctxt "#30123"
 msgid "Profile Manager"
@@ -504,7 +504,7 @@ msgstr "프로필 관리자"
 
 msgctxt "#30124"
 msgid "Profile created"
-msgstr "프로파일이 생성되었습니다"
+msgstr "프로필이 생성되었습니다"
 
 msgctxt "#30125"
 msgid "Profile updated"
@@ -512,15 +512,15 @@ msgstr "프로필 업데이트"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
-msgstr "프로필 이름을 할당해야합니다."
+msgstr "프로필 이름을 할당해야 합니다."
 
 msgctxt "#30127"
 msgid "You must assign a password."
-msgstr "비밀번호를 할당해야합니다."
+msgstr "비밀번호를 할당해야 합니다."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "소금을 할당해야합니다."
+msgstr "Salt 값을 할당해야 합니다."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -580,7 +580,7 @@ msgstr "모든 드라이브 동기화"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
-msgstr "삭제 하시겠습니까 :"
+msgstr "삭제하시겠습니까:"
 
 msgctxt "#30144"
 msgid "File deleted"
@@ -592,7 +592,7 @@ msgstr "파일 삭제가 실패했습니다"
 
 msgctxt "#30146"
 msgid "Are you sure you want to delete the TMDB cache?"
-msgstr "TMDB 캐시를 삭제 하시겠습니까?"
+msgstr "TMDB 캐시를 삭제하시겠습니까?"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
@@ -612,7 +612,7 @@ msgstr "해상도"
 
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
-msgstr "계정을 삭제하고 싶습니까?"
+msgstr "계정을 삭제하시겠습니까:"
 
 msgctxt "#30158"
 msgid "Account Deletion"
@@ -624,7 +624,7 @@ msgstr "삭제"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "선택 폴더 동기화 중지"
+msgstr "지정된 폴더 동기화 중지"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
@@ -636,7 +636,7 @@ msgstr "계정 추가"
 
 msgctxt "#30209"
 msgid "The file wasn't found in the account:"
-msgstr "계정에는 파일이 발견되지 않았습니다."
+msgstr "계정에서 파일을 찾을 수 없습니다:"
 
 msgctxt "#30214"
 msgid "Add service accounts"
@@ -644,7 +644,7 @@ msgstr "서비스 계정을 추가하십시오"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "방문"
+msgstr "방문하기"
 
 msgctxt "#30216"
 msgid "in a web browser."
@@ -668,7 +668,7 @@ msgstr "이것으로"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "URI를 리디렉션하십시오"
+msgstr "리디렉션 URI"
 
 msgctxt "#30222"
 msgid "Validating"
@@ -680,7 +680,7 @@ msgstr "재생"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "신속한 해상도 선택 (사용 가능한 경우)"
+msgstr "해상도 선택 창 표시 (사용 가능한 경우)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
@@ -688,7 +688,7 @@ msgstr "비디오 해결 우선 순위"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
-msgstr "자막을 자동으로 설정하십시오"
+msgstr "자막을 자동으로 설정"
 
 msgctxt "#30304"
 msgid "Subtitle format"
@@ -696,7 +696,7 @@ msgstr "자막 형식"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
-msgstr "자막은 STRM과 동일하지 않으며 STRM이있는 격리 된 폴더에 있습니다."
+msgstr "자막 이름이 STRM과 같지 않으며 STRM이 있는 별도의 폴더에 있습니다."
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
@@ -704,7 +704,7 @@ msgstr "자막의 이름은 STRM과 동일합니다"
 
 msgctxt "#30307"
 msgid "Default playback account"
-msgstr "기본 재생 계정"
+msgstr "기본 재생용 계정"
 
 msgctxt "#30400"
 msgid "Library"
@@ -724,15 +724,15 @@ msgstr "STRM에서 미디어 플래그 데이터를 가져옵니다"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "라이브러리를 자동으로 업데이트하십시오"
+msgstr "라이브러리를 자동으로 업데이트"
 
 msgctxt "#30405"
 msgid "Display dialog"
-msgstr "대화 상자를 표시합니다"
+msgstr "대화 상자 표시"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "도서관을 자동으로 청소하십시오"
+msgstr "라이브러리를 자동으로 정리합니다"
 
 msgctxt "#30407"
 msgid "Video source"
@@ -740,7 +740,7 @@ msgstr "비디오 소스"
 
 msgctxt "#30500"
 msgid "Sync"
-msgstr "동조"
+msgstr "동기화하다"
 
 msgctxt "#30501"
 msgid "Threads"
@@ -772,15 +772,15 @@ msgstr "STRM 접미사"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
-msgstr "암호화 된 파일이 있습니다"
+msgstr "파일이 다음으로 암호화되어 있습니다"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "동영상 이름을 Kodi 친화적 형식으로 바꿉니다"
+msgstr "Kodi 호환 형식으로 동영상 이름 바꾸기"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Kodi 친화적 인 디렉토리 구조를 만듭니다"
+msgstr "Kodi에 적합한 디렉터리 구조 생성"
 
 msgctxt "#30511"
 msgid "Sync NFO"
@@ -824,7 +824,7 @@ msgstr "파일 삭제 대화 상자를 표시합니다"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "드라이브 선택 메뉴에서 마지막 동기화 이후 표시 시간을 표시합니다"
+msgstr "드라이브 선택 메뉴에 마지막 동기화 시간 표시"
 
 msgctxt "#30700"
 msgid "Accounts"
@@ -832,15 +832,15 @@ msgstr "계정"
 
 msgctxt "#30701"
 msgid "Import accounts"
-msgstr "수입 계정"
+msgstr "계정 가져오기"
 
 msgctxt "#30702"
 msgid "Export accounts"
-msgstr "수출 계정"
+msgstr "계정 내보내기"
 
 msgctxt "#30703"
 msgid "Delete all accounts"
-msgstr "모든 계정을 삭제합니다"
+msgstr "모든 계정을 삭제하세요"
 
 msgctxt "#30800"
 msgid "Encryption"
@@ -852,7 +852,7 @@ msgstr "기본 프로필"
 
 msgctxt "#30802"
 msgid "Create profile"
-msgstr "프로필을 만듭니다"
+msgstr "프로필 만들기"
 
 msgctxt "#30803"
 msgid "Modify profile"
@@ -860,15 +860,15 @@ msgstr "프로필을 수정하십시오"
 
 msgctxt "#30804"
 msgid "Delete profiles"
-msgstr "프로파일을 삭제하십시오"
+msgstr "프로필을 삭제하십시오"
 
 msgctxt "#30805"
 msgid "Import profiles"
-msgstr "수입 프로필"
+msgstr "프로필 가져오기"
 
 msgctxt "#30806"
 msgid "Export profiles"
-msgstr "수출 프로필"
+msgstr "프로필 내보내기"
 
 msgctxt "#30900"
 msgid "Misc"
