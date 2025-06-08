@@ -644,7 +644,7 @@ msgstr "Додати службові облікові записи"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Відвідувати"
+msgstr "Відвідайте"
 
 msgctxt "#30216"
 msgid "in a web browser."
@@ -660,11 +660,11 @@ msgstr "ID OAuth клієнта"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "Веб -додаток"
+msgstr "Вебзастосунок"
 
 msgctxt "#30220"
 msgid "with this"
-msgstr "З цим"
+msgstr "з цим"
 
 msgctxt "#30221"
 msgid "Redirect URI"

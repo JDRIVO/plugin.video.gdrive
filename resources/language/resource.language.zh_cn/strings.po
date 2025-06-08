@@ -648,7 +648,7 @@ msgstr "访问"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "在网络浏览器中。"
+msgstr "使用网页浏览器。"
 
 msgctxt "#30217"
 msgid "You must create an"
@@ -656,19 +656,19 @@ msgstr "您必须创建一个"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
-msgstr "OAUTH客户端ID"
+msgstr "OAuth 客户端 ID"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "Web应用程序"
+msgstr "网页应用"
 
 msgctxt "#30220"
 msgid "with this"
-msgstr "与此"
+msgstr "使用此"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "重定向URI"
+msgstr "重定向 URI"
 
 msgctxt "#30222"
 msgid "Validating"

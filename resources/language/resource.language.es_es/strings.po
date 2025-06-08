@@ -412,7 +412,7 @@ msgstr "La carpeta de sincronización no existe."
 
 msgctxt "#30101"
 msgid "Failed to move the folder. The folder can't be moved into itself."
-msgstr "No se pudo mover la carpeta. La carpeta no se puede mover en sí misma."
+msgstr "No se pudo mover la carpeta. La carpeta no puede moverse dentro de sí misma."
 
 msgctxt "#30102"
 msgid "Failed to move the folder. The folder already exists."
@@ -572,7 +572,7 @@ msgstr "horas"
 
 msgctxt "#30141"
 msgid "Failed to sync"
-msgstr "No se ha sincronizado"
+msgstr "No se pudo sincronizar"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
@@ -644,7 +644,7 @@ msgstr "Agregar cuentas de servicio"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Visita"
+msgstr "Visite"
 
 msgctxt "#30216"
 msgid "in a web browser."
@@ -652,11 +652,11 @@ msgstr "en un navegador web."
 
 msgctxt "#30217"
 msgid "You must create an"
-msgstr "Debes crear un"
+msgstr "Debe crear un"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
-msgstr "ID de cliente OAUTH"
+msgstr "ID de cliente OAuth"
 
 msgctxt "#30219"
 msgid "Web Application"
@@ -664,11 +664,11 @@ msgstr "Aplicación web"
 
 msgctxt "#30220"
 msgid "with this"
-msgstr "con esto"
+msgstr "con esta"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "URI de redirección"
+msgstr "URI de redireccionamiento"
 
 msgctxt "#30222"
 msgid "Validating"
@@ -680,7 +680,7 @@ msgstr "Reproducción"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "Selección de resolución rápida (si está disponible)"
+msgstr "Selección de resolución de prompts (si está disponible)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
@@ -776,11 +776,11 @@ msgstr "Tiene archivos cifrados con"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Renombrar videos al formato de Kodi"
+msgstr "Renombrar videos a un formato compatible con Kodi"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Crear estructura amigable para Kodi"
+msgstr "Crear una estructura de directorios compatible con Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"

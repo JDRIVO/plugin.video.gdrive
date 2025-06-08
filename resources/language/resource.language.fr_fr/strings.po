@@ -236,7 +236,7 @@ msgstr "Échec de la suppression du cache. Voir le journal pour plus de détails
 
 msgctxt "#30057"
 msgid "Playback account not found."
-msgstr "Compte de lecture introuvable."
+msgstr "Compte de lecture non trouvé."
 
 msgctxt "#30058"
 msgid "Search language"
@@ -352,7 +352,7 @@ msgstr "Lecteurs"
 
 msgctxt "#30086"
 msgid "Folder Selection"
-msgstr "Sélection de dossiers"
+msgstr "Sélection de dossier"
 
 msgctxt "#30087"
 msgid "manual"
@@ -532,11 +532,11 @@ msgstr "Profil supprimé"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "Synchronisé tous les disques"
+msgstr "Synchronisé tous les lecteurs"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
-msgstr "Échec de la synchronisation de tous les disques"
+msgstr "Échec de la synchronisation de tous les lecteurs"
 
 msgctxt "#30133"
 msgid "Sync failed"
@@ -576,7 +576,7 @@ msgstr "Échec de la synchronisation"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "Synchroniser tous les disques"
+msgstr "Synchroniser tous les lecteurs"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
@@ -644,11 +644,11 @@ msgstr "Ajouter des comptes de service"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Visiter"
+msgstr "Visitez"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "dans un navigateur Web."
+msgstr "dans un navigateur web."
 
 msgctxt "#30217"
 msgid "You must create an"
@@ -656,7 +656,7 @@ msgstr "Vous devez créer un"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
-msgstr "ID du client OAuth"
+msgstr "ID client OAuth"
 
 msgctxt "#30219"
 msgid "Web Application"
@@ -664,7 +664,7 @@ msgstr "Application Web"
 
 msgctxt "#30220"
 msgid "with this"
-msgstr "avec"
+msgstr "avec cette"
 
 msgctxt "#30221"
 msgid "Redirect URI"
@@ -681,6 +681,7 @@ msgstr "Lecture"
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
 msgstr "Sélection de résolution rapide (si disponible)"
+msgstr "Demander la sélection de la résolution (si disponible)."
 
 msgctxt "#30302"
 msgid "Video resolution priority"

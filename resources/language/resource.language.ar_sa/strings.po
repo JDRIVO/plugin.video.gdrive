@@ -40,7 +40,7 @@ msgstr "حظر الـ API:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "التبديل إلى الحساب الاحتياطي"
+msgstr "يتم التبديل إلى الحساب الاحتياطي"
 
 msgctxt "#30008"
 msgid "Videos"
@@ -84,7 +84,7 @@ msgstr "إعدادات محرك الأقراص"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
-msgstr "فشل التحقق من صحة الاعتماد في الحساب:"
+msgstr "فشل التحقق من بيانات الاعتماد للحساب:"
 
 msgctxt "#30019"
 msgid "Account validated"
@@ -176,7 +176,7 @@ msgstr "بحث"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "المميّزة بنجمة"
+msgstr "المُميَّزة"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -324,15 +324,15 @@ msgstr "لا توجد حسابات OAuth متصلة بهذا المحرك."
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
-msgstr "عليك تحديد مسار المزامنة."
+msgstr "يجب تعيين مسار المزامنة."
 
 msgctxt "#30080"
 msgid "You must assign a sync mode."
-msgstr "يجب عليك تعيين وضع المزامنة."
+msgstr "يجب تعيين وضع المزامنة."
 
 msgctxt "#30081"
 msgid "You must assign a sync frequency."
-msgstr "يجب عليك تعيين تردد المزامنة."
+msgstr "يجب تعيين تردد المزامنة."
 
 msgctxt "#30082"
 msgid "Sync started"
@@ -412,7 +412,7 @@ msgstr "مجلد المزامنة غير موجود."
 
 msgctxt "#30101"
 msgid "Failed to move the folder. The folder can't be moved into itself."
-msgstr "فشل في نقل المجلد. لا يمكن نقل المجلد إلى نفسه."
+msgstr "فشل في نقل المجلد. لا يمكن نقل المجلد إلى داخل نفسه."
 
 msgctxt "#30102"
 msgid "Failed to move the folder. The folder already exists."
@@ -656,11 +656,11 @@ msgstr "يجب عليك إنشاء"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
-msgstr "معرف عميل Oauth"
+msgstr "معرّف عميل OAuth"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "تطبيق الويب"
+msgstr "تطبيق ويب"
 
 msgctxt "#30220"
 msgid "with this"
@@ -668,7 +668,7 @@ msgstr "مع هذا"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "إعادة توجيه URI"
+msgstr "عنوان إعادة التوجيه"
 
 msgctxt "#30222"
 msgid "Validating"
@@ -760,7 +760,7 @@ msgstr "حذف مجلد المزامنة"
 
 msgctxt "#30505"
 msgid "Sync defaults"
-msgstr "مزامنة الإعدادات الافتراضية"
+msgstr "إعدادات المزامنة الافتراضية"
 
 msgctxt "#30506"
 msgid "STRM prefix"

@@ -644,31 +644,31 @@ msgstr "Adăugați conturi de servicii"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Vizitați"
+msgstr "Vizitează"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "într -un browser web."
+msgstr "într-un browser web."
 
 msgctxt "#30217"
 msgid "You must create an"
-msgstr "Trebuie să creați un"
+msgstr "Trebuie să creezi un"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
-msgstr "OAuth ID client"
+msgstr "ID Client OAuth"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "Aplicație web"
+msgstr "Aplicație Web"
 
 msgctxt "#30220"
 msgid "with this"
-msgstr "cu asta"
+msgstr "cu acest"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "Redirecționarea URI"
+msgstr "URI de redirecționare"
 
 msgctxt "#30222"
 msgid "Validating"

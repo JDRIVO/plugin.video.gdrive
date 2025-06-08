@@ -648,7 +648,7 @@ msgstr "アクセスする"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "Webブラウザで。"
+msgstr "ウェブブラウザで。"
 
 msgctxt "#30217"
 msgid "You must create an"
@@ -656,7 +656,7 @@ msgstr "あなたは作成する必要があります"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
-msgstr "OAUTHクライアントID"
+msgstr "OAuth クライアントID"
 
 msgctxt "#30219"
 msgid "Web Application"
@@ -664,7 +664,7 @@ msgstr "ウェブアプリケーション"
 
 msgctxt "#30220"
 msgid "with this"
-msgstr "この値を"
+msgstr "これを使って"
 
 msgctxt "#30221"
 msgid "Redirect URI"

@@ -644,11 +644,11 @@ msgstr "Dodaj konta usług"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Odwiedzać"
+msgstr "Odwiedź"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "W przeglądarce internetowej."
+msgstr "w przeglądarce internetowej."
 
 msgctxt "#30217"
 msgid "You must create an"

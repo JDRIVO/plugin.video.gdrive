@@ -64,7 +64,7 @@ msgstr "Impostazioni di sincronizzazione"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "Cartella di sincronizzazione"
+msgstr "Sincronizza cartella"
 
 msgctxt "#30014"
 msgid "Select an account"
@@ -300,7 +300,7 @@ msgstr "Seleziona una fonte video"
 
 msgctxt "#30073"
 msgid "Syncing"
-msgstr "Sincronizzazione"
+msgstr "Sincronizzando"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
@@ -308,7 +308,7 @@ msgstr "Eliminazione della cartella di sincronizzazione"
 
 msgctxt "#30075"
 msgid "Deleting files"
-msgstr "Eliminazione di file"
+msgstr "Eliminazione dei file"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
@@ -428,7 +428,7 @@ msgstr "Includere"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
-msgstr "Eliminazione dell'unità:"
+msgstr "Eliminazione unità:"
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
@@ -532,7 +532,7 @@ msgstr "Profilo eliminato"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "Tutte le unità sincronizzate"
+msgstr "Sincronizzati tutti i unità"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
@@ -648,7 +648,7 @@ msgstr "Visita"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "In un browser web."
+msgstr "in un browser web."
 
 msgctxt "#30217"
 msgid "You must create an"
@@ -692,7 +692,7 @@ msgstr "Imposta automaticamente i sottotitoli"
 
 msgctxt "#30304"
 msgid "Subtitle format"
-msgstr "Formato sottotitolo"
+msgstr "Formato dei sottotitoli"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"

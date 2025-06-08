@@ -32,7 +32,7 @@ msgstr "Laufwerksname"
 
 msgctxt "#30005"
 msgid "Sync settings"
-msgstr "Einstellungen synchronisieren"
+msgstr "Synchronisierungseinstellungen"
 
 msgctxt "#30006"
 msgid "API Ban:"
@@ -40,7 +40,7 @@ msgstr "API-Sperre:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "Wechsel zum Fallback-Konto"
+msgstr "Wechsel zum Ausweichkonto"
 
 msgctxt "#30008"
 msgid "Videos"
@@ -644,7 +644,7 @@ msgstr "Dienstkonten hinzufügen"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Besuchen"
+msgstr "Besuchen Sie"
 
 msgctxt "#30216"
 msgid "in a web browser."
@@ -652,11 +652,11 @@ msgstr "in einem Webbrowser."
 
 msgctxt "#30217"
 msgid "You must create an"
-msgstr "Sie müssen eine erstellen"
+msgstr "Sie müssen eine"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
-msgstr "OAuth Client ID"
+msgstr "OAuth-Client-ID"
 
 msgctxt "#30219"
 msgid "Web Application"
@@ -664,7 +664,7 @@ msgstr "Webanwendung"
 
 msgctxt "#30220"
 msgid "with this"
-msgstr "damit"
+msgstr "mit dieser"
 
 msgctxt "#30221"
 msgid "Redirect URI"
@@ -688,7 +688,7 @@ msgstr "Videoauflösung Priorität"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
-msgstr "Stellen Sie Untertitel automatisch ein"
+msgstr "Untertitel automatisch einstellen"
 
 msgctxt "#30304"
 msgid "Subtitle format"
@@ -784,7 +784,7 @@ msgstr "Kodi-kompatible Verzeichnisstruktur erstellen"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "Synchronisieren NFO"
+msgstr "NFO synchronisieren"
 
 msgctxt "#30512"
 msgid "Sync subtitles"

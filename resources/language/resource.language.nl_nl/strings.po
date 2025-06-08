@@ -644,7 +644,7 @@ msgstr "Serviceaccounts toevoegen"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Bezoeken"
+msgstr "Bezoek"
 
 msgctxt "#30216"
 msgid "in a web browser."
@@ -652,19 +652,19 @@ msgstr "in een webbrowser."
 
 msgctxt "#30217"
 msgid "You must create an"
-msgstr "U moet een"
+msgstr "Je moet een"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
-msgstr "Oauth-client-ID"
+msgstr "OAuth-client-ID"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "Webtoepassing"
+msgstr "Webapplicatie"
 
 msgctxt "#30220"
 msgid "with this"
-msgstr "hiermee"
+msgstr "aanmaken met deze"
 
 msgctxt "#30221"
 msgid "Redirect URI"

@@ -644,7 +644,7 @@ msgstr "Добавить учетные записи"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Перейти"
+msgstr "Перейдите на"
 
 msgctxt "#30216"
 msgid "in a web browser."
@@ -660,7 +660,7 @@ msgstr "Идентификатор клиента OAuth"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "Веб -приложение"
+msgstr "Веб-приложение"
 
 msgctxt "#30220"
 msgid "with this"

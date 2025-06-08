@@ -644,7 +644,7 @@ msgstr "서비스 계정을 추가하십시오"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "방문하기"
+msgstr "방문하세요"
 
 msgctxt "#30216"
 msgid "in a web browser."
@@ -652,19 +652,19 @@ msgstr "웹 브라우저에서."
 
 msgctxt "#30217"
 msgid "You must create an"
-msgstr "당신은 만들어야합니다"
+msgstr "당신은 생성해야 합니다"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
-msgstr "Oauth 클라이언트 ID"
+msgstr "OAuth 클라이언트 ID"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "웹 응용 프로그램"
+msgstr "웹 애플리케이션"
 
 msgctxt "#30220"
 msgid "with this"
-msgstr "이것으로"
+msgstr "이것과 함께"
 
 msgctxt "#30221"
 msgid "Redirect URI"

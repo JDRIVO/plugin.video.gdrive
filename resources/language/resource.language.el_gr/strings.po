@@ -84,7 +84,7 @@ msgstr "Ρυθμίσεις μονάδας δίσκου"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
-msgstr "Η επικύρωση πιστοποίησης απέτυχε για λογαριασμό:"
+msgstr "Η επικύρωση διαπιστευτηρίων απέτυχε για τον λογαριασμό:"
 
 msgctxt "#30019"
 msgid "Account validated"
@@ -144,7 +144,7 @@ msgstr "Επιλέξτε ένα αρχείο για εισαγωγή"
 
 msgctxt "#30034"
 msgid "Select a folder to export to"
-msgstr "Επιλέξτε φάκελο για εξαγωγή"
+msgstr "Επιλέξτε έναν φάκελο για εξαγωγή"
 
 msgctxt "#30035"
 msgid "File exported as"
@@ -356,7 +356,7 @@ msgstr "Επιλογή φακέλου"
 
 msgctxt "#30087"
 msgid "manual"
-msgstr "Χειροκίνητο"
+msgstr "χειροκίνητο"
 
 msgctxt "#30088"
 msgid "Deleting sync cache"
@@ -412,7 +412,7 @@ msgstr "Ο φάκελος συγχρονισμού δεν βρέθηκε."
 
 msgctxt "#30101"
 msgid "Failed to move the folder. The folder can't be moved into itself."
-msgstr "Αποτυχία μετακίνησης του φακέλου. Ο φάκελος δεν μπορεί να μετακινηθεί στον εαυτό του."
+msgstr "Αποτυχία μετακίνησης του φακέλου. Ο φάκελος δεν μπορεί να μετακινηθεί μέσα στον εαυτό του."
 
 msgctxt "#30102"
 msgid "Failed to move the folder. The folder already exists."
@@ -644,11 +644,11 @@ msgstr "Προσθήκη λογαριασμών υπηρεσίας"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Επισκέψου"
+msgstr "Επισκεφθείτε"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "Σε ένα πρόγραμμα περιήγησης ιστού."
+msgstr "σε ένα πρόγραμμα περιήγησης ιστού."
 
 msgctxt "#30217"
 msgid "You must create an"
@@ -660,19 +660,19 @@ msgstr "Αναγνωριστικό πελάτη OAuth"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "Αίτημα ιστού"
+msgstr "Εφαρμογή Ιστού"
 
 msgctxt "#30220"
 msgid "with this"
-msgstr "με αυτήν"
+msgstr "με αυτήν την"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "Ανακατεύθυνση URI"
+msgstr "URI ανακατεύθυνσης"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "Επικυρωτικός"
+msgstr "Επικυρώνοντας"
 
 msgctxt "#30300"
 msgid "Playback"
@@ -704,7 +704,7 @@ msgstr "Οι υπότιτλοι ονομάζονται ίδιοι με το STRM
 
 msgctxt "#30307"
 msgid "Default playback account"
-msgstr "Ο προεπιλεγμένος λογαριασμός αναπαραγωγής"
+msgstr "Προεπιλεγμένος λογαριασμός αναπαραγωγής"
 
 msgctxt "#30400"
 msgid "Library"
@@ -760,7 +760,7 @@ msgstr "Διαγραφή του φακέλου συγχρονισμού"
 
 msgctxt "#30505"
 msgid "Sync defaults"
-msgstr "Προεπιλογή συγχρονισμού"
+msgstr "Προεπιλογές συγχρονισμού"
 
 msgctxt "#30506"
 msgid "STRM prefix"
@@ -832,11 +832,11 @@ msgstr "Λογαριασμοί"
 
 msgctxt "#30701"
 msgid "Import accounts"
-msgstr "Λογαριασμούς εισαγωγής"
+msgstr "Εισαγωγή λογαριασμών"
 
 msgctxt "#30702"
 msgid "Export accounts"
-msgstr "Λογαριασμοί εξαγωγής"
+msgstr "Εξαγωγή λογαριασμών"
 
 msgctxt "#30703"
 msgid "Delete all accounts"
@@ -864,11 +864,11 @@ msgstr "Διαγραφή προφίλ"
 
 msgctxt "#30805"
 msgid "Import profiles"
-msgstr "Προφίλ εισαγωγής"
+msgstr "Εισαγωγή προφίλ"
 
 msgctxt "#30806"
 msgid "Export profiles"
-msgstr "Προφίλ εξαγωγής"
+msgstr "Εξαγωγή προφίλ"
 
 msgctxt "#30900"
 msgid "Misc"
