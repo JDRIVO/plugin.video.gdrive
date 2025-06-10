@@ -387,12 +387,10 @@ class Syncer:
 
 			folderSettings = self.cache.getFolder({"folder_id": rootFolderID})
 			encryptionID = folderSettings["encryption_id"]
+			encryptorSet = self.encryptor.setEncryptor(encryptionID) if encryptionID else False
 
-			if encryptionID:
-				encryptorSet = self.encryptor.setEncryptor(encryptionID)
-
-				if encryptorSet:
-					folderName = removeProhibitedFSchars(self.encryptor.decryptDirName(folderName))
+			if encryptorSet:
+				folderName = removeProhibitedFSchars(self.encryptor.decryptDirName(folderName))
 
 			dirPath = self.cache.getUniqueDirectoryPath(driveID, dirPath)
 			folder = Folder(folderID, parentFolderID, rootFolderID, driveID, folderName, dirPath, os.path.join(drivePath, dirPath), syncRootPath, folderSettings["folder_renaming"], modifiedTime=folder["modifiedTime"])
@@ -406,12 +404,10 @@ class Syncer:
 		cachedRemoteName = cachedDirectory["remote_name"]
 		folderSettings = self.cache.getFolder({"folder_id": cachedRootFolderID})
 		encryptionID = folderSettings["encryption_id"]
+		encryptorSet = self.encryptor.setEncryptor(encryptionID) if encryptionID else False
 
-		if encryptionID:
-			encryptorSet = self.encryptor.setEncryptor(encryptionID)
-
-			if encryptorSet:
-				folderName = removeProhibitedFSchars(self.encryptor.decryptDirName(folderName))
+		if encryptorSet:
+			folderName = removeProhibitedFSchars(self.encryptor.decryptDirName(folderName))
 
 		if parentFolderID != cachedParentFolderID and folderID != cachedRootFolderID:
 			# folder has been moved into another directory
