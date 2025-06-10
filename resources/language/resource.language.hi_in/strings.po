@@ -784,7 +784,7 @@ msgstr "एक कोडी फ्रेंडली निर्देशिक
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "सिंक एनएफओ"
+msgstr "सिंक NFO"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
@@ -796,7 +796,7 @@ msgstr "सिंक कलाकृति"
 
 msgctxt "#30514"
 msgid "Sync STRM"
-msgstr "सिंक एसटीआरएम"
+msgstr "सिंक STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"

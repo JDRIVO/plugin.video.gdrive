@@ -312,7 +312,7 @@ msgstr "Eliminazione dei file"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
-msgstr "Cartella di sincronizzazione in movimento"
+msgstr "Spostamento della cartella di sincronizzazione"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
@@ -820,7 +820,7 @@ msgstr "Mostra finestra di avanzamento sincronizzazione iniziale"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
-msgstr "Mostra la finestra di dialogo per l'eliminazione dei file""
+msgstr "Mostra la finestra di dialogo per l'eliminazione dei file"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"

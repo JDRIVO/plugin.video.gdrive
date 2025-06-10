@@ -36,7 +36,7 @@ msgstr "Paramètres de synchronisation"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "Interdiction d’API :"
+msgstr "API bloquée :"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
@@ -148,7 +148,7 @@ msgstr "Sélectionnez un dossier dans lequel exporter"
 
 msgctxt "#30035"
 msgid "File exported as"
-msgstr "Fichier exporté comme"
+msgstr "Fichier exporté en tant que"
 
 msgctxt "#30036"
 msgid "Accounts imported"
@@ -156,7 +156,7 @@ msgstr "Comptes importés"
 
 msgctxt "#30037"
 msgid "Account import failed."
-msgstr "L'importation du compte a échoué."
+msgstr "Échec de l'importation du compte."
 
 msgctxt "#30038"
 msgid "My Drive"
@@ -212,7 +212,7 @@ msgstr "Fréquence de synchronisation"
 
 msgctxt "#30051"
 msgid "Sync on startup"
-msgstr "Synchroniser sur le démarrage"
+msgstr "Synchroniser au démarrage"
 
 msgctxt "#30052"
 msgid "Syncing folders"
@@ -220,7 +220,7 @@ msgstr "Synchronisation des dossiers"
 
 msgctxt "#30053"
 msgid "Processing files"
-msgstr "Traitement des fichiers"
+msgstr "Traitement des fichiers en cours"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
@@ -228,7 +228,7 @@ msgstr "Êtes-vous sûr de vouloir supprimer le cache de synchronisation ?"
 
 msgctxt "#30055"
 msgid "Cache deleted"
-msgstr "Cache supprimé"
+msgstr "Le cache a été supprimé."
 
 msgctxt "#30056"
 msgid "Failed to delete the cache. See log for details."
@@ -308,7 +308,7 @@ msgstr "Suppression du dossier de synchronisation"
 
 msgctxt "#30075"
 msgid "Deleting files"
-msgstr "Suppression de fichiers"
+msgstr "Suppression de fichiers en cours"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
@@ -340,7 +340,7 @@ msgstr "Synchronisation commencée"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
-msgstr "Résolution prioritaire"
+msgstr "Priorité de résolution"
 
 msgctxt "#30084"
 msgid "Close"
@@ -372,7 +372,7 @@ msgstr "Synchroniser plusieurs"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Dossier de recherche"
+msgstr "Rechercher dans le dossier"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
@@ -456,7 +456,7 @@ msgstr "Chiffrement du nom de fichier"
 
 msgctxt "#30112"
 msgid "Filename encoding"
-msgstr "Encodage de nom de fichier"
+msgstr "Encodage du nom de fichier"
 
 msgctxt "#30113"
 msgid "Suffix"
@@ -464,7 +464,7 @@ msgstr "Suffixe"
 
 msgctxt "#30114"
 msgid "Encrypt file data"
-msgstr "Crypter les données des fichiers"
+msgstr "Chiffrer les données des fichiers"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
@@ -532,7 +532,7 @@ msgstr "Profil supprimé"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "Synchronisé tous les lecteurs"
+msgstr "Tous les lecteurs synchronisés"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
@@ -576,7 +576,7 @@ msgstr "Échec de la synchronisation"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "Synchroniser tous les lecteurs"
+msgstr "Synchronisation de tous les lecteurs"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
@@ -672,7 +672,7 @@ msgstr "URI de redirection"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "Validation"
+msgstr "Validation en cours"
 
 msgctxt "#30300"
 msgid "Playback"
@@ -680,7 +680,6 @@ msgstr "Lecture"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "Sélection de résolution rapide (si disponible)"
 msgstr "Demander la sélection de la résolution (si disponible)."
 
 msgctxt "#30302"
@@ -773,7 +772,7 @@ msgstr "Suffixe STRM"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
-msgstr "A des fichiers chiffrés avec"
+msgstr "Contient des fichiers chiffrés avec"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
@@ -809,7 +808,7 @@ msgstr "Région TMDB"
 
 msgctxt "#30517"
 msgid "TMDB adult content"
-msgstr "Contenu adulte TMDB"
+msgstr "Contenu pour adultes TMDB"
 
 msgctxt "#30600"
 msgid "GUI"

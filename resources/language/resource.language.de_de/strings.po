@@ -216,11 +216,11 @@ msgstr "Synchronisation beim Start"
 
 msgctxt "#30052"
 msgid "Syncing folders"
-msgstr "Synchronisierungsordner"
+msgstr "Synchronisiere Ordner"
 
 msgctxt "#30053"
 msgid "Processing files"
-msgstr "Verarbeitungsdateien"
+msgstr "Verarbeite Dateien"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
@@ -304,11 +304,11 @@ msgstr "Synchronisierung"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
-msgstr "Synchronisierungsordner löschen"
+msgstr "Lösche Synchronisierungsordner"
 
 msgctxt "#30075"
 msgid "Deleting files"
-msgstr "Dateien löschen"
+msgstr "Lösche Dateien"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
@@ -532,7 +532,7 @@ msgstr "Profil gelöscht"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "Synchronisierte alle Laufwerke"
+msgstr "Alle Laufwerke synchronisiert"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
@@ -576,7 +576,7 @@ msgstr "Synchronisierung fehlgeschlagen"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "Alle Laufwerke synchronisieren"
+msgstr "Alle Laufwerke werden synchronisiert"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
@@ -672,7 +672,7 @@ msgstr "Weiterleitungs-URI"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "Validieren"
+msgstr "Validierung läuft"
 
 msgctxt "#30300"
 msgid "Playback"
@@ -684,7 +684,7 @@ msgstr "Auswahl der Anzeigeauflösung (falls verfügbar)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
-msgstr "Videoauflösung Priorität"
+msgstr "Videoauflösungs-Priorität"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
@@ -696,11 +696,11 @@ msgstr "Untertitelformat"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
-msgstr "Untertitel werden nicht gleich genannt wie STRM und befinden sich in einem isolierten Ordner mit STRM"
+msgstr "Untertitel werden nicht nicht gleich benannt wie STRM und befinden sich in einem isolierten Ordner mit STRM"
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
-msgstr "Untertitel werden gleich genannt wie STRM"
+msgstr "Untertitel werden gleich benannt wie STRM"
 
 msgctxt "#30307"
 msgid "Default playback account"
@@ -740,7 +740,7 @@ msgstr "Videoquelle"
 
 msgctxt "#30500"
 msgid "Sync"
-msgstr "Synchronisation"
+msgstr "Synchronisieren"
 
 msgctxt "#30501"
 msgid "Threads"
@@ -812,11 +812,11 @@ msgstr "TMDB-Inhalte für Erwachsene"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "Benutzeroberfläche"
+msgstr "Oberfläche"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Anfangsfortschrittsdialog der Synchronisation anzeigen"
+msgstr "Initialen Synchronisierungs-Fortschrittsdialog anzeigen"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"

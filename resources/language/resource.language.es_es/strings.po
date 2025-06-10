@@ -36,7 +36,7 @@ msgstr "Configuración de sincronización"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "Bloqueo de API:"
+msgstr "API bloqueada:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
@@ -64,7 +64,7 @@ msgstr "Configuración de sincronización"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "Carpeta de sincronización"
+msgstr "Sincronizar carpeta"
 
 msgctxt "#30014"
 msgid "Select an account"
@@ -76,7 +76,7 @@ msgstr "El nombre de la unidad ya existe; debe ser único."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
-msgstr "¿Está seguro de que desea eliminar la unidad:"
+msgstr "¿Estás seguro de que quieres eliminar la unidad:"
 
 msgctxt "#30017"
 msgid "Drive settings"
@@ -156,7 +156,7 @@ msgstr "Cuentas importadas"
 
 msgctxt "#30037"
 msgid "Account import failed."
-msgstr "La importación de la cuenta falló."
+msgstr "La importación de la cuenta ha fallado."
 
 msgctxt "#30038"
 msgid "My Drive"
@@ -184,7 +184,7 @@ msgstr "Consulta de búsqueda"
 
 msgctxt "#30044"
 msgid "Sync completed"
-msgstr "Sincronización completa"
+msgstr "Sincronización completada"
 
 msgctxt "#30045"
 msgid "Files have been deleted"
@@ -292,7 +292,7 @@ msgstr "Ingrese el intervalo de sincronización en minutos"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
-msgstr "Ingrese el tiempo para sincronizar archivos"
+msgstr "Ingrese la hora para sincronizar archivos"
 
 msgctxt "#30072"
 msgid "Select a video source"
@@ -336,11 +336,11 @@ msgstr "Debe asignar una frecuencia de sincronización."
 
 msgctxt "#30082"
 msgid "Sync started"
-msgstr "La sincronización comenzó"
+msgstr "Sincronización iniciada"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
-msgstr "Prioridad resolución"
+msgstr "Prioridad de resolución"
 
 msgctxt "#30084"
 msgid "Close"
@@ -364,15 +364,15 @@ msgstr "Eliminando caché de sincronización"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "Creación del ID y secreto de cliente"
+msgstr "Creación del ID y clave secreta de cliente"
 
 msgctxt "#30090"
 msgid "Sync multiple"
-msgstr "Sincronizar múltiples"
+msgstr "Sincronizar varios"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Carpeta de búsqueda"
+msgstr "Buscar en carpeta"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
@@ -412,7 +412,7 @@ msgstr "La carpeta de sincronización no existe."
 
 msgctxt "#30101"
 msgid "Failed to move the folder. The folder can't be moved into itself."
-msgstr "No se pudo mover la carpeta. La carpeta no puede moverse dentro de sí misma."
+msgstr "No se pudo mover la carpeta. No se puede mover una carpeta dentro de sí misma."
 
 msgctxt "#30102"
 msgid "Failed to move the folder. The folder already exists."
@@ -512,7 +512,7 @@ msgstr "Perfil actualizado"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
-msgstr "Debe asignar un nombre de perfil."
+msgstr "Debe asignar una nombre de perfil."
 
 msgctxt "#30127"
 msgid "You must assign a password."
@@ -520,7 +520,7 @@ msgstr "Debe asignar una contraseña."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Debes asignar una sal."
+msgstr "Debe asignar una sal."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -532,7 +532,7 @@ msgstr "Perfil eliminado"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "Sincronizadas todas las unidades"
+msgstr "Todas las unidades sincronizadas"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
@@ -588,7 +588,7 @@ msgstr "Archivo eliminado"
 
 msgctxt "#30145"
 msgid "File deletion failed"
-msgstr "Falló la eliminación de archivos"
+msgstr "Falló la eliminación del archivo"
 
 msgctxt "#30146"
 msgid "Are you sure you want to delete the TMDB cache?"
@@ -680,7 +680,7 @@ msgstr "Reproducción"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "Selección de resolución de prompts (si está disponible)"
+msgstr "Solicitar selección de resolución (si está disponible)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
@@ -700,7 +700,7 @@ msgstr "Los subtítulos no se nombran igual que STRM y están en una carpeta ais
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
-msgstr "Los subtítulos se denominan igual que STRM"
+msgstr "Los subtítulos tienen el mismo nombre que STRM"
 
 msgctxt "#30307"
 msgid "Default playback account"
@@ -728,7 +728,7 @@ msgstr "Actualizar la biblioteca automáticamente"
 
 msgctxt "#30405"
 msgid "Display dialog"
-msgstr "Diálogo de visualización"
+msgstr "Mostrar diálogo"
 
 msgctxt "#30406"
 msgid "Clean library automatically"

@@ -128,7 +128,7 @@ msgstr "لم يتم العثور على المفتاح الخاص والبريد
 
 msgctxt "#30029"
 msgid "The client email wasn't found in:"
-msgstr "لم يتم العثور على بريد إلكتروني العميل في:"
+msgstr "لم يتم العثور على البريد الإلكتروني للعميل في:"
 
 msgctxt "#30030"
 msgid "The private key wasn't found in:"
@@ -164,7 +164,7 @@ msgstr "محرك الأقراص الخاص بي"
 
 msgctxt "#30039"
 msgid "Shared With Me"
-msgstr "المجلدات المشتركة معي"
+msgstr "مشارك معي"
 
 msgctxt "#30040"
 msgid "Shared Drives"
@@ -208,7 +208,7 @@ msgstr "وضع المزامنة"
 
 msgctxt "#30050"
 msgid "Sync frequency"
-msgstr "تردد المزامنة"
+msgstr "تكرار المزامنة"
 
 msgctxt "#30051"
 msgid "Sync on startup"
@@ -280,7 +280,7 @@ msgstr "إلغاء"
 
 msgctxt "#30068"
 msgid "interval"
-msgstr "فاصل"
+msgstr "فترات"
 
 msgctxt "#30069"
 msgid "schedule"
@@ -300,7 +300,7 @@ msgstr "حدد مصدر فيديو"
 
 msgctxt "#30073"
 msgid "Syncing"
-msgstr "مزامنة"
+msgstr "جارٍ المزامنة"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
@@ -372,7 +372,7 @@ msgstr "زامن العديد"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "مجلد البحث"
+msgstr "البحث في المجلد"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
@@ -468,7 +468,7 @@ msgstr "تشفير بيانات الملف"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
-msgstr "تشفير أسماء الدليل"
+msgstr "تشفير أسماء المجلدات"
 
 msgctxt "#30116"
 msgid "Select a profile"
