@@ -40,7 +40,7 @@ msgstr "API-Sperre:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "Wechsel zum Ausweichkonto"
+msgstr "Wechsle zu Ausweichkonto"
 
 msgctxt "#30008"
 msgid "Videos"
@@ -216,11 +216,11 @@ msgstr "Synchronisation beim Start"
 
 msgctxt "#30052"
 msgid "Syncing folders"
-msgstr "Synchronisiere Ordner"
+msgstr "Ordner werden synchronisiert"
 
 msgctxt "#30053"
 msgid "Processing files"
-msgstr "Verarbeite Dateien"
+msgstr "Dateien werden verarbeitet"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
@@ -260,11 +260,11 @@ msgstr "Synchronisation des Ordners beenden"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
-msgstr "Möchten Sie die mit diesem Ordner zugeordneten lokalen Dateien löschen?"
+msgstr "Möchten Sie die diesem Ordner zugeordneten lokalen Dateien löschen?"
 
 msgctxt "#30064"
 msgid "Do you want to delete the local files associated with these folders?"
-msgstr "Möchten Sie die lokalen Dateien löschen, die diesen Ordnern zugeordnet sind?"
+msgstr "Möchten Sie die diesen Ordnern zugeordneten lokalen Dateien löschen?"
 
 msgctxt "#30065"
 msgid "General"
@@ -300,15 +300,15 @@ msgstr "Wählen Sie eine Videoquelle aus"
 
 msgctxt "#30073"
 msgid "Syncing"
-msgstr "Synchronisierung"
+msgstr "Synchronisiere"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
-msgstr "Lösche Synchronisierungsordner"
+msgstr "Synchronisierungsordner wird gelöscht"
 
 msgctxt "#30075"
 msgid "Deleting files"
-msgstr "Lösche Dateien"
+msgstr "Dateien werden gelöscht"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
@@ -324,7 +324,7 @@ msgstr "Mit diesem Laufwerk sind keine OAuth-Konten verbunden."
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
-msgstr "Sie müssen einen Synchronisierungsweg zuweisen."
+msgstr "Sie müssen einen Synchronisierungspfad zuweisen."
 
 msgctxt "#30080"
 msgid "You must assign a sync mode."
@@ -340,7 +340,7 @@ msgstr "Synchronisierung gestartet"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
-msgstr "Videoauflösungspriorität"
+msgstr "Auflösungspriorität"
 
 msgctxt "#30084"
 msgid "Close"
@@ -368,7 +368,7 @@ msgstr "Erstellung von Client-ID und Client-Secret"
 
 msgctxt "#30090"
 msgid "Sync multiple"
-msgstr "Multiple synchronisieren"
+msgstr "Mehrere synchronisieren"
 
 msgctxt "#30091"
 msgid "Search folder"
@@ -379,7 +379,7 @@ msgid "Sync folder isn't set."
 msgstr "Der Synchronisierungsordner ist nicht festgelegt."
 
 msgctxt "#30093"
-msgid "Select a folder to move to"
+msgid "Select a folder to move into"
 msgstr "Wählen Sie einen Ordner aus, in den verschoben werden soll"
 
 msgctxt "#30094"
@@ -448,7 +448,7 @@ msgstr "Passwort"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Salz"
+msgstr "Salt"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -520,7 +520,7 @@ msgstr "Sie müssen ein Passwort zuweisen."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Sie müssen ein Salz zuweisen."
+msgstr "Sie müssen ein Salt zuweisen."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -616,7 +616,7 @@ msgstr "Sind Sie sicher, dass Sie das Konto löschen möchten:"
 
 msgctxt "#30158"
 msgid "Account Deletion"
-msgstr "Kontodeletion"
+msgstr "Kontolöschung"
 
 msgctxt "#30159"
 msgid "Delete"
@@ -680,15 +680,15 @@ msgstr "Wiedergabe"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "Auswahl der Anzeigeauflösung (falls verfügbar)"
+msgstr "Auflösungsauswahl anbieten (falls verfügbar)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
-msgstr "Videoauflösungs-Priorität"
+msgstr "Videoauflösungspriorität"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
-msgstr "Untertitel automatisch einstellen"
+msgstr "Automatische Untertitel-Einstellung"
 
 msgctxt "#30304"
 msgid "Subtitle format"
@@ -696,7 +696,7 @@ msgstr "Untertitelformat"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
-msgstr "Untertitel werden nicht nicht gleich benannt wie STRM und befinden sich in einem isolierten Ordner mit STRM"
+msgstr "Untertitel werden nicht gleich benannt wie STRM und befinden sich in einem isolierten Ordner mit STRM"
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
@@ -776,11 +776,11 @@ msgstr "Hat Dateien verschlüsselt mit"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Videos in ein Kodi-kompatibles Format umbenennen"
+msgstr "Videos in ein Kodi-freundliches Format umbenennen"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Kodi-kompatible Verzeichnisstruktur erstellen"
+msgstr "Kodi-freundliche Verzeichnisstruktur erstellen"
 
 msgctxt "#30511"
 msgid "Sync NFO"
@@ -816,7 +816,7 @@ msgstr "Oberfläche"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Initialen Synchronisierungs-Fortschrittsdialog anzeigen"
+msgstr "Fortschrittsdialog für die erste Synchronisierung anzeigen"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"

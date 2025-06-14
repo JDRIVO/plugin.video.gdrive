@@ -20,11 +20,11 @@ msgstr "ヘルプ"
 
 msgctxt "#30002"
 msgid "Rename"
-msgstr "名前を変更する"
+msgstr "リネーム"
 
 msgctxt "#30003"
 msgid "is no longer valid. Do you want to delete this account?"
-msgstr "もう有効ではありません。このアカウントを削除しますか？"
+msgstr "はもう有効ではありません。このアカウントを削除しますか？"
 
 msgctxt "#30004"
 msgid "Drive Name"
@@ -124,15 +124,15 @@ msgstr "このドライブに関連付けられたすべてのファイルを削
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
-msgstr "アカウントに秘密鍵とクライアントのメールが見つかりません:"
+msgstr "秘密鍵とクライアントメールが以下で見つかりませんでした："
 
 msgctxt "#30029"
 msgid "The client email wasn't found in:"
-msgstr "クライアントの電子メールが見つかりませんでした："
+msgstr "クライアントメールが以下で見つかりませんでした："
 
 msgctxt "#30030"
 msgid "The private key wasn't found in:"
-msgstr "秘密鍵が見つかりませんでした："
+msgstr "秘密鍵が以下で見つかりませんでした："
 
 msgctxt "#30031"
 msgid "Folder moved"
@@ -208,7 +208,7 @@ msgstr "同期モード"
 
 msgctxt "#30050"
 msgid "Sync frequency"
-msgstr "同期周波数"
+msgstr "同期頻度"
 
 msgctxt "#30051"
 msgid "Sync on startup"
@@ -272,7 +272,7 @@ msgstr "一般"
 
 msgctxt "#30066"
 msgid "OK"
-msgstr "わかりました"
+msgstr "はい"
 
 msgctxt "#30067"
 msgid "Cancel"
@@ -296,11 +296,11 @@ msgstr "ファイルを同期する時刻を入力してください"
 
 msgctxt "#30072"
 msgid "Select a video source"
-msgstr "ビデオソースを選択"
+msgstr "ビデオソースを選ぶ"
 
 msgctxt "#30073"
 msgid "Syncing"
-msgstr "同期しています"
+msgstr "同期中"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
@@ -372,14 +372,14 @@ msgstr "複数を同期"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "検索フォルダ"
+msgstr "フォルダを検索"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
 msgstr "同期フォルダが設定されていません。"
 
 msgctxt "#30093"
-msgid "Select a folder to move to"
+msgid "Select a folder to move into"
 msgstr "移動先のフォルダを選択してください"
 
 msgctxt "#30094"
@@ -584,7 +584,7 @@ msgstr "削除しますか："
 
 msgctxt "#30144"
 msgid "File deleted"
-msgstr "削除されたファイル"
+msgstr "ファイルが削除されました"
 
 msgctxt "#30145"
 msgid "File deletion failed"
@@ -596,7 +596,7 @@ msgstr "TMDBキャッシュを本当に削除してもよろしいですか？"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
-msgstr "TMDBキャッシュの削除"
+msgstr "TMDBキャッシュを削除中"
 
 msgctxt "#30148"
 msgid "duration"
@@ -620,7 +620,7 @@ msgstr "アカウントの削除"
 
 msgctxt "#30159"
 msgid "Delete"
-msgstr "消去"
+msgstr "削除"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
@@ -672,7 +672,7 @@ msgstr "リダイレクトURI"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "検証"
+msgstr "検証中"
 
 msgctxt "#30300"
 msgid "Playback"
@@ -680,7 +680,7 @@ msgstr "再生"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "解像度の選択を促す（利用可能な場合）"
+msgstr "解像度選択画面を表示する（利用可能な場合）"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
@@ -696,7 +696,7 @@ msgstr "字幕形式"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
-msgstr "字幕はSTRMと同じ名前ではなく、STRMと同じフォルダにあります"
+msgstr "字幕はSTRMと同じ名前ではなく、STRMと共に別のフォルダにあります"
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
@@ -760,15 +760,15 @@ msgstr "同期フォルダを削除"
 
 msgctxt "#30505"
 msgid "Sync defaults"
-msgstr "デフォルトを同期"
+msgstr "同期のデフォルト設定"
 
 msgctxt "#30506"
 msgid "STRM prefix"
-msgstr "STRMの接頭辞"
+msgstr "STRM接頭辞"
 
 msgctxt "#30507"
 msgid "STRM suffix"
-msgstr "STRMの接尾辞"
+msgstr "STRM接尾辞"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
@@ -776,19 +776,19 @@ msgstr "で暗号化されたファイルが含まれています"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Kodi対応形式にビデオ名を変更する"
+msgstr "Kodiに適合する形式に動画名を変更する"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Kodi対応のディレクトリ構造を作成する"
+msgstr "Kodi互換のディレクトリ構造を作成する"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "同期NFO"
+msgstr "NFOを同期"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "同期字幕"
+msgstr "字幕を同期"
 
 msgctxt "#30513"
 msgid "Sync artwork"
@@ -804,7 +804,7 @@ msgstr "TMDB検索言語"
 
 msgctxt "#30516"
 msgid "TMDB region"
-msgstr "TMDB領域"
+msgstr "TMDB地域"
 
 msgctxt "#30517"
 msgid "TMDB adult content"
@@ -812,11 +812,11 @@ msgstr "TMDB成人向けコンテンツ"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "インターフェース"
+msgstr "ジーユーアイ"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "初期同期の進行状況ダイアログを表示"
+msgstr "初期同期進行状況ダイアログを表示"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
@@ -824,7 +824,7 @@ msgstr "ファイル削除ダイアログを表示"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "ドライブ選択メニューに前回の同期からの経過時間を表示する"
+msgstr "ドライブ選択メニューで最終同期からの経過時間を表示"
 
 msgctxt "#30700"
 msgid "Accounts"

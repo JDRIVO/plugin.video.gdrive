@@ -379,7 +379,7 @@ msgid "Sync folder isn't set."
 msgstr "尚未设置同步文件夹。"
 
 msgctxt "#30093"
-msgid "Select a folder to move to"
+msgid "Select a folder to move into"
 msgstr "选择一个文件夹以移至"
 
 msgctxt "#30094"

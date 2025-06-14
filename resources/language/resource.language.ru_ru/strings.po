@@ -24,7 +24,7 @@ msgstr "Переименовать"
 
 msgctxt "#30003"
 msgid "is no longer valid. Do you want to delete this account?"
-msgstr "больше не действителен. Хотите удалить эту учетную запись?"
+msgstr "больше недействителен. Вы хотите удалить эту учетную запись?"
 
 msgctxt "#30004"
 msgid "Drive Name"
@@ -36,7 +36,7 @@ msgstr "Настройки синхронизации"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "Бан API:"
+msgstr "Блокировка API:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
@@ -104,7 +104,7 @@ msgstr "Удалить аккаунты"
 
 msgctxt "#30023"
 msgid "Validate"
-msgstr "Проверять"
+msgstr "Проверить"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
@@ -144,11 +144,11 @@ msgstr "Выберите файл для импорта"
 
 msgctxt "#30034"
 msgid "Select a folder to export to"
-msgstr "Выберите папку для экспорта в"
+msgstr "Выберите папку для экспорта"
 
 msgctxt "#30035"
 msgid "File exported as"
-msgstr "Файл экспортируется как"
+msgstr "Файл экспортирован как"
 
 msgctxt "#30036"
 msgid "Accounts imported"
@@ -232,7 +232,7 @@ msgstr "Кэш удален"
 
 msgctxt "#30056"
 msgid "Failed to delete the cache. See log for details."
-msgstr "Не удалось удалить кеш. Смотрите журнал для деталей."
+msgstr "Не удалось удалить кэш. См. журнал для деталей."
 
 msgctxt "#30057"
 msgid "Playback account not found."
@@ -248,7 +248,7 @@ msgstr "Область"
 
 msgctxt "#30060"
 msgid "Adult content"
-msgstr "Взрослый контент"
+msgstr "Контент для взрослых"
 
 msgctxt "#30061"
 msgid "Stop syncing all folders"
@@ -260,15 +260,15 @@ msgstr "Остановить синхронизацию папки"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
-msgstr "Вы хотите удалить локальные файлы, связанные с этой папкой?"
+msgstr "Удалить локальные файлы, связанные с этой папкой?"
 
 msgctxt "#30064"
 msgid "Do you want to delete the local files associated with these folders?"
-msgstr "Вы хотите удалить локальные файлы, связанные с этими папками?"
+msgstr "Удалить локальные файлы, связанные с этими папками?"
 
 msgctxt "#30065"
 msgid "General"
-msgstr "Общий"
+msgstr "Общие"
 
 msgctxt "#30066"
 msgid "OK"
@@ -316,11 +316,11 @@ msgstr "Перемещение папки синхронизации"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
-msgstr "Выберите папку, в которой будут храниться ваши файлы"
+msgstr "Выберите папку для хранения ваших файлов"
 
 msgctxt "#30078"
 msgid "There are no OAuth accounts connected to this drive."
-msgstr "К этому диску не подключено ни одной учетной записи OAuth."
+msgstr "К этому диску нет подключенных учетных записей OAuth."
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
@@ -379,7 +379,7 @@ msgid "Sync folder isn't set."
 msgstr "Папка синхронизации не задана."
 
 msgctxt "#30093"
-msgid "Select a folder to move to"
+msgid "Select a folder to move into"
 msgstr "Выберите папку для перемещения к"
 
 msgctxt "#30094"
@@ -392,7 +392,7 @@ msgstr "Папка удалена"
 
 msgctxt "#30096"
 msgid "Failed to delete the sync folder. See log for details."
-msgstr "Не удалось удалить папку синхронизации. Смотрите журнал для деталей."
+msgstr "Не удалось удалить папку синхронизации. См. журнал для деталей."
 
 msgctxt "#30097"
 msgid "Accounts file deleted"
@@ -400,7 +400,7 @@ msgstr "Удален файл учетных записей"
 
 msgctxt "#30098"
 msgid "Failed to delete the accounts file. See log for details."
-msgstr "Не удалось удалить файл учетных записей. Смотрите журнал для деталей."
+msgstr "Не удалось удалить файл учетных записей. См. журнал для деталей."
 
 msgctxt "#30099"
 msgid "Enter the filename"
@@ -464,11 +464,11 @@ msgstr "Суффикс"
 
 msgctxt "#30114"
 msgid "Encrypt file data"
-msgstr "Зашифруйте данные файла"
+msgstr "Шифровать данные файла"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
-msgstr "Имена каталогов шифрования"
+msgstr "Шифровать имен каталогов"
 
 msgctxt "#30116"
 msgid "Select a profile"
@@ -488,7 +488,7 @@ msgstr "Профили импортированы"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
-msgstr "Назначьте профиль шифрования по умолчанию, прежде чем воспроизводить зашифрованное видео."
+msgstr "Необходимо назначить профиль шифрования по умолчанию, прежде чем воспроизводить зашифрованное видео."
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
@@ -500,7 +500,7 @@ msgstr "Профилей шифрования не найдено."
 
 msgctxt "#30123"
 msgid "Profile Manager"
-msgstr "Менеджер профиля"
+msgstr "Менеджер профилей"
 
 msgctxt "#30124"
 msgid "Profile created"
@@ -532,7 +532,7 @@ msgstr "Профиль удален"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "Синхронизировал все диски"
+msgstr "Все диски синхронизированы"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
@@ -576,7 +576,7 @@ msgstr "Не удалось синхронизировать"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "Синхронизация всех дисков"
+msgstr "Идет синхронизация всех дисков"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
@@ -588,7 +588,7 @@ msgstr "Файл удален"
 
 msgctxt "#30145"
 msgid "File deletion failed"
-msgstr "Удаление файла не удалось"
+msgstr "Не удалось удалить файл"
 
 msgctxt "#30146"
 msgid "Are you sure you want to delete the TMDB cache?"
@@ -596,7 +596,7 @@ msgstr "Вы уверены, что хотите удалить кэш TMDB?"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
-msgstr "Удаление кеша TMDB"
+msgstr "Удаление кэша TMDB"
 
 msgctxt "#30148"
 msgid "duration"
@@ -640,11 +640,11 @@ msgstr "Файл не был найден в учетной записи:"
 
 msgctxt "#30214"
 msgid "Add service accounts"
-msgstr "Добавить учетные записи"
+msgstr "Добавить сервисные учетные записи"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Перейдите на"
+msgstr "Посетите"
 
 msgctxt "#30216"
 msgid "in a web browser."
@@ -668,7 +668,7 @@ msgstr "с этим"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "Перенаправить Uri"
+msgstr "редирект URI"
 
 msgctxt "#30222"
 msgid "Validating"
@@ -688,7 +688,7 @@ msgstr "Приоритет разрешения видео"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
-msgstr "Установите субтитры автоматически"
+msgstr "Устанавливать субтитры автоматически"
 
 msgctxt "#30304"
 msgid "Subtitle format"
@@ -712,15 +712,15 @@ msgstr "Библиотека"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "Отметьте фильмы, как смотрели в"
+msgstr "Отметить фильмы как просмотренные при"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "Отметьте эпизоды, которые смотрели на"
+msgstr "Отметить эпизоды как просмотренные при"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "Импортируйте данные медиа -флага от STRM"
+msgstr "Импортировать данные медиа-флага от STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
@@ -736,7 +736,7 @@ msgstr "Очистить библиотеку автоматически"
 
 msgctxt "#30407"
 msgid "Video source"
-msgstr "Видео источник"
+msgstr "Видеоисточник"
 
 msgctxt "#30500"
 msgid "Sync"
@@ -748,11 +748,11 @@ msgstr "Потоки"
 
 msgctxt "#30502"
 msgid "Move sync folder"
-msgstr "Переместите папку синхронизации"
+msgstr "Переместить папку синхронизации"
 
 msgctxt "#30503"
 msgid "Delete sync cache"
-msgstr "Удалить синхронизационный кеш"
+msgstr "Удалить кэш синхронизации"
 
 msgctxt "#30504"
 msgid "Delete sync folder"
@@ -760,19 +760,19 @@ msgstr "Удалить папку синхронизации"
 
 msgctxt "#30505"
 msgid "Sync defaults"
-msgstr "Синхронизации по умолчанию"
+msgstr "Настройки синхронизации по умолчанию"
 
 msgctxt "#30506"
 msgid "STRM prefix"
-msgstr "STRM Префикс"
+msgstr "Префикс STRM"
 
 msgctxt "#30507"
 msgid "STRM suffix"
-msgstr "STRM Суффикс"
+msgstr "Суффикс STRM"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
-msgstr "Есть файлы, зашифрованные с"
+msgstr "Имеет файлы, зашифрованные с помощью"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
@@ -792,7 +792,7 @@ msgstr "Синхронизировать субтитры"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Синхронизировать работы"
+msgstr "Синхронизировать обложки"
 
 msgctxt "#30514"
 msgid "Sync STRM"
@@ -808,7 +808,7 @@ msgstr "Область TMDB"
 
 msgctxt "#30517"
 msgid "TMDB adult content"
-msgstr "Содержание взрослых TMDB"
+msgstr "Контент для взрослых TMDB"
 
 msgctxt "#30600"
 msgid "GUI"
@@ -816,7 +816,7 @@ msgstr "Графический интерфейс"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Показать диалог прогресса начальной синхронизации"
+msgstr "Показать диалог начальной синхронизации"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
@@ -824,7 +824,7 @@ msgstr "Показать диалог удаления файла"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Показать время с последней синхронизации в меню выбора диска"
+msgstr "Показать время, прошедшее с последней синхронизации, в меню выбора диска"
 
 msgctxt "#30700"
 msgid "Accounts"

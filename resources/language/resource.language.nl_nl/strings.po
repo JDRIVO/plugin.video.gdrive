@@ -40,7 +40,7 @@ msgstr "API-blokkering:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "Overschakelen naar Fallback-account"
+msgstr "Overschakelen naar fallback-account"
 
 msgctxt "#30008"
 msgid "Videos"
@@ -128,7 +128,7 @@ msgstr "De privésleutel en klant-e-mail zijn niet gevonden in:"
 
 msgctxt "#30029"
 msgid "The client email wasn't found in:"
-msgstr "De klant-e-mail is niet gevonden in::"
+msgstr "De klant-e-mail is niet gevonden in:"
 
 msgctxt "#30030"
 msgid "The private key wasn't found in:"
@@ -212,15 +212,15 @@ msgstr "Synchronisatiefrequentie"
 
 msgctxt "#30051"
 msgid "Sync on startup"
-msgstr "Synchroniseerd bij het opstarten"
+msgstr "Synchroniseren bij opstarten"
 
 msgctxt "#30052"
 msgid "Syncing folders"
-msgstr "Synchroniseren van mappen"
+msgstr "Mappen synchroniseren"
 
 msgctxt "#30053"
 msgid "Processing files"
-msgstr "Het verwerken van bestanden"
+msgstr "Bestanden verwerken"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
@@ -240,7 +240,7 @@ msgstr "Afspeelaccount niet gevonden."
 
 msgctxt "#30058"
 msgid "Search language"
-msgstr "Doorzoektaal"
+msgstr "Zoektaal"
 
 msgctxt "#30059"
 msgid "Region"
@@ -252,11 +252,11 @@ msgstr "Inhoud voor volwassenen"
 
 msgctxt "#30061"
 msgid "Stop syncing all folders"
-msgstr "Stop met het synchroniseren van alle mappen"
+msgstr "Stop alle mappen synchroniseren"
 
 msgctxt "#30062"
 msgid "Stop syncing folder"
-msgstr "Stop met het synchroniseren van de map"
+msgstr "Stop deze map synchroniseren"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
@@ -292,11 +292,11 @@ msgstr "Voer het synchronisatie-interval in minuten in"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
-msgstr "Voer de tijd in om bestanden te synchroniseren"
+msgstr "Voer het tijdstip in om bestanden te synchroniseren"
 
 msgctxt "#30072"
 msgid "Select a video source"
-msgstr "Selecteer een video-bron"
+msgstr "Selecteer een videobron"
 
 msgctxt "#30073"
 msgid "Syncing"
@@ -312,7 +312,7 @@ msgstr "Bestanden verwijderen"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
-msgstr "Synchronisatiemap wordt verplaatst"
+msgstr "Synchronisatiemap verplaatsen"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
@@ -332,7 +332,7 @@ msgstr "U moet een synchronisatie-modus toewijzen."
 
 msgctxt "#30081"
 msgid "You must assign a sync frequency."
-msgstr "U moet een sync-frequentie toewijzen."
+msgstr "U moet een synchronisatiefrequentie toewijzen."
 
 msgctxt "#30082"
 msgid "Sync started"
@@ -356,7 +356,7 @@ msgstr "Mapselectie"
 
 msgctxt "#30087"
 msgid "manual"
-msgstr "handmatige"
+msgstr "handmatig"
 
 msgctxt "#30088"
 msgid "Deleting sync cache"
@@ -372,14 +372,14 @@ msgstr "Synchroniseer meerdere"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Zoekmap"
+msgstr "Map zoeken"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
 msgstr "Synchronisatiemap is niet ingesteld."
 
 msgctxt "#30093"
-msgid "Select a folder to move to"
+msgid "Select a folder to move into"
 msgstr "Selecteer een map om naartoe te verplaatsen"
 
 msgctxt "#30094"
@@ -424,7 +424,7 @@ msgstr "Uitsluiten"
 
 msgctxt "#30104"
 msgid "Include"
-msgstr "Erbij betrekken"
+msgstr "Inclusief"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
@@ -440,7 +440,7 @@ msgstr "Profielnaam"
 
 msgctxt "#30108"
 msgid "Encryption type"
-msgstr "Coderingstype"
+msgstr "Versleutelingstype"
 
 msgctxt "#30109"
 msgid "Password"
@@ -464,11 +464,11 @@ msgstr "Achtervoegsel"
 
 msgctxt "#30114"
 msgid "Encrypt file data"
-msgstr "Bestandsgegevens coderen"
+msgstr "Bestandsgegevens versleutelen"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
-msgstr "Namen van de directory coderen"
+msgstr "Directoriemamen versleutelen"
 
 msgctxt "#30116"
 msgid "Select a profile"
@@ -488,15 +488,15 @@ msgstr "Profielen geïmporteerd"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
-msgstr "Wijs een standaardcoderingsprofiel toe voordat u een gecodeerde video afspeelt."
+msgstr "Wijs een standaardversleutelingsprofiel toe voordat u een versleutelde video afspeelt."
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
-msgstr "Het coderingsprofiel dat aan dit bestand is gekoppeld, bestaat niet."
+msgstr "Het versleutelingsprofiel dat aan dit bestand is gekoppeld, bestaat niet."
 
 msgctxt "#30122"
 msgid "No encryption profiles found."
-msgstr "Geen coderingsprofielen gevonden."
+msgstr "Geen versleutelingsprofielen gevonden."
 
 msgctxt "#30123"
 msgid "Profile Manager"
@@ -572,7 +572,7 @@ msgstr "uren"
 
 msgctxt "#30141"
 msgid "Failed to sync"
-msgstr "Kan niet worden gesynchroniseerd"
+msgstr "Synchronisatie mislukt"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
@@ -580,7 +580,7 @@ msgstr "Alle schijven worden gesynchroniseerd"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
-msgstr "Wil je verwijderen:"
+msgstr "Wilt u verwijderen:"
 
 msgctxt "#30144"
 msgid "File deleted"
@@ -612,7 +612,7 @@ msgstr "resolutie"
 
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
-msgstr "Weet je zeker dat je account wilt verwijderen:"
+msgstr "Weet u zeker dat u account wilt verwijderen:"
 
 msgctxt "#30158"
 msgid "Account Deletion"
@@ -624,7 +624,7 @@ msgstr "Verwijderen"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Stop met het synchroniseren van geselecteerde mappen"
+msgstr "Stop synchroniseren van geselecteerde mappen"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
@@ -652,7 +652,7 @@ msgstr "in een webbrowser."
 
 msgctxt "#30217"
 msgid "You must create an"
-msgstr "Je moet een"
+msgstr "U moet een"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
@@ -664,15 +664,15 @@ msgstr "Webapplicatie"
 
 msgctxt "#30220"
 msgid "with this"
-msgstr "aanmaken met deze"
+msgstr "met deze"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "Direct Uri omleiden"
+msgstr "Redirect-URI"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "Het valideren"
+msgstr "Valideren"
 
 msgctxt "#30300"
 msgid "Playback"
@@ -680,15 +680,15 @@ msgstr "Afspelen"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "Selectie van snelle resolutie (indien beschikbaar)"
+msgstr "Resolutie selectie weergeven (indien beschikbaar)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
-msgstr "Video-resolutie prioriteit"
+msgstr "Videoresolutieprioriteit"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
-msgstr "Stel ondertitels automatisch in"
+msgstr "Ondertitels automatisch instellen"
 
 msgctxt "#30304"
 msgid "Subtitle format"
@@ -724,7 +724,7 @@ msgstr "Importeer media-vlaggegevens van STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "Update Library automatisch"
+msgstr "Bibliotheek automatisch updaten"
 
 msgctxt "#30405"
 msgid "Display dialog"
@@ -732,7 +732,7 @@ msgstr "Dialoogvenster weergeven"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "Schone bibliotheek automatisch"
+msgstr "Bibliotheek automatisch opschonen"
 
 msgctxt "#30407"
 msgid "Video source"
@@ -772,15 +772,15 @@ msgstr "STRM-achtervoegsel"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
-msgstr "Heeft bestanden gecodeerd met"
+msgstr "Bevat bestanden versleuteld met"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Hernoem video's tot een Kodi-vriendelijk formaat"
+msgstr "Hernoem video's naar een Kodi-vriendelijk formaat"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Maak een Kodi-vriendelijke directorystructuur"
+msgstr "Maak een Kodi-vriendelijke mapstructuur"
 
 msgctxt "#30511"
 msgid "Sync NFO"
@@ -816,7 +816,7 @@ msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Dialoogvenster Initiële synchronisatie voortgang weergeven"
+msgstr "Dialoogvenster met voortgang initiële synchronisatie weergeven"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
@@ -824,19 +824,19 @@ msgstr "Dialoogvenster Bestandsverwijdering weergeven"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Toon tijd sinds laatste synchronisatie in het schijfselectiemenu"
+msgstr "Toon de tijd sinds de laatste synchronisatie in het schijfselectiemenu"
 
 msgctxt "#30700"
 msgid "Accounts"
-msgstr "Rekeningen"
+msgstr "Gebruikersaccounts"
 
 msgctxt "#30701"
 msgid "Import accounts"
-msgstr "Rekeningen importeren"
+msgstr "Accounts importeren"
 
 msgctxt "#30702"
 msgid "Export accounts"
-msgstr "Exportrekeningen exporteren"
+msgstr "Accounts exporteren"
 
 msgctxt "#30703"
 msgid "Delete all accounts"
@@ -844,7 +844,7 @@ msgstr "Verwijder alle accounts"
 
 msgctxt "#30800"
 msgid "Encryption"
-msgstr "Codering"
+msgstr "Versleuteling"
 
 msgctxt "#30801"
 msgid "Default profile"
@@ -864,11 +864,11 @@ msgstr "Verwijder profielen"
 
 msgctxt "#30805"
 msgid "Import profiles"
-msgstr "Importprofielen importeren"
+msgstr "Profielen importeren"
 
 msgctxt "#30806"
 msgid "Export profiles"
-msgstr "Exportprofielen exporteren"
+msgstr "Profielen exporteren"
 
 msgctxt "#30900"
 msgid "Misc"

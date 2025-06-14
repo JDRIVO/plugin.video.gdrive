@@ -84,7 +84,7 @@ msgstr "Impostazioni dell'unità"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
-msgstr "Convalida delle credenziali fallita per l’account:"
+msgstr "Convalida delle credenziali non riuscita per l'account:"
 
 msgctxt "#30019"
 msgid "Account validated"
@@ -144,7 +144,7 @@ msgstr "Seleziona un file da importare"
 
 msgctxt "#30034"
 msgid "Select a folder to export to"
-msgstr "Seleziona una cartella da esportare in"
+msgstr "Seleziona una cartella in cui esportare"
 
 msgctxt "#30035"
 msgid "File exported as"
@@ -172,11 +172,11 @@ msgstr "Unità condivise"
 
 msgctxt "#30041"
 msgid "Search"
-msgstr "Ricerca"
+msgstr "Cerca"
 
 msgctxt "#30042"
 msgid "Starred"
-msgstr "Contrassegnati con una stella"
+msgstr "Preferiti"
 
 msgctxt "#30043"
 msgid "Search Query"
@@ -212,15 +212,15 @@ msgstr "Frequenza di sincronizzazione"
 
 msgctxt "#30051"
 msgid "Sync on startup"
-msgstr "Sincronizzazione all'avvio"
+msgstr "Sincronizza all'avvio"
 
 msgctxt "#30052"
 msgid "Syncing folders"
-msgstr "Sincronizzazione delle cartelle"
+msgstr "Sincronizzazione cartelle"
 
 msgctxt "#30053"
 msgid "Processing files"
-msgstr "Elaborazione di file"
+msgstr "Elaborazione dei file"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
@@ -292,7 +292,7 @@ msgstr "Immettere l'intervallo di sincronizzazione in minuti"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
-msgstr "Immettere il tempo per sincronizzare i file"
+msgstr "Inserire l'ora di sincronizzazione dei file"
 
 msgctxt "#30072"
 msgid "Select a video source"
@@ -300,7 +300,7 @@ msgstr "Seleziona una fonte video"
 
 msgctxt "#30073"
 msgid "Syncing"
-msgstr "Sincronizzando"
+msgstr "Sincronizzazione"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
@@ -340,7 +340,7 @@ msgstr "Sincronizzazione avviata"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
-msgstr "Priorità di risoluzione"
+msgstr "Priorità risoluzione"
 
 msgctxt "#30084"
 msgid "Close"
@@ -372,14 +372,14 @@ msgstr "Sincronizza multipli"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Cartella di ricerca"
+msgstr "Cerca cartella"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
 msgstr "La cartella di sincronizzazione non è impostata."
 
 msgctxt "#30093"
-msgid "Select a folder to move to"
+msgid "Select a folder to move into"
 msgstr "Seleziona una cartella in cui spostare"
 
 msgctxt "#30094"
@@ -420,11 +420,11 @@ msgstr "Impossibile spostare la cartella. La cartella esiste già."
 
 msgctxt "#30103"
 msgid "Exclude"
-msgstr "Escludere"
+msgstr "Esclusione"
 
 msgctxt "#30104"
 msgid "Include"
-msgstr "Includere"
+msgstr "Inclusione"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
@@ -464,7 +464,7 @@ msgstr "Suffisso"
 
 msgctxt "#30114"
 msgid "Encrypt file data"
-msgstr "Crittografare i dati dei file"
+msgstr "Crittografa i dati dei file"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
@@ -512,15 +512,15 @@ msgstr "Profilo aggiornato"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
-msgstr "Devi assegnare un nome profilo."
+msgstr "È necessario assegnar un nome profilo."
 
 msgctxt "#30127"
 msgid "You must assign a password."
-msgstr "Devi assegnare una password."
+msgstr "È necessario assegnar una password."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Devi assegnare un salt."
+msgstr "È necessario assegnar un salt."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -532,7 +532,7 @@ msgstr "Profilo eliminato"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "Sincronizzati tutti i unità"
+msgstr "Tutte le unità sincronizzate"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
@@ -668,7 +668,7 @@ msgstr "con questo"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "Reindirizza l'URI"
+msgstr "URI di reindirizzamento"
 
 msgctxt "#30222"
 msgid "Validating"
@@ -680,7 +680,7 @@ msgstr "Riproduzione"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "Selezione della risoluzione prompt (se disponibile)"
+msgstr "Mostra selezione risoluzione (se disponibile)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
@@ -708,15 +708,15 @@ msgstr "Account di riproduzione predefinito"
 
 msgctxt "#30400"
 msgid "Library"
-msgstr "Biblioteca"
+msgstr "Libreria"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "Segna i film come visualizzati"
+msgstr "Contrassegna i film come guardati al"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "Segna gli episodi come visualizzati"
+msgstr "Contrassegna gli episodi come guardati al"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
@@ -728,7 +728,7 @@ msgstr "Aggiorna automaticamente la libreria"
 
 msgctxt "#30405"
 msgid "Display dialog"
-msgstr "Visualizza il dialogo"
+msgstr "Mostra finestra di dialogo"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
@@ -792,7 +792,7 @@ msgstr "Sincronizza sottotitoli"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Sincronizza artwork"
+msgstr "Sincronizza illustrazioni"
 
 msgctxt "#30514"
 msgid "Sync STRM"
@@ -808,11 +808,11 @@ msgstr "Regione TMDB"
 
 msgctxt "#30517"
 msgid "TMDB adult content"
-msgstr "Contenuto per adulti TMDB"
+msgstr "Contenuti per adulti TMDB"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "Interfaccia"
+msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
@@ -820,11 +820,11 @@ msgstr "Mostra finestra di avanzamento sincronizzazione iniziale"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
-msgstr "Mostra la finestra di dialogo per l'eliminazione dei file"
+msgstr "Mostra finestra di dialogo per l'eliminazione dei file"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Mostra il tempo dall'ultima sincronizzazione nel menu di selezione dell'unità"
+msgstr "Mostra il tempo trascorso dall'ultima sincronizzazione nel menu di selezione dell'unità"
 
 msgctxt "#30700"
 msgid "Accounts"

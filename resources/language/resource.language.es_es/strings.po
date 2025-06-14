@@ -24,7 +24,7 @@ msgstr "Renombrar"
 
 msgctxt "#30003"
 msgid "is no longer valid. Do you want to delete this account?"
-msgstr "ya no es válido. ¿Quieres eliminar esta cuenta?"
+msgstr "ya no es válido. ¿Desea eliminar esta cuenta?"
 
 msgctxt "#30004"
 msgid "Drive Name"
@@ -36,7 +36,7 @@ msgstr "Configuración de sincronización"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "API bloqueada:"
+msgstr "Suspensión de API:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
@@ -76,7 +76,7 @@ msgstr "El nombre de la unidad ya existe; debe ser único."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
-msgstr "¿Estás seguro de que quieres eliminar la unidad:"
+msgstr "¿Está seguro de que quiere eliminar la unidad:"
 
 msgctxt "#30017"
 msgid "Drive settings"
@@ -108,7 +108,7 @@ msgstr "Validar"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
-msgstr "¿Estás seguro de que quieres eliminar el archivo de cuentas?"
+msgstr "¿Está seguro de que quiere eliminar el archivo de cuentas?"
 
 msgctxt "#30025"
 msgid "Account Name"
@@ -120,7 +120,7 @@ msgstr "Seleccione archivos para importar"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
-msgstr "¿Quieres eliminar todos los archivos asociados con esta unidad?"
+msgstr "¿Desea eliminar todos los archivos asociados con esta unidad?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
@@ -156,7 +156,7 @@ msgstr "Cuentas importadas"
 
 msgctxt "#30037"
 msgid "Account import failed."
-msgstr "La importación de la cuenta ha fallado."
+msgstr "La importación de la cuenta falló."
 
 msgctxt "#30038"
 msgid "My Drive"
@@ -224,7 +224,7 @@ msgstr "Procesando archivos"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
-msgstr "¿Estás seguro de que quieres eliminar el caché de sincronización?"
+msgstr "¿Está seguro de que quiere eliminar el caché de sincronización?"
 
 msgctxt "#30055"
 msgid "Cache deleted"
@@ -364,7 +364,7 @@ msgstr "Eliminando caché de sincronización"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "Creación del ID y clave secreta de cliente"
+msgstr "Creación de ID y Secreto de Cliente"
 
 msgctxt "#30090"
 msgid "Sync multiple"
@@ -372,19 +372,19 @@ msgstr "Sincronizar varios"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Buscar en carpeta"
+msgstr "Buscar carpeta"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
 msgstr "La carpeta de sincronización no está configurada."
 
 msgctxt "#30093"
-msgid "Select a folder to move to"
+msgid "Select a folder to move into"
 msgstr "Seleccione una carpeta a la que mover"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
-msgstr "¿Estás seguro de que quieres eliminar la carpeta de sincronización?"
+msgstr "¿Está seguro de que quiere eliminar la carpeta de sincronización?"
 
 msgctxt "#30095"
 msgid "Folder deleted"
@@ -448,7 +448,7 @@ msgstr "Contraseña"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Sal"
+msgstr "Salt"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -520,7 +520,7 @@ msgstr "Debe asignar una contraseña."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Debe asignar una sal."
+msgstr "Debe asignar una salt."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -592,7 +592,7 @@ msgstr "Falló la eliminación del archivo"
 
 msgctxt "#30146"
 msgid "Are you sure you want to delete the TMDB cache?"
-msgstr "¿Estás seguro de que quieres eliminar el caché TMDB?"
+msgstr "¿Está seguro de que quiere eliminar el caché TMDB?"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
@@ -612,7 +612,7 @@ msgstr "resolución"
 
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
-msgstr "¿Estás seguro de que quieres eliminar la cuenta:"
+msgstr "¿Está seguro de que quiere eliminar la cuenta:"
 
 msgctxt "#30158"
 msgid "Account Deletion"
@@ -620,7 +620,7 @@ msgstr "Eliminación de cuenta"
 
 msgctxt "#30159"
 msgid "Delete"
-msgstr "Borrar"
+msgstr "Eliminar"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
@@ -776,11 +776,11 @@ msgstr "Tiene archivos cifrados con"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Renombrar videos a un formato compatible con Kodi"
+msgstr "Renombrar videos a un formato amigable para Kodi"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Crear una estructura de directorios compatible con Kodi"
+msgstr "Crear una estructura de directorios amigable con Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
@@ -812,7 +812,7 @@ msgstr "TMDB Contenido para adultos"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "Interfaz"
+msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"

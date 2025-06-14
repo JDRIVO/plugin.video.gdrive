@@ -36,15 +36,15 @@ msgstr "إعدادات المزامنة"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "حظر الـ API:"
+msgstr "حظر API:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "يتم التبديل إلى الحساب الاحتياطي"
+msgstr "جارٍ التبديل إلى الحساب الاحتياطي"
 
 msgctxt "#30008"
 msgid "Videos"
-msgstr "مقاطع الفيديو"
+msgstr "الفيديوهات"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
@@ -64,7 +64,7 @@ msgstr "إعدادات المزامنة"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "زامن المجلد"
+msgstr "مزامنة المجلد"
 
 msgctxt "#30014"
 msgid "Select an account"
@@ -232,7 +232,7 @@ msgstr "تم حذف ذاكرة التخزين المؤقت"
 
 msgctxt "#30056"
 msgid "Failed to delete the cache. See log for details."
-msgstr "فشل في حذف ذاكرة التخزين المؤقت. انظر السجل للحصول على التفاصيل."
+msgstr "فشل في حذف ذاكرة التخزين المؤقت. لمزيد من التفاصيل، راجع السجل."
 
 msgctxt "#30057"
 msgid "Playback account not found."
@@ -280,7 +280,7 @@ msgstr "إلغاء"
 
 msgctxt "#30068"
 msgid "interval"
-msgstr "فترات"
+msgstr "فترة"
 
 msgctxt "#30069"
 msgid "schedule"
@@ -292,7 +292,7 @@ msgstr "أدخل مدة المزامنة بالدقائق"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
-msgstr "أدخل الوقت لمزامنة الملفات"
+msgstr "أدخل وقت مزامنة الملفات"
 
 msgctxt "#30072"
 msgid "Select a video source"
@@ -304,15 +304,15 @@ msgstr "جارٍ المزامنة"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
-msgstr "حذف مجلد المزامنة"
+msgstr "جارٍ حذف مجلد المزامنة"
 
 msgctxt "#30075"
 msgid "Deleting files"
-msgstr "حذف الملفات"
+msgstr "جارٍ حذف الملفات"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
-msgstr "نقل مجلد المزامنة"
+msgstr "جارٍ نقل مجلد المزامنة"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
@@ -340,7 +340,7 @@ msgstr "بدأت المزامنة"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
-msgstr "أولوية دقة الفيديو"
+msgstr "أولوية الدقة"
 
 msgctxt "#30084"
 msgid "Close"
@@ -368,18 +368,18 @@ msgstr "إنشاء معرف العميل وسر العميل"
 
 msgctxt "#30090"
 msgid "Sync multiple"
-msgstr "زامن العديد"
+msgstr "مزامنة متعددة"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "البحث في المجلد"
+msgstr "مجلد البحث"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
 msgstr "لم يتم تعيين مجلد المزامنة."
 
 msgctxt "#30093"
-msgid "Select a folder to move to"
+msgid "Select a folder to move into"
 msgstr "حدد مجلدًا للانتقال إليه"
 
 msgctxt "#30094"
@@ -392,7 +392,7 @@ msgstr "تم حذف المجلد"
 
 msgctxt "#30096"
 msgid "Failed to delete the sync folder. See log for details."
-msgstr "فشل في حذف مجلد المزامنة. انظر السجل للحصول على التفاصيل."
+msgstr "فشل في حذف مجلد المزامنة. لمزيد من التفاصيل، راجع السجل."
 
 msgctxt "#30097"
 msgid "Accounts file deleted"
@@ -400,7 +400,7 @@ msgstr "تم حذف ملف الحسابات"
 
 msgctxt "#30098"
 msgid "Failed to delete the accounts file. See log for details."
-msgstr "فشل في حذف ملف الحسابات. انظر السجل للحصول على التفاصيل."
+msgstr "فشل في حذف ملف الحسابات. لمزيد من التفاصيل، راجع السجل."
 
 msgctxt "#30099"
 msgid "Enter the filename"
@@ -448,7 +448,7 @@ msgstr "كلمة المرور"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "ملح"
+msgstr "سالت"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -520,7 +520,7 @@ msgstr "يجب عليك تعيين كلمة مرور."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "يجب عليك تعيين ملح."
+msgstr "يجب عليك تعيين سالت."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -620,7 +620,7 @@ msgstr "حذف الحساب"
 
 msgctxt "#30159"
 msgid "Delete"
-msgstr "احذف"
+msgstr "حذف"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
@@ -712,11 +712,11 @@ msgstr "مكتبة"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "وضع علامة على الأفلام كمشاهدة في"
+msgstr "وضع علامة على الأفلام كمشاهدة عند"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "وضع علامة على الحلقات كمشاهدة في"
+msgstr "وضع علامة على الحلقات كمشاهدة عند"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
@@ -772,7 +772,7 @@ msgstr "لاحقة STRM"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
-msgstr "يحتوي على ملفات مشفرة مع"
+msgstr "يحتوي على ملفات مشفرة بـ"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
@@ -784,19 +784,19 @@ msgstr "إنشاء بنية مجلدات متوافقة مع Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "NFO المزامنة"
+msgstr "مزامنة NFO"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "زامن الترجمات"
+msgstr "مزامنة الترجمات"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "زامن الرسومات"
+msgstr "مزامنة الأعمال الفنية"
 
 msgctxt "#30514"
 msgid "Sync STRM"
-msgstr "زامن STRM"
+msgstr "مزامنة STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"

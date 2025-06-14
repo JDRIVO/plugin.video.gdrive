@@ -36,7 +36,7 @@ msgstr "Paramètres de synchronisation"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "API bloquée :"
+msgstr "Interdiction API :"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
@@ -48,7 +48,7 @@ msgstr "Vidéos"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
-msgstr "Limite quotidienne dépassée. L'interdiction sera levée dans les 24 heures."
+msgstr "Le quota quotidien est dépassé. L'interdiction sera levée dans les 24 heures."
 
 msgctxt "#30010"
 msgid "Sync all"
@@ -216,7 +216,7 @@ msgstr "Synchroniser au démarrage"
 
 msgctxt "#30052"
 msgid "Syncing folders"
-msgstr "Synchronisation des dossiers"
+msgstr "Dossiers en synchronisation"
 
 msgctxt "#30053"
 msgid "Processing files"
@@ -284,7 +284,7 @@ msgstr "intervalle"
 
 msgctxt "#30069"
 msgid "schedule"
-msgstr "calendrier"
+msgstr "programme"
 
 msgctxt "#30070"
 msgid "Enter the sync interval in minutes"
@@ -300,7 +300,7 @@ msgstr "Sélectionnez une source vidéo"
 
 msgctxt "#30073"
 msgid "Syncing"
-msgstr "Synchronisation"
+msgstr "Synchronisation en cours"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
@@ -372,15 +372,15 @@ msgstr "Synchroniser plusieurs"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Rechercher dans le dossier"
+msgstr "Rechercher le dossier"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
 msgstr "Le dossier de synchronisation n'est pas défini."
 
 msgctxt "#30093"
-msgid "Select a folder to move to"
-msgstr "Sélectionnez un dossier vers lequel déplacer"
+msgid "Select a folder to move into"
+msgstr "Sélectionnez le dossier vers lequel déplacer"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
@@ -448,7 +448,7 @@ msgstr "Mot de passe"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Sel"
+msgstr "Salt"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -488,7 +488,7 @@ msgstr "Profils importés"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
-msgstr "Attribuez un profil de chiffrement par défaut avant de lire une vidéo cryptée."
+msgstr "Attribuez un profil de chiffrement par défaut avant de lire une vidéo chiffrée."
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
@@ -520,7 +520,7 @@ msgstr "Vous devez attribuer un mot de passe."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Vous devez attribuer un sel."
+msgstr "Vous devez attribuer un salt."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -776,11 +776,11 @@ msgstr "Contient des fichiers chiffrés avec"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Renommer les vidéos dans un format compatible avec Kodi"
+msgstr "Renommer les vidéos dans un format adapté à Kodi"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Créer une structure de répertoires compatible avec Kodi"
+msgstr "Créer une structure de répertoires format adapté à Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
@@ -812,7 +812,7 @@ msgstr "Contenu pour adultes TMDB"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "Interface"
+msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"

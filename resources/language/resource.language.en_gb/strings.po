@@ -379,8 +379,8 @@ msgid "Sync folder isn't set."
 msgstr "Sync folder isn't set."
 
 msgctxt "#30093"
-msgid "Select a folder to move to"
-msgstr "Select a folder to move to"
+msgid "Select a folder to move into"
+msgstr "Select a folder to move into"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"

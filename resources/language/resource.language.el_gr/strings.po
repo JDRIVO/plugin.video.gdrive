@@ -36,7 +36,7 @@ msgstr "Ρυθμίσεις συγχρονισμού"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "Απαγόρευση API:"
+msgstr "Απαγόρευση του API:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
@@ -232,7 +232,7 @@ msgstr "Διαγράφηκε η προσωρινή μνήμη"
 
 msgctxt "#30056"
 msgid "Failed to delete the cache. See log for details."
-msgstr "Απέτυχε να διαγράψει την προσωρινή μνήμη. Δείτε το αρχείο καταγραφής για λεπτομέρειες."
+msgstr "Δεν ήταν δυνατή η διαγραφή της προσωρινής μνήμης. Δείτε το αρχείο καταγραφής για λεπτομέρειες."
 
 msgctxt "#30057"
 msgid "Playback account not found."
@@ -324,15 +324,15 @@ msgstr "Δεν υπάρχουν λογαριασμοί OAuth συνδεδεμέ�
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
-msgstr "Πρέπει να αντιστοιχίσετε μια διαδρομή συγχρονισμού."
+msgstr "Πρέπει να εκχωρήσετε μια διαδρομή συγχρονισμού."
 
 msgctxt "#30080"
 msgid "You must assign a sync mode."
-msgstr "Πρέπει να αντιστοιχίσετε μια λειτουργία συγχρονισμού."
+msgstr "Πρέπει να εκχωρήσετε μια λειτουργία συγχρονισμού."
 
 msgctxt "#30081"
 msgid "You must assign a sync frequency."
-msgstr "Πρέπει να αντιστοιχίσετε μια συχνότητα συγχρονισμού."
+msgstr "Πρέπει να εκχωρήσετε μια συχνότητα συγχρονισμού."
 
 msgctxt "#30082"
 msgid "Sync started"
@@ -379,8 +379,8 @@ msgid "Sync folder isn't set."
 msgstr "Ο φάκελος συγχρονισμού δεν έχει οριστεί."
 
 msgctxt "#30093"
-msgid "Select a folder to move to"
-msgstr "Επιλέξτε έναν φάκελο για μετακίνηση στο"
+msgid "Select a folder to move into"
+msgstr "Επιλέξτε έναν φάκελο για να μετακινηθείτε"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
@@ -400,7 +400,7 @@ msgstr "Διαγράφηκε το αρχείο λογαριασμών"
 
 msgctxt "#30098"
 msgid "Failed to delete the accounts file. See log for details."
-msgstr "Απέτυχε να διαγράψει το αρχείο λογαριασμών. Δείτε το αρχείο καταγραφής για λεπτομέρειες."
+msgstr "Δεν ήταν δυνατή η διαγραφή του αρχείου λογαριασμών. Δείτε το αρχείο καταγραφής για λεπτομέρειες."
 
 msgctxt "#30099"
 msgid "Enter the filename"
@@ -444,11 +444,11 @@ msgstr "Τύπος κρυπτογράφησης"
 
 msgctxt "#30109"
 msgid "Password"
-msgstr "Σύνθημα"
+msgstr "Κωδικός πρόσβασης"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Άλας"
+msgstr "Salt"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -512,15 +512,15 @@ msgstr "Ενημερώθηκε το προφίλ"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
-msgstr "Πρέπει να αντιστοιχίσετε ένα όνομα προφίλ."
+msgstr "Πρέπει να εκχωρήσετε ένα όνομα προφίλ."
 
 msgctxt "#30127"
 msgid "You must assign a password."
-msgstr "Πρέπει να ορίσετε έναν κωδικό πρόσβασης."
+msgstr "Πρέπει να εκχωρήσετε έναν κωδικό πρόσβασης."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Πρέπει να εκχωρήσετε ένα αλάτι."
+msgstr "Πρέπει να εκχωρήσετε ένα Salt."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -776,11 +776,11 @@ msgstr "Περιέχει κρυπτογραφημένα αρχεία με"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Μετονομασία βίντεο σε συμβατή μορφή Kodi"
+msgstr "Μετονομασία βίντεο σε φιλική προς Kodi μορφή"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Δημιουργία δομής φακέλων συμβατής με Kodi"
+msgstr "Δημιουργία δομής φακέλων φιλικής προς Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
