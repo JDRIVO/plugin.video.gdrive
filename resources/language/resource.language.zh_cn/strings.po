@@ -48,15 +48,15 @@ msgstr "视频"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
-msgstr "每日配额限制超出了。禁令将在24小时内举起。"
+msgstr "每日配额限制已超出。禁令将在24小时内解除。"
 
 msgctxt "#30010"
 msgid "Sync all"
-msgstr "同步"
+msgstr "全部同步"
 
 msgctxt "#30011"
 msgid "Synced"
-msgstr "同步"
+msgstr "已同步"
 
 msgctxt "#30012"
 msgid "Sync Settings"
@@ -84,7 +84,7 @@ msgstr "驱动器设置"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
-msgstr "凭证验证未能说明："
+msgstr "帐户凭证验证失败："
 
 msgctxt "#30019"
 msgid "Account validated"
@@ -92,7 +92,7 @@ msgstr "帐户已验证"
 
 msgctxt "#30020"
 msgid "Accounts validated"
-msgstr "帐户验证"
+msgstr "已验证帐户"
 
 msgctxt "#30021"
 msgid "Validate accounts"
@@ -104,7 +104,7 @@ msgstr "删除帐户"
 
 msgctxt "#30023"
 msgid "Validate"
-msgstr "证实"
+msgstr "验证"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
@@ -136,7 +136,7 @@ msgstr "没有找到私钥："
 
 msgctxt "#30031"
 msgid "Folder moved"
-msgstr "文件夹移动"
+msgstr "文件夹已移动"
 
 msgctxt "#30033"
 msgid "Select a file to import"
@@ -144,15 +144,15 @@ msgstr "选择要导入的文件"
 
 msgctxt "#30034"
 msgid "Select a folder to export to"
-msgstr "选择一个文件夹以导出到"
+msgstr "选择要导出的文件夹"
 
 msgctxt "#30035"
 msgid "File exported as"
-msgstr "文件导出为"
+msgstr "文件已导出为"
 
 msgctxt "#30036"
 msgid "Accounts imported"
-msgstr "帐户进口"
+msgstr "帐户已导入"
 
 msgctxt "#30037"
 msgid "Account import failed."
@@ -160,7 +160,7 @@ msgstr "帐户导入失败。"
 
 msgctxt "#30038"
 msgid "My Drive"
-msgstr "我的开车"
+msgstr "我的云端硬盘"
 
 msgctxt "#30039"
 msgid "Shared With Me"
@@ -168,7 +168,7 @@ msgstr "与我分享"
 
 msgctxt "#30040"
 msgid "Shared Drives"
-msgstr "共享的驱动器"
+msgstr "共享云端硬盘"
 
 msgctxt "#30041"
 msgid "Search"
@@ -216,11 +216,11 @@ msgstr "同步启动"
 
 msgctxt "#30052"
 msgid "Syncing folders"
-msgstr "同步文件夹"
+msgstr "正在同步文件夹"
 
 msgctxt "#30053"
 msgid "Processing files"
-msgstr "处理文件"
+msgstr "正在处理文件"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
@@ -272,7 +272,7 @@ msgstr "一般的"
 
 msgctxt "#30066"
 msgid "OK"
-msgstr "好的"
+msgstr "确定"
 
 msgctxt "#30067"
 msgid "Cancel"
@@ -288,11 +288,11 @@ msgstr "日程"
 
 msgctxt "#30070"
 msgid "Enter the sync interval in minutes"
-msgstr "在几分钟内输入同步间隔"
+msgstr "请输入同步间隔（分钟）"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
-msgstr "输入同步文件的时间"
+msgstr "输入文件同步时间"
 
 msgctxt "#30072"
 msgid "Select a video source"
@@ -300,23 +300,23 @@ msgstr "选择视频源"
 
 msgctxt "#30073"
 msgid "Syncing"
-msgstr "同步"
+msgstr "正在同步"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
-msgstr "删除同步文件夹"
+msgstr "正在删除同步文件夹"
 
 msgctxt "#30075"
 msgid "Deleting files"
-msgstr "删除文件"
+msgstr "正在删除文件"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
-msgstr "移动同步文件夹"
+msgstr "正在移动同步文件夹"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
-msgstr "选择您的文件将存储在"
+msgstr "选择文件将存储的文件夹"
 
 msgctxt "#30078"
 msgid "There are no OAuth accounts connected to this drive."
@@ -340,7 +340,7 @@ msgstr "同步开始"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
-msgstr "解决优先级"
+msgstr "分辨率优先"
 
 msgctxt "#30084"
 msgid "Close"
@@ -364,11 +364,11 @@ msgstr "删除同步缓存"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "客户ID和客户端秘密创建"
+msgstr "客户端ID和客户端密钥创建"
 
 msgctxt "#30090"
 msgid "Sync multiple"
-msgstr "同步倍数"
+msgstr "同步多个"
 
 msgctxt "#30091"
 msgid "Search folder"
@@ -380,7 +380,7 @@ msgstr "尚未设置同步文件夹。"
 
 msgctxt "#30093"
 msgid "Select a folder to move into"
-msgstr "选择一个文件夹以移至"
+msgstr "选择要移入的文件夹"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
@@ -396,7 +396,7 @@ msgstr "无法删除同步文件夹。有关详细信息，请参见日志。"
 
 msgctxt "#30097"
 msgid "Accounts file deleted"
-msgstr "删除帐户文件"
+msgstr "帐户文件已删除"
 
 msgctxt "#30098"
 msgid "Failed to delete the accounts file. See log for details."
@@ -424,7 +424,7 @@ msgstr "排除"
 
 msgctxt "#30104"
 msgid "Include"
-msgstr "包括"
+msgstr "包含"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
@@ -432,7 +432,7 @@ msgstr "删除驱动器："
 
 msgctxt "#30106"
 msgid "Deleted Drive:"
-msgstr "删除驱动器："
+msgstr "已删除驱动器："
 
 msgctxt "#30107"
 msgid "Profile name"
@@ -504,11 +504,11 @@ msgstr "个人资料管理器"
 
 msgctxt "#30124"
 msgid "Profile created"
-msgstr "创建的个人资料"
+msgstr "个人资料已创建"
 
 msgctxt "#30125"
 msgid "Profile updated"
-msgstr "个人资料更新"
+msgstr "个人资料已更新"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
@@ -524,7 +524,7 @@ msgstr "您必须分配盐。"
 
 msgctxt "#30129"
 msgid "Profile Deletion"
-msgstr "配置文件删除"
+msgstr "删除配置文件"
 
 msgctxt "#30130"
 msgid "Profile deleted"
@@ -532,7 +532,7 @@ msgstr "配置文件已删除"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "同步所有驱动器"
+msgstr "所有驱动器已同步"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
@@ -576,7 +576,7 @@ msgstr "无法同步"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "同步所有驱动器"
+msgstr "正在同步所有驱动器"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
@@ -624,7 +624,7 @@ msgstr "删除"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "停止同步选择文件夹"
+msgstr "停止同步选定文件夹"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
@@ -636,7 +636,7 @@ msgstr "添加帐户"
 
 msgctxt "#30209"
 msgid "The file wasn't found in the account:"
-msgstr "该文件在帐户中找不到："
+msgstr "在帐户中未找到该文件："
 
 msgctxt "#30214"
 msgid "Add service accounts"
@@ -648,7 +648,7 @@ msgstr "访问"
 
 msgctxt "#30216"
 msgid "in a web browser."
-msgstr "使用网页浏览器。"
+msgstr "在网页浏览器中。"
 
 msgctxt "#30217"
 msgid "You must create an"
@@ -660,7 +660,7 @@ msgstr "OAuth 客户端 ID"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "网页应用"
+msgstr "Web 应用"
 
 msgctxt "#30220"
 msgid "with this"
@@ -680,11 +680,11 @@ msgstr "播放"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "迅速解决（如果有）"
+msgstr "提示分辨率选择（如果可用）"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
-msgstr "视频解决优先级"
+msgstr "视频分辨率优先级"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
@@ -708,23 +708,23 @@ msgstr "默认播放帐户"
 
 msgctxt "#30400"
 msgid "Library"
-msgstr "图书馆"
+msgstr "资料库"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "标记看电影"
+msgstr "标记电影为已观看"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "在观看的标记情节"
+msgstr "标记剧集为已观看"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "从STRM导入媒体标志数据"
+msgstr "从STRM导入媒体标识数据"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "自动更新库"
+msgstr "自动更新媒体库"
 
 msgctxt "#30405"
 msgid "Display dialog"
@@ -732,7 +732,7 @@ msgstr "显示对话框"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "自动清洁库"
+msgstr "自动清理媒体库"
 
 msgctxt "#30407"
 msgid "Video source"
@@ -772,7 +772,7 @@ msgstr "STRM后缀"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
-msgstr "已加密文件"
+msgstr "加密的文件"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
@@ -792,7 +792,7 @@ msgstr "同步字幕"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "同步艺术品"
+msgstr "同步艺术图片"
 
 msgctxt "#30514"
 msgid "Sync STRM"
@@ -824,7 +824,7 @@ msgstr "显示文件删除对话框"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "显示自驱动器选择菜单中上一次同步以来的时间"
+msgstr "在驱动器选择菜单中显示上次同步以来的时间"
 
 msgctxt "#30700"
 msgid "Accounts"
@@ -832,11 +832,11 @@ msgstr "帐户"
 
 msgctxt "#30701"
 msgid "Import accounts"
-msgstr "进口帐户"
+msgstr "导入帐户"
 
 msgctxt "#30702"
 msgid "Export accounts"
-msgstr "出口帐户"
+msgstr "导出帐户"
 
 msgctxt "#30703"
 msgid "Delete all accounts"

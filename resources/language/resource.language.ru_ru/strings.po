@@ -96,7 +96,7 @@ msgstr "Аккаунты подтверждены"
 
 msgctxt "#30021"
 msgid "Validate accounts"
-msgstr "Проверить учетные записи"
+msgstr "Проверить аккаунты"
 
 msgctxt "#30022"
 msgid "Delete accounts"
@@ -200,7 +200,7 @@ msgstr "Регистрация аккаунта не удалась"
 
 msgctxt "#30048"
 msgid "Sync path"
-msgstr "Синхронизационный путь"
+msgstr "Путь синхронизации"
 
 msgctxt "#30049"
 msgid "Sync mode"
@@ -244,7 +244,7 @@ msgstr "Язык поиска"
 
 msgctxt "#30059"
 msgid "Region"
-msgstr "Область"
+msgstr "Регион"
 
 msgctxt "#30060"
 msgid "Adult content"
@@ -260,11 +260,11 @@ msgstr "Остановить синхронизацию папки"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
-msgstr "Удалить локальные файлы, связанные с этой папкой?"
+msgstr "Вы хотите удалить локальные файлы, связанные с этой папкой?"
 
 msgctxt "#30064"
 msgid "Do you want to delete the local files associated with these folders?"
-msgstr "Удалить локальные файлы, связанные с этими папками?"
+msgstr "Вы хотите удалить локальные файлы, связанные с этими папками?"
 
 msgctxt "#30065"
 msgid "General"
@@ -372,7 +372,7 @@ msgstr "Синхронизировать несколько"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Поиск папки"
+msgstr "Поиск в папке"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
@@ -420,11 +420,11 @@ msgstr "Не удалось переместить папку. Папка уже
 
 msgctxt "#30103"
 msgid "Exclude"
-msgstr "Исключать"
+msgstr "Исключить"
 
 msgctxt "#30104"
 msgid "Include"
-msgstr "Включать"
+msgstr "Включить"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
@@ -468,7 +468,7 @@ msgstr "Шифровать данные файла"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
-msgstr "Шифровать имен каталогов"
+msgstr "Шифровать имена каталогов"
 
 msgctxt "#30116"
 msgid "Select a profile"
@@ -640,7 +640,7 @@ msgstr "Файл не был найден в учетной записи:"
 
 msgctxt "#30214"
 msgid "Add service accounts"
-msgstr "Добавить сервисные учетные записи"
+msgstr "Добавить сервисные аккаунты"
 
 msgctxt "#30215"
 msgid "Visit"
@@ -668,11 +668,11 @@ msgstr "с этим"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "редирект URI"
+msgstr "URI перенаправления"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "Проверка"
+msgstr "Идет проверка"
 
 msgctxt "#30300"
 msgid "Playback"
@@ -680,7 +680,7 @@ msgstr "Воспроизведение"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "Выбор разрешения (если доступно)"
+msgstr "Показать выбор разрешения (если доступно)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
@@ -708,7 +708,7 @@ msgstr "Учетная запись воспроизведения по умол
 
 msgctxt "#30400"
 msgid "Library"
-msgstr "Библиотека"
+msgstr "Медиатека"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
@@ -720,11 +720,11 @@ msgstr "Отметить эпизоды как просмотренные при
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "Импортировать данные медиа-флага от STRM"
+msgstr "Импортировать данные флагов сведений от STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "Обновить библиотеку автоматически"
+msgstr "Обновить медиатеку автоматически"
 
 msgctxt "#30405"
 msgid "Display dialog"
@@ -732,7 +732,7 @@ msgstr "Отобразить диалог"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "Очистить библиотеку автоматически"
+msgstr "Очистить медиатеку автоматически"
 
 msgctxt "#30407"
 msgid "Video source"
@@ -780,7 +780,7 @@ msgstr "Переименовать видео в удобный формат Kod
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Создать структуру каталога Kodi"
+msgstr "Создать дружественная структура каталога Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
@@ -792,7 +792,7 @@ msgstr "Синхронизировать субтитры"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Синхронизировать обложки"
+msgstr "Синхронизировать картинки"
 
 msgctxt "#30514"
 msgid "Sync STRM"
@@ -804,7 +804,7 @@ msgstr "Язык поиска TMDB"
 
 msgctxt "#30516"
 msgid "TMDB region"
-msgstr "Область TMDB"
+msgstr "Регион TMDB"
 
 msgctxt "#30517"
 msgid "TMDB adult content"
@@ -816,7 +816,7 @@ msgstr "Графический интерфейс"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Показать диалог начальной синхронизации"
+msgstr "Показать диалог прогресса начальной синхронизации"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
@@ -840,7 +840,7 @@ msgstr "Экспорт аккаунтов"
 
 msgctxt "#30703"
 msgid "Delete all accounts"
-msgstr "Удалить все учетные записи"
+msgstr "Удалить все аккаунты"
 
 msgctxt "#30800"
 msgid "Encryption"

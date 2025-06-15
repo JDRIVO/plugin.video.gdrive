@@ -20,7 +20,7 @@ msgstr "ヘルプ"
 
 msgctxt "#30002"
 msgid "Rename"
-msgstr "リネーム"
+msgstr "名称変更"
 
 msgctxt "#30003"
 msgid "is no longer valid. Do you want to delete this account?"
@@ -36,11 +36,11 @@ msgstr "同期設定"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "API利用制限："
+msgstr "API制限："
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "フォールバックアカウントへの切り替え"
+msgstr "フォールバックアカウントに切り替え中"
 
 msgctxt "#30008"
 msgid "Videos"
@@ -48,11 +48,11 @@ msgstr "ビデオ"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
-msgstr "1日のクォータ制限を超えました。制限は24時間以内に解除されます。"
+msgstr "1日のクォータ上限を超過しました。制限は24時間以内に解除されます。"
 
 msgctxt "#30010"
 msgid "Sync all"
-msgstr "すべてを同期"
+msgstr "すべて同期"
 
 msgctxt "#30011"
 msgid "Synced"
@@ -64,7 +64,7 @@ msgstr "同期設定"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "同期フォルダ"
+msgstr "フォルダを同期"
 
 msgctxt "#30014"
 msgid "Select an account"
@@ -72,11 +72,11 @@ msgstr "アカウントを選択"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
-msgstr "ドライブ名はすでに存在しています。一意である必要があります。"
+msgstr "ドライブ名はすでに存在します。一意にしてください。"
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
-msgstr "本当にこのドライブを削除してもよろしいですか："
+msgstr "このドライブを本当に削除しますか："
 
 msgctxt "#30017"
 msgid "Drive settings"
@@ -108,7 +108,7 @@ msgstr "検証"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
-msgstr "アカウントファイルを削除してもよろしいですか？"
+msgstr "アカウントファイルを本当に削除しますか？"
 
 msgctxt "#30025"
 msgid "Account Name"
@@ -232,7 +232,7 @@ msgstr "キャッシュが削除されました"
 
 msgctxt "#30056"
 msgid "Failed to delete the cache. See log for details."
-msgstr "キャッシュの削除に失敗しました。詳細については、ログを参照してください。"
+msgstr "キャッシュの削除に失敗しました。詳細はログを参照してください。"
 
 msgctxt "#30057"
 msgid "Playback account not found."
@@ -272,7 +272,7 @@ msgstr "一般"
 
 msgctxt "#30066"
 msgid "OK"
-msgstr "はい"
+msgstr "OK"
 
 msgctxt "#30067"
 msgid "Cancel"
@@ -296,7 +296,7 @@ msgstr "ファイルを同期する時刻を入力してください"
 
 msgctxt "#30072"
 msgid "Select a video source"
-msgstr "ビデオソースを選ぶ"
+msgstr "ビデオソースを選択"
 
 msgctxt "#30073"
 msgid "Syncing"
@@ -324,15 +324,15 @@ msgstr "このドライブにはOAuthアカウントが接続されていませ�
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
-msgstr "同期パスを割り当てる必要があります。"
+msgstr "同期パスの指定が必要です。"
 
 msgctxt "#30080"
 msgid "You must assign a sync mode."
-msgstr "同期モードを割り当てる必要があります。"
+msgstr "同期モードの指定が必要です。"
 
 msgctxt "#30081"
 msgid "You must assign a sync frequency."
-msgstr "同期周波数を割り当てる必要があります。"
+msgstr "同期頻度の指定が必要です。"
 
 msgctxt "#30082"
 msgid "Sync started"
@@ -372,7 +372,7 @@ msgstr "複数を同期"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "フォルダを検索"
+msgstr "フォルダ内を検索"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
@@ -416,7 +416,7 @@ msgstr "フォルダの移動に失敗しました。フォルダを自分自身
 
 msgctxt "#30102"
 msgid "Failed to move the folder. The folder already exists."
-msgstr "フォルダの移動に失敗しました。フォルダはすでに存在しています。"
+msgstr "フォルダの移動に失敗しました。フォルダはすでに存在します。"
 
 msgctxt "#30103"
 msgid "Exclude"
@@ -436,11 +436,11 @@ msgstr "削除されたドライブ："
 
 msgctxt "#30107"
 msgid "Profile name"
-msgstr "プロフィール名"
+msgstr "プロファイル名"
 
 msgctxt "#30108"
 msgid "Encryption type"
-msgstr "暗号化タイプ"
+msgstr "暗号化の種類"
 
 msgctxt "#30109"
 msgid "Password"
@@ -452,11 +452,11 @@ msgstr "ソルト"
 
 msgctxt "#30111"
 msgid "Filename encryption"
-msgstr "ファイルネーム暗号化"
+msgstr "ファイル名暗号化"
 
 msgctxt "#30112"
 msgid "Filename encoding"
-msgstr "ファイルネームエンコーディング"
+msgstr "ファイル名エンコーディング"
 
 msgctxt "#30113"
 msgid "Suffix"
@@ -500,15 +500,15 @@ msgstr "暗号化プロファイルが見つかりませんでした。"
 
 msgctxt "#30123"
 msgid "Profile Manager"
-msgstr "プロフィールマネージャー"
+msgstr "プロファイルマネージャー"
 
 msgctxt "#30124"
 msgid "Profile created"
-msgstr "プロフィールを作成しました"
+msgstr "プロファイルを作成しました"
 
 msgctxt "#30125"
 msgid "Profile updated"
-msgstr "プロフィールを更新しました"
+msgstr "プロファイルを更新しました"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
@@ -524,11 +524,11 @@ msgstr "ソルトを設定する必要があります。"
 
 msgctxt "#30129"
 msgid "Profile Deletion"
-msgstr "プロフィールの削除"
+msgstr "プロファイルの削除"
 
 msgctxt "#30130"
 msgid "Profile deleted"
-msgstr "プロフィールを削除しました"
+msgstr "プロファイルを削除しました"
 
 msgctxt "#30131"
 msgid "Synced all drives"
@@ -660,7 +660,7 @@ msgstr "OAuth クライアントID"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "ウェブアプリケーション"
+msgstr "Webアプリケーション""
 
 msgctxt "#30220"
 msgid "with this"
@@ -680,7 +680,7 @@ msgstr "再生"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "解像度選択画面を表示する（利用可能な場合）"
+msgstr "解像度選択プロンプトを表示（利用可能な場合）"
 
 msgctxt "#30302"
 msgid "Video resolution priority"
@@ -696,7 +696,7 @@ msgstr "字幕形式"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
-msgstr "字幕はSTRMと同じ名前ではなく、STRMと共に別のフォルダにあります"
+msgstr "字幕がSTRMと同じ名前ではなく、STRMと共に別のフォルダにあります"
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
@@ -720,7 +720,7 @@ msgstr "エピソードを視聴済みにする"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "STRMからメディアフラグデータをインポート"
+msgstr "STRMからメディアのフラグデータをインポート"
 
 msgctxt "#30404"
 msgid "Update library automatically"
@@ -764,11 +764,11 @@ msgstr "同期のデフォルト設定"
 
 msgctxt "#30506"
 msgid "STRM prefix"
-msgstr "STRM接頭辞"
+msgstr "STRMプレフィックス"
 
 msgctxt "#30507"
 msgid "STRM suffix"
-msgstr "STRM接尾辞"
+msgstr "STRMサフィックス"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
@@ -776,11 +776,11 @@ msgstr "で暗号化されたファイルが含まれています"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Kodiに適合する形式に動画名を変更する"
+msgstr "Kodiに適した形式に動画名を変更"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Kodi互換のディレクトリ構造を作成する"
+msgstr "Kodi互換のディレクトリ構造を作成"
 
 msgctxt "#30511"
 msgid "Sync NFO"
@@ -812,7 +812,7 @@ msgstr "TMDB成人向けコンテンツ"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "ジーユーアイ"
+msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
@@ -848,27 +848,27 @@ msgstr "暗号化"
 
 msgctxt "#30801"
 msgid "Default profile"
-msgstr "デフォルトプロフィール"
+msgstr "デフォルトプロファイル"
 
 msgctxt "#30802"
 msgid "Create profile"
-msgstr "プロフィールを作成"
+msgstr "プロファイルを作成"
 
 msgctxt "#30803"
 msgid "Modify profile"
-msgstr "プロフィールを編集"
+msgstr "プロファイルを編集"
 
 msgctxt "#30804"
 msgid "Delete profiles"
-msgstr "プロフィールを削除"
+msgstr "プロファイルを削除"
 
 msgctxt "#30805"
 msgid "Import profiles"
-msgstr "プロフィールをインポート"
+msgstr "プロファイルをインポート"
 
 msgctxt "#30806"
 msgid "Export profiles"
-msgstr "プロフィールをエクスポート"
+msgstr "プロファイルをエクスポート"
 
 msgctxt "#30900"
 msgid "Misc"

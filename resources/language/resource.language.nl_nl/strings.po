@@ -152,7 +152,7 @@ msgstr "Bestand geëxporteerd als"
 
 msgctxt "#30036"
 msgid "Accounts imported"
-msgstr "Geïmporteerde accounts"
+msgstr "Accounts geïmporteerd"
 
 msgctxt "#30037"
 msgid "Account import failed."
@@ -252,11 +252,11 @@ msgstr "Inhoud voor volwassenen"
 
 msgctxt "#30061"
 msgid "Stop syncing all folders"
-msgstr "Stop alle mappen synchroniseren"
+msgstr "Alle mappen synchroniseren stoppen"
 
 msgctxt "#30062"
 msgid "Stop syncing folder"
-msgstr "Stop deze map synchroniseren"
+msgstr "Deze map synchroniseren stoppen"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
@@ -372,7 +372,7 @@ msgstr "Synchroniseer meerdere"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Map zoeken"
+msgstr "Zoek map"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
@@ -424,7 +424,7 @@ msgstr "Uitsluiten"
 
 msgctxt "#30104"
 msgid "Include"
-msgstr "Inclusief"
+msgstr "Opnemen"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
@@ -468,7 +468,7 @@ msgstr "Bestandsgegevens versleutelen"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
-msgstr "Directoriemamen versleutelen"
+msgstr "Directorienamen versleutelen"
 
 msgctxt "#30116"
 msgid "Select a profile"
@@ -624,7 +624,7 @@ msgstr "Verwijderen"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Stop synchroniseren van geselecteerde mappen"
+msgstr "Geselecteerde mappen synchroniseren stoppen"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
@@ -672,7 +672,7 @@ msgstr "Redirect-URI"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "Valideren"
+msgstr "Bezig met valideren"
 
 msgctxt "#30300"
 msgid "Playback"
@@ -720,11 +720,11 @@ msgstr "Markeer afleveringen als bekeken op"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "Importeer media-vlaggegevens van STRM"
+msgstr "Importeer media-informatiegegevens van STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "Bibliotheek automatisch updaten"
+msgstr "Bibliotheek automatisch bijwerken"
 
 msgctxt "#30405"
 msgid "Display dialog"
@@ -792,7 +792,7 @@ msgstr "Synchroniseer ondertitels"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Synchroniseer illustraties"
+msgstr "Synchroniseer artwork"
 
 msgctxt "#30514"
 msgid "Sync STRM"
@@ -816,7 +816,7 @@ msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Dialoogvenster met voortgang initiële synchronisatie weergeven"
+msgstr "Dialoogvenster voor voortgang initiële synchronisatie weergeven"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"

@@ -36,7 +36,7 @@ msgstr "Paramètres de synchronisation"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "Interdiction API :"
+msgstr "Interdiction d'API :"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
@@ -52,7 +52,7 @@ msgstr "Le quota quotidien est dépassé. L'interdiction sera levée dans les 24
 
 msgctxt "#30010"
 msgid "Sync all"
-msgstr "Tout synchroniser"
+msgstr "Synchroniser tout"
 
 msgctxt "#30011"
 msgid "Synced"
@@ -72,7 +72,7 @@ msgstr "Sélectionnez un compte"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
-msgstr "Le nom du lecteur existe déjà, il doit être unique."
+msgstr "Le nom du lecteur existe déjà ; il doit être unique."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
@@ -192,11 +192,11 @@ msgstr "Les fichiers ont été supprimés"
 
 msgctxt "#30046"
 msgid "Account registration succeeded"
-msgstr "L'enregistrement du compte a réussi"
+msgstr "Enregistrement du compte réussi"
 
 msgctxt "#30047"
 msgid "Account registration failed"
-msgstr "L'enregistrement du compte a échoué"
+msgstr "Enregistrement du compte échoué"
 
 msgctxt "#30048"
 msgid "Sync path"
@@ -216,7 +216,7 @@ msgstr "Synchroniser au démarrage"
 
 msgctxt "#30052"
 msgid "Syncing folders"
-msgstr "Dossiers en synchronisation"
+msgstr "Dossiers en cours de synchronisation"
 
 msgctxt "#30053"
 msgid "Processing files"
@@ -228,11 +228,11 @@ msgstr "Êtes-vous sûr de vouloir supprimer le cache de synchronisation ?"
 
 msgctxt "#30055"
 msgid "Cache deleted"
-msgstr "Le cache a été supprimé."
+msgstr "Cache supprimé"
 
 msgctxt "#30056"
 msgid "Failed to delete the cache. See log for details."
-msgstr "Échec de la suppression du cache. Voir le journal pour plus de détails."
+msgstr "Échec de la suppression du cache. Consultez le journal pour plus de détails."
 
 msgctxt "#30057"
 msgid "Playback account not found."
@@ -336,7 +336,7 @@ msgstr "Vous devez attribuer une fréquence de synchronisation."
 
 msgctxt "#30082"
 msgid "Sync started"
-msgstr "Synchronisation commencée"
+msgstr "Synchronisation démarrée"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
@@ -412,7 +412,7 @@ msgstr "Le dossier de synchronisation n'existe pas."
 
 msgctxt "#30101"
 msgid "Failed to move the folder. The folder can't be moved into itself."
-msgstr "Échec du déplacement du dossier. Le dossier ne peut pas être déplacé dans lui-même."
+msgstr "Échec du déplacement du dossier. Impossible de déplacer le dossier dans lui-même."
 
 msgctxt "#30102"
 msgid "Failed to move the folder. The folder already exists."
@@ -452,11 +452,11 @@ msgstr "Salt"
 
 msgctxt "#30111"
 msgid "Filename encryption"
-msgstr "Chiffrement du nom de fichier"
+msgstr "Chiffrement des noms de fichier"
 
 msgctxt "#30112"
 msgid "Filename encoding"
-msgstr "Encodage du nom de fichier"
+msgstr "Encodage des noms de fichier"
 
 msgctxt "#30113"
 msgid "Suffix"
@@ -468,7 +468,7 @@ msgstr "Chiffrer les données des fichiers"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
-msgstr "Chiffrer les noms de répertoire"
+msgstr "Chiffrer les noms de répertoires"
 
 msgctxt "#30116"
 msgid "Select a profile"
@@ -480,7 +480,7 @@ msgstr "Profils supprimés"
 
 msgctxt "#30118"
 msgid "Profile import failed."
-msgstr "L'importation de profil a échoué."
+msgstr "Échec de l'importation de profil."
 
 msgctxt "#30119"
 msgid "Profiles imported"
@@ -488,7 +488,7 @@ msgstr "Profils importés"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
-msgstr "Attribuez un profil de chiffrement par défaut avant de lire une vidéo chiffrée."
+msgstr "Vous devez attribuer un profil de chiffrement par défaut avant de lire une vidéo chiffrée."
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
@@ -520,7 +520,7 @@ msgstr "Vous devez attribuer un mot de passe."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Vous devez attribuer un salt."
+msgstr "Vous devez attribuer un Salt."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -624,7 +624,7 @@ msgstr "Supprimer"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Arrêter de synchroniser certains dossiers"
+msgstr "Arrêter la synchronisation de certains dossiers"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
@@ -684,7 +684,7 @@ msgstr "Demander la sélection de la résolution (si disponible)."
 
 msgctxt "#30302"
 msgid "Video resolution priority"
-msgstr "Priorité de résolution vidéo"
+msgstr "Priorité de la résolution vidéo"
 
 msgctxt "#30303"
 msgid "Set subtitles automatically"
@@ -708,7 +708,7 @@ msgstr "Compte de lecture par défaut"
 
 msgctxt "#30400"
 msgid "Library"
-msgstr "Bibliothèque"
+msgstr "Médiathèque"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
@@ -720,11 +720,11 @@ msgstr "Marquer les épisodes comme visionnés à"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "Importer des données sur les indicateurs de média de STRM"
+msgstr "Importer des données sur les drapeaux de médias de STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "Mettre à jour la bibliothèque automatiquement"
+msgstr "Mettre à jour la médiathèque automatiquement"
 
 msgctxt "#30405"
 msgid "Display dialog"
@@ -732,7 +732,7 @@ msgstr "Afficher la boîte de dialogue"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "Nettoyer automatiquement la bibliothèque"
+msgstr "Nettoyer automatiquement la médiathèque"
 
 msgctxt "#30407"
 msgid "Video source"
@@ -760,7 +760,7 @@ msgstr "Supprimer le dossier de synchronisation"
 
 msgctxt "#30505"
 msgid "Sync defaults"
-msgstr "Synchronisation par défaut"
+msgstr "Paramètres de synchronisation par défaut"
 
 msgctxt "#30506"
 msgid "STRM prefix"
@@ -820,7 +820,7 @@ msgstr "Afficher la boîte de dialogue de progression de synchronisation initial
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
-msgstr "Afficher la boîte de dialogue de suppression du fichier"
+msgstr "Afficher la boîte de dialogue de suppression des fichiers"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"

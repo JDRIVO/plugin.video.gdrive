@@ -224,7 +224,7 @@ msgstr "Procesarea fișierelor"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
-msgstr "Ești sigur că vrei să ștergi memoria cache de sincronizare?"
+msgstr "Sunteți sigur că doriți să ștergeți memoria cache de sincronizare?"
 
 msgctxt "#30055"
 msgid "Cache deleted"
@@ -272,11 +272,11 @@ msgstr "General"
 
 msgctxt "#30066"
 msgid "OK"
-msgstr "OK"
+msgstr "Bine"
 
 msgctxt "#30067"
 msgid "Cancel"
-msgstr "Anulează"
+msgstr "Renunță"
 
 msgctxt "#30068"
 msgid "interval"
@@ -372,7 +372,7 @@ msgstr "Sincronizează mai multe"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Director de căutare"
+msgstr "Căutați în director"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
@@ -384,7 +384,7 @@ msgstr "Selectați un director la care să vă mutați"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
-msgstr "Ești sigur că vrei să ștergi directorul de sincronizare?"
+msgstr "Sunteți sigur că doriți să ștergeți directorul de sincronizare?"
 
 msgctxt "#30095"
 msgid "Folder deleted"
@@ -420,11 +420,11 @@ msgstr "Nu s-a putut muta directorul. Directorul există deja."
 
 msgctxt "#30103"
 msgid "Exclude"
-msgstr "Exclude"
+msgstr "Excluse"
 
 msgctxt "#30104"
 msgid "Include"
-msgstr "Include"
+msgstr "Incluse"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
@@ -592,7 +592,7 @@ msgstr "Ștergerea fișierului a eșuat"
 
 msgctxt "#30146"
 msgid "Are you sure you want to delete the TMDB cache?"
-msgstr "Ești sigur că vrei să ștergi cache-ul TMDB?"
+msgstr "Sunteți sigur că doriți să ștergeți cache-ul TMDB?"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
@@ -644,7 +644,7 @@ msgstr "Adăugați conturi de servicii"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "Vizitează"
+msgstr "Vizitați"
 
 msgctxt "#30216"
 msgid "in a web browser."
@@ -652,7 +652,7 @@ msgstr "într-un browser web."
 
 msgctxt "#30217"
 msgid "You must create an"
-msgstr "Trebuie să creezi un"
+msgstr "Trebuie să creați un"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
@@ -672,7 +672,7 @@ msgstr "URI de redirecționare"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "Validare"
+msgstr "Se validează"
 
 msgctxt "#30300"
 msgid "Playback"
@@ -708,7 +708,7 @@ msgstr "Cont de redare implicit"
 
 msgctxt "#30400"
 msgid "Library"
-msgstr "Bibliotecă"
+msgstr "Mediatecă"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
@@ -720,11 +720,11 @@ msgstr "Marchează episoadele ca vizionate la"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "Importați datele de pavilion media de la STRM"
+msgstr "Importați datele marcajelor media de la STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "Actualizați automat biblioteca"
+msgstr "Actualizați automat mediatecă"
 
 msgctxt "#30405"
 msgid "Display dialog"
@@ -732,7 +732,7 @@ msgstr "Afișare dialog"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "Curățați automat biblioteca"
+msgstr "Curățați automat mediatecă"
 
 msgctxt "#30407"
 msgid "Video source"
@@ -760,7 +760,7 @@ msgstr "Ștergeți directorul de sincronizare"
 
 msgctxt "#30505"
 msgid "Sync defaults"
-msgstr "Sincronizare implicită"
+msgstr "Setări implicite de sincronizare"
 
 msgctxt "#30506"
 msgid "STRM prefix"

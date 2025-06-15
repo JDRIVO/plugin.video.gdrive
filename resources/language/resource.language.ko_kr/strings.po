@@ -792,7 +792,7 @@ msgstr "자막 동기화"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "아트 워크 동기화"
+msgstr "아트워크 동기화"
 
 msgctxt "#30514"
 msgid "Sync STRM"

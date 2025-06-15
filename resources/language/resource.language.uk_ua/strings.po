@@ -240,7 +240,7 @@ msgstr "Обліковий запис відтворення не знайден
 
 msgctxt "#30058"
 msgid "Search language"
-msgstr "Мови пошуку"
+msgstr "Мова пошуку"
 
 msgctxt "#30059"
 msgid "Region"
@@ -420,11 +420,11 @@ msgstr "Не вдалося перемістити папку. Папка вже
 
 msgctxt "#30103"
 msgid "Exclude"
-msgstr "Виключати"
+msgstr "Виключити"
 
 msgctxt "#30104"
 msgid "Include"
-msgstr "Включати"
+msgstr "Включити"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
@@ -448,7 +448,7 @@ msgstr "Пароль"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Cоль"
+msgstr "Сіль"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -520,7 +520,7 @@ msgstr "Ви повинні призначити пароль."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Ви повинні призначити соль."
+msgstr "Ви повинні призначити сіль."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -668,11 +668,11 @@ msgstr "з цим"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "Перенаправлення URI"
+msgstr "URI перенаправлення"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "Перевірка"
+msgstr "Йде перевірка"
 
 msgctxt "#30300"
 msgid "Playback"
@@ -708,7 +708,7 @@ msgstr "Обліковий запис відтворення за замовчу
 
 msgctxt "#30400"
 msgid "Library"
-msgstr "Бібліотека"
+msgstr "Медіатека"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
@@ -720,11 +720,11 @@ msgstr "Позначити епізоди як переглянуті при"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "Імпортувати дані прапора медіа з STRM"
+msgstr "Імпортувати дані інформаційних значків з STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "Автоматичне оновлювати бібліотеку"
+msgstr "Автоматично оновлювати медіатеку"
 
 msgctxt "#30405"
 msgid "Display dialog"
@@ -732,7 +732,7 @@ msgstr "Відобразити діалогове вікно"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "Автоматичне очищення бібліотеку"
+msgstr "Автоматично очищати медіатеку"
 
 msgctxt "#30407"
 msgid "Video source"
@@ -792,7 +792,7 @@ msgstr "Синхронізувати субтитри"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Синхронізувати обкладинки"
+msgstr "Синхронізувати картинки"
 
 msgctxt "#30514"
 msgid "Sync STRM"
@@ -856,7 +856,7 @@ msgstr "Створити профіль"
 
 msgctxt "#30803"
 msgid "Modify profile"
-msgstr "Змініть профіль"
+msgstr "Редагувати профіль"
 
 msgctxt "#30804"
 msgid "Delete profiles"
@@ -864,11 +864,11 @@ msgstr "Видалити профілі"
 
 msgctxt "#30805"
 msgid "Import profiles"
-msgstr "Профілі імпорту"
+msgstr "Імпортувати профілі"
 
 msgctxt "#30806"
 msgid "Export profiles"
-msgstr "Експортні профілі"
+msgstr "Експортувати профілі"
 
 msgctxt "#30900"
 msgid "Misc"

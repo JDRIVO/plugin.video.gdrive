@@ -52,7 +52,7 @@ msgstr "تم تجاوز الحصة اليومية. سيُرفع الحظر خل�
 
 msgctxt "#30010"
 msgid "Sync all"
-msgstr "زامن الكل"
+msgstr "مزامنة الكل"
 
 msgctxt "#30011"
 msgid "Synced"
@@ -72,7 +72,7 @@ msgstr "اختر حسابًا"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
-msgstr "اسم محرك الأقراص موجود بالفعل. يجب أن يكون فريدًا."
+msgstr "اسم محرك الأقراص موجود بالفعل، ويجب أن يكون فريدًا."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
@@ -144,7 +144,7 @@ msgstr "حدد ملفًا للاستيراد"
 
 msgctxt "#30034"
 msgid "Select a folder to export to"
-msgstr "حدد المجلد للتصدير إليه"
+msgstr "حدد مجلدًا للتصدير إليه"
 
 msgctxt "#30035"
 msgid "File exported as"
@@ -184,7 +184,7 @@ msgstr "استعلام البحث"
 
 msgctxt "#30044"
 msgid "Sync completed"
-msgstr "تمت المزامنة"
+msgstr "اكتملت المزامنة"
 
 msgctxt "#30045"
 msgid "Files have been deleted"
@@ -212,15 +212,15 @@ msgstr "تكرار المزامنة"
 
 msgctxt "#30051"
 msgid "Sync on startup"
-msgstr "المزامنة عند بدء التشغيل"
+msgstr "مزامنة عند بدء التشغيل"
 
 msgctxt "#30052"
 msgid "Syncing folders"
-msgstr "مزامنة المجلدات"
+msgstr "جارٍ مزامنة المجلدات"
 
 msgctxt "#30053"
 msgid "Processing files"
-msgstr "معالجة الملفات"
+msgstr "جارٍ معالجة الملفات"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
@@ -272,7 +272,7 @@ msgstr "عام"
 
 msgctxt "#30066"
 msgid "OK"
-msgstr "حسناً"
+msgstr "موافق"
 
 msgctxt "#30067"
 msgid "Cancel"
@@ -296,7 +296,7 @@ msgstr "أدخل وقت مزامنة الملفات"
 
 msgctxt "#30072"
 msgid "Select a video source"
-msgstr "حدد مصدر فيديو"
+msgstr "حدد مصدر الفيديو"
 
 msgctxt "#30073"
 msgid "Syncing"
@@ -360,7 +360,7 @@ msgstr "يدوي"
 
 msgctxt "#30088"
 msgid "Deleting sync cache"
-msgstr "يتم حذف ذاكرة التخزين المؤقت للمزامنة"
+msgstr "جارٍ حذف ذاكرة التخزين المؤقت للمزامنة"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
@@ -424,7 +424,7 @@ msgstr "استبعاد"
 
 msgctxt "#30104"
 msgid "Include"
-msgstr "يشمل"
+msgstr "تضمين"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
@@ -436,7 +436,7 @@ msgstr "تم حذف محرك الأقراص:"
 
 msgctxt "#30107"
 msgid "Profile name"
-msgstr "اسم الملف التعريفي"
+msgstr "اسم الملف الشخصي"
 
 msgctxt "#30108"
 msgid "Encryption type"
@@ -472,11 +472,11 @@ msgstr "تشفير أسماء المجلدات"
 
 msgctxt "#30116"
 msgid "Select a profile"
-msgstr "اختر ملفًا تعريفيًا"
+msgstr "اختر ملفًا شخصيًا"
 
 msgctxt "#30117"
 msgid "Profiles deleted"
-msgstr "تم حذف ملفات التعريف"
+msgstr "تم حذف الملفات الشخصية"
 
 msgctxt "#30118"
 msgid "Profile import failed."
@@ -484,27 +484,27 @@ msgstr "فشل استيراد الملف الشخصي."
 
 msgctxt "#30119"
 msgid "Profiles imported"
-msgstr "تم استيراد ملفات التعريف"
+msgstr "تم استيراد الملفات الشخصية"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
-msgstr "قم بتعيين ملف تعريف تشفير افتراضي قبل تشغيل فيديو مشفر."
+msgstr "عيّن ملفًا شخصيًا افتراضيًا للتشفير قبل تشغيل فيديو مشفر."
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
-msgstr "ملف تعريف التشفير المرتبط بهذا الملف غير موجود."
+msgstr "الملف الشخصي للتشفير المرتبط بهذا الملف غير موجود."
 
 msgctxt "#30122"
 msgid "No encryption profiles found."
-msgstr "لم يتم العثور على ملفات تعريف التشفير."
+msgstr "لم يتم العثور على ملفات شخصية للتشفير."
 
 msgctxt "#30123"
 msgid "Profile Manager"
-msgstr "مدير الملف الشخصي"
+msgstr "مدير الملفات الشخصية"
 
 msgctxt "#30124"
 msgid "Profile created"
-msgstr "تم إنشاء ملف تعريف"
+msgstr "تم إنشاء ملف شخصي"
 
 msgctxt "#30125"
 msgid "Profile updated"
@@ -512,7 +512,7 @@ msgstr "تم تحديث الملف الشخصي"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
-msgstr "يجب عليك تعيين اسم ملف تعريف."
+msgstr "يجب عليك تعيين اسم ملف شخصي."
 
 msgctxt "#30127"
 msgid "You must assign a password."
@@ -520,7 +520,7 @@ msgstr "يجب عليك تعيين كلمة مرور."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "يجب عليك تعيين سالت."
+msgstr "يجب عليك تعيين ملح."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -596,11 +596,11 @@ msgstr "هل أنت متأكد من أنك تريد حذف ذاكرة التخز
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
-msgstr "حذف ذاكرة التخزين المؤقت TMDB"
+msgstr "جارٍ حذف ذاكرة التخزين المؤقت لـ TMDB"
 
 msgctxt "#30148"
 msgid "duration"
-msgstr "المدة الزمنية"
+msgstr "المدة"
 
 msgctxt "#30149"
 msgid "extension"
@@ -628,7 +628,7 @@ msgstr "توقف عن مزامنة المجلدات المحددة"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
-msgstr "اختر المجلدات التي تريد حذفها"
+msgstr "حدد المجلدات المراد حذفها"
 
 msgctxt "#30207"
 msgid "Add account"
@@ -668,7 +668,7 @@ msgstr "مع هذا"
 
 msgctxt "#30221"
 msgid "Redirect URI"
-msgstr "عنوان إعادة التوجيه"
+msgstr "URI إعادة التوجيه"
 
 msgctxt "#30222"
 msgid "Validating"
@@ -696,7 +696,7 @@ msgstr "تنسيق الترجمة"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
-msgstr "لا يتم تسمية الترجمات بنفس اسم STRM وهي في مجلد منفصل مع STRM"
+msgstr "لا يتم تسمية ملفات الترجمة بنفس اسم ملفات STRM وتكون في مجلد منفصل معها"
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
@@ -708,7 +708,7 @@ msgstr "حساب التشغيل الافتراضي"
 
 msgctxt "#30400"
 msgid "Library"
-msgstr "مكتبة"
+msgstr "المكتبة"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
@@ -720,7 +720,7 @@ msgstr "وضع علامة على الحلقات كمشاهدة عند"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "استيراد بيانات علامة الوسائط من STRM"
+msgstr "استيراد بيانات إشارات الوسائط من STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
@@ -744,15 +744,15 @@ msgstr "زامن"
 
 msgctxt "#30501"
 msgid "Threads"
-msgstr "الخيوط"
+msgstr "المواضيع"
 
 msgctxt "#30502"
 msgid "Move sync folder"
-msgstr "نقل مجلّد المزامنة"
+msgstr "نقل مجلد المزامنة"
 
 msgctxt "#30503"
 msgid "Delete sync cache"
-msgstr "حذف ذاكرة التخزين المؤقت Sync"
+msgstr "حذف ذاكرة التخزين المؤقت للمزامنة"
 
 msgctxt "#30504"
 msgid "Delete sync folder"
@@ -848,11 +848,11 @@ msgstr "التشفير"
 
 msgctxt "#30801"
 msgid "Default profile"
-msgstr "ملف التعريف الافتراضي"
+msgstr "الملف الشخصي الافتراضي"
 
 msgctxt "#30802"
 msgid "Create profile"
-msgstr "إنشاء ملف تعريف"
+msgstr "إنشاء ملف شخصي"
 
 msgctxt "#30803"
 msgid "Modify profile"
@@ -864,11 +864,11 @@ msgstr "حذف الملفات الشخصية"
 
 msgctxt "#30805"
 msgid "Import profiles"
-msgstr "استيراد ملفات التعريف"
+msgstr "استيراد الملفات الشخصية"
 
 msgctxt "#30806"
 msgid "Export profiles"
-msgstr "تصدير ملفات التعريف"
+msgstr "تصدير الملفات الشخصية"
 
 msgctxt "#30900"
 msgid "Misc"

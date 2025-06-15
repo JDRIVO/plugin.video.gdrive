@@ -48,7 +48,7 @@ msgstr "Video"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
-msgstr "Limite quotidiano superato. Il ban sarà rimosso entro 24 ore."
+msgstr "Limite di quota giornaliero superato. Il blocco verrà rimosso entro 24 ore."
 
 msgctxt "#30010"
 msgid "Sync all"
@@ -72,7 +72,7 @@ msgstr "Seleziona un account"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
-msgstr "Il nome dell'unità esiste già, deve essere univoco."
+msgstr "Il nome dell'unità esiste già; deve essere univoco."
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
@@ -216,7 +216,7 @@ msgstr "Sincronizza all'avvio"
 
 msgctxt "#30052"
 msgid "Syncing folders"
-msgstr "Sincronizzazione cartelle"
+msgstr "Sincronizzazione cartelle in corso"
 
 msgctxt "#30053"
 msgid "Processing files"
@@ -232,7 +232,7 @@ msgstr "Cache eliminata"
 
 msgctxt "#30056"
 msgid "Failed to delete the cache. See log for details."
-msgstr "Impossibile eliminare la cache. Vedi registro per i dettagli."
+msgstr "Impossibile eliminare la cache. Consulta il registro per i dettagli."
 
 msgctxt "#30057"
 msgid "Playback account not found."
@@ -252,11 +252,11 @@ msgstr "Contenuto per adulti"
 
 msgctxt "#30061"
 msgid "Stop syncing all folders"
-msgstr "Smetti di sincronizzare tutte le cartelle"
+msgstr "Arresta sincronizzazione di tutte le cartelle"
 
 msgctxt "#30062"
 msgid "Stop syncing folder"
-msgstr "Smetti di sincronizzare la cartella"
+msgstr "Arresta sincronizzazione della cartella"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
@@ -292,27 +292,27 @@ msgstr "Immettere l'intervallo di sincronizzazione in minuti"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
-msgstr "Inserire l'ora di sincronizzazione dei file"
+msgstr "Immetti l'ora di sincronizzazione dei file"
 
 msgctxt "#30072"
 msgid "Select a video source"
-msgstr "Seleziona una fonte video"
+msgstr "Seleziona una sorgente video"
 
 msgctxt "#30073"
 msgid "Syncing"
-msgstr "Sincronizzazione"
+msgstr "Sincronizzazione in corso"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
-msgstr "Eliminazione della cartella di sincronizzazione"
+msgstr "Eliminazione della cartella di sincronizzazione in corso"
 
 msgctxt "#30075"
 msgid "Deleting files"
-msgstr "Eliminazione dei file"
+msgstr "Eliminazione dei file in corso"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
-msgstr "Spostamento della cartella di sincronizzazione"
+msgstr "Spostamento della cartella di sincronizzazione in corso"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
@@ -340,7 +340,7 @@ msgstr "Sincronizzazione avviata"
 
 msgctxt "#30083"
 msgid "Resolution Priority"
-msgstr "Priorità risoluzione"
+msgstr "Priorità della risoluzione"
 
 msgctxt "#30084"
 msgid "Close"
@@ -360,7 +360,7 @@ msgstr "manuale"
 
 msgctxt "#30088"
 msgid "Deleting sync cache"
-msgstr "Eliminazione della cache di sincronizzazione"
+msgstr "Eliminazione della cache di sincronizzazione in corso"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
@@ -396,7 +396,7 @@ msgstr "Impossibile eliminare la cartella di sincronizzazione. Vedi registro per
 
 msgctxt "#30097"
 msgid "Accounts file deleted"
-msgstr "File account eliminato"
+msgstr "File degli account eliminato"
 
 msgctxt "#30098"
 msgid "Failed to delete the accounts file. See log for details."
@@ -420,11 +420,11 @@ msgstr "Impossibile spostare la cartella. La cartella esiste già."
 
 msgctxt "#30103"
 msgid "Exclude"
-msgstr "Esclusione"
+msgstr "Escludi"
 
 msgctxt "#30104"
 msgid "Include"
-msgstr "Inclusione"
+msgstr "Includi"
 
 msgctxt "#30105"
 msgid "Deleting Drive:"
@@ -452,11 +452,11 @@ msgstr "Salt"
 
 msgctxt "#30111"
 msgid "Filename encryption"
-msgstr "Crittografia del nome file"
+msgstr "Crittografia dei nomi dei file"
 
 msgctxt "#30112"
 msgid "Filename encoding"
-msgstr "Codifica del nome file"
+msgstr "Codifica dei nomi dei file"
 
 msgctxt "#30113"
 msgid "Suffix"
@@ -512,15 +512,15 @@ msgstr "Profilo aggiornato"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
-msgstr "È necessario assegnar un nome profilo."
+msgstr "È necessario assegnare un nome di profilo."
 
 msgctxt "#30127"
 msgid "You must assign a password."
-msgstr "È necessario assegnar una password."
+msgstr "È necessario assegnare una password."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "È necessario assegnar un salt."
+msgstr "È necessario assegnare un salt."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -576,7 +576,7 @@ msgstr "Impossibile sincronizzare"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
-msgstr "Sincronizzazione di tutte le unità"
+msgstr "Sincronizzazione di tutte le unità in corso"
 
 msgctxt "#30143"
 msgid "Do you want to delete:"
@@ -596,7 +596,7 @@ msgstr "Sei sicuro di voler eliminare la cache TMDB?"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
-msgstr "Eliminazione della cache TMDB"
+msgstr "Eliminazione della cache TMDB in corso"
 
 msgctxt "#30148"
 msgid "duration"
@@ -624,7 +624,7 @@ msgstr "Elimina"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Smetti di sincronizzare le cartelle selezionate"
+msgstr "Arresta sincronizzazione le cartelle selezionate"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
@@ -672,7 +672,7 @@ msgstr "URI di reindirizzamento"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "In fase di convalida"
+msgstr "Convalida in corso"
 
 msgctxt "#30300"
 msgid "Playback"
@@ -700,7 +700,7 @@ msgstr "I sottotitoli non sono nominati uguali a STRM e si trovano in una cartel
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
-msgstr "I sottotitoli sono nominati uguali a STRM"
+msgstr "I sottotitoli hanno lo stesso nome di STRM"
 
 msgctxt "#30307"
 msgid "Default playback account"
@@ -720,7 +720,7 @@ msgstr "Contrassegna gli episodi come guardati al"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "Importa i dati di flag multimediale da STRM"
+msgstr "Importa i dati degli indicatori multimediali da STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
@@ -772,7 +772,7 @@ msgstr "Suffisso STRM"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
-msgstr "Ha file crittografati con"
+msgstr "Contiene file crittografati con"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
@@ -792,7 +792,7 @@ msgstr "Sincronizza sottotitoli"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Sincronizza illustrazioni"
+msgstr "Sincronizza l'artwork"
 
 msgctxt "#30514"
 msgid "Sync STRM"
@@ -816,7 +816,7 @@ msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Mostra finestra di avanzamento sincronizzazione iniziale"
+msgstr "Mostra finestra di avanzamento della sincronizzazione iniziale"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
