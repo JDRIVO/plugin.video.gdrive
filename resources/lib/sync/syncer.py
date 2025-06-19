@@ -416,33 +416,34 @@ class Syncer:
 			if not dirPath:
 				# folder has moved outside of root folder hierarchy/tree > delete folder
 				self.cache.removeDirectory(syncRootPath, drivePath, folderID)
+				return
+
+			self.cache.updateDirectory({"parent_folder_id": parentFolderID}, folderID)
+			cachedParentDirectory = self.cache.getDirectory({"folder_id": parentFolderID})
+
+			if cachedParentDirectory:
+				dirPath = self.cache.getUniqueDirectoryPath(driveID, dirPath)
 			else:
-				self.cache.updateDirectory({"parent_folder_id": parentFolderID}, folderID)
-				cachedParentDirectory = self.cache.getDirectory({"folder_id": parentFolderID})
+				parentDirPath = os.path.split(dirPath)[0]
+				parentFolderName = os.path.basename(parentDirPath)
+				parentDirPath = self.cache.getUniqueDirectoryPath(driveID, parentDirPath)
+				dirPath = os.path.join(parentDirPath, folderName)
+				dirPath = self.cache.getUniqueDirectoryPath(driveID, dirPath)
+				parentsParentFolderID = self.cloudService.getParentDirectoryID(parentFolderID)
+				directory = {
+					"drive_id": driveID,
+					"folder_id": parentFolderID,
+					"local_path": parentDirPath,
+					"remote_name": parentFolderName,
+					"parent_folder_id": parentsParentFolderID if parentsParentFolderID != driveID else parentFolderID,
+					"root_folder_id": rootFolderID,
+				}
+				self.cache.addDirectory(directory)
 
-				if cachedParentDirectory:
-					dirPath = self.cache.getUniqueDirectoryPath(driveID, dirPath)
-				else:
-					parentDirPath = os.path.split(dirPath)[0]
-					parentFolderName = os.path.basename(parentDirPath)
-					parentDirPath = self.cache.getUniqueDirectoryPath(driveID, parentDirPath)
-					dirPath = os.path.join(parentDirPath, folderName)
-					dirPath = self.cache.getUniqueDirectoryPath(driveID, dirPath)
-					parentsParentFolderID = self.cloudService.getParentDirectoryID(parentFolderID)
-					directory = {
-						"drive_id": driveID,
-						"folder_id": parentFolderID,
-						"local_path": parentDirPath,
-						"remote_name": parentFolderName,
-						"parent_folder_id": parentsParentFolderID if parentsParentFolderID != driveID else parentFolderID,
-						"root_folder_id": rootFolderID,
-					}
-					self.cache.addDirectory(directory)
-
-				oldPath = os.path.join(drivePath, cachedDirectoryPath)
-				newPath = os.path.join(drivePath, dirPath)
-				self.fileOperations.renameFolder(syncRootPath, oldPath, newPath)
-				self.cache.updateChildPaths(cachedDirectoryPath, dirPath, folderID)
+			oldPath = os.path.join(drivePath, cachedDirectoryPath)
+			newPath = os.path.join(drivePath, dirPath)
+			self.fileOperations.renameFolder(syncRootPath, oldPath, newPath)
+			self.cache.updateChildPaths(cachedDirectoryPath, dirPath, folderID)
 
 		elif cachedRemoteName != folderName:
 			# folder renamed
