@@ -64,7 +64,7 @@ msgstr "Налаштування синхронізації"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "Папка синхронізації"
+msgstr "Синхронізувати папку"
 
 msgctxt "#30014"
 msgid "Select an account"
@@ -372,7 +372,7 @@ msgstr "Синхронізувати декілька"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Папка пошуку"
+msgstr "Пошук у папці"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."

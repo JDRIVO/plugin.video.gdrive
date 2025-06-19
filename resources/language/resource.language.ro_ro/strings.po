@@ -64,7 +64,7 @@ msgstr "Setări de sincronizare"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "Director de sincronizare"
+msgstr "Sincronizează folderul"
 
 msgctxt "#30014"
 msgid "Select an account"

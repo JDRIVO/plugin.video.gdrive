@@ -372,7 +372,7 @@ msgstr "Synchroniser plusieurs"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Rechercher le dossier"
+msgstr "Rechercher dans le dossier"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."

@@ -36,7 +36,7 @@ msgstr "同步设置"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "API 禁用:"
+msgstr "API禁用:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
@@ -372,7 +372,7 @@ msgstr "同步多个"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "搜索文件夹"
+msgstr "搜索此文件夹"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."

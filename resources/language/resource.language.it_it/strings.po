@@ -372,7 +372,7 @@ msgstr "Sincronizza multipli"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Cerca cartella"
+msgstr "Cerca nella cartella"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
@@ -436,7 +436,7 @@ msgstr "Unità eliminata:"
 
 msgctxt "#30107"
 msgid "Profile name"
-msgstr "Nome del profilo"
+msgstr "Nome profilo"
 
 msgctxt "#30108"
 msgid "Encryption type"
@@ -860,7 +860,7 @@ msgstr "Modifica profilo"
 
 msgctxt "#30804"
 msgid "Delete profiles"
-msgstr "Elimina i profili"
+msgstr "Elimina profili"
 
 msgctxt "#30805"
 msgid "Import profiles"

@@ -272,7 +272,7 @@ msgstr "सामान्य"
 
 msgctxt "#30066"
 msgid "OK"
-msgstr "टेके"
+msgstr "ओके"
 
 msgctxt "#30067"
 msgid "Cancel"
@@ -372,7 +372,7 @@ msgstr "कई सिंक करें"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "फ़ोल्डर खोजें
+msgstr "फ़ोल्डर में खोजें"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
