@@ -24,7 +24,7 @@ msgstr "Zmień nazwę"
 
 msgctxt "#30003"
 msgid "is no longer valid. Do you want to delete this account?"
-msgstr "nie jest już aktywne. Czy na pewno chcesz usunąć to konto?"
+msgstr "jest już nieaktywne. Czy na pewno chcesz usunąć to konto?"
 
 msgctxt "#30004"
 msgid "Drive Name"
@@ -84,7 +84,7 @@ msgstr "Ustawienia dysku"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
-msgstr "Weryfikacja poświadczeń konta nie powiodła się dla:"
+msgstr "Weryfikacja poświadczeń konta nieudana dla:"
 
 msgctxt "#30019"
 msgid "Account validated"
@@ -136,7 +136,7 @@ msgstr "Klucz prywatny nie został znaleziony w:"
 
 msgctxt "#30031"
 msgid "Folder moved"
-msgstr "Folder został przeniesiony"
+msgstr "Folder przeniesiono"
 
 msgctxt "#30033"
 msgid "Select a file to import"
@@ -144,15 +144,15 @@ msgstr "Wybierz plik do zaimportowania"
 
 msgctxt "#30034"
 msgid "Select a folder to export to"
-msgstr "Wybierz folder docelowy eksportu"
+msgstr "Wybierz folder, do którego eksportować"
 
 msgctxt "#30035"
 msgid "File exported as"
-msgstr "Plik został wyeksportowany jako"
+msgstr "Plik wyeksportowano jako"
 
 msgctxt "#30036"
 msgid "Accounts imported"
-msgstr "Konta zostały zaimportowane"
+msgstr "Konta zaimportowano"
 
 msgctxt "#30037"
 msgid "Account import failed."
@@ -180,7 +180,7 @@ msgstr "Oznaczone gwiazdką"
 
 msgctxt "#30043"
 msgid "Search Query"
-msgstr "Zapytanie wyszukiwania"
+msgstr "Wyszukiwana fraza"
 
 msgctxt "#30044"
 msgid "Sync completed"
@@ -188,7 +188,7 @@ msgstr "Synchronizacja zakończona"
 
 msgctxt "#30045"
 msgid "Files have been deleted"
-msgstr "Pliki zostały usunięte"
+msgstr "Pliki usunięto"
 
 msgctxt "#30046"
 msgid "Account registration succeeded"
@@ -372,7 +372,7 @@ msgstr "Synchronizuj wiele"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "Wyszukaj folder"
+msgstr "Szukaj w folderze"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
@@ -380,7 +380,7 @@ msgstr "Folder synchronizacji nie jest ustawiony."
 
 msgctxt "#30093"
 msgid "Select a folder to move into"
-msgstr "Wybierz folder docelowy przeniesienia"
+msgstr "Wybierz folder, do którego przenieść"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
@@ -476,7 +476,7 @@ msgstr "Wybierz profil"
 
 msgctxt "#30117"
 msgid "Profiles deleted"
-msgstr "Profile zostały usunięte"
+msgstr "Profile usunięto"
 
 msgctxt "#30118"
 msgid "Profile import failed."
@@ -484,7 +484,7 @@ msgstr "Import profilu nie powiódł się."
 
 msgctxt "#30119"
 msgid "Profiles imported"
-msgstr "Profile zostały zaimportowane"
+msgstr "Profile zaimportowano"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
@@ -504,11 +504,11 @@ msgstr "Menedżer profilu"
 
 msgctxt "#30124"
 msgid "Profile created"
-msgstr "Utworzony profil"
+msgstr "Profil utworzono"
 
 msgctxt "#30125"
 msgid "Profile updated"
-msgstr "Profil został zaktualizowany"
+msgstr "Profil zaktualizowano"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
@@ -528,7 +528,7 @@ msgstr "Usunięcie profilu"
 
 msgctxt "#30130"
 msgid "Profile deleted"
-msgstr "Profil usunięty"
+msgstr "Profil usunięto"
 
 msgctxt "#30131"
 msgid "Synced all drives"
@@ -712,11 +712,11 @@ msgstr "Biblioteka"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "Oznacz filmy jako obejrzane po"
+msgstr "Oznacz filmy jako obejrzane od"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "Oznacz odcinki jako obejrzane po"
+msgstr "Oznacz odcinki jako obejrzane od"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
@@ -808,7 +808,7 @@ msgstr "Region TMDB"
 
 msgctxt "#30517"
 msgid "TMDB adult content"
-msgstr "TMDB Treść dla dorosłych"
+msgstr "Treść dla dorosłych TMDB"
 
 msgctxt "#30600"
 msgid "GUI"

@@ -36,11 +36,11 @@ msgstr "同步设置"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "API禁令："
+msgstr "API 禁用:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "切换到后备帐户"
+msgstr "切换到备用帐户"
 
 msgctxt "#30008"
 msgid "Videos"
@@ -48,7 +48,7 @@ msgstr "视频"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
-msgstr "每日配额限制已超出。禁令将在24小时内解除。"
+msgstr "每日配额已超出限制。禁用将在24小时内解除。"
 
 msgctxt "#30010"
 msgid "Sync all"
@@ -68,7 +68,7 @@ msgstr "同步文件夹"
 
 msgctxt "#30014"
 msgid "Select an account"
-msgstr "选择一个帐户"
+msgstr "选择帐户"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
@@ -124,15 +124,15 @@ msgstr "您要删除与此驱动器关联的所有文件吗？"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
-msgstr "私钥和客户端电子邮件未找到："
+msgstr "未在 中找到私钥和客户端电子邮件："
 
 msgctxt "#30029"
 msgid "The client email wasn't found in:"
-msgstr "客户电子邮件未找到："
+msgstr "未在 中找到客户端电子邮件："
 
 msgctxt "#30030"
 msgid "The private key wasn't found in:"
-msgstr "没有找到私钥："
+msgstr "未在 中找到私钥："
 
 msgctxt "#30031"
 msgid "Folder moved"
@@ -164,7 +164,7 @@ msgstr "我的云端硬盘"
 
 msgctxt "#30039"
 msgid "Shared With Me"
-msgstr "与我分享"
+msgstr "与我共享"
 
 msgctxt "#30040"
 msgid "Shared Drives"
@@ -212,7 +212,7 @@ msgstr "同步频率"
 
 msgctxt "#30051"
 msgid "Sync on startup"
-msgstr "同步启动"
+msgstr "启动时同步"
 
 msgctxt "#30052"
 msgid "Syncing folders"
@@ -268,7 +268,7 @@ msgstr "您要删除与这些文件夹关联的本地文件吗？"
 
 msgctxt "#30065"
 msgid "General"
-msgstr "一般的"
+msgstr "通用"
 
 msgctxt "#30066"
 msgid "OK"
@@ -284,7 +284,7 @@ msgstr "间隔"
 
 msgctxt "#30069"
 msgid "schedule"
-msgstr "日程"
+msgstr "计划"
 
 msgctxt "#30070"
 msgid "Enter the sync interval in minutes"
@@ -356,7 +356,7 @@ msgstr "文件夹选择"
 
 msgctxt "#30087"
 msgid "manual"
-msgstr "手动的"
+msgstr "手动"
 
 msgctxt "#30088"
 msgid "Deleting sync cache"
@@ -472,11 +472,11 @@ msgstr "加密目录名称"
 
 msgctxt "#30116"
 msgid "Select a profile"
-msgstr "选择一个配置文件"
+msgstr "选择配置文件"
 
 msgctxt "#30117"
 msgid "Profiles deleted"
-msgstr "删除的配置文件"
+msgstr "配置文件已删除"
 
 msgctxt "#30118"
 msgid "Profile import failed."
@@ -484,7 +484,7 @@ msgstr "配置文件导入失败。"
 
 msgctxt "#30119"
 msgid "Profiles imported"
-msgstr "导入的配置文件"
+msgstr "配置文件已导入"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
@@ -500,19 +500,19 @@ msgstr "找不到加密配置文件。"
 
 msgctxt "#30123"
 msgid "Profile Manager"
-msgstr "个人资料管理器"
+msgstr "配置文件管理器"
 
 msgctxt "#30124"
 msgid "Profile created"
-msgstr "个人资料已创建"
+msgstr "配置文件已创建"
 
 msgctxt "#30125"
 msgid "Profile updated"
-msgstr "个人资料已更新"
+msgstr "配置文件已更新"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
-msgstr "您必须分配一个配置文件名称。"
+msgstr "您必须分配配置文件名称。"
 
 msgctxt "#30127"
 msgid "You must assign a password."
@@ -652,7 +652,7 @@ msgstr "在网页浏览器中。"
 
 msgctxt "#30217"
 msgid "You must create an"
-msgstr "您必须创建一个"
+msgstr "您必须创建"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
@@ -672,7 +672,7 @@ msgstr "重定向 URI"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "验证"
+msgstr "正在验证"
 
 msgctxt "#30300"
 msgid "Playback"
@@ -700,7 +700,7 @@ msgstr "字幕的名称与STRM的名字不同，并且在带有STRM的孤立文�
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
-msgstr "字幕命名与STRM相同"
+msgstr "字幕名称与STRM相同"
 
 msgctxt "#30307"
 msgid "Default playback account"
@@ -712,11 +712,11 @@ msgstr "资料库"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "标记电影为已观看"
+msgstr "在 处将电影标记为已观看"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "标记剧集为已观看"
+msgstr "在 处将剧集标记为已观看"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
@@ -772,7 +772,7 @@ msgstr "STRM后缀"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
-msgstr "加密的文件"
+msgstr "包含以 加密的文件"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
@@ -852,7 +852,7 @@ msgstr "默认配置文件"
 
 msgctxt "#30802"
 msgid "Create profile"
-msgstr "创建个人资料"
+msgstr "创建配置文件"
 
 msgctxt "#30803"
 msgid "Modify profile"
@@ -868,7 +868,7 @@ msgstr "导入配置文件"
 
 msgctxt "#30806"
 msgid "Export profiles"
-msgstr "出口概况"
+msgstr "导出配置文件"
 
 msgctxt "#30900"
 msgid "Misc"

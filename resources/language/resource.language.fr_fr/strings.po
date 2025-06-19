@@ -780,7 +780,7 @@ msgstr "Renommer les vidéos dans un format adapté à Kodi"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Créer une structure de répertoires format adapté à Kodi"
+msgstr "Créer une structure de répertoires adaptée à Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"

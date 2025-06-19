@@ -76,7 +76,7 @@ msgstr "ドライブ名はすでに存在します。一意にしてください
 
 msgctxt "#30016"
 msgid "Are you sure you want to delete drive:"
-msgstr "このドライブを本当に削除しますか："
+msgstr "このドライブを削除しますか："
 
 msgctxt "#30017"
 msgid "Drive settings"
@@ -108,7 +108,7 @@ msgstr "検証"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
-msgstr "アカウントファイルを本当に削除しますか？"
+msgstr "アカウントファイルを削除しますか？"
 
 msgctxt "#30025"
 msgid "Account Name"
@@ -224,7 +224,7 @@ msgstr "ファイル処理中"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
-msgstr "同期キャッシュを本当に削除してもよろしいですか？"
+msgstr "同期キャッシュを削除してもよろしいですか？"
 
 msgctxt "#30055"
 msgid "Cache deleted"
@@ -384,7 +384,7 @@ msgstr "移動先のフォルダを選択してください"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
-msgstr "同期フォルダを本当に削除してもよろしいですか？"
+msgstr "同期フォルダを削除してもよろしいですか？"
 
 msgctxt "#30095"
 msgid "Folder deleted"
@@ -592,7 +592,7 @@ msgstr "ファイルの削除に失敗しました"
 
 msgctxt "#30146"
 msgid "Are you sure you want to delete the TMDB cache?"
-msgstr "TMDBキャッシュを本当に削除してもよろしいですか？"
+msgstr "TMDBキャッシュを削除してもよろしいですか？"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
@@ -612,7 +612,7 @@ msgstr "解像度"
 
 msgctxt "#30157"
 msgid "Are you sure you want to delete account:"
-msgstr "本当にアカウントを削除してもよろしいですか："
+msgstr "アカウントを削除してもよろしいですか："
 
 msgctxt "#30158"
 msgid "Account Deletion"
@@ -660,7 +660,7 @@ msgstr "OAuth クライアントID"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "Webアプリケーション""
+msgstr "Webアプリケーション"
 
 msgctxt "#30220"
 msgid "with this"

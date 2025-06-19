@@ -64,7 +64,7 @@ msgstr "إعدادات المزامنة"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "مزامنة المجلد"
+msgstr "مزامنة مجلد"
 
 msgctxt "#30014"
 msgid "Select an account"
@@ -288,7 +288,7 @@ msgstr "جدول"
 
 msgctxt "#30070"
 msgid "Enter the sync interval in minutes"
-msgstr "أدخل مدة المزامنة بالدقائق"
+msgstr "أدخل فاصل المزامنة بالدقائق"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
@@ -744,7 +744,7 @@ msgstr "زامن"
 
 msgctxt "#30501"
 msgid "Threads"
-msgstr "المواضيع"
+msgstr "الخيوط"
 
 msgctxt "#30502"
 msgid "Move sync folder"

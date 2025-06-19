@@ -96,7 +96,7 @@ msgstr "Облікові записи підтверджені"
 
 msgctxt "#30021"
 msgid "Validate accounts"
-msgstr "Підтвердити облікові записи"
+msgstr "Перевірити облікові записи"
 
 msgctxt "#30022"
 msgid "Delete accounts"
@@ -368,7 +368,7 @@ msgstr "Створення ідентифікатора клієнта та се
 
 msgctxt "#30090"
 msgid "Sync multiple"
-msgstr "Синхронізувати множинне"
+msgstr "Синхронізувати декілька"
 
 msgctxt "#30091"
 msgid "Search folder"
@@ -712,11 +712,11 @@ msgstr "Медіатека"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "Позначити фільми як переглянуті при"
+msgstr "Позначити фільми як переглянуті на"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "Позначити епізоди як переглянуті при"
+msgstr "Позначити епізоди як переглянуті на"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
@@ -748,7 +748,7 @@ msgstr "Потоки"
 
 msgctxt "#30502"
 msgid "Move sync folder"
-msgstr "Перемістіть папку синхронізації"
+msgstr "Перемістити папку синхронізації"
 
 msgctxt "#30503"
 msgid "Delete sync cache"

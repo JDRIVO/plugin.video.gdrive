@@ -52,7 +52,7 @@ msgstr "Limita zilnică de cotă a fost depășită. Restricția va fi ridicată
 
 msgctxt "#30010"
 msgid "Sync all"
-msgstr "Sincronizează toate"
+msgstr "Sincronizează tot"
 
 msgctxt "#30011"
 msgid "Synced"
@@ -84,7 +84,7 @@ msgstr "Setări unitate"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
-msgstr "Validarea acreditării a eșuat pentru cont:"
+msgstr "Validarea credințialelor a eșuat pentru cont:"
 
 msgctxt "#30019"
 msgid "Account validated"
@@ -116,7 +116,7 @@ msgstr "Numele contului"
 
 msgctxt "#30026"
 msgid "Select files to import"
-msgstr "Selectați fișiere pentru a importa"
+msgstr "Selectați fișiere de importat"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
@@ -136,7 +136,7 @@ msgstr "Cheia privată nu a fost găsită în:"
 
 msgctxt "#30031"
 msgid "Folder moved"
-msgstr "Directorul a fost mutat"
+msgstr "Director mutat"
 
 msgctxt "#30033"
 msgid "Select a file to import"
@@ -148,11 +148,11 @@ msgstr "Selectați un director în care să exportați"
 
 msgctxt "#30035"
 msgid "File exported as"
-msgstr "Fișierul a fost exportat ca"
+msgstr "Fișier exportat ca"
 
 msgctxt "#30036"
 msgid "Accounts imported"
-msgstr "Conturile au fost importate"
+msgstr "Conturi importate"
 
 msgctxt "#30037"
 msgid "Account import failed."
@@ -188,7 +188,7 @@ msgstr "Sincronizare completată"
 
 msgctxt "#30045"
 msgid "Files have been deleted"
-msgstr "Fișierele au fost șterse"
+msgstr "Fișiere șterse"
 
 msgctxt "#30046"
 msgid "Account registration succeeded"
@@ -216,7 +216,7 @@ msgstr "Sincronizare la pornire"
 
 msgctxt "#30052"
 msgid "Syncing folders"
-msgstr "Se sincronizează directorele"
+msgstr "Se sincronizează directoarele"
 
 msgctxt "#30053"
 msgid "Processing files"
@@ -228,11 +228,11 @@ msgstr "Sunteți sigur că doriți să ștergeți memoria cache de sincronizare?
 
 msgctxt "#30055"
 msgid "Cache deleted"
-msgstr "Cache șters"
+msgstr "Memoria cache a fost ștearsă"
 
 msgctxt "#30056"
 msgid "Failed to delete the cache. See log for details."
-msgstr "Nu a reușit să șteargă memoria cache. Consultați jurnalul pentru detalii."
+msgstr "Nu s-a putut șterge memoria cache. Consultați jurnalul pentru detalii."
 
 msgctxt "#30057"
 msgid "Playback account not found."
@@ -252,7 +252,7 @@ msgstr "Conținut pentru adulți"
 
 msgctxt "#30061"
 msgid "Stop syncing all folders"
-msgstr "Nu mai sincronizați toate directorele"
+msgstr "Opriți sincronizarea tuturor directoarelor"
 
 msgctxt "#30062"
 msgid "Stop syncing folder"
@@ -264,7 +264,7 @@ msgstr "Doriți să ștergeți fișierele locale asociate cu acest director?"
 
 msgctxt "#30064"
 msgid "Do you want to delete the local files associated with these folders?"
-msgstr "Doriți să ștergeți fișierele locale asociate cu aceste directore?"
+msgstr "Doriți să ștergeți fișierele locale asociate cu aceste directoare?"
 
 msgctxt "#30065"
 msgid "General"
@@ -360,11 +360,11 @@ msgstr "manual"
 
 msgctxt "#30088"
 msgid "Deleting sync cache"
-msgstr "Ștergerea cache-ului de sincronizare"
+msgstr "Ștergerea memoriei cache de sincronizare"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "ID client și crearea secretului clientului"
+msgstr "Creare ID client și secret client"
 
 msgctxt "#30090"
 msgid "Sync multiple"
@@ -380,7 +380,7 @@ msgstr "Directorul de sincronizare nu este setat."
 
 msgctxt "#30093"
 msgid "Select a folder to move into"
-msgstr "Selectați un director la care să vă mutați"
+msgstr "Selectați un director în care să mutați"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
@@ -388,19 +388,19 @@ msgstr "Sunteți sigur că doriți să ștergeți directorul de sincronizare?"
 
 msgctxt "#30095"
 msgid "Folder deleted"
-msgstr "Directorul a fost șters"
+msgstr "Director șters"
 
 msgctxt "#30096"
 msgid "Failed to delete the sync folder. See log for details."
-msgstr "Nu a reușit să ștergeți directorul de sincronizare. Consultați jurnalul pentru detalii."
+msgstr "Nu s-a putut șterge directorul de sincronizare. Consultați jurnalul pentru detalii."
 
 msgctxt "#30097"
 msgid "Accounts file deleted"
-msgstr "Fișierul de conturi a fost șters"
+msgstr "Fișier conturi șters."
 
 msgctxt "#30098"
 msgid "Failed to delete the accounts file. See log for details."
-msgstr "Nu a reușit să ștergeți fișierul de conturi. Consultați jurnalul pentru detalii."
+msgstr "Nu s-a putut șterge fișierul de conturi. Consultați jurnalul pentru detalii."
 
 msgctxt "#30099"
 msgid "Enter the filename"
@@ -476,7 +476,7 @@ msgstr "Selectați un profil"
 
 msgctxt "#30117"
 msgid "Profiles deleted"
-msgstr "Profilurile au fost șterse"
+msgstr "Profile șterse"
 
 msgctxt "#30118"
 msgid "Profile import failed."
@@ -484,11 +484,11 @@ msgstr "Importul de profil a eșuat."
 
 msgctxt "#30119"
 msgid "Profiles imported"
-msgstr "Profilurile au fost importate"
+msgstr "Profile importate"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
-msgstr "Alocați un profil de criptare implicit înainte de a reda un videoclip criptat."
+msgstr "Atribuiți un profil de criptare implicit înainte de a reda un videoclip criptat."
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
@@ -496,7 +496,7 @@ msgstr "Profilul de criptare asociat cu acest fișier nu există."
 
 msgctxt "#30122"
 msgid "No encryption profiles found."
-msgstr "Nu s -au găsit profiluri de criptare."
+msgstr "Nu au fost găsite profiluri de criptare."
 
 msgctxt "#30123"
 msgid "Profile Manager"
@@ -504,11 +504,11 @@ msgstr "Manager de profil"
 
 msgctxt "#30124"
 msgid "Profile created"
-msgstr "Profilul a fost creat"
+msgstr "Profil creat"
 
 msgctxt "#30125"
 msgid "Profile updated"
-msgstr "Profilul a fost actualizat"
+msgstr "Profil actualizat"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
@@ -516,11 +516,11 @@ msgstr "Trebuie să atribuiți un nume de profil."
 
 msgctxt "#30127"
 msgid "You must assign a password."
-msgstr "Trebuie să alocați o parolă."
+msgstr "Trebuie să atribuiți o parolă."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Trebuie să alocați un salt."
+msgstr "Trebuie să atribuiți un salt."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -528,11 +528,11 @@ msgstr "Ștergerea profilului"
 
 msgctxt "#30130"
 msgid "Profile deleted"
-msgstr "Profilul a fost șters"
+msgstr "Profil șters"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "Toate unitățile au fost sincronizate"
+msgstr "Toate unitățile sincronizate"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
@@ -572,7 +572,7 @@ msgstr "ore"
 
 msgctxt "#30141"
 msgid "Failed to sync"
-msgstr "Nu a reușit sincronizarea"
+msgstr "Nu s-a putut sincroniza"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
@@ -584,7 +584,7 @@ msgstr "Doriți să ștergeți:"
 
 msgctxt "#30144"
 msgid "File deleted"
-msgstr "Fișierul a fost șters"
+msgstr "Fișier șters"
 
 msgctxt "#30145"
 msgid "File deletion failed"
@@ -592,11 +592,11 @@ msgstr "Ștergerea fișierului a eșuat"
 
 msgctxt "#30146"
 msgid "Are you sure you want to delete the TMDB cache?"
-msgstr "Sunteți sigur că doriți să ștergeți cache-ul TMDB?"
+msgstr "Sunteți sigur că doriți să ștergeți memoria cache TMDB?"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
-msgstr "Ștergerea cache -ului TMDB"
+msgstr "Ștergerea memoriei cache TMDB"
 
 msgctxt "#30148"
 msgid "duration"
@@ -624,11 +624,11 @@ msgstr "Șterge"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Opriți sincronizarea directorelor selectate"
+msgstr "Opriți sincronizarea directoarelor selectate"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
-msgstr "Selectați directorele pentru a șterge"
+msgstr "Selectați directoarele de șters"
 
 msgctxt "#30207"
 msgid "Add account"
@@ -724,7 +724,7 @@ msgstr "Importați datele marcajelor media de la STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "Actualizați automat mediatecă"
+msgstr "Actualizați automat mediateca"
 
 msgctxt "#30405"
 msgid "Display dialog"
@@ -732,7 +732,7 @@ msgstr "Afișare dialog"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "Curățați automat mediatecă"
+msgstr "Curățați automat mediateca"
 
 msgctxt "#30407"
 msgid "Video source"
@@ -752,7 +752,7 @@ msgstr "Mutați directorul de sincronizare"
 
 msgctxt "#30503"
 msgid "Delete sync cache"
-msgstr "Ștergeți cache de sincronizare"
+msgstr "Ștergeți memoria cache de sincronizare"
 
 msgctxt "#30504"
 msgid "Delete sync folder"
@@ -880,4 +880,4 @@ msgstr "Port server (necesită repornire)"
 
 msgctxt "#30902"
 msgid "Delete TMDB cache"
-msgstr "Ștergeți cache TMDB"
+msgstr "Ștergeți memoria cache TMDB"

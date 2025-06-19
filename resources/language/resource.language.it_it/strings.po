@@ -252,11 +252,11 @@ msgstr "Contenuto per adulti"
 
 msgctxt "#30061"
 msgid "Stop syncing all folders"
-msgstr "Arresta sincronizzazione di tutte le cartelle"
+msgstr "Arresta la sincronizzazione di tutte le cartelle"
 
 msgctxt "#30062"
 msgid "Stop syncing folder"
-msgstr "Arresta sincronizzazione della cartella"
+msgstr "Arresta la sincronizzazione della cartella"
 
 msgctxt "#30063"
 msgid "Do you want to delete the local files associated with this folder?"
@@ -292,7 +292,7 @@ msgstr "Immettere l'intervallo di sincronizzazione in minuti"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
-msgstr "Immetti l'ora di sincronizzazione dei file"
+msgstr "Immettere l'ora di sincronizzazione dei file"
 
 msgctxt "#30072"
 msgid "Select a video source"
@@ -624,7 +624,7 @@ msgstr "Elimina"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Arresta sincronizzazione le cartelle selezionate"
+msgstr "Arresta la sincronizzazione delle cartelle selezionate"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
@@ -652,7 +652,7 @@ msgstr "in un browser web."
 
 msgctxt "#30217"
 msgid "You must create an"
-msgstr "Devi creare un"
+msgstr "È necessario creare un"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
