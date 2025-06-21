@@ -680,7 +680,7 @@ msgstr "Lecture"
 
 msgctxt "#30301"
 msgid "Prompt resolution selection (if available)"
-msgstr "Demander la sélection de la résolution (si disponible)."
+msgstr "Demander la sélection de la résolution (si disponible)"
 
 msgctxt "#30302"
 msgid "Video resolution priority"

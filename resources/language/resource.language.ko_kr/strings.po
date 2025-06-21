@@ -696,7 +696,7 @@ msgstr "자막 형식"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
-msgstr "자막 이름이 STRM과 같지 않으며 STRM이 있는 별도의 폴더에 있습니다."
+msgstr "자막 이름이 STRM과 같지 않으며 STRM이 있는 별도의 폴더에 있습니다"
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"

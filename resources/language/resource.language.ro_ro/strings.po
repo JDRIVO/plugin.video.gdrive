@@ -316,7 +316,7 @@ msgstr "Mutarea directorului de sincronizare"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
-msgstr "Selectați directorul în care vor fi stocate fișierele dvs."
+msgstr "Selectați directorul în care vor fi stocate fișierele dvs"
 
 msgctxt "#30078"
 msgid "There are no OAuth accounts connected to this drive."
@@ -396,7 +396,7 @@ msgstr "Nu s-a putut șterge directorul de sincronizare. Consultați jurnalul pe
 
 msgctxt "#30097"
 msgid "Accounts file deleted"
-msgstr "Fișier conturi șters."
+msgstr "Fișier conturi șters"
 
 msgctxt "#30098"
 msgid "Failed to delete the accounts file. See log for details."

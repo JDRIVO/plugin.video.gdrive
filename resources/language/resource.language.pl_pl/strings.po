@@ -712,7 +712,7 @@ msgstr "Biblioteka"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "Oznacz wideo jako obejrzane od"
+msgstr "Oznacz filmy jako obejrzane od"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
