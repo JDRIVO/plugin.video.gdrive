@@ -736,7 +736,7 @@ msgstr "自动清理媒体库"
 
 msgctxt "#30407"
 msgid "Video source"
-msgstr "视频来源"
+msgstr "视频源"
 
 msgctxt "#30500"
 msgid "Sync"
@@ -812,7 +812,7 @@ msgstr "TMDB成人内容"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "图形用户界面"
+msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"

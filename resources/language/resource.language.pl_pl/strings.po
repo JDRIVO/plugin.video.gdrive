@@ -44,7 +44,7 @@ msgstr "Przełączanie na konto zapasowe"
 
 msgctxt "#30008"
 msgid "Videos"
-msgstr "Filmy"
+msgstr "Wideo"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
@@ -488,7 +488,7 @@ msgstr "Profile zaimportowano"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
-msgstr "Przypisz domyślny profil szyfrowania przed odtworzeniem zaszyfrowanego filmu."
+msgstr "Przypisz domyślny profil szyfrowania przed odtworzeniem zaszyfrowanego wideo."
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
@@ -712,7 +712,7 @@ msgstr "Biblioteka"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "Oznacz filmy jako obejrzane od"
+msgstr "Oznacz wideo jako obejrzane od"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
@@ -732,7 +732,7 @@ msgstr "Wyświetl okno dialogowe"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "Automatycznie czyść bibliotekę"
+msgstr "Automatycznie wyczyść bibliotekę"
 
 msgctxt "#30407"
 msgid "Video source"
@@ -776,7 +776,7 @@ msgstr "Zawiera pliki zaszyfrowane z użyciem"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Zmień nazwę filmów na format przyjazny Kodi"
+msgstr "Zmień nazwę wideo na format przyjazny Kodi"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"

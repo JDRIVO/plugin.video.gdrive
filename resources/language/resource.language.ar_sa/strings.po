@@ -812,7 +812,7 @@ msgstr "محتوى البالغين في TMDB"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "الواجهة"
+msgstr "واجهة رسومية"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"

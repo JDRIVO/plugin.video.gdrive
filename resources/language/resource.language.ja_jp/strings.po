@@ -732,7 +732,7 @@ msgstr "ダイアログを表示"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "ライブラリを自動的に清掃"
+msgstr "ライブラリを自動的に整理"
 
 msgctxt "#30407"
 msgid "Video source"

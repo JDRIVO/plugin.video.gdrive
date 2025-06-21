@@ -160,7 +160,7 @@ msgstr "Importazione dell'account non riuscita."
 
 msgctxt "#30038"
 msgid "My Drive"
-msgstr "Il mio Drive"
+msgstr "La mia unità"
 
 msgctxt "#30039"
 msgid "Shared With Me"

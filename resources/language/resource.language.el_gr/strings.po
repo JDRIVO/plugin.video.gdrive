@@ -812,7 +812,7 @@ msgstr "Περιεχόμενο ενηλίκων TMDB"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "Διεπαφή Χρήστη"
+msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"

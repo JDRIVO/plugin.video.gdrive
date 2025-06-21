@@ -160,7 +160,7 @@ msgstr "A importação da conta falhou."
 
 msgctxt "#30038"
 msgid "My Drive"
-msgstr "Meu Drive"
+msgstr "Minha Unidade"
 
 msgctxt "#30039"
 msgid "Shared With Me"
@@ -168,7 +168,7 @@ msgstr "Compartilhado Comigo"
 
 msgctxt "#30040"
 msgid "Shared Drives"
-msgstr "Drives Compartilhados"
+msgstr "Unidades Compartilhadas"
 
 msgctxt "#30041"
 msgid "Search"
@@ -720,7 +720,7 @@ msgstr "Marcar episódios como assistidos em"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
-msgstr "Importar dados de sinalizador de mídia de STRM"
+msgstr "Importar dados de emblemas de mídia de STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
@@ -792,7 +792,7 @@ msgstr "Sincronizar legendas"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Sincronizar arte"
+msgstr "Sincronizar imagens"
 
 msgctxt "#30514"
 msgid "Sync STRM"

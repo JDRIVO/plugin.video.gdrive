@@ -732,7 +732,7 @@ msgstr "Відобразити діалогове вікно"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "Автоматично очищати медіатеку"
+msgstr "Автоматично очистити медіатеку"
 
 msgctxt "#30407"
 msgid "Video source"
@@ -812,7 +812,7 @@ msgstr "Вміст для дорослих TMDB"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "Графічний інтерфейс"
+msgstr "ГІК"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"

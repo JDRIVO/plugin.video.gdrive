@@ -44,7 +44,7 @@ msgstr "Se trece la contul de rezervă"
 
 msgctxt "#30008"
 msgid "Videos"
-msgstr "Videoclipuri"
+msgstr "Video"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
@@ -64,7 +64,7 @@ msgstr "Setări de sincronizare"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "Sincronizează folderul"
+msgstr "Sincronizează directorul"
 
 msgctxt "#30014"
 msgid "Select an account"
@@ -436,7 +436,7 @@ msgstr "Unitate ștearsă:"
 
 msgctxt "#30107"
 msgid "Profile name"
-msgstr "Numele profilului"
+msgstr "Nume profil"
 
 msgctxt "#30108"
 msgid "Encryption type"
@@ -476,7 +476,7 @@ msgstr "Selectați un profil"
 
 msgctxt "#30117"
 msgid "Profiles deleted"
-msgstr "Profile șterse"
+msgstr "Profiluri șterse"
 
 msgctxt "#30118"
 msgid "Profile import failed."
@@ -484,11 +484,11 @@ msgstr "Importul de profil a eșuat."
 
 msgctxt "#30119"
 msgid "Profiles imported"
-msgstr "Profile importate"
+msgstr "Profiluri importate"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
-msgstr "Atribuiți un profil de criptare implicit înainte de a reda un videoclip criptat."
+msgstr "Atribuiți un profil de criptare implicit înainte de a reda un video criptat."
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
@@ -776,7 +776,7 @@ msgstr "Conține fișiere criptate cu"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Redenumiți videoclipuri într-un format prietenos cu Kodi"
+msgstr "Redenumiți videouri într-un format prietenos cu Kodi"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
@@ -792,7 +792,7 @@ msgstr "Sincronizează subtitrările"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Sincronizează grafica"
+msgstr "Sincronizează artă"
 
 msgctxt "#30514"
 msgid "Sync STRM"
@@ -812,7 +812,7 @@ msgstr "Conținut pentru adulți TMDB"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "Interfață grafică"
+msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"

@@ -812,7 +812,7 @@ msgstr "TMDB-Inhalte für Erwachsene"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "Oberfläche"
+msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"

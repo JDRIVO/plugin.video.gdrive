@@ -792,7 +792,7 @@ msgstr "Синхронизировать субтитры"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Синхронизировать картинки"
+msgstr "Синхронизировать иллюстрации"
 
 msgctxt "#30514"
 msgid "Sync STRM"
@@ -812,7 +812,7 @@ msgstr "Контент для взрослых TMDB"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "Графический интерфейс"
+msgstr "ГИП"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
