@@ -20,7 +20,7 @@ msgstr "Βοήθεια"
 
 msgctxt "#30002"
 msgid "Rename"
-msgstr "Μετονομασία"
+msgstr "Μετονομάστε"
 
 msgctxt "#30003"
 msgid "is no longer valid. Do you want to delete this account?"
@@ -52,7 +52,7 @@ msgstr "Υπέρβαση ημερήσιου ορίου. Η απαγόρευση 
 
 msgctxt "#30010"
 msgid "Sync all"
-msgstr "Συγχρονισμός όλων"
+msgstr "Συγχρονίστε όλων"
 
 msgctxt "#30011"
 msgid "Synced"
@@ -64,7 +64,7 @@ msgstr "Ρυθμίσεις συγχρονισμού"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "Συγχρονισμός φακέλου"
+msgstr "Συγχρονίστε φακέλου"
 
 msgctxt "#30014"
 msgid "Select an account"
@@ -740,7 +740,7 @@ msgstr "Πηγή βίντεο"
 
 msgctxt "#30500"
 msgid "Sync"
-msgstr "Συγχρονισμός"
+msgstr "Συγχρονίστε"
 
 msgctxt "#30501"
 msgid "Threads"

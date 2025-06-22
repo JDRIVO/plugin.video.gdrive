@@ -36,7 +36,7 @@ msgstr "إعدادات المزامنة"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "حظر API:"
+msgstr "قيود API:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
@@ -48,7 +48,7 @@ msgstr "الفيديوهات"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."
-msgstr "تم تجاوز الحصة اليومية. سيُرفع الحظر خلال 24 ساعة."
+msgstr "تم تجاوز الحصة اليومية. ستُرفع القيود خلال 24 ساعة."
 
 msgctxt "#30010"
 msgid "Sync all"
@@ -56,7 +56,7 @@ msgstr "مزامنة الكل"
 
 msgctxt "#30011"
 msgid "Synced"
-msgstr "تمت المزامنة"
+msgstr "مُزامَن"
 
 msgctxt "#30012"
 msgid "Sync Settings"
@@ -448,7 +448,7 @@ msgstr "كلمة المرور"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "سالت"
+msgstr "سولت"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -520,7 +520,7 @@ msgstr "يجب عليك تعيين كلمة مرور."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "يجب عليك تعيين ملح."
+msgstr "يجب عليك تعيين سولت."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -696,7 +696,7 @@ msgstr "تنسيق الترجمة"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
-msgstr "لا يتم تسمية ملفات الترجمة بنفس اسم ملفات STRM وتكون في مجلد منفصل معها"
+msgstr "لا تحمل ملفات الترجمة نفس اسم ملفات STRM وتوجد في مجلد منفصل معها"
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"

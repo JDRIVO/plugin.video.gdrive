@@ -324,15 +324,15 @@ msgstr "Mit diesem Laufwerk sind keine OAuth-Konten verbunden."
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
-msgstr "Sie müssen einen Synchronisierungspfad zuweisen."
+msgstr "Sie müssen einen Synchronisierungspfad festlegen."
 
 msgctxt "#30080"
 msgid "You must assign a sync mode."
-msgstr "Sie müssen einen Synchronisierungsmodus zuweisen."
+msgstr "Sie müssen einen Synchronisierungsmoduss festlegen."
 
 msgctxt "#30081"
 msgid "You must assign a sync frequency."
-msgstr "Sie müssen eine Synchronisierungsfrequenz zuweisen."
+msgstr "Sie müssen eine Synchronisierungsfrequenz festlegen."
 
 msgctxt "#30082"
 msgid "Sync started"
@@ -448,7 +448,7 @@ msgstr "Passwort"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Salt"
+msgstr "Saltwert"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -492,7 +492,7 @@ msgstr "Weisen Sie ein Standardverschlüsselungsprofil zu, bevor Sie ein verschl
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
-msgstr "Das dem dieser Datei zugeordnete Verschlüsselungsprofil existiert nicht."
+msgstr "Das dieser Datei zugeordnete Verschlüsselungsprofil existiert nicht."
 
 msgctxt "#30122"
 msgid "No encryption profiles found."
@@ -512,15 +512,15 @@ msgstr "Profil aktualisiert"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
-msgstr "Sie müssen einen Profilnamen zuweisen."
+msgstr "Sie müssen einen Profilnamen festlegen."
 
 msgctxt "#30127"
 msgid "You must assign a password."
-msgstr "Sie müssen ein Passwort zuweisen."
+msgstr "Sie müssen ein Passwort festlegen."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Sie müssen ein Salt zuweisen."
+msgstr "Sie müssen einen Saltwert festlegen."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -776,27 +776,27 @@ msgstr "Hat Dateien verschlüsselt mit"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Videos in ein Kodi-freundliches Format umbenennen"
+msgstr "Videos in ein für Kodi geeignetes Format umbenennen"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Kodi-freundliche Verzeichnisstruktur erstellen"
+msgstr "Eine für Kodi geeignete Verzeichnisstruktur erstellen"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "NFO synchronisieren"
+msgstr "NFO-Synchronisierung"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "Untertitel synchronisieren"
+msgstr "Untertitel-Synchronisierung"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Artwork synchronisieren"
+msgstr "Artwork-Synchronisierung"
 
 msgctxt "#30514"
 msgid "Sync STRM"
-msgstr "STRM synchronisieren"
+msgstr "STRM-Synchronisierung"
 
 msgctxt "#30515"
 msgid "TMDB search language"

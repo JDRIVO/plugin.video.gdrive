@@ -740,7 +740,7 @@ msgstr "Fuente de video"
 
 msgctxt "#30500"
 msgid "Sync"
-msgstr "Sincronización"
+msgstr "Sincronizar"
 
 msgctxt "#30501"
 msgid "Threads"
@@ -784,19 +784,19 @@ msgstr "Crear una estructura de directorios amigable con Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "Sincronizar NFO"
+msgstr "Sincronización NFO"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "Sincronizar subtítulos"
+msgstr "Sincronización subtítulos"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Sincronizar ilustraciones"
+msgstr "Sincronización ilustraciones"
 
 msgctxt "#30514"
 msgid "Sync STRM"
-msgstr "Sincronizar STRM"
+msgstr "Sincronización STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"

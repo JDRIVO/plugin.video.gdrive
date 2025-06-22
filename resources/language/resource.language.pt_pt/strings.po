@@ -40,7 +40,7 @@ msgstr "Banimento de API:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "Alternando para conta de fallback"
+msgstr "Alternando para conta alternativa"
 
 msgctxt "#30008"
 msgid "Videos"
@@ -172,7 +172,7 @@ msgstr "Unidades Compartilhadas"
 
 msgctxt "#30041"
 msgid "Search"
-msgstr "Buscar"
+msgstr "Pesquisar"
 
 msgctxt "#30042"
 msgid "Starred"
@@ -696,7 +696,7 @@ msgstr "Formato de legenda"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
-msgstr "As legendas não têm o mesmo nome que STRM e estão em uma pasta isolada com STRM"
+msgstr "As legendas têm nomes diferentes de STRM e estão em uma pasta separada com os arquivos STRM"
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
@@ -740,7 +740,7 @@ msgstr "Fonte de vídeo"
 
 msgctxt "#30500"
 msgid "Sync"
-msgstr "Sincronização"
+msgstr "Sincronizar"
 
 msgctxt "#30501"
 msgid "Threads"
@@ -784,19 +784,19 @@ msgstr "Criar uma estrutura de diretórios amigável ao Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "Sincronizar NFO"
+msgstr "Sincronização de NFO"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "Sincronizar legendas"
+msgstr "Sincronização de legendas"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Sincronizar imagens"
+msgstr "Sincronização de imagens"
 
 msgctxt "#30514"
 msgid "Sync STRM"
-msgstr "Sincronizar STRM"
+msgstr "Sincronização de STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"

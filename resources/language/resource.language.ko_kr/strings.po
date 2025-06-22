@@ -36,7 +36,7 @@ msgstr "동기화 설정"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "API 차단:"
+msgstr "API 제한"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
@@ -68,7 +68,7 @@ msgstr "폴더 동기화"
 
 msgctxt "#30014"
 msgid "Select an account"
-msgstr "계정을 선택하세요"
+msgstr "계정 선택"
 
 msgctxt "#30015"
 msgid "The drive name already exists, it must be unique."
@@ -92,7 +92,7 @@ msgstr "계정이 확인되었습니다"
 
 msgctxt "#30020"
 msgid "Accounts validated"
-msgstr "모든 계정이 검증되었습니다"
+msgstr 계정이 검증되었습니다"
 
 msgctxt "#30021"
 msgid "Validate accounts"
@@ -116,7 +116,7 @@ msgstr "계정 이름"
 
 msgctxt "#30026"
 msgid "Select files to import"
-msgstr "가져올 파일을 선택하세요"
+msgstr "가져올 파일 선택"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
@@ -140,19 +140,19 @@ msgstr "폴더가 이동되었습니다"
 
 msgctxt "#30033"
 msgid "Select a file to import"
-msgstr "가져올 파일을 선택하세요"
+msgstr "가져올 파일 선택"
 
 msgctxt "#30034"
 msgid "Select a folder to export to"
-msgstr "내보낼 폴더를 선택하세요"
+msgstr "내보낼 폴더 선택"
 
 msgctxt "#30035"
 msgid "File exported as"
-msgstr "파일이 으로 내보내졌습니다"
+msgstr "파일이 다음 이름으로 내보내졌습니다"
 
 msgctxt "#30036"
 msgid "Accounts imported"
-msgstr "계정이 가져오기되었습니다"
+msgstr "계정을 가져왔습니다"
 
 msgctxt "#30037"
 msgid "Account import failed."
@@ -288,15 +288,15 @@ msgstr "일정"
 
 msgctxt "#30070"
 msgid "Enter the sync interval in minutes"
-msgstr "동기화 간격을 분 단위로 입력하세요"
+msgstr "동기화 간격을 분 단위로 입력"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
-msgstr "파일을 동기화할 시간을 입력하세요"
+msgstr "파일을 동기화할 시간을 입력"
 
 msgctxt "#30072"
 msgid "Select a video source"
-msgstr "비디오 소스를 선택하세요"
+msgstr "비디오 소스 선택"
 
 msgctxt "#30073"
 msgid "Syncing"
@@ -316,7 +316,7 @@ msgstr "동기화 폴더 이동 중"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
-msgstr "파일이 저장될 폴더를 선택하세요"
+msgstr "파일이 저장될 폴더 선택"
 
 msgctxt "#30078"
 msgid "There are no OAuth accounts connected to this drive."
@@ -324,11 +324,11 @@ msgstr "이 드라이브에 연결된 Oauth 계정은 없습니다."
 
 msgctxt "#30079"
 msgid "You must assign a sync path."
-msgstr "동기화 경로를 할당해야 합니다."
+msgstr "동기화 경로를 설정해야 합니다."
 
 msgctxt "#30080"
 msgid "You must assign a sync mode."
-msgstr "동기화 모드를 할당해야 합니다."
+msgstr "동기화 모드를 설정해야 합니다."
 
 msgctxt "#30081"
 msgid "You must assign a sync frequency."
@@ -368,7 +368,7 @@ msgstr "클라이언트 ID 및 클라이언트 시크릿 생성"
 
 msgctxt "#30090"
 msgid "Sync multiple"
-msgstr "여러 동기화"
+msgstr "다중 동기화"
 
 msgctxt "#30091"
 msgid "Search folder"
@@ -380,7 +380,7 @@ msgstr "동기화 폴더가 설정되지 않았습니다."
 
 msgctxt "#30093"
 msgid "Select a folder to move into"
-msgstr "이동할 폴더를 선택하세요"
+msgstr "이동할 폴더 선택"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
@@ -404,7 +404,7 @@ msgstr "계정 파일을 삭제하지 못했습니다. 자세한 내용은 로�
 
 msgctxt "#30099"
 msgid "Enter the filename"
-msgstr "파일 이름을 입력하세요"
+msgstr "파일 이름 입력"
 
 msgctxt "#30100"
 msgid "The sync folder doesn't exist."
@@ -472,7 +472,7 @@ msgstr "디렉터리 이름 암호화"
 
 msgctxt "#30116"
 msgid "Select a profile"
-msgstr "프로필을 선택하세요"
+msgstr "프로필 선택"
 
 msgctxt "#30117"
 msgid "Profiles deleted"
@@ -488,7 +488,7 @@ msgstr "프로필이 가져오기되었습니다"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
-msgstr "암호화된 비디오를 재생하기 전에 기본 암호화 프로필을 할당하세요."
+msgstr "암호화된 비디오를 재생하기 전에 기본 암호화 프로필 할당"
 
 msgctxt "#30121"
 msgid "The encryption profile associated with this file doesn't exist."
@@ -512,15 +512,15 @@ msgstr "프로필이 업데이트되었습니다"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
-msgstr "프로필 이름을 할당해야 합니다."
+msgstr "프로필 이름을 설정해야 합니다."
 
 msgctxt "#30127"
 msgid "You must assign a password."
-msgstr "비밀번호를 할당해야 합니다."
+msgstr "비밀번호를 설정해야 합니다."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "솔트를 할당해야 합니다."
+msgstr "솔트를 설정해야 합니다."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -628,7 +628,7 @@ msgstr "선택한 폴더 동기화 중지"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
-msgstr "삭제할 폴더를 선택하세요"
+msgstr "삭제할 폴더 선택"
 
 msgctxt "#30207"
 msgid "Add account"
@@ -640,11 +640,11 @@ msgstr "계정에서 파일을 찾을 수 없습니다:"
 
 msgctxt "#30214"
 msgid "Add service accounts"
-msgstr "서비스 계정을 추가하세요"
+msgstr "서비스 계정 추가"
 
 msgctxt "#30215"
 msgid "Visit"
-msgstr "방문하세요"
+msgstr "방문"
 
 msgctxt "#30216"
 msgid "in a web browser."
@@ -712,11 +712,11 @@ msgstr "라이브러리"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "영화를 시청한 것으로 표시하세요"
+msgstr "영화를 시청률 기준으로 시청 완료로 표시"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "에피소드를 시청한 것으로 표시하세요"
+msgstr "에피소드를 시청률 기준으로 시청 완료로 표시"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"
@@ -824,7 +824,7 @@ msgstr "파일 삭제 대화 상자 표시"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "드라이브 선택 메뉴에 마지막 동기화 시간 표시"
+msgstr "드라이브 선택 메뉴에 마지막 동기화로부터 경과 시간 표시"
 
 msgctxt "#30700"
 msgid "Accounts"

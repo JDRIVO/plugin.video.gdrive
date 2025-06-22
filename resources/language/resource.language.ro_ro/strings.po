@@ -640,7 +640,7 @@ msgstr "Fișierul nu s-a găsit în cont:"
 
 msgctxt "#30214"
 msgid "Add service accounts"
-msgstr "Adăugați conturi de servicii"
+msgstr "Adăugați conturi de serviciu"
 
 msgctxt "#30215"
 msgid "Visit"
@@ -764,11 +764,11 @@ msgstr "Setări implicite de sincronizare"
 
 msgctxt "#30506"
 msgid "STRM prefix"
-msgstr "Prefix STRM"
+msgstr "Prefixul STRM"
 
 msgctxt "#30507"
 msgid "STRM suffix"
-msgstr "Sufix STRM"
+msgstr "Sufixul STRM"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
@@ -776,27 +776,27 @@ msgstr "Conține fișiere criptate cu"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
-msgstr "Redenumiți videouri într-un format prietenos cu Kodi"
+msgstr "Redenumiți video într-un format compatibil cu Kodi"
 
 msgctxt "#30510"
 msgid "Create a Kodi friendly directory structure"
-msgstr "Creați o structură de director prietenos Kodi"
+msgstr "Creați o structură de directoare compatibilă cu Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "Sincronizează NFO"
+msgstr "Sincronizare NFO"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "Sincronizează subtitrările"
+msgstr "Sincronizare subtitrări"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Sincronizează artă"
+msgstr "Sincronizare de artă"
 
 msgctxt "#30514"
 msgid "Sync STRM"
-msgstr "Sincronizează STRM"
+msgstr "Sincronizare STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"

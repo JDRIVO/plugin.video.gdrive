@@ -136,7 +136,7 @@ msgstr "Klucz prywatny nie został znaleziony w:"
 
 msgctxt "#30031"
 msgid "Folder moved"
-msgstr "Folder przeniesiono"
+msgstr "Przeniesiono folder"
 
 msgctxt "#30033"
 msgid "Select a file to import"
@@ -212,7 +212,7 @@ msgstr "Częstotliwość synchronizacji"
 
 msgctxt "#30051"
 msgid "Sync on startup"
-msgstr "Synchronizuj przy uruchomieniu"
+msgstr "Synchronizuj przy uruchamianiu"
 
 msgctxt "#30052"
 msgid "Syncing folders"
@@ -300,7 +300,7 @@ msgstr "Wybierz źródło wideo"
 
 msgctxt "#30073"
 msgid "Syncing"
-msgstr "Synchronizuję"
+msgstr "Trwa synchronizacja"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
@@ -448,7 +448,7 @@ msgstr "Hasło"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Sól"
+msgstr "Salt"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -520,7 +520,7 @@ msgstr "Musisz przypisać hasło."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Musisz przypisać sól."
+msgstr "Musisz przypisać salt."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -624,7 +624,7 @@ msgstr "Usuń"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"
-msgstr "Przestań synchronizować wybrane foldery"
+msgstr "Zatrzymaj synchronizację wybranych folderów"
 
 msgctxt "#30165"
 msgid "Select folders to delete"
@@ -784,19 +784,19 @@ msgstr "Utwórz strukturę katalogu przyjaznego Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "Synchronizuj NFO"
+msgstr "Synchronizacja NFO"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "Synchronizuj napisy"
+msgstr "Synchronizacja napisów"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Synchronizuj grafikę"
+msgstr "Synchronizacja grafiki"
 
 msgctxt "#30514"
 msgid "Sync STRM"
-msgstr "Synchronizuj STRM"
+msgstr "Synchronizacja STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"

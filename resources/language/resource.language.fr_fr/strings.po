@@ -192,11 +192,11 @@ msgstr "Les fichiers ont été supprimés"
 
 msgctxt "#30046"
 msgid "Account registration succeeded"
-msgstr "Enregistrement du compte réussi"
+msgstr "L'enregistrement du compte a réussi"
 
 msgctxt "#30047"
 msgid "Account registration failed"
-msgstr "Enregistrement du compte échoué"
+msgstr "L'enregistrement du compte a échoué"
 
 msgctxt "#30048"
 msgid "Sync path"
@@ -740,7 +740,7 @@ msgstr "Source vidéo"
 
 msgctxt "#30500"
 msgid "Sync"
-msgstr "Synchronisation"
+msgstr "Synchroniser"
 
 msgctxt "#30501"
 msgid "Threads"
@@ -784,19 +784,19 @@ msgstr "Créer une structure de répertoires adaptée à Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "Synchroniser NFO"
+msgstr "Synchronisation NFO"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "Synchroniser les sous-titres"
+msgstr "Synchronisation les sous-titres"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Synchroniser les illustrations"
+msgstr "Synchronisation les illustrations"
 
 msgctxt "#30514"
 msgid "Sync STRM"
-msgstr "Synchroniser STRM"
+msgstr "Synchronisation STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"

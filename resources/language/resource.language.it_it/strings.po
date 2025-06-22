@@ -784,19 +784,19 @@ msgstr "Crea una struttura di directory compatibile con Kodi"
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "Sincronizza NFO"
+msgstr "Sincronizzazione NFO"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "Sincronizza sottotitoli"
+msgstr "Sincronizzazione sottotitoli"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Sincronizza l'artwork"
+msgstr "Sincronizzazione l'artwork"
 
 msgctxt "#30514"
 msgid "Sync STRM"
-msgstr "Sincronizza STRM"
+msgstr "Sincronizzazione STRM"
 
 msgctxt "#30515"
 msgid "TMDB search language"
