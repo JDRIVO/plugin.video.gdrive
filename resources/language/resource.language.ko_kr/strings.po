@@ -84,19 +84,19 @@ msgstr "드라이브 설정"
 
 msgctxt "#30018"
 msgid "Credential validation failed for account:"
-msgstr "계정의 자격 증명 확인에 실패했습니다:"
+msgstr "계정 인증에 실패했습니다:"
 
 msgctxt "#30019"
 msgid "Account validated"
-msgstr "계정이 확인되었습니다"
+msgstr "계정이 인증되었습니다"
 
 msgctxt "#30020"
 msgid "Accounts validated"
-msgstr 계정이 검증되었습니다"
+msgstr "계정들이 인증되었습니다"
 
 msgctxt "#30021"
 msgid "Validate accounts"
-msgstr "계정 유효성 검증"
+msgstr "계정 인증"
 
 msgctxt "#30022"
 msgid "Delete accounts"
@@ -104,7 +104,7 @@ msgstr "계정 삭제"
 
 msgctxt "#30023"
 msgid "Validate"
-msgstr "검증"
+msgstr "인증"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
@@ -152,7 +152,7 @@ msgstr "파일이 다음 이름으로 내보내졌습니다"
 
 msgctxt "#30036"
 msgid "Accounts imported"
-msgstr "계정을 가져왔습니다"
+msgstr "계정이 가져와졌습니다"
 
 msgctxt "#30037"
 msgid "Account import failed."
@@ -476,7 +476,7 @@ msgstr "프로필 선택"
 
 msgctxt "#30117"
 msgid "Profiles deleted"
-msgstr "프로필이 삭제되었습니다"
+msgstr "프로필 삭제됨"
 
 msgctxt "#30118"
 msgid "Profile import failed."
@@ -484,7 +484,7 @@ msgstr "프로필 가져오기에 실패했습니다."
 
 msgctxt "#30119"
 msgid "Profiles imported"
-msgstr "프로필이 가져오기되었습니다"
+msgstr "프로필 가져옴"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
@@ -504,11 +504,11 @@ msgstr "프로필 관리자"
 
 msgctxt "#30124"
 msgid "Profile created"
-msgstr "프로필이 생성되었습니다"
+msgstr "프로필 생성됨"
 
 msgctxt "#30125"
 msgid "Profile updated"
-msgstr "프로필이 업데이트되었습니다"
+msgstr "프로필 업데이트됨"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
@@ -528,11 +528,11 @@ msgstr "프로필 삭제"
 
 msgctxt "#30130"
 msgid "Profile deleted"
-msgstr "프로필이 삭제되었습니다"
+msgstr "프로필 삭제됨"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "모든 드라이브를 동기화했습니다"
+msgstr "모든 드라이브 동기화됨"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
@@ -540,7 +540,7 @@ msgstr "모든 드라이브를 동기화하지 못했습니다"
 
 msgctxt "#30133"
 msgid "Sync failed"
-msgstr "동기화가 실패했습니다"
+msgstr "동기화 실패"
 
 msgctxt "#30134"
 msgid "Base Name"
@@ -584,7 +584,7 @@ msgstr "삭제하시겠습니까:"
 
 msgctxt "#30144"
 msgid "File deleted"
-msgstr "파일이 삭제되었습니다"
+msgstr "파일 삭제됨"
 
 msgctxt "#30145"
 msgid "File deletion failed"
@@ -672,7 +672,7 @@ msgstr "리디렉션 URI"
 
 msgctxt "#30222"
 msgid "Validating"
-msgstr "검증 중"
+msgstr "인증 중"
 
 msgctxt "#30300"
 msgid "Playback"
@@ -696,11 +696,11 @@ msgstr "자막 형식"
 
 msgctxt "#30305"
 msgid "Subtitles aren't named the same as STRM and are in an isolated folder with STRM"
-msgstr "자막 이름이 STRM과 같지 않으며 STRM이 있는 별도의 폴더에 있습니다"
+msgstr "자막 이름이 STRM과 다르며, STRM과 함께 별도 폴더에 있습니다"
 
 msgctxt "#30306"
 msgid "Subtitles are named the same as STRM"
-msgstr "자막의 이름은 STRM과 동일합니다"
+msgstr "자막 이름이 STRM과 동일합니다"
 
 msgctxt "#30307"
 msgid "Default playback account"
@@ -712,11 +712,11 @@ msgstr "라이브러리"
 
 msgctxt "#30401"
 msgid "Mark movies as watched at"
-msgstr "영화를 시청률 기준으로 시청 완료로 표시"
+msgstr "영화를 다음 시점에 본 것으로 표시"
 
 msgctxt "#30402"
 msgid "Mark episodes as watched at"
-msgstr "에피소드를 시청률 기준으로 시청 완료로 표시"
+msgstr "에피소드를 다음 시점에 본 것으로 표시"
 
 msgctxt "#30403"
 msgid "Import media flag data from STRM"

@@ -160,7 +160,7 @@ msgstr "帐号导入失败。"
 
 msgctxt "#30038"
 msgid "My Drive"
-msgstr "我的云盘"
+msgstr "我的云端硬盘"
 
 msgctxt "#30039"
 msgid "Shared With Me"
@@ -168,7 +168,7 @@ msgstr "与我共享"
 
 msgctxt "#30040"
 msgid "Shared Drives"
-msgstr "共享云盘"
+msgstr "共享云端硬盘"
 
 msgctxt "#30041"
 msgid "Search"

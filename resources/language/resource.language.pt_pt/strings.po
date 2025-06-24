@@ -24,7 +24,7 @@ msgstr "Renomear"
 
 msgctxt "#30003"
 msgid "is no longer valid. Do you want to delete this account?"
-msgstr "não é mais válida. Deseja excluir esta conta?"
+msgstr "não é mais válido. Deseja excluir esta conta?"
 
 msgctxt "#30004"
 msgid "Drive Name"
@@ -180,7 +180,7 @@ msgstr "Com estrela"
 
 msgctxt "#30043"
 msgid "Search Query"
-msgstr "Consulta de Busca"
+msgstr "Termo de Busca"
 
 msgctxt "#30044"
 msgid "Sync completed"
@@ -772,7 +772,7 @@ msgstr "Sufixo STRM"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
-msgstr "Possui arquivos criptografados com"
+msgstr "Contém arquivos criptografados com"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"

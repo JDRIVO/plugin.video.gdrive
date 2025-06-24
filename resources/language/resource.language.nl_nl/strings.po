@@ -728,7 +728,7 @@ msgstr "Bibliotheek automatisch bijwerken"
 
 msgctxt "#30405"
 msgid "Display dialog"
-msgstr "Dialoogvenster weergeven"
+msgstr "Toon dialoogvenster"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
@@ -816,11 +816,11 @@ msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Dialoogvenster voor voortgang initiële synchronisatie weergeven"
+msgstr "Toon dialoogvenster initiële synchronisatievoortgang"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
-msgstr "Dialoogvenster Bestandsverwijdering weergeven"
+msgstr "Toon dialoogvenster bestanden verwijderen"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"

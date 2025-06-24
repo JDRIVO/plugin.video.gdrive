@@ -364,7 +364,7 @@ msgstr "Eliminando caché de sincronización"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "Creación de ID de cliente y Secreto de cliente"
+msgstr "Creación de ID de cliente y Secreto del Cliente"
 
 msgctxt "#30090"
 msgid "Sync multiple"
@@ -380,7 +380,7 @@ msgstr "La carpeta de sincronización no está configurada."
 
 msgctxt "#30093"
 msgid "Select a folder to move into"
-msgstr "Seleccione una carpeta a la que mover"
+msgstr "Selecciona una carpeta a la que mover el contenido"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"

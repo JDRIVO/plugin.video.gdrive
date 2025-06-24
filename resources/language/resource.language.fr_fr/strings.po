@@ -124,7 +124,7 @@ msgstr "Voulez-vous supprimer tous les fichiers associés à ce lecteur ?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
-msgstr "La clé privée et le courriel client n'ont pas été trouvés dans :"
+msgstr "La clé privée et l'e-mail du client n'ont pas été trouvés dans :"
 
 msgctxt "#30029"
 msgid "The client email wasn't found in:"
@@ -788,11 +788,11 @@ msgstr "Synchronisation NFO"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "Synchronisation les sous-titres"
+msgstr "Synchronisation des sous-titres"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Synchronisation les illustrations"
+msgstr "Synchronisation des illustrations"
 
 msgctxt "#30514"
 msgid "Sync STRM"

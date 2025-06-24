@@ -44,7 +44,7 @@ msgstr "جارٍ التبديل إلى الحساب الاحتياطي"
 
 msgctxt "#30008"
 msgid "Videos"
-msgstr "الفيديوهات"
+msgstr "الفيديو"
 
 msgctxt "#30009"
 msgid "Daily quota limit exceeded. Ban will lift within 24 hours."

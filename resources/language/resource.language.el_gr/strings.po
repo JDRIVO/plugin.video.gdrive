@@ -52,7 +52,7 @@ msgstr "Υπέρβαση ημερήσιου ορίου. Η απαγόρευση 
 
 msgctxt "#30010"
 msgid "Sync all"
-msgstr "Συγχρονίστε όλων"
+msgstr "Συγχρονίστε όλα"
 
 msgctxt "#30011"
 msgid "Synced"
@@ -64,7 +64,7 @@ msgstr "Ρυθμίσεις συγχρονισμού"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "Συγχρονίστε φακέλου"
+msgstr "Συγχρονίστε φάκελο"
 
 msgctxt "#30014"
 msgid "Select an account"
@@ -104,7 +104,7 @@ msgstr "Διαγραφή λογαριασμών"
 
 msgctxt "#30023"
 msgid "Validate"
-msgstr "Επικύρωση"
+msgstr "Επικυρώστε"
 
 msgctxt "#30024"
 msgid "Are you sure you want to delete the accounts file?"
@@ -148,7 +148,7 @@ msgstr "Επιλέξτε έναν φάκελο για εξαγωγή"
 
 msgctxt "#30035"
 msgid "File exported as"
-msgstr "Το αρχείο εξήχθη ως"
+msgstr "Αρχείο εξαγόμενο ως"
 
 msgctxt "#30036"
 msgid "Accounts imported"
@@ -368,7 +368,7 @@ msgstr "Δημιουργία Client ID και Client Secret"
 
 msgctxt "#30090"
 msgid "Sync multiple"
-msgstr "Συγχρονισμός πολλαπλών"
+msgstr "Συγχρονίστε πολλαπλά"
 
 msgctxt "#30091"
 msgid "Search folder"
@@ -380,7 +380,7 @@ msgstr "Ο φάκελος συγχρονισμού δεν έχει οριστε�
 
 msgctxt "#30093"
 msgid "Select a folder to move into"
-msgstr "Επιλέξτε έναν φάκελο για να μετακινηθείτε"
+msgstr "Επιλέξτε έναν φάκελο για μετακίνηση σε αυτόν"
 
 msgctxt "#30094"
 msgid "Are you sure you want to delete the sync folder?"
@@ -448,7 +448,7 @@ msgstr "Κωδικός πρόσβασης"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Αλάτι"
+msgstr "Salt"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -520,7 +520,7 @@ msgstr "Πρέπει να ορίσετε έναν κωδικό πρόσβαση�
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Πρέπει να ορίσετε ένα αλάτι."
+msgstr "Πρέπει να ορίσετε ένα Salt."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -620,7 +620,7 @@ msgstr "Διαγραφή λογαριασμού"
 
 msgctxt "#30159"
 msgid "Delete"
-msgstr "Διαγραφή"
+msgstr "Διαγράψτε"
 
 msgctxt "#30163"
 msgid "Stop syncing select folders"

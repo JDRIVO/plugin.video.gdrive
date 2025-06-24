@@ -64,7 +64,7 @@ msgstr "Setări de sincronizare"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "Sincronizează directorul"
+msgstr "Sincronizează director"
 
 msgctxt "#30014"
 msgid "Select an account"
@@ -760,7 +760,7 @@ msgstr "Ștergeți directorul de sincronizare"
 
 msgctxt "#30505"
 msgid "Sync defaults"
-msgstr "Setări implicite de sincronizare"
+msgstr "Setări de sincronizare implicite"
 
 msgctxt "#30506"
 msgid "STRM prefix"
@@ -816,7 +816,7 @@ msgstr "GUI"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Afișează dialogul inițial de progres al sincronizării"
+msgstr "Afișează dialogul de progres inițial al sincronizării"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"

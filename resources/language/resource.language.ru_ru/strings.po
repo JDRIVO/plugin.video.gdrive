@@ -164,7 +164,7 @@ msgstr "Мой диск"
 
 msgctxt "#30039"
 msgid "Shared With Me"
-msgstr "Общие со мной"
+msgstr "Доступно мне"
 
 msgctxt "#30040"
 msgid "Shared Drives"
@@ -728,7 +728,7 @@ msgstr "Обновить медиатеку автоматически"
 
 msgctxt "#30405"
 msgid "Display dialog"
-msgstr "Отобразить диалог"
+msgstr "Показывать диалог"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
@@ -772,7 +772,7 @@ msgstr "Суффикс STRM"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
-msgstr "Имеет файлы, зашифрованные с помощью"
+msgstr "Содержит файлы, зашифрованные с помощью"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
@@ -816,15 +816,15 @@ msgstr "ГИ"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Показать диалог прогресса начальной синхронизации"
+msgstr "Показывать диалог начальной синхронизации"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
-msgstr "Показать диалог удаления файла"
+msgstr "Показывать диалог удаления файла"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
-msgstr "Показать время, прошедшее с последней синхронизации, в меню выбора диска"
+msgstr "Показывать время, прошедшее с последней синхронизации, в меню выбора диска"
 
 msgctxt "#30700"
 msgid "Accounts"

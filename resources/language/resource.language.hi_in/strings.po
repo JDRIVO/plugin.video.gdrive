@@ -152,7 +152,7 @@ msgstr "फ़ाइल इस रूप में निर्यात की 
 
 msgctxt "#30036"
 msgid "Accounts imported"
-msgstr "खाते आयात किए गए"
+msgstr "खाते आयात हो गए"
 
 msgctxt "#30037"
 msgid "Account import failed."
@@ -164,7 +164,7 @@ msgstr "मेरी ड्राइव"
 
 msgctxt "#30039"
 msgid "Shared With Me"
-msgstr "मेरे साथ साझा किया"
+msgstr "मेरे साथ साझा किए गए"
 
 msgctxt "#30040"
 msgid "Shared Drives"
@@ -484,7 +484,7 @@ msgstr "प्रोफ़ाइल आयात विफल हो गया�
 
 msgctxt "#30119"
 msgid "Profiles imported"
-msgstr "आयातित प्रोफ़ाइल"
+msgstr "प्रोफ़ाइल आयात हो गए"
 
 msgctxt "#30120"
 msgid "Assign a default encryption profile before playing an encrypted video."
@@ -504,11 +504,11 @@ msgstr "प्रोफ़ाइल प्रबंधक"
 
 msgctxt "#30124"
 msgid "Profile created"
-msgstr "प्रोफ़ाइल बना दी गई"
+msgstr "प्रोफ़ाइल बन गई"
 
 msgctxt "#30125"
 msgid "Profile updated"
-msgstr "प्रोफ़ाइल अपडेट की गई"
+msgstr "प्रोफ़ाइल अपडेट हो गई"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
@@ -532,7 +532,7 @@ msgstr "प्रोफ़ाइल हटा दी गई"
 
 msgctxt "#30131"
 msgid "Synced all drives"
-msgstr "सभी ड्राइव सिंक किए गए"
+msgstr "सभी ड्राइव सिंक हो गए"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
@@ -784,19 +784,19 @@ msgstr "कोडी के अनुकूल निर्देशिका �
 
 msgctxt "#30511"
 msgid "Sync NFO"
-msgstr "सिंक NFO"
+msgstr "NFO सिंक्रनाइज़ेशन"
 
 msgctxt "#30512"
 msgid "Sync subtitles"
-msgstr "सिंक उपशीर्षक"
+msgstr "उपशीर्षक सिंक्रनाइज़ेशन"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "सिंक कलाकृति"
+msgstr "कलाकृति सिंक्रनाइज़ेशन"
 
 msgctxt "#30514"
 msgid "Sync STRM"
-msgstr "सिंक STRM"
+msgstr "STRM सिंक्रनाइज़ेशन"
 
 msgctxt "#30515"
 msgid "TMDB search language"
@@ -812,7 +812,7 @@ msgstr "TMDB वयस्क सामग्री"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "ग्राफ़िकल इंटरफ़ेस"
+msgstr "जीयूआई"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"

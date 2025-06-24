@@ -36,11 +36,11 @@ msgstr "Synchronisierungseinstellungen"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "API-Sperre:"
+msgstr "API-Sperre"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
-msgstr "Wechsle zum Ausweichkonto"
+msgstr "Wechsel zu Ausweichkonto"
 
 msgctxt "#30008"
 msgid "Videos"
@@ -212,7 +212,7 @@ msgstr "Synchronisierungsfrequenz"
 
 msgctxt "#30051"
 msgid "Sync on startup"
-msgstr "Synchronisierung beim Start"
+msgstr "Synchronisierung beim Starten"
 
 msgctxt "#30052"
 msgid "Syncing folders"
@@ -328,7 +328,7 @@ msgstr "Sie müssen einen Synchronisierungspfad festlegen."
 
 msgctxt "#30080"
 msgid "You must assign a sync mode."
-msgstr "Sie müssen einen Synchronisierungsmoduss festlegen."
+msgstr "Sie müssen einen Synchronisierungsmodus festlegen."
 
 msgctxt "#30081"
 msgid "You must assign a sync frequency."
@@ -448,7 +448,7 @@ msgstr "Passwort"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Saltwert"
+msgstr "Salt"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -520,7 +520,7 @@ msgstr "Sie müssen ein Passwort festlegen."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Sie müssen einen Saltwert festlegen."
+msgstr "Sie müssen ein Salt festlegen."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -596,7 +596,7 @@ msgstr "Sind Sie sicher, dass Sie den TMDB-Cache löschen möchten?"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
-msgstr "TMDB-Cache löschen"
+msgstr "TMDB-Cache wird gelöscht"
 
 msgctxt "#30148"
 msgid "duration"

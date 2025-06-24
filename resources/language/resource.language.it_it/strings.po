@@ -792,7 +792,7 @@ msgstr "Sincronizzazione sottotitoli"
 
 msgctxt "#30513"
 msgid "Sync artwork"
-msgstr "Sincronizzazione l'artwork"
+msgstr "Sincronizzazione artwork"
 
 msgctxt "#30514"
 msgid "Sync STRM"

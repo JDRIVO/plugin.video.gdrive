@@ -772,7 +772,7 @@ msgstr "Суфікс STRM"
 
 msgctxt "#30508"
 msgid "Has files encrypted with"
-msgstr "Має файли, зашифровані за допомогою"
+msgstr "Містить файли, зашифровані за допомогою"
 
 msgctxt "#30509"
 msgid "Rename videos to a Kodi friendly format"
@@ -816,11 +816,11 @@ msgstr "ГІ"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"
-msgstr "Відображати діалогове вікно початкової синхронізації"
+msgstr "Відображати діалог початкового прогресу синхронізації"
 
 msgctxt "#30602"
 msgid "Display file deletion dialog"
-msgstr "Відображати діалогове вікно видалення файлу"
+msgstr "Відображати діалог видалення файлу"
 
 msgctxt "#30603"
 msgid "Display time since last sync in drive selection menu"
