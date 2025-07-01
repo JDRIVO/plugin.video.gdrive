@@ -22,12 +22,17 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 	def __init__(self, *args, **kwargs):
 		self.resolutions = kwargs["resolutions"]
 		self.settings = SETTINGS
-		self.shift = False
-		self.closed = False
-		self.lastUpdate = 0
-		self.buttonWidth = 120
+		self.heading = self.settings.getLocalizedString(30083)
+		originalHeadingLength = len("Resolution Priority")
+		headingLength = len(self.heading) + 10
+		self.scale = 2 * abs(originalHeadingLength) / (originalHeadingLength + headingLength) + 1
+		self.resButtonsWidth = int(120 * self.scale)
+		self.menuButtonsWidth = int(80 * self.scale)
 		self.buttonHeight = 30
 		self.buttonAmount = len(self.resolutions)
+		self.lastUpdate = 0
+		self.shift = False
+		self.closed = False
 		self._initializePaths()
 		self._calculateViewport()
 		self._addBackground()
@@ -113,7 +118,7 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 			self.y,
 			self.windowWidth,
 			40,
-			f"[B]{self.settings.getLocalizedString(30083)}[/B]",
+			f"[B]{self.heading}[/B]",
 			focusTexture=self.blueTexture,
 			noFocusTexture=self.blueTexture,
 			textOffsetX=20,
@@ -139,16 +144,17 @@ class ResolutionOrder(xbmcgui.WindowDialog):
 	def _calculateViewport(self):
 		self.viewportWidth = self.getWidth()
 		self.viewportHeight = self.getHeight()
-		self.windowWidth = int(350 * self.viewportWidth / 1920)
+		self.windowWidth = int(338 * self.viewportWidth / 1920 * self.scale)
 		self.windowHeight = int(350 * self.viewportHeight / 1080)
 		self.x = (self.viewportWidth - self.windowWidth) // 2
 		self.y = (self.viewportHeight - self.windowHeight) // 2
 
 	def _createButtons(self):
 		y = 60
-		self.buttons = [self._addControlButton(self.x + 10, self.y + y + 30 * i, self.buttonWidth, self.buttonHeight, res, alignment=2 + 4) for i, res in enumerate(self.resolutions)]
-		self.buttonOK = self._addControlButton(self.x + self.buttonWidth + 20, self.y + y, 80, self.buttonHeight, self.settings.getLocalizedString(30066), alignment=2 + 4, font="font25_title")
-		self.buttonClose = self._addControlButton(self.x + self.buttonWidth + 20, self.y + y + 35, 80, self.buttonHeight, self.settings.getLocalizedString(30084), alignment=2 + 4, font="font25_title")
+		center = int((self.viewportWidth - self.resButtonsWidth - self.menuButtonsWidth - 10) / 2)
+		self.buttons = [self._addControlButton(center, self.y + y + 30 * i, self.resButtonsWidth, self.buttonHeight, res, alignment=2 + 4) for i, res in enumerate(self.resolutions)]
+		self.buttonOK = self._addControlButton(center + self.resButtonsWidth + 10, self.y + y, self.menuButtonsWidth, self.buttonHeight, self.settings.getLocalizedString(30066), alignment=2 + 4, font="font25_title")
+		self.buttonClose = self._addControlButton(center + self.resButtonsWidth + 10, self.y + y + 35, self.menuButtonsWidth, self.buttonHeight, self.settings.getLocalizedString(30067), alignment=2 + 4, font="font25_title")
 		self.addControls(self.buttons + [self.buttonOK, self.buttonClose])
 		self.buttonIDs = [button.getId() for button in self.buttons]
 		self.buttonCloseID = self.buttonClose.getId()

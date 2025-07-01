@@ -185,9 +185,31 @@ class SyncSettings(xbmcgui.WindowDialog):
 		)
 
 		if label == self.settings.getLocalizedString(30506):
-			button.setLabel(label2=folderSettings["strm_prefix"] if folderSettings else self.settings.getSetting("strm_prefix"))
+			prefix = folderSettings["strm_prefix"] if folderSettings else self.settings.getSetting("strm_prefix")
+
+			if prefix:
+				valueMap = {
+					"duration": self.settings.getLocalizedString(30148),
+					"extension": self.settings.getLocalizedString(30149),
+					"resolution": self.settings.getLocalizedString(30150),
+				}
+				prefix = ", ".join(valueMap[p] for p in prefix.split(", "))
+
+			button.setLabel(label2=prefix)
+
 		elif label == self.settings.getLocalizedString(30507):
-			button.setLabel(label2=folderSettings["strm_suffix"] if folderSettings else self.settings.getSetting("strm_suffix"))
+			suffix = folderSettings["strm_suffix"] if folderSettings else self.settings.getSetting("strm_suffix")
+
+			if suffix:
+				valueMap = {
+					"duration": self.settings.getLocalizedString(30148),
+					"extension": self.settings.getLocalizedString(30149),
+					"resolution": self.settings.getLocalizedString(30150),
+				}
+				suffix = ", ".join(valueMap[s] for s in suffix.split(", "))
+
+			button.setLabel(label2=suffix)
+
 		elif label == self.settings.getLocalizedString(30049):
 			button.setLabel(label2=self.syncMode)
 		elif label == self.settings.getLocalizedString(30050):
@@ -226,7 +248,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 	def _calculateViewport(self):
 		self.viewportWidth = self.getWidth()
 		self.viewportHeight = self.getHeight()
-		self.windowWidth = int(1000 * self.viewportWidth / 1920)
+		self.windowWidth = int(1100 * self.viewportWidth / 1920)
 
 		if self.folders:
 			self.buttonWidth = self.windowWidth - 200
@@ -255,7 +277,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.buttonOK = xbmcgui.ControlButton(
 			self.center + 80 if self.folders else self.center,
 			self.windowBottom - 60,
-			100,
+			110,
 			self.buttonHeight,
 			self.settings.getLocalizedString(30066),
 			noFocusTexture=self.dGrayTexture,
@@ -266,7 +288,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.buttonClose = xbmcgui.ControlButton(
 			self.center + 200 if self.folders else self.center + 120,
 			self.windowBottom - 60,
-			100,
+			110,
 			self.buttonHeight,
 			self.settings.getLocalizedString(30067),
 			noFocusTexture=self.dGrayTexture,
@@ -456,10 +478,10 @@ class SyncSettings(xbmcgui.WindowDialog):
 		if button.getLabel2():
 			included = [a for a in button.getLabel2().split(", ") if a != " "]
 		else:
-			included = [a for a in folderSettings[f"strm_{affix.lower()}"].split(", ") if a] if folderSettings else [a for a in self.settings.getSetting(f"strm_{affix.lower()}").split(", ") if a]
+			included = [a for a in folderSettings[f"strm_{affix}"].split(", ") if a] if folderSettings else [a for a in self.settings.getSetting(f"strm_{affix.lower()}").split(", ") if a]
 
 		[excluded.remove(prefix) for prefix in included]
-		strmAffixer = StrmAffixer(included=included, excluded=excluded, title=f"STRM {affix}")
+		strmAffixer = StrmAffixer(included=included, excluded=excluded, title=self.settings.getLocalizedString(30506) if affix == "prefix" else self.settings.getLocalizedString(30507))
 		strmAffixer.doModal()
 		closed = strmAffixer.closed
 		del strmAffixer
@@ -499,7 +521,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		self.encryptionID = ids[selection - 1]
 
 	def _setPrefix(self, button):
-		self._setAffix(button, "Prefix")
+		self._setAffix(button, "prefix")
 
 	def _setSearchLanguage(self, button):
 		selection = self.dialog.select(30515, TMDB_LANGUAGES)
@@ -526,6 +548,18 @@ class SyncSettings(xbmcgui.WindowDialog):
 				settingTypes[settingType].update({setting["name"]: button if (button := button.getLabel2()) != " " else ""})
 			except KeyError:
 				continue
+
+		valueMap = {
+			self.settings.getLocalizedString(30148): "duration",
+			self.settings.getLocalizedString(30149): "extension",
+			self.settings.getLocalizedString(30150): "resolution",
+		}
+
+		if folderSettings["strm_prefix"]:
+			folderSettings["strm_prefix"] = ", ".join(valueMap[p] for p in folderSettings["strm_prefix"].split(", "))
+
+		if folderSettings["strm_suffix"]:
+			folderSettings["strm_suffix"] = ", ".join(valueMap[s] for s in folderSettings["strm_suffix"].split(", "))
 
 		encryptionID = folderSettings.get("encryption_id")
 
@@ -617,7 +651,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 			http_requester.request(url, syncTaskData)
 
 	def _setSuffix(self, button):
-		self._setAffix(button, "Suffix")
+		self._setAffix(button, "suffix")
 
 	def _setSyncFrequency(self, button):
 

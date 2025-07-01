@@ -29,14 +29,9 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		self.shift = False
 		self.closed = False
 		self.lastUpdate = 0
-		self.buttonWidth = 120
+		self.buttonWidth = 160
 		self.buttonHeight = 30
 		self.buttonAmount = len(self.excluded) + len(self.included)
-		self.valueMap = {
-			self.settings.getLocalizedString(30148): "duration",
-			self.settings.getLocalizedString(30149): "extension",
-			self.settings.getLocalizedString(30150): "resolution",
-		}
 		self._initializePaths()
 		self._calculateViewport()
 		self._addBackground()
@@ -202,7 +197,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 			self.close()
 		elif self.focusedButtonID == self.buttonOKid:
 			self.included.clear()
-			[self.included.append(self.valueMap[button.getLabel()]) for button in self.includedButtons if button.isVisible()]
+			[self.included.append(button.getLabel()) for button in self.includedButtons if button.isVisible()]
 			self.close()
 
 	def _addAffixButtons(self, items, buttons, x):
@@ -229,9 +224,10 @@ class StrmAffixer(xbmcgui.WindowDialog):
 			textOffsetX=20,
 			shadowColor="0xFF000000",
 		)
-		excludeBG = self._addControlImage(self.x + 11, self.y + 85, self.buttonWidth, self.buttonHeight * self.buttonAmount, self.dGrayTexture)
-		includeBG = self._addControlImage(self.x + self.buttonWidth + 20, self.y + 85, self.buttonWidth, self.buttonHeight * self.buttonAmount, self.dGrayTexture)
-		self.addControls([backgroundFade, backgroundInvis, background, bar, includeBG, excludeBG])
+		self.center = int((self.viewportWidth - self.buttonWidth - self.buttonWidth - 10) / 2)
+		self.excludeBG = self._addControlImage(self.center, self.y + 85, self.buttonWidth, self.buttonHeight * self.buttonAmount, self.dGrayTexture)
+		self.includeBG = self._addControlImage(self.center + self.buttonWidth + 10, self.y + 85, self.buttonWidth, self.buttonHeight * self.buttonAmount, self.dGrayTexture)
+		self.addControls([backgroundFade, backgroundInvis, background, bar, self.includeBG, self.excludeBG])
 		self.backgroundID = backgroundInvis.getId()
 
 	def _addControlButton(self, x, y, width, height, label="", focusTexture=None, noFocusTexture=None, **kwargs):
@@ -259,22 +255,22 @@ class StrmAffixer(xbmcgui.WindowDialog):
 		)
 
 	def _addLabels(self):
-		labelExclude = xbmcgui.ControlLabel(self.x + 10, self.y + 50, 120, 30, f"[COLOR FF0F85A5]{self.settings.getLocalizedString(30103)}[/COLOR]", alignment=2 + 4)
-		labelInclude = xbmcgui.ControlLabel(self.x + 140, self.y + 50, 120, 30, f"[COLOR FF0F85A5]{self.settings.getLocalizedString(30104)}[/COLOR]", alignment=2 + 4)
+		labelExclude = xbmcgui.ControlLabel(self.excludeBG.getX(), self.y + 50, self.buttonWidth, 30, f"[COLOR FF0F85A5]{self.settings.getLocalizedString(30103)}[/COLOR]", alignment=2 + 4)
+		labelInclude = xbmcgui.ControlLabel(self.includeBG.getX(), self.y + 50, self.buttonWidth, 30, f"[COLOR FF0F85A5]{self.settings.getLocalizedString(30104)}[/COLOR]", alignment=2 + 4)
 		self.addControls([labelExclude, labelInclude])
 
 	def _calculateViewport(self):
 		self.viewportWidth = self.getWidth()
 		self.viewportHeight = self.getHeight()
-		self.windowWidth = int(406 * self.viewportWidth / 1920)
+		self.windowWidth = int(600 * self.viewportWidth / 1920)
 		self.windowHeight = int(350 * self.viewportHeight / 1080)
 		self.x = (self.viewportWidth - self.windowWidth) // 2
 		self.y = (self.viewportHeight - self.windowHeight) // 2
 
 	def _createButtons(self):
 		self.excludedButtons, self.includedButtons = [], []
-		self._addAffixButtons(self.excluded, self.excludedButtons, self.x + 11)
-		self._addAffixButtons(self.included, self.includedButtons, self.x + self.buttonWidth + 20)
+		self._addAffixButtons(self.excluded, self.excludedButtons, self.center)
+		self._addAffixButtons(self.included, self.includedButtons, self.center + self.buttonWidth + 10)
 
 		for button, label in zip(self.excludedButtons, self.excluded):
 			button.setLabel(label)
@@ -284,8 +280,12 @@ class StrmAffixer(xbmcgui.WindowDialog):
 			button.setLabel(label)
 			button.setVisible(True)
 
-		self.buttonOK = self._addControlButton(self.x + 40, self.y + 190, 80, self.buttonHeight, self.settings.getLocalizedString(30066), alignment=2 + 4, font="font25_title")
-		self.buttonClose = self._addControlButton(self.x + self.buttonWidth + 30, self.y + 190, 80, self.buttonHeight, self.settings.getLocalizedString(30084), alignment=2 + 4, font="font25_title")
+		buttonWidth = 110
+		y = self.y + 190
+		buttonOkX = int(self.excludeBG.getX() + (self.buttonWidth / 2) - (buttonWidth / 2))
+		buttonCloseX = int(self.includeBG.getX() + (self.buttonWidth / 2) - (buttonWidth / 2))
+		self.buttonOK = self._addControlButton(buttonOkX, y, buttonWidth, self.buttonHeight, self.settings.getLocalizedString(30066), alignment=2 + 4, font="font25_title")
+		self.buttonClose = self._addControlButton(buttonCloseX, y, buttonWidth, self.buttonHeight, self.settings.getLocalizedString(30067), alignment=2 + 4, font="font25_title")
 		self.addControls(self.includedButtons + self.excludedButtons + [self.buttonOK, self.buttonClose])
 		self.buttonOKid = self.buttonOK.getId()
 		self.buttonCloseID = self.buttonClose.getId()
