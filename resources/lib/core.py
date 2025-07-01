@@ -873,17 +873,12 @@ class Core:
 		self.listFolders(driveID, folders)
 
 	def setAffix(self, affix):
-		valueMap = {
-			"duration": self.settings.getLocalizedString(30148),
-			"extension": self.settings.getLocalizedString(30149),
-			"resolution": self.settings.getLocalizedString(30150),
-		}
 		excluded = [
 			self.settings.getLocalizedString(30148),
 			self.settings.getLocalizedString(30149),
 			self.settings.getLocalizedString(30150),
 		]
-		included = [valueMap[a] for a in self.settings.getSetting(f"strm_{affix}").split(", ") if a]
+		included = [a for a in self.settings.getSetting(f"strm_{affix}").split(", ") if a]
 		[excluded.remove(include) for include in included]
 		from .ui.strm_affixer import StrmAffixer
 		strmAffixer = StrmAffixer(included=included, excluded=excluded, title=self.settings.getLocalizedString(30506) if affix == "prefix" else self.settings.getLocalizedString(30507))
@@ -894,7 +889,7 @@ class Core:
 		if closed:
 			return
 
-		self.settings.setSetting(f"strm_{affix.lower()}", ", ".join(included))
+		self.settings.setSetting(f"strm_{affix}", ", ".join(included))
 
 	def setAlias(self):
 		driveID = self.settings.getParameter("drive_id")

@@ -478,7 +478,7 @@ class SyncSettings(xbmcgui.WindowDialog):
 		if button.getLabel2():
 			included = [a for a in button.getLabel2().split(", ") if a != " "]
 		else:
-			included = [a for a in folderSettings[f"strm_{affix}"].split(", ") if a] if folderSettings else [a for a in self.settings.getSetting(f"strm_{affix.lower()}").split(", ") if a]
+			included = [a for a in folderSettings[f"strm_{affix}"].split(", ") if a] if folderSettings else [a for a in self.settings.getSetting(f"strm_{affix}").split(", ") if a]
 
 		[excluded.remove(prefix) for prefix in included]
 		strmAffixer = StrmAffixer(included=included, excluded=excluded, title=self.settings.getLocalizedString(30506) if affix == "prefix" else self.settings.getLocalizedString(30507))
