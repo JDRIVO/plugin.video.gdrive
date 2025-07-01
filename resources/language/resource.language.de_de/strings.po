@@ -36,7 +36,7 @@ msgstr "Synchronisierungseinstellungen"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "API-Sperre"
+msgstr "API-Sperre:"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
@@ -652,7 +652,7 @@ msgstr "in einem Webbrowser."
 
 msgctxt "#30217"
 msgid "You must create an"
-msgstr "Sie müssen einen"
+msgstr "Sie müssen eine"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"

@@ -120,7 +120,7 @@ msgstr "حدد ملفات للاستيراد"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
-msgstr "هل تريد حذف جميع الملفات المرتبطة بهذا المحرك؟"
+msgstr "هل تريد حذف جميع الملفات المرتبطة بمحرك الأقراص هذا؟"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
@@ -208,7 +208,7 @@ msgstr "وضع المزامنة"
 
 msgctxt "#30050"
 msgid "Sync frequency"
-msgstr "تكرار المزامنة"
+msgstr "تواتر المزامنة"
 
 msgctxt "#30051"
 msgid "Sync on startup"
@@ -244,7 +244,7 @@ msgstr "لغة البحث"
 
 msgctxt "#30059"
 msgid "Region"
-msgstr "منطقة"
+msgstr "المنطقة"
 
 msgctxt "#30060"
 msgid "Adult content"
@@ -280,11 +280,11 @@ msgstr "إلغاء"
 
 msgctxt "#30068"
 msgid "interval"
-msgstr "فترة"
+msgstr "الفاصل الزمني"
 
 msgctxt "#30069"
 msgid "schedule"
-msgstr "جدول"
+msgstr "الجدول الزمني"
 
 msgctxt "#30070"
 msgid "Enter the sync interval in minutes"
@@ -364,7 +364,7 @@ msgstr "جارٍ حذف ذاكرة التخزين المؤقت للمزامنة"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "إنشاء معرف العميل وسر العميل"
+msgstr "إنشاء معرّف العميل وسرّ العميل"
 
 msgctxt "#30090"
 msgid "Sync multiple"
@@ -372,7 +372,7 @@ msgstr "مزامنة متعددة"
 
 msgctxt "#30091"
 msgid "Search folder"
-msgstr "البحث في المجلد"
+msgstr "بحث في المجلد"
 
 msgctxt "#30092"
 msgid "Sync folder isn't set."
@@ -392,7 +392,7 @@ msgstr "تم حذف المجلد"
 
 msgctxt "#30096"
 msgid "Failed to delete the sync folder. See log for details."
-msgstr "فشل في حذف مجلد المزامنة. لمزيد من التفاصيل، راجع السجل."
+msgstr "فشل حذف مجلد المزامنة. راجع السجل للمزيد من التفاصيل."
 
 msgctxt "#30097"
 msgid "Accounts file deleted"
@@ -400,7 +400,7 @@ msgstr "تم حذف ملف الحسابات"
 
 msgctxt "#30098"
 msgid "Failed to delete the accounts file. See log for details."
-msgstr "فشل في حذف ملف الحسابات. لمزيد من التفاصيل، راجع السجل."
+msgstr "فشل حذف ملف الحسابات. راجع السجل للمزيد من التفاصيل."
 
 msgctxt "#30099"
 msgid "Enter the filename"
@@ -448,7 +448,7 @@ msgstr "كلمة المرور"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "سولت"
+msgstr "ملح"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -464,7 +464,7 @@ msgstr "لاحقة"
 
 msgctxt "#30114"
 msgid "Encrypt file data"
-msgstr "تشفير بيانات الملف"
+msgstr "تشفير بيانات الملفات"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
@@ -512,7 +512,7 @@ msgstr "تم تحديث الملف الشخصي"
 
 msgctxt "#30126"
 msgid "You must assign a profile name."
-msgstr "يجب عليك تعيين اسم ملف شخصي."
+msgstr "يجب عليك تعيين اسم للملف الشخصي."
 
 msgctxt "#30127"
 msgid "You must assign a password."
@@ -520,11 +520,11 @@ msgstr "يجب عليك تعيين كلمة مرور."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "يجب عليك تعيين سولت."
+msgstr "يجب عليك تعيين ملح."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
-msgstr "حذف الملف الشخصي"
+msgstr  "حذف الملفات الشخصية"
 
 msgctxt "#30130"
 msgid "Profile deleted"
@@ -536,7 +536,7 @@ msgstr "تمت مزامنة جميع محركات الأقراص"
 
 msgctxt "#30132"
 msgid "Failed to sync all drives"
-msgstr "فشل في مزامنة جميع محركات الأقراص"
+msgstr "فشل مزامنة جميع محركات الأقراص"
 
 msgctxt "#30133"
 msgid "Sync failed"
@@ -572,7 +572,7 @@ msgstr "ساعات"
 
 msgctxt "#30141"
 msgid "Failed to sync"
-msgstr "فشل المزامنة"
+msgstr "فشلت المزامنة"
 
 msgctxt "#30142"
 msgid "Syncing all drives"
@@ -724,7 +724,7 @@ msgstr "استيراد بيانات إشارات الوسائط من STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "تحديث المكتبة تلقائيا"
+msgstr "تحديث المكتبة تلقائيًا"
 
 msgctxt "#30405"
 msgid "Display dialog"
@@ -804,7 +804,7 @@ msgstr "لغة البحث TMDB"
 
 msgctxt "#30516"
 msgid "TMDB region"
-msgstr "منطقة TMDB"
+msgstr "المنطقة TMDB"
 
 msgctxt "#30517"
 msgid "TMDB adult content"
@@ -812,7 +812,7 @@ msgstr "محتوى البالغين في TMDB"
 
 msgctxt "#30600"
 msgid "GUI"
-msgstr "واجهة رسومية"
+msgstr "الواجهة الرسومية"
 
 msgctxt "#30601"
 msgid "Display initial sync progress dialog"

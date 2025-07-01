@@ -448,7 +448,7 @@ msgstr "Wachtwoord"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Salt"
+msgstr "Zout"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -520,7 +520,7 @@ msgstr "U moet een wachtwoord toewijzen."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "U moet een salt toewijzen."
+msgstr "U moet een zout toewijzen."
 
 msgctxt "#30129"
 msgid "Profile Deletion"

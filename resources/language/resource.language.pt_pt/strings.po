@@ -448,7 +448,7 @@ msgstr "Senha"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Salt"
+msgstr "Sal"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -520,7 +520,7 @@ msgstr "Você deve atribuir uma senha."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Você deve atribuir um salt."
+msgstr "Você deve atribuir um sal."
 
 msgctxt "#30129"
 msgid "Profile Deletion"

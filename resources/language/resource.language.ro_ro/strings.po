@@ -36,7 +36,7 @@ msgstr "Setări de sincronizare"
 
 msgctxt "#30006"
 msgid "API Ban:"
-msgstr "Blocare API:"
+msgstr "Restricție API"
 
 msgctxt "#30007"
 msgid "Switching to fallback account"
@@ -64,7 +64,7 @@ msgstr "Setări de sincronizare"
 
 msgctxt "#30013"
 msgid "Sync folder"
-msgstr "Sincronizează director"
+msgstr "Sincronizează directorul"
 
 msgctxt "#30014"
 msgid "Select an account"
@@ -100,7 +100,7 @@ msgstr "Validați conturile"
 
 msgctxt "#30022"
 msgid "Delete accounts"
-msgstr "Ștergeți conturile"
+msgstr "Șterge conturile"
 
 msgctxt "#30023"
 msgid "Validate"
@@ -120,7 +120,7 @@ msgstr "Selectați fișiere de importat"
 
 msgctxt "#30027"
 msgid "Do you want to delete all files associated with this drive?"
-msgstr "Doriți să ștergeți toate fișierele asociate acestei unități?"
+msgstr "Doriți să ștergeți toate fișierele asociate cu această unitate?"
 
 msgctxt "#30028"
 msgid "The private key and client email weren't found in:"
@@ -220,7 +220,7 @@ msgstr "Se sincronizează directoarele"
 
 msgctxt "#30053"
 msgid "Processing files"
-msgstr "Procesarea fișierelor"
+msgstr "Se procesează fișierele"
 
 msgctxt "#30054"
 msgid "Are you sure you want to delete the sync cache?"
@@ -292,7 +292,7 @@ msgstr "Introduceți intervalul de sincronizare în minute"
 
 msgctxt "#30071"
 msgid "Enter the time to sync files"
-msgstr "Introduceți ora pentru a sincroniza fișierele"
+msgstr "Introduceți ora de sincronizare a fișierelor"
 
 msgctxt "#30072"
 msgid "Select a video source"
@@ -304,15 +304,15 @@ msgstr "Se sincronizează"
 
 msgctxt "#30074"
 msgid "Deleting sync folder"
-msgstr "Ștergerea directorului de sincronizare"
+msgstr "Se șterge directorul de sincronizare"
 
 msgctxt "#30075"
 msgid "Deleting files"
-msgstr "Ștergerea fișierelor"
+msgstr "Se șterg fișierele"
 
 msgctxt "#30076"
 msgid "Moving sync folder"
-msgstr "Mutarea directorului de sincronizare"
+msgstr "Se mută directorul de sincronizare"
 
 msgctxt "#30077"
 msgid "Select the folder that your files will be stored in"
@@ -364,7 +364,7 @@ msgstr "Ștergerea memoriei cache de sincronizare"
 
 msgctxt "#30089"
 msgid "Client ID and Client Secret creation"
-msgstr "Creare ID client și secret client"
+msgstr "Creare ID client și Secret client"
 
 msgctxt "#30090"
 msgid "Sync multiple"
@@ -448,7 +448,7 @@ msgstr "Parolă"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Salt"
+msgstr "Sal"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -464,7 +464,7 @@ msgstr "Sufix"
 
 msgctxt "#30114"
 msgid "Encrypt file data"
-msgstr "Criptați datele fișierului"
+msgstr "Criptează datele fișierului"
 
 msgctxt "#30115"
 msgid "Encrypt directory names"
@@ -480,7 +480,7 @@ msgstr "Profiluri șterse"
 
 msgctxt "#30118"
 msgid "Profile import failed."
-msgstr "Importul de profil a eșuat."
+msgstr "Importul profilului a eșuat."
 
 msgctxt "#30119"
 msgid "Profiles imported"
@@ -520,7 +520,7 @@ msgstr "Trebuie să atribuiți o parolă."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Trebuie să atribuiți un salt."
+msgstr "Trebuie să atribuiți o sală."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
@@ -596,7 +596,7 @@ msgstr "Sunteți sigur că doriți să ștergeți memoria cache TMDB?"
 
 msgctxt "#30147"
 msgid "Deleting TMDB cache"
-msgstr "Ștergerea memoriei cache TMDB"
+msgstr "Se șterge memoria cache TMDB"
 
 msgctxt "#30148"
 msgid "duration"
@@ -632,7 +632,7 @@ msgstr "Selectați directoarele de șters"
 
 msgctxt "#30207"
 msgid "Add account"
-msgstr "Adăugați un cont"
+msgstr "Adaugă un cont"
 
 msgctxt "#30209"
 msgid "The file wasn't found in the account:"
@@ -640,7 +640,7 @@ msgstr "Fișierul nu s-a găsit în cont:"
 
 msgctxt "#30214"
 msgid "Add service accounts"
-msgstr "Adăugați conturi de serviciu"
+msgstr "Adaugă conturi de serviciu"
 
 msgctxt "#30215"
 msgid "Visit"
@@ -656,11 +656,11 @@ msgstr "Trebuie să creați un"
 
 msgctxt "#30218"
 msgid "OAuth Client ID"
-msgstr "ID Client OAuth"
+msgstr "ID client OAuth"
 
 msgctxt "#30219"
 msgid "Web Application"
-msgstr "Aplicație Web"
+msgstr "Aplicație web"
 
 msgctxt "#30220"
 msgid "with this"
@@ -724,7 +724,7 @@ msgstr "Importați datele marcajelor media de la STRM"
 
 msgctxt "#30404"
 msgid "Update library automatically"
-msgstr "Actualizați automat mediateca"
+msgstr "Actualizează automat mediateca"
 
 msgctxt "#30405"
 msgid "Display dialog"
@@ -732,7 +732,7 @@ msgstr "Afișare dialog"
 
 msgctxt "#30406"
 msgid "Clean library automatically"
-msgstr "Curățați automat mediateca"
+msgstr "Curăță automat mediateca"
 
 msgctxt "#30407"
 msgid "Video source"
@@ -752,11 +752,11 @@ msgstr "Mutați directorul de sincronizare"
 
 msgctxt "#30503"
 msgid "Delete sync cache"
-msgstr "Ștergeți memoria cache de sincronizare"
+msgstr "Șterge memoria cache de sincronizare"
 
 msgctxt "#30504"
 msgid "Delete sync folder"
-msgstr "Ștergeți directorul de sincronizare"
+msgstr "Șterge directorul de sincronizare"
 
 msgctxt "#30505"
 msgid "Sync defaults"
@@ -840,7 +840,7 @@ msgstr "Exportă conturi"
 
 msgctxt "#30703"
 msgid "Delete all accounts"
-msgstr "Ștergeți toate conturile"
+msgstr "Șterge toate conturile"
 
 msgctxt "#30800"
 msgid "Encryption"
@@ -860,7 +860,7 @@ msgstr "Modificați profilul"
 
 msgctxt "#30804"
 msgid "Delete profiles"
-msgstr "Ștergeți profilurile"
+msgstr "Șterge profilurile"
 
 msgctxt "#30805"
 msgid "Import profiles"
@@ -880,4 +880,4 @@ msgstr "Port server (necesită repornire)"
 
 msgctxt "#30902"
 msgid "Delete TMDB cache"
-msgstr "Ștergeți memoria cache TMDB"
+msgstr "Șterge memoria cache TMDB"

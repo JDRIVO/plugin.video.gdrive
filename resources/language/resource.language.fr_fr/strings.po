@@ -448,7 +448,7 @@ msgstr "Mot de passe"
 
 msgctxt "#30110"
 msgid "Salt"
-msgstr "Salt"
+msgstr "Sel"
 
 msgctxt "#30111"
 msgid "Filename encryption"
@@ -520,7 +520,7 @@ msgstr "Vous devez attribuer un mot de passe."
 
 msgctxt "#30128"
 msgid "You must assign a salt."
-msgstr "Vous devez attribuer un Salt."
+msgstr "Vous devez attribuer un sel."
 
 msgctxt "#30129"
 msgid "Profile Deletion"
