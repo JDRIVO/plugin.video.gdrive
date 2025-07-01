@@ -3,7 +3,7 @@ import base64
 try:
 	from Cryptodome.Util.Padding import pad, unpad
 	from Cryptodome.Cipher._mode_ecb import EcbMode
-except:
+except Exception:
 	from Crypto.Util.Padding import pad, unpad
 	from Crypto.Cipher._mode_ecb import EcbMode
 
@@ -132,7 +132,7 @@ class Name:
 			for str_ in filename:
 				filename_code.append(ord(str_))
 
-		except:
+		except Exception:
 			return "!." + filename
 
 		dir_ = 0
@@ -176,7 +176,7 @@ class Name:
 
 				try:
 					out_filename = out_filename + chr(base + (code - base + thisdir) % 256)
-				except:
+				except Exception:
 					out_filename = out_filename + f"!{chr(code)}"
 
 			else:
@@ -201,7 +201,7 @@ class Name:
 
 		try:
 			dir_ = int(num)
-		except:
+		except Exception:
 			raise ValueError("Not an obfuscated encrypted filename")
 
 		for i in self.__nameKey:
