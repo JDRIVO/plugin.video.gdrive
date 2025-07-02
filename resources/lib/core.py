@@ -874,22 +874,29 @@ class Core:
 
 	def setAffix(self, affix):
 		excluded = [
-			self.settings.getLocalizedString(30148),
-			self.settings.getLocalizedString(30149),
-			self.settings.getLocalizedString(30150),
+			"duration",
+			"extension",
+			"resolution",
 		]
 		included = [a for a in self.settings.getSetting(f"strm_{affix}").split(", ") if a]
 		[excluded.remove(include) for include in included]
 		from .ui.strm_affixer import StrmAffixer
 		strmAffixer = StrmAffixer(included=included, excluded=excluded, title=self.settings.getLocalizedString(30506) if affix == "prefix" else self.settings.getLocalizedString(30507))
 		strmAffixer.doModal()
+		included = strmAffixer.included
 		closed = strmAffixer.closed
 		del strmAffixer
 
 		if closed:
 			return
 
-		self.settings.setSetting(f"strm_{affix}", ", ".join(included))
+		valueMap = {
+			self.settings.getLocalizedString(30148): "duration",
+			self.settings.getLocalizedString(30149): "extension",
+			self.settings.getLocalizedString(30150): "resolution",
+		}
+		self.settings.setSetting(f"strm_{affix}", ", ".join(valueMap[a] for a in included))
+		self.settings.setSetting(f"strm_{affix}_localized", ", ".join(included))
 
 	def setAlias(self):
 		driveID = self.settings.getParameter("drive_id")

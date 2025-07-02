@@ -22,10 +22,15 @@ class StrmAffixer(xbmcgui.WindowDialog):
 	ACTION_TOUCH_LONGPRESS = 411
 
 	def __init__(self, *args, **kwargs):
-		self.title = kwargs["title"]
-		self.excluded = kwargs["excluded"]
-		self.included = kwargs["included"]
 		self.settings = SETTINGS
+		valueMap = {
+			"duration": self.settings.getLocalizedString(30148),
+			"extension": self.settings.getLocalizedString(30149),
+			"resolution": self.settings.getLocalizedString(30150),
+		}
+		self.excluded = [valueMap[a] for a in kwargs["excluded"]]
+		self.included = [valueMap[a] for a in kwargs["included"]]
+		self.title = kwargs["title"]
 		self.shift = False
 		self.closed = False
 		self.lastUpdate = 0
@@ -200,7 +205,7 @@ class StrmAffixer(xbmcgui.WindowDialog):
 			[self.included.append(button.getLabel()) for button in self.includedButtons if button.isVisible()]
 			self.close()
 
-	def _addAffixButtons(self, items, buttons, x):
+	def _addAffixButtons(self, buttons, x):
 		y = self.y + 85
 
 		for _ in range(self.buttonAmount):
@@ -269,8 +274,8 @@ class StrmAffixer(xbmcgui.WindowDialog):
 
 	def _createButtons(self):
 		self.excludedButtons, self.includedButtons = [], []
-		self._addAffixButtons(self.excluded, self.excludedButtons, self.center)
-		self._addAffixButtons(self.included, self.includedButtons, self.center + self.buttonWidth + 10)
+		self._addAffixButtons(self.excludedButtons, self.center)
+		self._addAffixButtons(self.includedButtons, self.center + self.buttonWidth + 10)
 
 		for button, label in zip(self.excludedButtons, self.excluded):
 			button.setLabel(label)

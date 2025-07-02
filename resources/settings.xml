@@ -180,7 +180,7 @@
 				</setting>
 			</group>
 			<group id="2" label="30505">
-				<setting id="strm_prefix" type="string" label="30506" help="">
+				<setting id="strm_prefix_localized" type="string" label="30506" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -190,7 +190,18 @@
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_strm_prefix)</data>
 					</control>
 				</setting>
-				<setting id="strm_suffix" type="string" label="30507" help="">
+				<setting id="strm_prefix" type="string" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+					<visible>false</visible>
+				</setting>
+				<setting id="strm_suffix_localized" type="string" label="30507" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -199,6 +210,17 @@
 					<control type="button" format="action">
 						<data>RunPlugin(plugin://plugin.video.gdrive/?mode=set_strm_suffix)</data>
 					</control>
+				</setting>
+				<setting id="strm_suffix" type="string" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+					<visible>false</visible>
 				</setting>
 				<setting id="encryption_name" type="string" label="30508" help="">
 					<level>0</level>
