@@ -1,10 +1,9 @@
 import os
 import re
 import datetime
-import urllib.parse
 
 from ..network import http_requester
-from ..network.network_helpers import addQueryString, mergePaths, unquote
+from ..network.network_helpers import addQueryString, mergePaths, parseQuery, unquote
 from ..encryption.jwt import JsonWebToken
 from ..filesystem.fs_helpers import removeProhibitedFSchars
 
@@ -147,12 +146,8 @@ class GoogleDrive:
 
 	def getHeaders(self):
 		return {
-			"Cookie": f"DRIVE_STREAM={self.account.driveStream or ''}",
 			"Authorization": f"Bearer {self.account.accessToken or ''}",
 		}
-
-	def getHeadersEncoded(self):
-		return urllib.parse.urlencode(self.getHeaders())
 
 	def getPageToken(self):
 		params = {"supportsAllDrives": "true"}
@@ -174,44 +169,44 @@ class GoogleDrive:
 
 	def getStreams(self, fileID, resolutionPriority=None):
 		url = f"https://drive.google.com/get_video_info?docid={fileID}"
-		self.account.driveStream = None
-		responseData, cookie = http_requester.request(url, headers=self.getHeaders(), cookie=True)
-		self.account.driveStream = re.search("DRIVE_STREAM=(.*?);", cookie).group(1)
+		response = http_requester.request(url, headers=self.getHeaders())
+		parsedData = parseQuery(response)
+		formats = parsedData.get("fmt_list")
 
-		for _ in range(5):
-			responseData = unquote(responseData)
+		if not formats:
+			return
 
-		urls = re.sub("\&url\=https://", "\@", responseData)
+		streamMap = parsedData.get("fmt_stream_map")
 		streams, resolutionMap = {}, {}
 		resolutions = [1080, 720, 480, 360]
 
-		for r in re.finditer("(\d+)/(\d+)x(\d+)", urls, re.DOTALL):
-			itag, r1, r2 = r.groups()
+		for match in re.finditer("(\d+)/(\d+)x(\d+)", formats):
+			itag, r1, r2 = match.groups()
 			resolution = min(int(r1), int(r2))
-
-			if resolution not in resolutions:
-				resolution = min(resolutions, key=lambda x: abs(x - resolution))
-
+			resolution = min(resolutions, key=lambda x: abs(x - resolution))
 			resolution = f"{resolution}P"
 			resolutionMap[resolution] = itag
 			streams[itag] = {"resolution": resolution}
 
-		for r in re.finditer("\@([^\@;]+)", urls):
-			videoURL = r.group(1)
-			itag = re.search("itag=(\d+)", videoURL).group(1)
-			streams[itag]["url"] = f"https://{videoURL}|{self.getHeadersEncoded()}"
+		for match in re.finditer(r"(\d+)\|(https://[^,]+)", streamMap):
+			itag, url = match.groups()
+			streams[itag]["url"] = url
 
-		if streams and resolutionPriority:
+		if streams:
 
-			for resolution in resolutionPriority:
+			if resolutionPriority:
 
-				if resolution == "Original":
-					return
-				elif resolution in resolutionMap:
-					return resolution, streams[resolutionMap[resolution]]["url"]
+				for resolution in resolutionPriority:
 
-		elif streams:
-			return {"Original": None, **{v["resolution"]: v["url"] for k, v in streams.items()}}
+					if resolution == "Original":
+						return
+
+					itag = resolutionMap.get(resolution)
+
+					if itag and "url" in streams[itag]:
+						return resolution, streams[itag]["url"]
+
+			return {"Original": None, **{v["resolution"]: v["url"] for v in streams.values()}}
 
 	def getToken(self, clientID, clientSecret, code, port):
 		data = {

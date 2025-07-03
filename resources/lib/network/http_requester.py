@@ -8,7 +8,7 @@ HEADERS = {"User-Agent": USER_AGENT}
 HTTP = urllib3.PoolManager()
 
 
-def request(url, data=None, headers=HEADERS, cookie=False, raw=False, method="GET"):
+def request(url, data=None, headers=HEADERS, raw=False, method="GET"):
 
 	if data:
 		method = "POST"
@@ -35,12 +35,9 @@ def request(url, data=None, headers=HEADERS, cookie=False, raw=False, method="GE
 
 			xbmc.sleep(1000)
 
-	if cookie:
-		cookie = response.headers["set-cookie"]
-
 	try:
 		data = json.loads(data)
 	except json.JSONDecodeError:
 		pass
 
-	return data if not cookie else (data, cookie)
+	return data
