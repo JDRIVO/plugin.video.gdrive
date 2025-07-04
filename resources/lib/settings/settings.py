@@ -1,7 +1,8 @@
 import sys
-import urllib.parse
 
 import xbmcaddon
+
+from ..network.network_helpers import parseQuery
 
 
 class Settings(xbmcaddon.Addon):
@@ -35,7 +36,7 @@ class Settings(xbmcaddon.Addon):
 
 	@staticmethod
 	def parseQuery(queries):
-		query = dict(urllib.parse.parse_qsl(queries))
+		query = parseQuery(queries)
 		query.setdefault("mode", "main")
 		return query
 

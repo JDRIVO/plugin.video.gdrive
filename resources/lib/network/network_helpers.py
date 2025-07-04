@@ -29,3 +29,7 @@ def quote(string):
 
 def unquote(string):
 	return urllib.parse.unquote(string)
+
+
+def unquotePlus(string):
+	return urllib.parse.unquote_plus(string)

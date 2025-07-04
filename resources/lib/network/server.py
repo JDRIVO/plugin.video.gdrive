@@ -4,7 +4,6 @@ import json
 import time
 import datetime
 from threading import Thread
-from urllib.parse import unquote_plus
 from socketserver import ThreadingMixIn
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -13,7 +12,7 @@ import urllib3
 
 from constants import *
 from . import registration
-from .network_helpers import parseQuery, parseURL
+from .network_helpers import parseQuery, parseURL, unquotePlus
 from ..ui.dialogs import Dialog
 from ..accounts.account import OAuthAccount
 from ..accounts.account_manager import AccountManager
@@ -209,7 +208,7 @@ class ServerHandler(BaseHTTPRequestHandler):
 		clientID = queries["client_id"]
 		authURL = self.server.cloudService.getAuthURL(clientID, self.server.server_port)
 		self.server.account = OAuthAccount()
-		self.server.account.name = unquote_plus(queries["account"])
+		self.server.account.name = unquotePlus(queries["account"])
 		self.server.account.clientID = clientID
 		self.server.account.clientSecret = queries["client_secret"]
 		self.sendRedirect(authURL)

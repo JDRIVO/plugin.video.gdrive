@@ -7,7 +7,6 @@ class Account:
 		self.name = None
 		self._accessToken = None
 		self.tokenExpiry = None
-		self.driveStream = None
 
 	@property
 	def accessToken(self):
