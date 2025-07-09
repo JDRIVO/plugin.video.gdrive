@@ -145,9 +145,7 @@ class GoogleDrive:
 		return drives
 
 	def getHeaders(self):
-		return {
-			"Authorization": f"Bearer {self.account.accessToken or ''}",
-		}
+		return {"Authorization": f"Bearer {self.account.accessToken or ''}"}
 
 	def getPageToken(self):
 		params = {"supportsAllDrives": "true"}
@@ -263,9 +261,9 @@ class GoogleDrive:
 				"grant_type": "refresh_token",
 			}
 		else:
-			jwt = JsonWebToken(self.account.email, self.account.key, SCOPE_URL, GOOGLE_TOKEN_URL).create()
+			jwt = JsonWebToken(self.account.email, self.account.key, SCOPE_URL, GOOGLE_TOKEN_URL)
 			data = {
-				"assertion": jwt,
+				"assertion": jwt.create(),
 				"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
 			}
 

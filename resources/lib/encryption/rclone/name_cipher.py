@@ -3,7 +3,7 @@ import base64
 try:
 	from Cryptodome.Util.Padding import pad, unpad
 	from Cryptodome.Cipher._mode_ecb import EcbMode
-except Exception:
+except ImportError:
 	from Crypto.Util.Padding import pad, unpad
 	from Crypto.Cipher._mode_ecb import EcbMode
 

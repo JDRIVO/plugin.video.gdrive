@@ -3,7 +3,7 @@ from functools import partial
 
 try:
 	from Cryptodome.Util.strxor import strxor
-except Exception:
+except ImportError:
 	from Crypto.Util.strxor import strxor
 
 O = struct.unpack("<4I", b"expand 32-byte k")

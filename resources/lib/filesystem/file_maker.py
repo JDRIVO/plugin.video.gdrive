@@ -112,10 +112,12 @@ def _identifyVideo(ptnData):
 	episode = ptnData.get("episode")
 	media = None
 
-	if episode is not None and season is not None and title:
-		media = "episode"
-	elif title and year:
-		media = "movie"
+	if title:
+
+		if episode is not None and season is not None:
+			media = "episode"
+		elif year:
+			media = "movie"
 
 	return {
 		"media": media,

@@ -1,7 +1,7 @@
 try:
 	from Cryptodome.Cipher import AES
 	from Cryptodome.Protocol.KDF import scrypt
-except Exception:
+except ImportError:
 	from Crypto.Cipher import AES
 	from Crypto.Protocol.KDF import scrypt
 

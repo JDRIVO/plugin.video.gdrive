@@ -357,9 +357,7 @@ class SyncCacheManager(DatabaseManager):
 		self.createTable("folders", columns)
 
 	def _createGlobalTable(self):
-		columns = (
-			"local_path TEXT",
-		)
+		columns = ("local_path TEXT",)
 		self.createTable("global", columns)
 
 	def _removeDirectories(self, syncRootPath, drivePath, rootFolderID, progressDialog):

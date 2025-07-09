@@ -9,7 +9,7 @@ import hashlib
 
 try:
 	from Cryptodome.Cipher import AES
-except Exception:
+except ImportError:
 	from Crypto.Cipher import AES
 
 
