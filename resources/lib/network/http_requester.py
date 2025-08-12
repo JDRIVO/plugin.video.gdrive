@@ -19,7 +19,12 @@ def request(url, data=None, headers=HEADERS, raw=False, method="GET"):
 			response = HTTP.request(method, url, headers=headers, json=data, preload_content=not raw)
 
 			if response.status >= 400:
-				raise urllib3.exceptions.HTTPError(response.reason)
+
+				try:
+					error = json.loads(response.data.decode("utf-8"))
+					raise urllib3.exceptions.HTTPError(f"Status: {response.status}, Reason: {response.reason}, Error details: {error}")
+				except json.JSONDecodeError:
+					raise urllib3.exceptions.HTTPError(f"Status: {response.status}, Reason: {response.reason}")
 
 			if raw:
 				return response
